@@ -7,6 +7,7 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
   const port = configService.get<number>('PORT', 3000);
+  app.setGlobalPrefix('api/v1/andean');
   await app.listen(port);
 }
 bootstrap();
