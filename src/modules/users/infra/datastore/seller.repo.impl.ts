@@ -4,7 +4,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { SellerDocument } from '../persistence/seller.schema';
 import { Seller } from '../../domain/entities/seller';
-import { AccountStatus } from '../../domain/enums/AccountStatus';
 
 @Injectable()
 export class SellerRepositoryImpl extends SellerRepository {
@@ -25,8 +24,8 @@ export class SellerRepositoryImpl extends SellerRepository {
       address: seller.address,
       phoneNumber: seller.phoneNumber,
       email: seller.email,
-      accountStatus: AccountStatus.DISABLED,
     });
+
     const savedSeller = await created.save();
     return new Seller(
       seller.id,
@@ -37,7 +36,6 @@ export class SellerRepositoryImpl extends SellerRepository {
       savedSeller.address,
       savedSeller.phoneNumber,
       savedSeller.email,
-      AccountStatus.DISABLED,
     );
   }
 
@@ -54,7 +52,6 @@ export class SellerRepositoryImpl extends SellerRepository {
           doc.address,
           doc.phoneNumber,
           doc.email,
-          doc.accountStatus,
         ),
     );
   }

@@ -2,7 +2,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { SellerRepository } from '../datastore/Seller.repo';
 import { Seller } from '../../domain/entities/seller';
 import { CreateSellerDto } from '../../infra/controllers/dto/CreateSellerDto';
-import { AccountStatus } from '../../domain/enums/AccountStatus';
 import { ConflictException } from '@nestjs/common';
 
 @Injectable()
@@ -34,7 +33,6 @@ export class CreateSellerUseCase {
       sellerDto.address,
       sellerDto.phoneNumber,
       sellerDto.email,
-      AccountStatus.DISABLED,
     );
     await this.sellerRepository.saveSeller(sellerToSave);
     return sellerToSave;

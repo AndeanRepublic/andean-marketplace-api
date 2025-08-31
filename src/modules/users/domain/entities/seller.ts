@@ -1,5 +1,3 @@
-import { AccountStatus } from '../enums/AccountStatus';
-
 export class Seller {
   constructor(
     public id: string,
@@ -10,6 +8,5 @@ export class Seller {
     public address: string,
     public phoneNumber: string,
     public email: string,
-    public accountStatus: AccountStatus,
   ) {}
 }
