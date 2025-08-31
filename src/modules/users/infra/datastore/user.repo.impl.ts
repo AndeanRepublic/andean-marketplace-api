@@ -12,9 +12,10 @@ export class UserRepositoryImpl extends UserRepository {
   ) {
     super();
   }
+
   async saveUser(user: User): Promise<User> {
     const created = new this.userModel({
-      _id: user.id,
+      _id: crypto.randomUUID(),
       id: user.id,
       name: user.name,
       country: user.country,
@@ -25,7 +26,7 @@ export class UserRepositoryImpl extends UserRepository {
     });
     const savedUser = await created.save();
     return new User(
-      savedUser._id,
+      user.id,
       savedUser.name,
       savedUser.country,
       savedUser.phoneNumber,
@@ -34,12 +35,13 @@ export class UserRepositoryImpl extends UserRepository {
       savedUser.coin,
     );
   }
+
   async getAllUsers(): Promise<User[]> {
     const docs = await this.userModel.find().exec();
     return docs.map(
       (doc) =>
         new User(
-          doc._id,
+          doc.id,
           doc.name,
           doc.country,
           doc.phoneNumber,
@@ -48,5 +50,13 @@ export class UserRepositoryImpl extends UserRepository {
           doc.coin,
         ),
     );
+  }
+
+  async getUserByEmail(email: string): Promise<User | null> {
+    return this.userModel.findOne({ email }).exec();
+  }
+
+  async getUserByPhoneNumber(phoneNumber: string): Promise<User | null> {
+    return this.userModel.findOne({ phoneNumber }).exec();
   }
 }
