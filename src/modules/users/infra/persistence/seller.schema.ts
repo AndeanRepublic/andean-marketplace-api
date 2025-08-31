@@ -1,5 +1,4 @@
 import { Document, Schema } from 'mongoose';
-import { AccountStatus } from '../../domain/enums/AccountStatus';
 
 export const SellerSchema = new Schema({
   _id: String,
@@ -11,11 +10,6 @@ export const SellerSchema = new Schema({
   address: String,
   phoneNumber: String,
   email: String,
-  accountStatus: {
-    type: String,
-    enum: Object.values(AccountStatus),
-    default: AccountStatus.PENDING,
-  },
 });
 
 export interface SellerDocument extends Document {
@@ -28,5 +22,4 @@ export interface SellerDocument extends Document {
   address: string;
   phoneNumber: string;
   email: string;
-  accountStatus: AccountStatus;
 }
