@@ -1,9 +1,11 @@
 import { Seller } from '../../domain/entities/seller';
 
-export interface SellerRepository {
-  getAllSellers(): Promise<Seller[]>;
-  getSellerById(id: string): Promise<Seller | null>;
-  saveSeller(seller: Seller): Promise<void>;
-  updateSeller(seller: Seller): Promise<void>;
-  deleteSellerById(id: string): Promise<void>;
+export abstract class SellerRepository {
+  abstract getAllSellers(): Promise<Seller[]>;
+  abstract getSellerByEmail(email: string): Promise<Seller | null>;
+  abstract getSellerByPhoneNumber(phoneNumber: string): Promise<Seller | null>;
+  // getSellerById(id: string): Promise<Seller | null>;
+  abstract saveSeller(seller: Seller): Promise<Seller>;
+  // updateSeller(seller: Seller): Promise<void>;
+  // deleteSellerById(id: string): Promise<void>;
 }
