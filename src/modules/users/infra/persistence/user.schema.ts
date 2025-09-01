@@ -1,4 +1,5 @@
 import { Document, Schema } from 'mongoose';
+import { CoinType } from '../../domain/enums/CoinType';
 
 export const UserSchema = new Schema({
   _id: String,
@@ -8,7 +9,11 @@ export const UserSchema = new Schema({
   email: String,
   phoneNumber: String,
   language: String,
-  coin: String,
+  coin: {
+    type: String,
+    enum: Object.values(CoinType),
+    required: true,
+  },
 });
 
 export interface UserDocument extends Document {
@@ -19,5 +24,5 @@ export interface UserDocument extends Document {
   email: string;
   phoneNumber: string;
   language: string;
-  coin: string;
+  coin: CoinType;
 }

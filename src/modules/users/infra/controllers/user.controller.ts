@@ -8,7 +8,7 @@ import { Seller } from '../../domain/entities/seller';
 import { GetAllSellersUseCase } from '../../app/use_cases/GetAllSellersUseCase';
 import { CreateSellerUseCase } from '../../app/use_cases/CreateSellerUseCase';
 
-const path_buyer_users: string = '/buyer';
+const path_buyer_users: string = '';
 const path_seller_users: string = '/seller';
 
 @Controller('users')
