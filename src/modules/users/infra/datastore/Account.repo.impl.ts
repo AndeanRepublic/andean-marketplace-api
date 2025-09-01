@@ -5,12 +5,14 @@ import { AccountDocument } from '../persistence/account.schema';
 import { Model } from 'mongoose';
 import { Account } from '../../domain/entities/Account';
 import { AccountMapper } from '../services/AccountMapper';
+import { HashService } from '../services/HashService';
 
 @Injectable()
 export class AccountRepoImpl extends AccountRepository {
   constructor(
     @InjectModel('Account')
     private readonly accountModel: Model<AccountDocument>,
+    private readonly hashService: HashService,
   ) {
     super();
   }
@@ -21,10 +23,11 @@ export class AccountRepoImpl extends AccountRepository {
   }
 
   async saveAccount(account: Account): Promise<Account> {
+    const hashedPassword = await this.hashService.hash(account.password);
     const created = new this.accountModel({
       _id: crypto.randomUUID(),
       userId: account.userId,
-      password: account.password,
+      password: hashedPassword,
       type: account.type,
       status: account.status,
     });

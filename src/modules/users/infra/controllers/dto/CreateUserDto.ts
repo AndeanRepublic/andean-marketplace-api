@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsEnum } from 'class-validator';
 import { CoinType } from '../../../domain/enums/CoinType';
 
 export class CreateUserDto {
@@ -22,7 +22,11 @@ export class CreateUserDto {
   @IsNotEmpty()
   language: string;
 
-  @IsString()
+  @IsEnum(CoinType)
   @IsNotEmpty()
   coin: CoinType;
+
+  @IsString()
+  @IsNotEmpty()
+  password: string;
 }

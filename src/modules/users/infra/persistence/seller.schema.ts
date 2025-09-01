@@ -1,9 +1,14 @@
 import { Document, Schema } from 'mongoose';
+import { TypePerson } from '../../domain/enums/TypePerson';
 
 export const SellerSchema = new Schema({
   _id: String,
   id: String,
-  typePerson: String,
+  typePerson: {
+    type: String,
+    enum: Object.values(TypePerson),
+    required: true,
+  },
   numberDocument: String,
   ruc: String,
   commercialName: String,
@@ -15,7 +20,7 @@ export const SellerSchema = new Schema({
 export interface SellerDocument extends Document {
   _id: string;
   id: string;
-  typePerson: string;
+  typePerson: TypePerson;
   numberDocument: string;
   ruc: string;
   commercialName: string;

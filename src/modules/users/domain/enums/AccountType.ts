@@ -1,5 +1,5 @@
 export enum AccountType {
-  SELLER = 'SELLER',
-  BUYER = 'BUYER',
   ADMIN = 'ADMIN',
+  USER = 'USER',
+  SELLER = 'SELLER',
 }

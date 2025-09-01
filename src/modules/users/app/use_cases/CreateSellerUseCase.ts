@@ -1,14 +1,19 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { ConflictException, Inject, Injectable } from '@nestjs/common';
 import { SellerRepository } from '../datastore/Seller.repo';
 import { Seller } from '../../domain/entities/seller';
 import { CreateSellerDto } from '../../infra/controllers/dto/CreateSellerDto';
-import { ConflictException } from '@nestjs/common';
+import { AccountRepository } from '../datastore/Account.repo';
+import { AccountType } from '../../domain/enums/AccountType';
+import { AccountStatus } from '../../domain/enums/AccountStatus';
+import { Account } from '../../domain/entities/Account';
 
 @Injectable()
 export class CreateSellerUseCase {
   constructor(
     @Inject(SellerRepository)
     private readonly sellerRepository: SellerRepository,
+    @Inject(AccountRepository)
+    private readonly accountRepository: AccountRepository,
   ) {}
 
   async handle(sellerDto: CreateSellerDto): Promise<Seller> {
@@ -35,6 +40,15 @@ export class CreateSellerUseCase {
       sellerDto.email,
     );
     await this.sellerRepository.saveSeller(sellerToSave);
+
+    // Create account
+    const accountToSave: Account = {
+      userId: sellerToSave.id,
+      password: sellerDto.password,
+      type: AccountType.SELLER,
+      status: AccountStatus.PENDING,
+    };
+    await this.accountRepository.saveAccount(accountToSave);
     return sellerToSave;
   }
 }
