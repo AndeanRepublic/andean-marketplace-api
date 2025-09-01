@@ -1,14 +1,19 @@
 import { UserRepository } from '../datastore/User.repo';
 import { CreateUserDto } from '../../infra/controllers/dto/CreateUserDto';
 import { User } from '../../domain/entities/user';
-import { Inject, Injectable } from '@nestjs/common';
-import { ConflictException } from '@nestjs/common';
+import { ConflictException, Inject, Injectable } from '@nestjs/common';
+import { AccountRepository } from '../datastore/Account.repo';
+import { Account } from '../../domain/entities/Account';
+import { AccountType } from '../../domain/enums/AccountType';
+import { AccountStatus } from '../../domain/enums/AccountStatus';
 
 @Injectable()
 export class CreateUserUseCase {
   constructor(
     @Inject(UserRepository)
     private readonly userRepository: UserRepository,
+    @Inject(AccountRepository)
+    private readonly accountRepository: AccountRepository,
   ) {}
 
   async handle(userDto: CreateUserDto): Promise<User> {
@@ -34,6 +39,15 @@ export class CreateUserUseCase {
       userDto.coin,
     );
     await this.userRepository.saveUser(userToSave);
+
+    // Create account
+    const accountToSave: Account = {
+      userId: userToSave.id,
+      password: userDto.password,
+      type: AccountType.USER,
+      status: AccountStatus.ENABLED,
+    };
+    await this.accountRepository.saveAccount(accountToSave);
     return userToSave;
   }
 }

@@ -11,6 +11,10 @@ import { CreateSellerUseCase } from './app/use_cases/CreateSellerUseCase';
 import { SellerSchema } from './infra/persistence/seller.schema';
 import { SellerRepository } from './app/datastore/Seller.repo';
 import { SellerRepositoryImpl } from './infra/datastore/seller.repo.impl';
+import { AccountSchema } from './infra/persistence/account.schema';
+import { AccountRepository } from './app/datastore/Account.repo';
+import { AccountRepoImpl } from './infra/datastore/Account.repo.impl';
+import { HashService } from './infra/services/HashService';
 
 @Module({
   imports: [
@@ -23,6 +27,10 @@ import { SellerRepositoryImpl } from './infra/datastore/seller.repo.impl';
         name: 'Seller',
         schema: SellerSchema,
       },
+      {
+        name: 'Account',
+        schema: AccountSchema,
+      },
     ]),
   ],
   controllers: [UserController],
@@ -31,6 +39,7 @@ import { SellerRepositoryImpl } from './infra/datastore/seller.repo.impl';
     GetAllUsersUseCase,
     GetAllSellersUseCase,
     CreateSellerUseCase,
+    HashService,
     {
       provide: UserRepository,
       useClass: UserRepositoryImpl,
@@ -39,7 +48,11 @@ import { SellerRepositoryImpl } from './infra/datastore/seller.repo.impl';
       provide: SellerRepository,
       useClass: SellerRepositoryImpl,
     },
+    {
+      provide: AccountRepository,
+      useClass: AccountRepoImpl,
+    },
   ],
-  exports: [UserRepository, SellerRepository],
+  exports: [UserRepository, SellerRepository, AccountRepository],
 })
 export class UsersModule {}

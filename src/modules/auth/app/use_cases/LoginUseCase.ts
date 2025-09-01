@@ -2,22 +2,29 @@ import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { SellerRepository } from '../../../users/app/datastore/Seller.repo';
 import { SessionToken } from '../../domain/entities/SessionToken';
 import { UserRepository } from '../../../users/app/datastore/User.repo';
-import { AccountRepository } from '../datastore/Account.repo';
-import { AccountStatus } from '../../domain/enums/AccountStatus';
-import { AuthenticateDto } from '../../infra/controllers/dto/AuthenticateDto';
+import { AccountRepository } from '../../../users/app/datastore/Account.repo';
+import { AccountStatus } from '../../../users/domain/enums/AccountStatus';
+import { AuthenticationDto } from '../../infra/controllers/dto/AuthenticationDto';
+import { HashService } from '../../../users/infra/services/HashService';
+import { Account } from '../../../users/domain/entities/Account';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class LoginUseCase {
   constructor(
     @Inject(SellerRepository)
-    @Inject(UserRepository)
-    @Inject(AccountRepository)
     private readonly sellerRepository: SellerRepository,
+    @Inject(UserRepository)
     private readonly userRepository: UserRepository,
+    @Inject(AccountRepository)
     private readonly accountRepository: AccountRepository,
+    private readonly hashService: HashService,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
-  async handle(body: AuthenticateDto): Promise<SessionToken> {
+  async handle(body: AuthenticationDto): Promise<SessionToken> {
     let userId = await this.userExistsAsUser(body.username);
     if (userId == '') {
       userId = await this.userExistsAsSeller(body.username);
@@ -29,10 +36,24 @@ export class LoginUseCase {
     if (!account || account.status != AccountStatus.ENABLED) {
       throw new UnauthorizedException();
     }
-    if (account.password !== body.password) {
+    const validPassword = await this.hashService.verify(
+      account.password,
+      body.password,
+    );
+    if (!validPassword) {
       throw new UnauthorizedException();
     }
-    return new SessionToken('', 1500);
+
+    return await this.generateToken(account);
+  }
+
+  private async generateToken(account: Account): Promise<SessionToken> {
+    const payload = { sub: account.userId, role: account.type };
+    const jwtToken = await this.jwtService.signAsync(payload);
+    return new SessionToken(
+      jwtToken,
+      this.configService.get('JWT_EXPIRES_IN') ?? 3600,
+    );
   }
 
   private async userExistsAsSeller(userName: string): Promise<string> {

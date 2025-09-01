@@ -1,5 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { AuthenticateDto } from './dto/AuthenticateDto';
+import { AuthenticationDto } from './dto/AuthenticationDto';
 import { SessionToken } from '../../domain/entities/SessionToken';
 import { LoginUseCase } from '../../app/use_cases/LoginUseCase';
 
@@ -7,8 +7,8 @@ import { LoginUseCase } from '../../app/use_cases/LoginUseCase';
 export class AuthController {
   constructor(private readonly loginUseCase: LoginUseCase) {}
 
-  @Post('/')
-  async authenticate(@Body() body: AuthenticateDto): Promise<SessionToken> {
+  @Post('/login')
+  async authenticate(@Body() body: AuthenticationDto): Promise<SessionToken> {
     return this.loginUseCase.handle(body);
   }
 }
