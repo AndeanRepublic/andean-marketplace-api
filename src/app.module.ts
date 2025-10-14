@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './modules/users/users.module';
-import { AuthModule } from './modules/auth/auth.module';
-import { ProductsModule } from './modules/products/product.module';
+import { AuthModule } from './modules/users/auth.module';
+import { ProductsModule } from './modules/users/product.module';
 
 @Module({
   imports: [
