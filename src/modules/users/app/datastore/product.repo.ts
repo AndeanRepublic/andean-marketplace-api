@@ -1,5 +1,4 @@
 import { Product } from '../../domain/entities/Product';
-import { ProductStatus } from '../../domain/enums/ProductStatus';
 
 export abstract class ProductRepository {
   abstract getAllBySellerId(sellerId: string): Promise<Product[]>;

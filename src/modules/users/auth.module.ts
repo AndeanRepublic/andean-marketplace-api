@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './infra/controllers/auth.controller';
 import { LoginUseCase } from './app/use_cases/LoginUseCase';
-import { UsersModule } from '../users/users.module';
-import { HashService } from '../users/infra/services/HashService';
+import { UsersModule } from './users.module';
+import { HashService } from './infra/services/HashService';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 
