@@ -13,7 +13,7 @@ import { SellerRepository } from './app/datastore/Seller.repo';
 import { SellerRepositoryImpl } from './infra/datastore/seller.repo.impl';
 import { AccountSchema } from './infra/persistence/account.schema';
 import { AccountRepository } from './app/datastore/Account.repo';
-import { AccountRepoImpl } from './infra/datastore/Account.repo.impl';
+import { AccountRepoImpl } from './infra/datastore/account.repo.impl';
 import { HashService } from './infra/services/HashService';
 
 @Module({

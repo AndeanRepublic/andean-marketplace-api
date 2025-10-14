@@ -1,4 +1,4 @@
-import { ProductDocument } from '../persistance/product.schema';
+import { ProductDocument } from '../persistence/product.schema';
 import { Product } from '../../domain/entities/Product';
 
 export class ProductMapper {
