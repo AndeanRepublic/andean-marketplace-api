@@ -5,14 +5,16 @@ import { CreateProductUseCase } from '../../app/use_cases/products/CreateProduct
 import { GetProductsBySellerIdUseCase } from '../../app/use_cases/products/GetProductsBySellerIdUseCase';
 import { DeleteProductUseCase } from '../../app/use_cases/products/DeleteProductUseCase';
 import { GetProductByIdUseCase } from '../../app/use_cases/products/GetProductByIdUseCase';
+import { GetProductsByShopUseCase } from '../../app/use_cases/products/GetProductsByShopUseCase';
 
 @Controller('products')
 export class ProductController {
   constructor(
     private readonly createProductUseCase: CreateProductUseCase,
     private readonly getProductsBySellerIdUseCase: GetProductsBySellerIdUseCase,
-    private readonly deleteProductByIdUseCase: DeleteProductUseCase,
+    private readonly getProductsByShopUseCase: GetProductsByShopUseCase,
     private readonly getProductByIdUseCase: GetProductByIdUseCase,
+    private readonly deleteProductByIdUseCase: DeleteProductUseCase,
   ) {}
 
   @Post('')
@@ -25,6 +27,11 @@ export class ProductController {
     @Param('sellerId') sellerId: string,
   ): Promise<Product[]> {
     return this.getProductsBySellerIdUseCase.handle(sellerId);
+  }
+
+  @Get('/bt-shop/:shopId')
+  async findByShop(@Param('shopId') shopId: string): Promise<Product[]> {
+    return this.getProductsByShopUseCase.handle(shopId);
   }
 
   @Get('/:productId')

@@ -8,6 +8,9 @@ import { CreateProductUseCase } from './app/use_cases/products/CreateProductUseC
 import { GetProductsBySellerIdUseCase } from './app/use_cases/products/GetProductsBySellerIdUseCase';
 import { DeleteProductUseCase } from './app/use_cases/products/DeleteProductUseCase';
 import { GetProductByIdUseCase } from './app/use_cases/products/GetProductByIdUseCase';
+import { GetProductsByShopUseCase } from './app/use_cases/products/GetProductsByShopUseCase';
+import { ShopRepository } from './app/datastore/Shop.repo';
+import { ShopRepoImpl } from './infra/datastore/shop.repo.impl';
 
 @Module({
   imports: [
@@ -22,11 +25,16 @@ import { GetProductByIdUseCase } from './app/use_cases/products/GetProductByIdUs
   providers: [
     CreateProductUseCase,
     GetProductsBySellerIdUseCase,
+    GetProductsByShopUseCase,
     DeleteProductUseCase,
     GetProductByIdUseCase,
     {
       provide: ProductRepository,
       useClass: ProductRepoImpl,
+    },
+    {
+      provide: ShopRepository,
+      useClass: ShopRepoImpl,
     },
   ],
   exports: [ProductRepository],
