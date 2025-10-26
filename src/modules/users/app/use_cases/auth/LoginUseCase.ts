@@ -1,12 +1,12 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { SellerRepository } from '../datastore/Seller.repo';
-import { SessionToken } from '../../domain/entities/SessionToken';
-import { UserRepository } from '../datastore/User.repo';
-import { AccountRepository } from '../datastore/Account.repo';
-import { AccountStatus } from '../../domain/enums/AccountStatus';
-import { AuthenticationDto } from '../../infra/controllers/dto/AuthenticationDto';
-import { HashService } from '../../infra/services/HashService';
-import { Account } from '../../domain/entities/Account';
+import { SellerRepository } from '../../datastore/Seller.repo';
+import { SessionToken } from '../../../domain/entities/SessionToken';
+import { UserRepository } from '../../datastore/Customer.repo';
+import { AccountRepository } from '../../datastore/Account.repo';
+import { AccountStatus } from '../../../domain/enums/AccountStatus';
+import { AuthenticationDto } from '../../../infra/controllers/dto/AuthenticationDto';
+import { HashService } from '../../../infra/services/HashService';
+import { Account } from '../../../domain/entities/Account';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
@@ -66,10 +66,10 @@ export class LoginUseCase {
   }
 
   private async userExistsAsUser(userName: string): Promise<string> {
-    const foundByEmail = await this.userRepository.getUserByEmail(userName);
+    const foundByEmail = await this.userRepository.getCustomerByEmail(userName);
     if (foundByEmail) return foundByEmail.id;
     const foundByPhone =
-      await this.userRepository.getUserByPhoneNumber(userName);
+      await this.userRepository.getCustomerByPhoneNumber(userName);
     if (foundByPhone) return foundByPhone.id;
     return '';
   }

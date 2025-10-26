@@ -1,6 +1,6 @@
 import { CoinType } from '../enums/CoinType';
 
-export class User {
+export class Customer {
   constructor(
     public id: string,
     public name: string,

@@ -1,11 +1,11 @@
 import { ConflictException, Inject, Injectable } from '@nestjs/common';
-import { SellerRepository } from '../datastore/Seller.repo';
-import { Seller } from '../../domain/entities/seller';
-import { CreateSellerDto } from '../../infra/controllers/dto/CreateSellerDto';
-import { AccountRepository } from '../datastore/Account.repo';
-import { AccountType } from '../../domain/enums/AccountType';
-import { AccountStatus } from '../../domain/enums/AccountStatus';
-import { Account } from '../../domain/entities/Account';
+import { SellerRepository } from '../../datastore/Seller.repo';
+import { Seller } from '../../../domain/entities/Seller';
+import { CreateSellerDto } from '../../../infra/controllers/dto/CreateSellerDto';
+import { AccountRepository } from '../../datastore/Account.repo';
+import { AccountType } from '../../../domain/enums/AccountType';
+import { AccountStatus } from '../../../domain/enums/AccountStatus';
+import { Account } from '../../../domain/entities/Account';
 
 @Injectable()
 export class CreateSellerUseCase {

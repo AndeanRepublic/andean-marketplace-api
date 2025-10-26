@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Seller } from '../../domain/entities/seller';
-import { SellerRepository } from '../datastore/Seller.repo';
+import { Seller } from '../../../domain/entities/Seller';
+import { SellerRepository } from '../../datastore/Seller.repo';
 
 @Injectable()
 export class GetAllSellersUseCase {

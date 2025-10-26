@@ -46,4 +46,8 @@ export class ProductRepoImpl extends ProductRepository {
     const savedProduct = await created.save();
     return ProductMapper.toDomain(savedProduct);
   }
+
+  async deleteProduct(id: string): Promise<void> {
+    await this.productModel.findByIdAndDelete(id).exec();
+  }
 }

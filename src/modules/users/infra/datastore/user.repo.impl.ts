@@ -1,19 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from '../../app/datastore/User.repo';
+import { UserRepository } from '../../app/datastore/Customer.repo';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserDocument } from '../persistence/user.schema';
-import { User } from '../../domain/entities/user';
+import { Customer } from '../../domain/entities/Customer';
 
 @Injectable()
 export class UserRepositoryImpl extends UserRepository {
   constructor(
-    @InjectModel('User') private readonly userModel: Model<UserDocument>,
+    @InjectModel('Customer') private readonly userModel: Model<UserDocument>,
   ) {
     super();
   }
 
-  async saveUser(user: User): Promise<User> {
+  async saveCustomer(user: Customer): Promise<Customer> {
     const created = new this.userModel({
       _id: crypto.randomUUID(),
       id: user.id,
@@ -25,7 +25,7 @@ export class UserRepositoryImpl extends UserRepository {
       coin: user.coin,
     });
     const savedUser = await created.save();
-    return new User(
+    return new Customer(
       user.id,
       savedUser.name,
       savedUser.country,
@@ -36,11 +36,11 @@ export class UserRepositoryImpl extends UserRepository {
     );
   }
 
-  async getAllUsers(): Promise<User[]> {
+  async getAllCustomers(): Promise<Customer[]> {
     const docs = await this.userModel.find().exec();
     return docs.map(
       (doc) =>
-        new User(
+        new Customer(
           doc.id,
           doc.name,
           doc.country,
@@ -52,11 +52,13 @@ export class UserRepositoryImpl extends UserRepository {
     );
   }
 
-  async getUserByEmail(email: string): Promise<User | null> {
+  async getCustomerByEmail(email: string): Promise<Customer | null> {
     return this.userModel.findOne({ email }).exec();
   }
 
-  async getUserByPhoneNumber(phoneNumber: string): Promise<User | null> {
+  async getCustomerByPhoneNumber(
+    phoneNumber: string,
+  ): Promise<Customer | null> {
     return this.userModel.findOne({ phoneNumber }).exec();
   }
 }
