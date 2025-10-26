@@ -1,42 +1,42 @@
 import { Body, Controller, Post, Get } from '@nestjs/common';
-import { CreateUserUseCase } from '../../app/use_cases/CreateUserUseCase';
-import { GetAllUsersUseCase } from '../../app/use_cases/GetAllUsersUseCase';
+import { CreateCustomerUseCase } from '../../app/use_cases/users/CreateCustomerUseCase';
+import { GetAllCustomerUseCase } from '../../app/use_cases/users/GetAllCustomerUseCase';
 import { CreateUserDto } from './dto/CreateUserDto';
-import { User } from '../../domain/entities/user';
+import { Customer } from '../../domain/entities/Customer';
 import { CreateSellerDto } from './dto/CreateSellerDto';
-import { Seller } from '../../domain/entities/seller';
-import { GetAllSellersUseCase } from '../../app/use_cases/GetAllSellersUseCase';
-import { CreateSellerUseCase } from '../../app/use_cases/CreateSellerUseCase';
+import { Seller } from '../../domain/entities/Seller';
+import { GetAllSellersUseCase } from '../../app/use_cases/users/GetAllSellersUseCase';
+import { CreateSellerUseCase } from '../../app/use_cases/users/CreateSellerUseCase';
 
-const path_buyer_users: string = '';
-const path_seller_users: string = '/seller';
+const path_buyer_users: string = '/customers';
+const path_seller_users: string = '/sellers';
 
 @Controller('users')
 export class UserController {
   constructor(
-    private readonly getAllUsersUseCase: GetAllUsersUseCase,
-    private readonly createUserUseCase: CreateUserUseCase,
+    private readonly getAllCustomerUseCase: GetAllCustomerUseCase,
+    private readonly createUserUseCase: CreateCustomerUseCase,
     private readonly getAllSellersUseCase: GetAllSellersUseCase,
     private readonly createSellerUseCase: CreateSellerUseCase,
   ) {}
 
   @Get(path_buyer_users)
-  async getAllBuyerUsers(): Promise<User[]> {
-    return this.getAllUsersUseCase.handle();
+  async getAllCustomers(): Promise<Customer[]> {
+    return this.getAllCustomerUseCase.handle();
   }
 
   @Post(path_buyer_users)
-  async createBuyerUser(@Body() body: CreateUserDto): Promise<User> {
+  async createCustomer(@Body() body: CreateUserDto): Promise<Customer> {
     return this.createUserUseCase.handle(body);
   }
 
   @Get(path_seller_users)
-  async getAllSellerUsers(): Promise<Seller[]> {
+  async getAllSellers(): Promise<Seller[]> {
     return this.getAllSellersUseCase.handle();
   }
 
   @Post(path_seller_users)
-  async createSellerUser(@Body() body: CreateSellerDto): Promise<Seller> {
+  async createSeller(@Body() body: CreateSellerDto): Promise<Seller> {
     return this.createSellerUseCase.handle(body);
   }
 }

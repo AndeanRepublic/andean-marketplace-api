@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ProductRepository } from '../datastore/product.repo';
-import { CreateProductDto } from '../../infra/controllers/dto/CreateProductDto';
-import { Product } from '../../domain/entities/Product';
-import { ProductStatus } from '../../domain/enums/ProductStatus';
+import { ProductRepository } from '../../datastore/product.repo';
+import { CreateProductDto } from '../../../infra/controllers/dto/CreateProductDto';
+import { Product } from '../../../domain/entities/Product';
+import { ProductStatus } from '../../../domain/enums/ProductStatus';
 
 @Injectable()
 export class CreateProductUseCase {
