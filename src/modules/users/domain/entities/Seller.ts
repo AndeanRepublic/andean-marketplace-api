@@ -1,9 +1,9 @@
-import { TypePerson } from '../enums/TypePerson';
+import { PersonType } from '../enums/PersonType';
 
 export class Seller {
   constructor(
     public id: string,
-    public typePerson: TypePerson,
+    public typePerson: PersonType,
     public numberDocument: string,
     public ruc: string,
     public commercialName: string,
