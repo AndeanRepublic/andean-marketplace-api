@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ProductRepository } from '../../app/datastore/product.repo';
+import { ProductRepository } from '../../app/datastore/Product.repo';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ProductDocument } from '../persistence/product.schema';

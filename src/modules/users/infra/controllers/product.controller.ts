@@ -3,7 +3,7 @@ import { CreateProductDto } from './dto/CreateProductDto';
 import { Product } from '../../domain/entities/Product';
 import { CreateProductUseCase } from '../../app/use_cases/products/CreateProductUseCase';
 import { GetProductsBySellerIdUseCase } from '../../app/use_cases/products/GetProductsBySellerIdUseCase';
-import { DeleteProductByIdUseCase } from '../../app/use_cases/products/DeleteProductByIdUseCase';
+import { DeleteProductUseCase } from '../../app/use_cases/products/DeleteProductUseCase';
 import { GetProductByIdUseCase } from '../../app/use_cases/products/GetProductByIdUseCase';
 
 @Controller('products')
@@ -11,7 +11,7 @@ export class ProductController {
   constructor(
     private readonly createProductUseCase: CreateProductUseCase,
     private readonly getProductsBySellerIdUseCase: GetProductsBySellerIdUseCase,
-    private readonly deleteProductByIdUseCase: DeleteProductByIdUseCase, 
+    private readonly deleteProductByIdUseCase: DeleteProductUseCase,
     private readonly getProductByIdUseCase: GetProductByIdUseCase,
   ) {}
 

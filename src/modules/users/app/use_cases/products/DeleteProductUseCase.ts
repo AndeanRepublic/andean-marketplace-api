@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { ProductRepository } from '../../datastore/product.repo';
+import { ProductRepository } from '../../datastore/Product.repo';
 
 @Injectable()
-export class DeleteProductByIdUseCase {
+export class DeleteProductUseCase {
   constructor(private readonly productRepository: ProductRepository) {}
 
   async handle(productId: string): Promise<void> {
