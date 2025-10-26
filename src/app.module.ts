@@ -6,6 +6,7 @@ import { AuthModule } from './modules/users/auth.module';
 import { ProductsModule } from './modules/users/product.module';
 import { ShopsModule } from './modules/users/shop.module';
 import { BankAccountsController } from './modules/users/bankAccount.module';
+import { CartShopController } from './modules/users/infra/controllers/cartShop.controller';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { BankAccountsController } from './modules/users/bankAccount.module';
     ProductsModule,
     ShopsModule,
     BankAccountsController,
+    CartShopController,
   ],
   controllers: [],
   providers: [],
