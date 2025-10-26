@@ -1,10 +1,10 @@
 import { IsString, IsNotEmpty, IsOptional, IsEnum } from 'class-validator';
-import { TypePerson } from '../../../domain/enums/TypePerson';
+import { PersonType } from '../../../domain/enums/PersonType';
 
 export class CreateSellerDto {
-  @IsEnum(TypePerson)
+  @IsEnum(PersonType)
   @IsNotEmpty()
-  typePerson: TypePerson;
+  typePerson: PersonType;
 
   @IsString()
   @IsNotEmpty()
