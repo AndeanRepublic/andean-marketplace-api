@@ -7,6 +7,7 @@ import { ProductsModule } from './modules/users/product.module';
 import { ShopsModule } from './modules/users/shop.module';
 import { BankAccountsController } from './modules/users/bankAccount.module';
 import { CartShopController } from './modules/users/infra/controllers/cartShop.controller';
+import { OrdersModule } from './modules/users/order.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { CartShopController } from './modules/users/infra/controllers/cartShop.c
     ShopsModule,
     BankAccountsController,
     CartShopController,
+    OrdersModule,
   ],
   controllers: [],
   providers: [],
