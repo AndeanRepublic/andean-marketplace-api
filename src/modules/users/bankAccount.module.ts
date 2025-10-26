@@ -1,0 +1,40 @@
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { BankAccountSchema } from './infra/persistence/bankAccount.schema';
+import { BankAccountController } from './infra/controllers/bankAccount.controller';
+import { CreateBankAccountUseCase } from './app/use_cases/bank_accounts/CreateBankAccountUseCase';
+import { GetBankAccountsBySellerUseCase } from './app/use_cases/bank_accounts/GetBankAccountsBySellerUseCase';
+import { GetBankAccountByIdUseCase } from './app/use_cases/bank_accounts/GetBankAccountByIdUseCase';
+import { DeleteBankAccountUseCase } from './app/use_cases/bank_accounts/DeleteBankAccountUseCase';
+import { SellerBankAccountRepository } from './app/datastore/SellerBankAccount.repo';
+import { SellerBankAccountRepoImpl } from './infra/datastore/sellerBankAccount.repo.impl';
+import { SellerRepository } from './app/datastore/Seller.repo';
+import { SellerRepositoryImpl } from './infra/datastore/seller.repo.impl';
+
+@Module({
+  imports: [
+    MongooseModule.forFeature([
+      {
+        name: 'BankAccount',
+        schema: BankAccountSchema,
+      },
+    ]),
+  ],
+  controllers: [BankAccountController],
+  providers: [
+    CreateBankAccountUseCase,
+    GetBankAccountsBySellerUseCase,
+    GetBankAccountByIdUseCase,
+    DeleteBankAccountUseCase,
+    {
+      provide: SellerBankAccountRepository,
+      useClass: SellerBankAccountRepoImpl,
+    },
+    {
+      provide: SellerRepository,
+      useClass: SellerRepositoryImpl,
+    },
+  ],
+  exports: [SellerBankAccountRepository],
+})
+export class BankAccountsController {}
