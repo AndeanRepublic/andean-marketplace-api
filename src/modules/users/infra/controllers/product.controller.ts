@@ -29,7 +29,7 @@ export class ProductController {
     return this.getProductsBySellerIdUseCase.handle(sellerId);
   }
 
-  @Get('/bt-shop/:shopId')
+  @Get('/by-shop/:shopId')
   async findByShop(@Param('shopId') shopId: string): Promise<Product[]> {
     return this.getProductsByShopUseCase.handle(shopId);
   }
