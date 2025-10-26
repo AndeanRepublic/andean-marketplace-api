@@ -12,7 +12,7 @@ export const CartShopSchema = new Schema({
   id: String,
   customerId: String,
   items: {
-    type: [CartItem],
+    type: [CartItemSchema],
     default: [],
   },
   totalAmount: Number,
