@@ -34,13 +34,13 @@ export class ShopController {
     return this.getShopsByCategoryUseCase.handle(categoryName);
   }
 
-  @Post
+  @Post('')
   async createShop(@Body() createShopDto: CreateShopDto): Promise<Shop> {
     return this.createShopUseCase.handle(createShopDto);
   }
 
   @Delete('/:shopId')
-  async deleteShop(@Param('shopId') shopId: string): Promise<Shop> {
+  async deleteShop(@Param('shopId') shopId: string): Promise<void> {
     return this.deleteShopUseCase.handle(shopId);
   }
 }

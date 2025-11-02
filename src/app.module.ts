@@ -5,9 +5,9 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/users/auth.module';
 import { ProductsModule } from './modules/users/product.module';
 import { ShopsModule } from './modules/users/shop.module';
-import { BankAccountsController } from './modules/users/bankAccount.module';
-import { CartShopController } from './modules/users/infra/controllers/cartShop.controller';
+import { BankAccountsModule } from './modules/users/bankAccount.module';
 import { OrdersModule } from './modules/users/order.module';
+import { CartShopModule } from './modules/users/cartShop.module';
 
 @Module({
   imports: [
@@ -25,8 +25,8 @@ import { OrdersModule } from './modules/users/order.module';
     AuthModule,
     ProductsModule,
     ShopsModule,
-    BankAccountsController,
-    CartShopController,
+    BankAccountsModule,
+    CartShopModule,
     OrdersModule,
   ],
   controllers: [],

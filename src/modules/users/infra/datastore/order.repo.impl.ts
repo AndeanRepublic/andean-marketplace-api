@@ -15,8 +15,8 @@ export class OrderRepositoryImpl extends OrderRepository {
     super();
   }
 
-  async getOrderById(id: string): Promise<Order> {
-    return this.orderModel.findById(id).exec();
+  async getOrderById(id: string): Promise<Order | null> {
+    return this.orderModel.findOne({ id }).exec();
   }
 
   async getOrdersByCustomerId(customerId: string): Promise<Order[]> {
@@ -37,6 +37,6 @@ export class OrderRepositoryImpl extends OrderRepository {
   }
 
   async updateOrderStatus(id: string, status: OrderStatus): Promise<void> {
-    return this.orderModel.findByIdAndUpdate(id, status).exec();
+    await this.orderModel.findByIdAndUpdate({ id }, { status }).exec();
   }
 }

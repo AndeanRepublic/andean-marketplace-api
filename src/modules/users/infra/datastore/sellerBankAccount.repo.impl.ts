@@ -32,20 +32,20 @@ export class SellerBankAccountRepoImpl extends SellerBankAccountRepository {
   }
 
   async getBankAccountById(id: string): Promise<SellerBankAccount | null> {
-    const doc = await this.bankAccountModel.findById(id).lean().exec();
+    const doc = await this.bankAccountModel.findById(id).exec();
     return doc ? BankAccountMapper.toDomain(doc) : null;
   }
 
   async getBankAccountsBySellerId(
     sellerId: string,
   ): Promise<SellerBankAccount[]> {
-    const docs = await this.bankAccountModel.find({ sellerId }).lean().exec();
+    const docs = await this.bankAccountModel.find({ sellerId }).exec();
     return docs.map((doc: BankAccountDocument) =>
       BankAccountMapper.toDomain(doc),
     );
   }
 
   async deleteBankAccount(id: string): Promise<void> {
-    await this.bankAccountModel.findByIdAndDelete(id).lean().exec();
+    await this.bankAccountModel.findByIdAndDelete({ id }).exec();
   }
 }

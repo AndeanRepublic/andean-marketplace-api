@@ -11,6 +11,10 @@ import { GetProductByIdUseCase } from './app/use_cases/products/GetProductByIdUs
 import { GetProductsByShopUseCase } from './app/use_cases/products/GetProductsByShopUseCase';
 import { ShopRepository } from './app/datastore/Shop.repo';
 import { ShopRepoImpl } from './infra/datastore/shop.repo.impl';
+import { SellerRepository } from './app/datastore/Seller.repo';
+import { SellerRepositoryImpl } from './infra/datastore/seller.repo.impl';
+import { ShopsModule } from './shop.module';
+import { UsersModule } from './users.module';
 
 @Module({
   imports: [
@@ -20,6 +24,8 @@ import { ShopRepoImpl } from './infra/datastore/shop.repo.impl';
         schema: ProductSchema,
       },
     ]),
+    ShopsModule,
+    UsersModule,
   ],
   controllers: [ProductController],
   providers: [
@@ -36,7 +42,11 @@ import { ShopRepoImpl } from './infra/datastore/shop.repo.impl';
       provide: ShopRepository,
       useClass: ShopRepoImpl,
     },
+    {
+      provide: SellerRepository,
+      useClass: SellerRepositoryImpl,
+    },
   ],
-  exports: [ProductRepository],
+  exports: [ProductRepository, MongooseModule],
 })
 export class ProductsModule {}

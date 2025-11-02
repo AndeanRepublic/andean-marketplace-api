@@ -12,6 +12,8 @@ import { UserRepository } from './app/datastore/Customer.repo';
 import { UserRepositoryImpl } from './infra/datastore/user.repo.impl';
 import { CartShopRepository } from './app/datastore/CartShop.repo';
 import { CartShopRepoImpl } from './infra/datastore/cartShop.repo.impl';
+import { ProductsModule } from './product.module';
+import { UsersModule } from './users.module';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { CartShopRepoImpl } from './infra/datastore/cartShop.repo.impl';
         schema: CartShopSchema,
       },
     ]),
+    ProductsModule,
+    UsersModule,
   ],
   controllers: [CartShopController],
   providers: [

@@ -23,9 +23,9 @@ export interface ShopDocument extends Document {
   id: string;
   sellerId: string;
   name: string;
-  description?: string;
+  description: string;
   categories: ShopCategory[];
-  policies?: string;
+  policies: string;
   shippingOrigin: string;
   shippingArea: string;
 }

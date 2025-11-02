@@ -11,6 +11,7 @@ import { GetShopByIdUseCase } from './app/use_cases/shops/GetShopByIdUseCase';
 import { GetShopsByCategoryUseCase } from './app/use_cases/shops/GetShopsByCategoryUseCase';
 import { GetShopsBySellerIdUseCase } from './app/use_cases/shops/GetShopsBySellerIdUseCase';
 import { DeleteShopUseCase } from './app/use_cases/shops/DeleteShopUseCase';
+import { UsersModule } from './users.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { DeleteShopUseCase } from './app/use_cases/shops/DeleteShopUseCase';
         schema: ShopSchema,
       },
     ]),
+    UsersModule,
   ],
   controllers: [ShopController],
   providers: [
@@ -37,6 +39,6 @@ import { DeleteShopUseCase } from './app/use_cases/shops/DeleteShopUseCase';
       useClass: SellerRepositoryImpl,
     },
   ],
-  exports: [ShopRepository],
+  exports: [ShopRepository, MongooseModule],
 })
 export class ShopsModule {}

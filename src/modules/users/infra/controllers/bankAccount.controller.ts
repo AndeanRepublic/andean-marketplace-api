@@ -17,7 +17,7 @@ export class BankAccountController {
 
   @Post('')
   async createBankAccount(
-    @Body body: CreateBankAccountDto,
+    @Body() body: CreateBankAccountDto,
   ): Promise<SellerBankAccount> {
     return this.createBankAccountUseCase.handle(body);
   }
@@ -32,14 +32,14 @@ export class BankAccountController {
   @Get('/by-seller/:sellerId')
   async findBySellerId(
     @Param('sellerId') sellerId: string,
-  ): Promise<SellerBankAccount> {
+  ): Promise<SellerBankAccount[]> {
     return this.getBankAccountsBySellerUseCase.handle(sellerId);
   }
 
   @Delete('/:accountId')
   async deleteBankAccount(
     @Param('accountId') accountId: string,
-  ): Promise<SellerBankAccount> {
+  ): Promise<void> {
     return this.deleteBankAccountUseCase.handle(accountId);
   }
 }

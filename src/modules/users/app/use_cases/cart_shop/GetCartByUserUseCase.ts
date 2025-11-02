@@ -17,6 +17,10 @@ export class GetCartByUserUseCase {
     if (!customerFound) {
       throw new NotFoundException('Customer not found');
     }
-    return this.cartShopRepository.getCartByUser(customerId);
+    const cartFound = await this.cartShopRepository.getCartByUser(customerId);
+    if (!cartFound) {
+      throw new NotFoundException('Customer cart not found');
+    }
+    return cartFound;
   }
 }

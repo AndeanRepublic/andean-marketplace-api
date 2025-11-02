@@ -53,6 +53,11 @@ import { HashService } from './infra/services/HashService';
       useClass: AccountRepoImpl,
     },
   ],
-  exports: [UserRepository, SellerRepository, AccountRepository],
+  exports: [
+    UserRepository,
+    SellerRepository,
+    AccountRepository,
+    MongooseModule,
+  ],
 })
 export class UsersModule {}

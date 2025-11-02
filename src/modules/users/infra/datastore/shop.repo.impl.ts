@@ -10,19 +10,18 @@ import { ShopCategory } from '../../domain/enums/ShopCategory';
 @Injectable()
 export class ShopRepoImpl extends ShopRepository {
   constructor(
-    @InjectModel('Shop')
-    private readonly shopModel: Model<ShopDocument>,
+    @InjectModel('Shop') private readonly shopModel: Model<ShopDocument>,
   ) {
     super();
   }
 
   async getAllBySellerId(sellerId: string): Promise<Shop[]> {
-    const docs = await this.shopModel.find({ sellerId }).lean().exec();
+    const docs = await this.shopModel.find({ sellerId }).exec();
     return docs.map((doc: ShopDocument) => ShopMapper.toDomain(doc));
   }
 
   async getById(id: string): Promise<Shop | null> {
-    const doc = await this.shopModel.findById(id).lean().exec();
+    const doc = await this.shopModel.findById(id).exec();
     return doc ? ShopMapper.toDomain(doc) : null;
   }
 
