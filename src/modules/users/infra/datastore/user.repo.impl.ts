@@ -36,8 +36,8 @@ export class UserRepositoryImpl extends UserRepository {
     );
   }
 
-  async getCustomerById(id: string): Promise<Customer> {
-    return this.userModel.findById(id).exec();
+  async getCustomerById(id: string): Promise<Customer | null> {
+    return this.userModel.findOne({ id }).exec();
   }
 
   async getAllCustomers(): Promise<Customer[]> {

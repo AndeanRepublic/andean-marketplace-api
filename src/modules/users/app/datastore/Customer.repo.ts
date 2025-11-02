@@ -7,7 +7,7 @@ export abstract class UserRepository {
     phoneNumber: string,
   ): Promise<Customer | null>;
   abstract saveCustomer(user: Customer): Promise<Customer>;
-  abstract getCustomerById(id: string): Promise<Customer>;
+  abstract getCustomerById(id: string): Promise<Customer | null>;
   // updateUser(user: Customer): Promise<void>;
   // deleteUserById(id: string): Promise<void>;
 }

@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CartShopDocument } from '../persistence/cartShop.schema';
 import { CartShop } from '../../domain/entities/CartShop';
+import { CartShopMapper } from '../services/CartShopMapper';
 
 @Injectable()
 export class CartShopRepoImpl extends CartShopRepository {
@@ -36,14 +37,18 @@ export class CartShopRepoImpl extends CartShopRepository {
       cart.items.push({
         productId,
         quantity,
+        price: 0,
       });
     }
 
     await cart.save();
-    return cart;
+    return CartShopMapper.toDomain(cart);
   }
 
-  async removeItem(customerId: string, productId: string): Promise<CartShop> {
+  async removeItem(
+    customerId: string,
+    productId: string,
+  ): Promise<CartShop | null> {
     const cart = await this.cartShopModel.findOne({ customerId });
     if (!cart) return null;
 
@@ -51,10 +56,10 @@ export class CartShopRepoImpl extends CartShopRepository {
       (item) => item.productId.toString() !== productId,
     );
     await cart.save();
-    return cart;
+    return CartShopMapper.toDomain(cart);
   }
 
-  async getCartByUser(customerId: string): Promise<CartShop> {
+  async getCartByUser(customerId: string): Promise<CartShop | null> {
     return this.cartShopModel.findOne({ customerId });
   }
 

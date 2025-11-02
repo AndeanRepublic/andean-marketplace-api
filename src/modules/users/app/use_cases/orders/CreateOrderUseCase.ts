@@ -4,6 +4,7 @@ import { OrderRepository } from '../../datastore/Order.repo';
 import { CreateOrderDto } from '../../../infra/controllers/dto/CreateOrderDto';
 import { Order } from '../../../domain/entities/Order';
 import { OrderStatus } from '../../../domain/enums/OrderStatus';
+import { PaymentMethod } from '../../../domain/enums/PaymentMethod';
 
 @Injectable()
 export class CreateOrderUseCase {
@@ -27,7 +28,7 @@ export class CreateOrderUseCase {
       orderDto.items,
       orderDto.totalAmount,
       OrderStatus.PAID,
-      orderDto.paymentMethod,
+      PaymentMethod[orderDto.paymentMethod as keyof typeof PaymentMethod],
     );
     return this.orderRepository.createOrder(orderToSave);
   }

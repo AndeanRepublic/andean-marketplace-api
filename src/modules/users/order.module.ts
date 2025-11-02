@@ -10,6 +10,7 @@ import { OrderRepository } from './app/datastore/Order.repo';
 import { OrderRepositoryImpl } from './infra/datastore/order.repo.impl';
 import { UserRepository } from './app/datastore/Customer.repo';
 import { UserRepositoryImpl } from './infra/datastore/user.repo.impl';
+import { UsersModule } from './users.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { UserRepositoryImpl } from './infra/datastore/user.repo.impl';
         schema: OrderSchema,
       },
     ]),
+    UsersModule,
   ],
   controllers: [OrderController],
   providers: [
