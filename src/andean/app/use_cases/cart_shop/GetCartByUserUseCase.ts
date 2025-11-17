@@ -1,25 +1,25 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CartShopRepository } from '../../datastore/CartShop.repo';
 import { CartShop } from '../../../domain/entities/CartShop';
-import { UserRepository } from '../../datastore/Customer.repo';
+import { CustomerProfileRepository } from '../../datastore/Customer.repo';
 
 @Injectable()
 export class GetCartByUserUseCase {
   constructor(
     @Inject(CartShopRepository)
     private readonly cartShopRepository: CartShopRepository,
-    @Inject(UserRepository)
-    private readonly userRepository: UserRepository,
+    @Inject(CustomerProfileRepository)
+    private readonly userRepository: CustomerProfileRepository,
   ) {}
 
   async handle(customerId: string): Promise<CartShop> {
     const customerFound = await this.userRepository.getCustomerById(customerId);
     if (!customerFound) {
-      throw new NotFoundException('Customer not found');
+      throw new NotFoundException('CustomerProfile not found');
     }
     const cartFound = await this.cartShopRepository.getCartByUser(customerId);
     if (!cartFound) {
-      throw new NotFoundException('Customer cart not found');
+      throw new NotFoundException('CustomerProfile cart not found');
     }
     return cartFound;
   }

@@ -1,14 +1,16 @@
 import { Document, Schema } from 'mongoose';
-import { AccountType } from '../../domain/enums/AccountType';
+import { AccountRole } from '../../domain/enums/AccountRole';
 import { AccountStatus } from '../../domain/enums/AccountStatus';
 
 export const AccountSchema = new Schema({
   _id: String,
   userId: String,
+  name: String,
+  email: String,
   password: String,
   type: {
     type: String,
-    enum: Object.values(AccountType),
+    enum: Object.values(AccountRole),
     required: true,
   },
   status: {
@@ -21,7 +23,9 @@ export const AccountSchema = new Schema({
 export interface AccountDocument extends Document {
   _id: string;
   userId: string;
+  name: string;
+  email: string;
   password: string;
-  type: AccountType;
+  type: AccountRole;
   status: AccountStatus;
 }

@@ -16,6 +16,10 @@ export class CreateSellerDto {
 
   @IsString()
   @IsNotEmpty()
+  name: string;
+
+  @IsString()
+  @IsNotEmpty()
   commercialName: string;
 
   @IsString()

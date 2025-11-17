@@ -1,11 +1,14 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
-import { CreateProductDto } from './dto/CreateProductDto';
-import { Product } from '../../domain/entities/Product';
+import { CreateProductDto } from './dto/products/CreateProductDto';
+import { Product } from '../../domain/entities/products/Product';
 import { CreateProductUseCase } from '../../app/use_cases/products/CreateProductUseCase';
 import { GetProductsBySellerIdUseCase } from '../../app/use_cases/products/GetProductsBySellerIdUseCase';
 import { DeleteProductUseCase } from '../../app/use_cases/products/DeleteProductUseCase';
 import { GetProductByIdUseCase } from '../../app/use_cases/products/GetProductByIdUseCase';
 import { GetProductsByShopUseCase } from '../../app/use_cases/products/GetProductsByShopUseCase';
+import { CreateVariantUseCase } from '../../app/use_cases/products/CreateVariantUseCase';
+import { CreateVariantDto } from './dto/products/CreateVariantDto';
+import { ProductVariant } from '../../domain/entities/products/ProductVariant';
 
 @Controller('products')
 export class ProductController {
@@ -15,11 +18,20 @@ export class ProductController {
     private readonly getProductsByShopUseCase: GetProductsByShopUseCase,
     private readonly getProductByIdUseCase: GetProductByIdUseCase,
     private readonly deleteProductByIdUseCase: DeleteProductUseCase,
+    private readonly createVariantUseCase: CreateVariantUseCase,
   ) {}
 
   @Post('')
   async createProduct(@Body() body: CreateProductDto): Promise<Product> {
     return this.createProductUseCase.handle(body);
+  }
+
+  @Post('/:productId/variants')
+  async createVariant(
+    @Param('productId') productId: string,
+    @Body() body: CreateVariantDto,
+  ): Promise<ProductVariant> {
+    return this.createVariantUseCase.handle(body, productId);
   }
 
   @Get('/by-seller/:sellerId')

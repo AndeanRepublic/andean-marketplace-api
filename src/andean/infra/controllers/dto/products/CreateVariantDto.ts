@@ -1,13 +1,10 @@
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { TimeModel } from '../../../../domain/entities/products/TimeModel';
 
-export class CreateProductDto {
+export class CreateVariantDto {
   @IsString()
   @IsNotEmpty()
-  shopId: string;
-
-  @IsString()
-  @IsNotEmpty()
-  name: string;
+  title: string;
 
   @IsString()
   @IsOptional()
@@ -17,11 +14,16 @@ export class CreateProductDto {
   @IsNotEmpty()
   price: number;
 
+  @IsNotEmpty()
+  attributes: any;
+
   @IsNumber()
   @IsNotEmpty()
   stock: number;
 
-  @IsString()
-  @IsNotEmpty()
-  category: string;
+  @IsOptional()
+  shippingTime: TimeModel;
+
+  @IsOptional()
+  guarantee: TimeModel;
 }

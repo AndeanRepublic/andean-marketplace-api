@@ -1,5 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { SellerRepository } from '../../datastore/Seller.repo';
+import { SellerProfileRepository } from '../../datastore/Seller.repo';
 import { SellerBankAccountRepository } from '../../datastore/SellerBankAccount.repo';
 import { CreateBankAccountDto } from '../../../infra/controllers/dto/CreateBankAccountDto';
 import { SellerBankAccount } from '../../../domain/entities/SellerBankAccount';
@@ -9,8 +9,8 @@ import { BankAccountType } from '../../../domain/enums/BankAccountType';
 @Injectable()
 export class CreateBankAccountUseCase {
   constructor(
-    @Inject(SellerRepository)
-    private readonly sellerRepository: SellerRepository,
+    @Inject(SellerProfileRepository)
+    private readonly sellerRepository: SellerProfileRepository,
     @Inject(SellerBankAccountRepository)
     private readonly sellerBankAccountRepository: SellerBankAccountRepository,
   ) {}

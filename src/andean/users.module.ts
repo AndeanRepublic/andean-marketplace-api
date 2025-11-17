@@ -3,14 +3,14 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from './infra/persistence/user.schema';
 import { UserController } from './infra/controllers/user.controller';
 import { CreateCustomerUseCase } from './app/use_cases/users/CreateCustomerUseCase';
-import { UserRepositoryImpl } from './infra/datastore/user.repo.impl';
-import { UserRepository } from './app/datastore/Customer.repo';
+import { CustomerProfileRepositoryImpl } from './infra/datastore/user.repo.impl';
+import { CustomerProfileRepository } from './app/datastore/Customer.repo';
 import { GetAllCustomerUseCase } from './app/use_cases/users/GetAllCustomerUseCase';
 import { GetAllSellersUseCase } from './app/use_cases/users/GetAllSellersUseCase';
 import { CreateSellerUseCase } from './app/use_cases/users/CreateSellerUseCase';
 import { SellerSchema } from './infra/persistence/seller.schema';
-import { SellerRepository } from './app/datastore/Seller.repo';
-import { SellerRepositoryImpl } from './infra/datastore/seller.repo.impl';
+import { SellerProfileRepository } from './app/datastore/Seller.repo';
+import { SellerProfileRepositoryImpl } from './infra/datastore/seller.repo.impl';
 import { AccountSchema } from './infra/persistence/account.schema';
 import { AccountRepository } from './app/datastore/Account.repo';
 import { AccountRepoImpl } from './infra/datastore/account.repo.impl';
@@ -20,7 +20,7 @@ import { HashService } from './infra/services/HashService';
   imports: [
     MongooseModule.forFeature([
       {
-        name: 'Customer',
+        name: 'CustomerProfile',
         schema: UserSchema,
       },
       {
@@ -41,12 +41,12 @@ import { HashService } from './infra/services/HashService';
     CreateSellerUseCase,
     HashService,
     {
-      provide: UserRepository,
-      useClass: UserRepositoryImpl,
+      provide: CustomerProfileRepository,
+      useClass: CustomerProfileRepositoryImpl,
     },
     {
-      provide: SellerRepository,
-      useClass: SellerRepositoryImpl,
+      provide: SellerProfileRepository,
+      useClass: SellerProfileRepositoryImpl,
     },
     {
       provide: AccountRepository,
@@ -54,8 +54,8 @@ import { HashService } from './infra/services/HashService';
     },
   ],
   exports: [
-    UserRepository,
-    SellerRepository,
+    CustomerProfileRepository,
+    SellerProfileRepository,
     AccountRepository,
     MongooseModule,
   ],
