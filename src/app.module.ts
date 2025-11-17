@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UsersModule } from './modules/users/users.module';
-import { AuthModule } from './modules/users/auth.module';
-import { ProductsModule } from './modules/users/product.module';
-import { ShopsModule } from './modules/users/shop.module';
-import { BankAccountsModule } from './modules/users/bankAccount.module';
-import { OrdersModule } from './modules/users/order.module';
-import { CartShopModule } from './modules/users/cartShop.module';
+import { UsersModule } from './andean/users.module';
+import { AuthModule } from './andean/auth.module';
+import { ProductsModule } from './andean/product.module';
+import { ShopsModule } from './andean/shop.module';
+import { BankAccountsModule } from './andean/bankAccount.module';
+import { OrdersModule } from './andean/order.module';
+import { CartShopModule } from './andean/cartShop.module';
 import { MulterModule } from '@nestjs/platform-express';
-import { UploadModule } from './modules/users/upload.module';
+import { UploadModule } from './andean/upload.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 
