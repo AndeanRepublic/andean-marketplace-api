@@ -2,9 +2,9 @@ import { Body, Controller, Post, Get } from '@nestjs/common';
 import { CreateCustomerUseCase } from '../../app/use_cases/users/CreateCustomerUseCase';
 import { GetAllCustomerUseCase } from '../../app/use_cases/users/GetAllCustomerUseCase';
 import { CreateUserDto } from './dto/CreateUserDto';
-import { Customer } from '../../domain/entities/Customer';
+import { CustomerProfile } from '../../domain/entities/CustomerProfile';
 import { CreateSellerDto } from './dto/CreateSellerDto';
-import { Seller } from '../../domain/entities/Seller';
+import { SellerProfile } from '../../domain/entities/SellerProfile';
 import { GetAllSellersUseCase } from '../../app/use_cases/users/GetAllSellersUseCase';
 import { CreateSellerUseCase } from '../../app/use_cases/users/CreateSellerUseCase';
 
@@ -21,22 +21,22 @@ export class UserController {
   ) {}
 
   @Get(path_customers)
-  async getAllCustomers(): Promise<Customer[]> {
+  async getAllCustomers(): Promise<CustomerProfile[]> {
     return this.getAllCustomerUseCase.handle();
   }
 
   @Post(path_customers)
-  async createCustomer(@Body() body: CreateUserDto): Promise<Customer> {
+  async createCustomer(@Body() body: CreateUserDto): Promise<CustomerProfile> {
     return this.createCustomerUseCase.handle(body);
   }
 
   @Get(path_sellers)
-  async getAllSellers(): Promise<Seller[]> {
+  async getAllSellers(): Promise<SellerProfile[]> {
     return this.getAllSellersUseCase.handle();
   }
 
   @Post(path_sellers)
-  async createSeller(@Body() body: CreateSellerDto): Promise<Seller> {
+  async createSeller(@Body() body: CreateSellerDto): Promise<SellerProfile> {
     return this.createSellerUseCase.handle(body);
   }
 }

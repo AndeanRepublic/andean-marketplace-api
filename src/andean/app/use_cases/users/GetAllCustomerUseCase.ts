@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { Customer } from '../../../domain/entities/Customer';
-import { UserRepository } from '../../datastore/Customer.repo';
+import { CustomerProfile } from '../../../domain/entities/CustomerProfile';
+import { CustomerProfileRepository } from '../../datastore/Customer.repo';
 
 @Injectable()
 export class GetAllCustomerUseCase {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(private readonly userRepository: CustomerProfileRepository) {}
 
-  async handle(): Promise<Customer[]> {
+  async handle(): Promise<CustomerProfile[]> {
     return this.userRepository.getAllCustomers();
   }
 }

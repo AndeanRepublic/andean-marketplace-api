@@ -5,8 +5,8 @@ import { ShopController } from './infra/controllers/shop.controller';
 import { CreateShopUseCase } from './app/use_cases/shops/CreateShopUseCase';
 import { ShopRepository } from './app/datastore/Shop.repo';
 import { ShopRepoImpl } from './infra/datastore/shop.repo.impl';
-import { SellerRepository } from './app/datastore/Seller.repo';
-import { SellerRepositoryImpl } from './infra/datastore/seller.repo.impl';
+import { SellerProfileRepository } from './app/datastore/Seller.repo';
+import { SellerProfileRepositoryImpl } from './infra/datastore/seller.repo.impl';
 import { GetShopByIdUseCase } from './app/use_cases/shops/GetShopByIdUseCase';
 import { GetShopsByCategoryUseCase } from './app/use_cases/shops/GetShopsByCategoryUseCase';
 import { GetShopsBySellerIdUseCase } from './app/use_cases/shops/GetShopsBySellerIdUseCase';
@@ -35,8 +35,8 @@ import { UsersModule } from './users.module';
       useClass: ShopRepoImpl,
     },
     {
-      provide: SellerRepository,
-      useClass: SellerRepositoryImpl,
+      provide: SellerProfileRepository,
+      useClass: SellerProfileRepositoryImpl,
     },
   ],
   exports: [ShopRepository, MongooseModule],

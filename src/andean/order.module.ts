@@ -8,8 +8,8 @@ import { GetOrdersByCustomerUseCase } from './app/use_cases/orders/GetOrdersByCu
 import { UpdateOrderStatusUseCase } from './app/use_cases/orders/UpdateOrderStatusUseCase';
 import { OrderRepository } from './app/datastore/Order.repo';
 import { OrderRepositoryImpl } from './infra/datastore/order.repo.impl';
-import { UserRepository } from './app/datastore/Customer.repo';
-import { UserRepositoryImpl } from './infra/datastore/user.repo.impl';
+import { CustomerProfileRepository } from './app/datastore/Customer.repo';
+import { CustomerProfileRepositoryImpl } from './infra/datastore/user.repo.impl';
 import { UsersModule } from './users.module';
 
 @Module({
@@ -33,8 +33,8 @@ import { UsersModule } from './users.module';
       useClass: OrderRepositoryImpl,
     },
     {
-      provide: UserRepository,
-      useClass: UserRepositoryImpl,
+      provide: CustomerProfileRepository,
+      useClass: CustomerProfileRepositoryImpl,
     },
   ],
 })

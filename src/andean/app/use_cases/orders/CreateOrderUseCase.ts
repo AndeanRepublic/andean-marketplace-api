@@ -1,5 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { UserRepository } from '../../datastore/Customer.repo';
+import { CustomerProfileRepository } from '../../datastore/Customer.repo';
 import { OrderRepository } from '../../datastore/Order.repo';
 import { CreateOrderDto } from '../../../infra/controllers/dto/CreateOrderDto';
 import { Order } from '../../../domain/entities/Order';
@@ -9,8 +9,8 @@ import { PaymentMethod } from '../../../domain/enums/PaymentMethod';
 @Injectable()
 export class CreateOrderUseCase {
   constructor(
-    @Inject(UserRepository)
-    private readonly userRepository: UserRepository,
+    @Inject(CustomerProfileRepository)
+    private readonly userRepository: CustomerProfileRepository,
     @Inject(OrderRepository)
     private readonly orderRepository: OrderRepository,
   ) {}
@@ -20,7 +20,7 @@ export class CreateOrderUseCase {
       orderDto.customerId,
     );
     if (!customerFound) {
-      throw new NotFoundException('Customer not found');
+      throw new NotFoundException('CustomerProfile not found');
     }
     const orderToSave = new Order(
       crypto.randomUUID(),

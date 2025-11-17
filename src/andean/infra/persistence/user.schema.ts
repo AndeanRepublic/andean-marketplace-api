@@ -6,7 +6,6 @@ export const UserSchema = new Schema({
   id: String,
   name: String,
   country: String,
-  email: String,
   phoneNumber: String,
   language: String,
   coin: {
@@ -21,7 +20,6 @@ export interface UserDocument extends Document {
   id: string;
   name: string;
   country: string;
-  email: string;
   phoneNumber: string;
   language: string;
   coin: CoinType;

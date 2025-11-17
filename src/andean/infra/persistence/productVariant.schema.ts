@@ -1,20 +1,17 @@
-import { Document, Schema } from 'mongoose';
+import { Schema } from 'mongoose';
 import { ProductStatus } from '../../domain/enums/ProductStatus';
 import { TimeModel } from '../../domain/entities/products/TimeModel';
 
-export const ProductSchema = new Schema({
+export const ProductVariantSchema = new Schema({
   _id: String,
   id: { type: String, required: true },
-  shopId: { type: String, required: true },
-  userId: { type: String, required: true },
+  productId: { type: String, required: true },
   title: { type: String, required: true },
   description: { type: String, required: true },
-  category: { type: String, required: true },
-  basePrice: { type: Number, required: true },
-  origin: { type: String, required: true },
-  photos: { type: [String], default: [] },
+  price: { type: Number, required: true },
   attributes: { type: Schema.Types.Mixed, default: {} },
   stock: { type: Number, required: true },
+  photos: { type: [String], default: [] },
   status: {
     type: String,
     enum: Object.values(ProductStatus),
@@ -32,19 +29,16 @@ export const ProductSchema = new Schema({
   },
 });
 
-export interface ProductDocument extends Document {
+export interface ProductVariantDocument extends Document {
   _id: string;
   id: string;
-  shopId: string;
-  userId: string;
+  productId: string;
   title: string;
   description: string;
-  category: string;
-  basePrice: number;
-  origin: string;
-  photos: string[];
+  price: number;
   attributes: any;
   stock: number;
+  photos: string[];
   status: ProductStatus;
   shippingTime: TimeModel;
   timeGuarantee: TimeModel;

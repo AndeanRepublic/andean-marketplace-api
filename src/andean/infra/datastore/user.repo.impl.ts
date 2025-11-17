@@ -1,68 +1,53 @@
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from '../../app/datastore/Customer.repo';
+import { CustomerProfileRepository } from '../../app/datastore/Customer.repo';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserDocument } from '../persistence/user.schema';
-import { Customer } from '../../domain/entities/Customer';
+import { CustomerProfile } from '../../domain/entities/CustomerProfile';
+import { CustomerProfileMapper } from '../services/CustomerProfileMapper';
 
 @Injectable()
-export class UserRepositoryImpl extends UserRepository {
+export class CustomerProfileRepositoryImpl extends CustomerProfileRepository {
   constructor(
-    @InjectModel('Customer') private readonly userModel: Model<UserDocument>,
+    @InjectModel('CustomerProfile')
+    private readonly userModel: Model<UserDocument>,
   ) {
     super();
   }
 
-  async saveCustomer(user: Customer): Promise<Customer> {
+  async saveCustomer(user: CustomerProfile): Promise<CustomerProfile> {
     const created = new this.userModel({
       _id: crypto.randomUUID(),
       id: user.id,
       name: user.name,
       country: user.country,
       phoneNumber: user.phoneNumber,
-      email: user.email,
       language: user.language,
       coin: user.coin,
     });
-    const savedUser = await created.save();
-    return new Customer(
+    const savedCustomerProfile = await created.save();
+    return new CustomerProfile(
       user.id,
-      savedUser.name,
-      savedUser.country,
-      savedUser.phoneNumber,
-      savedUser.email,
-      savedUser.language,
-      savedUser.coin,
+      savedCustomerProfile.name,
+      savedCustomerProfile.country,
+      savedCustomerProfile.phoneNumber,
+      savedCustomerProfile.language,
+      savedCustomerProfile.coin,
     );
   }
 
-  async getCustomerById(id: string): Promise<Customer | null> {
+  async getCustomerById(id: string): Promise<CustomerProfile | null> {
     return this.userModel.findOne({ id }).exec();
   }
 
-  async getAllCustomers(): Promise<Customer[]> {
+  async getAllCustomers(): Promise<CustomerProfile[]> {
     const docs = await this.userModel.find().exec();
-    return docs.map(
-      (doc) =>
-        new Customer(
-          doc.id,
-          doc.name,
-          doc.country,
-          doc.phoneNumber,
-          doc.email,
-          doc.language,
-          doc.coin,
-        ),
-    );
-  }
-
-  async getCustomerByEmail(email: string): Promise<Customer | null> {
-    return this.userModel.findOne({ email }).exec();
+    return docs.map((doc) => CustomerProfileMapper.toDomain(doc));
   }
 
   async getCustomerByPhoneNumber(
     phoneNumber: string,
-  ): Promise<Customer | null> {
+  ): Promise<CustomerProfile | null> {
     return this.userModel.findOne({ phoneNumber }).exec();
   }
 }
