@@ -15,6 +15,9 @@ import { SellerProfileRepository } from './app/datastore/Seller.repo';
 import { SellerProfileRepositoryImpl } from './infra/datastore/seller.repo.impl';
 import { ShopsModule } from './shop.module';
 import { UsersModule } from './users.module';
+import { CreateVariantUseCase } from './app/use_cases/products/CreateVariantUseCase';
+import { ProductVariantRepository } from './app/datastore/ProductVariant.repo';
+import { ProductVariantRepoImpl } from './infra/datastore/productVariant.repo.impl';
 
 @Module({
   imports: [
@@ -34,6 +37,7 @@ import { UsersModule } from './users.module';
     GetProductsByShopUseCase,
     DeleteProductUseCase,
     GetProductByIdUseCase,
+    CreateVariantUseCase,
     {
       provide: ProductRepository,
       useClass: ProductRepoImpl,
@@ -45,6 +49,10 @@ import { UsersModule } from './users.module';
     {
       provide: SellerProfileRepository,
       useClass: SellerProfileRepositoryImpl,
+    },
+    {
+      provide: ProductVariantRepository,
+      useClass: ProductVariantRepoImpl,
     },
   ],
   exports: [ProductRepository, MongooseModule],
