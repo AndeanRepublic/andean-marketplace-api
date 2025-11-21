@@ -25,7 +25,6 @@ export class CreateOrderUseCase {
     const orderToSave = new Order(
       crypto.randomUUID(),
       orderDto.customerId,
-      orderDto.items,
       orderDto.totalAmount,
       OrderStatus.PAID,
       PaymentMethod[orderDto.paymentMethod as keyof typeof PaymentMethod],
