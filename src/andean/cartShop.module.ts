@@ -9,7 +9,7 @@ import { RemoveItemFromCartUseCase } from './app/use_cases/cart_shop/RemoveItemF
 import { ProductRepository } from './app/datastore/Product.repo';
 import { ProductRepoImpl } from './infra/datastore/product.repo.impl';
 import { CustomerProfileRepository } from './app/datastore/Customer.repo';
-import { CustomerProfileRepositoryImpl } from './infra/datastore/user.repo.impl';
+import { CustomerProfileRepositoryImpl } from './infra/datastore/customer.repo.impl';
 import { CartShopRepository } from './app/datastore/CartShop.repo';
 import { CartShopRepoImpl } from './infra/datastore/cartShop.repo.impl';
 import { ProductsModule } from './product.module';

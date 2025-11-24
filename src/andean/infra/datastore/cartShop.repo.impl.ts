@@ -4,7 +4,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CartShopDocument } from '../persistence/cartShop.schema';
 import { CartShop } from '../../domain/entities/CartShop';
-import { CartShopMapper } from '../services/CartShopMapper';
 
 @Injectable()
 export class CartShopRepoImpl extends CartShopRepository {
@@ -15,50 +14,6 @@ export class CartShopRepoImpl extends CartShopRepository {
     super();
   }
 
-  async addItem(
-    customerId: string,
-    productId: string,
-    quantity: number,
-  ): Promise<CartShop> {
-    let cart = await this.cartShopModel.findOne({ customerId });
-    if (!cart) {
-      cart = new this.cartShopModel({
-        customerId,
-        items: [],
-      });
-    }
-
-    const existingItem = cart.items.find(
-      (item) => item.productId.toString() === productId,
-    );
-    if (existingItem) {
-      existingItem.quantity += quantity;
-    } else {
-      cart.items.push({
-        productId,
-        quantity,
-        price: 0,
-      });
-    }
-
-    await cart.save();
-    return CartShopMapper.toDomain(cart);
-  }
-
-  async removeItem(
-    customerId: string,
-    productId: string,
-  ): Promise<CartShop | null> {
-    const cart = await this.cartShopModel.findOne({ customerId });
-    if (!cart) return null;
-
-    cart.items = cart.items.filter(
-      (item) => item.productId.toString() !== productId,
-    );
-    await cart.save();
-    return CartShopMapper.toDomain(cart);
-  }
-
   async getCartByUser(customerId: string): Promise<CartShop | null> {
     return this.cartShopModel.findOne({ customerId });
   }
@@ -66,8 +21,6 @@ export class CartShopRepoImpl extends CartShopRepository {
   async clearCart(customerId: string): Promise<void> {
     const cart = await this.cartShopModel.findOne({ customerId });
     if (!cart) return;
-
-    cart.items = [];
     await cart.save();
   }
 }

@@ -28,7 +28,6 @@ export class OrderRepositoryImpl extends OrderRepository {
       _id: crypto.randomUUID(),
       id: order.id,
       customerId: order.userId,
-      items: order.items,
       totalAmount: order.totalAmount,
       status: order.status,
       paymentMethod: order.paymentMethod,

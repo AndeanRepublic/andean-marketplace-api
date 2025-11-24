@@ -24,13 +24,6 @@ export class RemoveItemFromCartUseCase {
     if (!productFound) {
       throw new NotFoundException('Product not found');
     }
-    const customerCart = await this.cartShopRepository.removeItem(
-      customerId,
-      productId,
-    );
-    if (!customerCart) {
-      throw new NotFoundException('CustomerProfile cart not found');
-    }
-    return customerCart;
+    return new CartShop(customerId, productId);
   }
 }

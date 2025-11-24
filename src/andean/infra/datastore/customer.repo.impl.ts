@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CustomerProfileRepository } from '../../app/datastore/Customer.repo';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { UserDocument } from '../persistence/user.schema';
+import { CustomerProfileDocument } from '../persistence/customerProfileSchema';
 import { CustomerProfile } from '../../domain/entities/CustomerProfile';
 import { CustomerProfileMapper } from '../services/CustomerProfileMapper';
 
@@ -10,30 +10,17 @@ import { CustomerProfileMapper } from '../services/CustomerProfileMapper';
 export class CustomerProfileRepositoryImpl extends CustomerProfileRepository {
   constructor(
     @InjectModel('CustomerProfile')
-    private readonly userModel: Model<UserDocument>,
+    private readonly userModel: Model<CustomerProfileDocument>,
   ) {
     super();
   }
 
   async saveCustomer(user: CustomerProfile): Promise<CustomerProfile> {
-    const created = new this.userModel({
-      _id: crypto.randomUUID(),
-      id: user.id,
-      name: user.name,
-      country: user.country,
-      phoneNumber: user.phoneNumber,
-      language: user.language,
-      coin: user.coin,
-    });
-    const savedCustomerProfile = await created.save();
-    return new CustomerProfile(
-      user.id,
-      savedCustomerProfile.name,
-      savedCustomerProfile.country,
-      savedCustomerProfile.phoneNumber,
-      savedCustomerProfile.language,
-      savedCustomerProfile.coin,
+    const created = new this.userModel(
+      CustomerProfileMapper.toPersistence(user),
     );
+    const savedCustomer = await created.save();
+    return CustomerProfileMapper.toDomain(savedCustomer);
   }
 
   async getCustomerById(id: string): Promise<CustomerProfile | null> {
@@ -45,9 +32,24 @@ export class CustomerProfileRepositoryImpl extends CustomerProfileRepository {
     return docs.map((doc) => CustomerProfileMapper.toDomain(doc));
   }
 
+  async getCustomerByUserId(userId: string): Promise<CustomerProfile | null> {
+    return this.userModel.findOne({ userId: userId }).exec();
+  }
+
   async getCustomerByPhoneNumber(
     phoneNumber: string,
   ): Promise<CustomerProfile | null> {
     return this.userModel.findOne({ phoneNumber }).exec();
+  }
+
+  async updateCustomerById(
+    userId: string,
+    profile: CustomerProfile,
+  ): Promise<void> {
+    await this.userModel.findOneAndUpdate(
+      { userId },
+      CustomerProfileMapper.toPersistence(profile),
+      { new: true },
+    );
   }
 }

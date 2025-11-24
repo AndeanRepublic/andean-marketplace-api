@@ -27,10 +27,6 @@ export class AddItemToCartUseCase {
     if (!productFound) {
       throw new NotFoundException('Product not found');
     }
-    return this.cartShopRepository.addItem(
-      customerId,
-      itemDto.productId,
-      itemDto.quantity,
-    );
+    return new CartShop(customerId, customerId);
   }
 }

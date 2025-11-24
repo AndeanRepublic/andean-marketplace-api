@@ -6,7 +6,11 @@ export abstract class SellerProfileRepository {
     phoneNumber: string,
   ): Promise<SellerProfile | null>;
   abstract getSellerById(id: string): Promise<SellerProfile | null>;
+  abstract getSellerByUserId(userId: string): Promise<SellerProfile | null>;
   abstract saveSeller(seller: SellerProfile): Promise<SellerProfile>;
-  // updateSeller(seller: Seller): Promise<void>;
+  abstract updateSellerByUserId(
+    userId: string,
+    profile: SellerProfile,
+  ): Promise<void>;
   // deleteSellerById(id: string): Promise<void>;
 }

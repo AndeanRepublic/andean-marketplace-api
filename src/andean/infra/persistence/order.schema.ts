@@ -1,23 +1,11 @@
 import { Schema } from 'mongoose';
 import { OrderStatus } from '../../domain/enums/OrderStatus';
 import { PaymentMethod } from '../../domain/enums/PaymentMethod';
-import { OrderItem } from '../../domain/entities/OrderItem';
-
-export const OrderItemSchema = new Schema({
-  productId: { type: String, required: true },
-  quantity: { type: Number, required: true },
-  price: { type: Number, required: true },
-  sellerId: { type: String, required: true },
-});
 
 export const OrderSchema = new Schema({
   _id: String,
   id: String,
-  customerId: String,
-  items: {
-    type: [OrderItemSchema],
-    default: [],
-  },
+  userId: String,
   totalAmount: Number,
   status: {
     type: String,
@@ -33,8 +21,7 @@ export const OrderSchema = new Schema({
 export interface OrderDocument extends Document {
   _id: string;
   id: string;
-  customerId: string;
-  items: OrderItem[];
+  userId: string;
   totalAmount: number;
   status: OrderStatus;
   paymentMethod: PaymentMethod;

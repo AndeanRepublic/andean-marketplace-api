@@ -18,6 +18,7 @@ import { UsersModule } from './users.module';
 import { CreateVariantUseCase } from './app/use_cases/products/CreateVariantUseCase';
 import { ProductVariantRepository } from './app/datastore/ProductVariant.repo';
 import { ProductVariantRepoImpl } from './infra/datastore/productVariant.repo.impl';
+import { ProductVariantSchema } from './infra/persistence/productVariant.schema';
 
 @Module({
   imports: [
@@ -25,6 +26,10 @@ import { ProductVariantRepoImpl } from './infra/datastore/productVariant.repo.im
       {
         name: 'Product',
         schema: ProductSchema,
+      },
+      {
+        name: 'ProductVariant',
+        schema: ProductVariantSchema,
       },
     ]),
     ShopsModule,
@@ -55,6 +60,6 @@ import { ProductVariantRepoImpl } from './infra/datastore/productVariant.repo.im
       useClass: ProductVariantRepoImpl,
     },
   ],
-  exports: [ProductRepository, MongooseModule],
+  exports: [ProductRepository, ProductVariantRepository, MongooseModule],
 })
 export class ProductsModule {}

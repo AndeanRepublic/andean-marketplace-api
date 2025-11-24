@@ -6,6 +6,7 @@ import { AccountRepository } from '../../datastore/Account.repo';
 import { AccountRole } from '../../../domain/enums/AccountRole';
 import { AccountStatus } from '../../../domain/enums/AccountStatus';
 import { Account } from '../../../domain/entities/Account';
+import { SellerProfileMapper } from '../../../infra/services/SellerProfileMapper';
 
 @Injectable()
 export class CreateSellerUseCase {
@@ -22,15 +23,7 @@ export class CreateSellerUseCase {
     if (accountFound) {
       throw new ConflictException('Email already in use');
     }
-    const sellerToSave = new SellerProfile(
-      crypto.randomUUID(),
-      sellerDto.typePerson,
-      sellerDto.numberDocument,
-      sellerDto.ruc ?? '',
-      sellerDto.commercialName,
-      sellerDto.address,
-      sellerDto.phoneNumber,
-    );
+    const sellerToSave = SellerProfileMapper.fromDto(sellerDto);
     await this.sellerRepository.saveSeller(sellerToSave);
 
     // Create account
@@ -39,9 +32,10 @@ export class CreateSellerUseCase {
       name: sellerDto.name,
       email: sellerDto.email,
       password: sellerDto.password,
-      type: AccountRole.SELLER,
       status: AccountStatus.PENDING,
+      role: AccountRole.SELLER,
     };
+
     await this.accountRepository.saveAccount(accountToSave);
     return sellerToSave;
   }
