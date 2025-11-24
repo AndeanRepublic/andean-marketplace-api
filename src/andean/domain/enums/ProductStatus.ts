@@ -1,6 +1,6 @@
 export enum ProductStatus {
+  PUBLISHED = 'PUBLISHED',
   PENDING = 'PENDING',
-  STOPPED = 'STOPPED',
-  ACTIVE = 'ACTIVE',
   SOLD_OUT = 'SOLD_OUT',
+  HIDDEN = 'HIDDEN',
 }

@@ -3,6 +3,13 @@ import { Account } from '../../domain/entities/Account';
 
 export class AccountMapper {
   static toDomain(doc: AccountDocument): Account {
-    return new Account(doc.userId, doc.password, doc.status, doc.type);
+    return new Account(
+      doc.userId,
+      doc.name,
+      doc.email,
+      doc.password,
+      doc.status,
+      doc.type,
+    );
   }
 }

@@ -1,9 +1,9 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ProductRepository } from '../../datastore/Product.repo';
-import { CreateProductDto } from '../../../infra/controllers/dto/CreateProductDto';
-import { Product } from '../../../domain/entities/Product';
-import { ProductStatus } from '../../../domain/enums/ProductStatus';
+import { CreateProductDto } from '../../../infra/controllers/dto/products/CreateProductDto';
+import { Product } from '../../../domain/entities/products/Product';
 import { ShopRepository } from '../../datastore/Shop.repo';
+import { ProductMapper } from '../../../infra/services/ProductMapper';
 
 @Injectable()
 export class CreateProductUseCase {
@@ -19,17 +19,7 @@ export class CreateProductUseCase {
     if (!shopFound) {
       throw new NotFoundException('Shop not found');
     }
-    const productToSave = new Product(
-      crypto.randomUUID(),
-      productDto.shopId,
-      shopFound.sellerId,
-      productDto.name,
-      productDto.description,
-      productDto.price,
-      productDto.stock,
-      productDto.category,
-      ProductStatus.ACTIVE,
-    );
+    const productToSave = ProductMapper.fromDto(productDto, shopFound.sellerId);
     return this.productRepository.saveProduct(productToSave);
   }
 }

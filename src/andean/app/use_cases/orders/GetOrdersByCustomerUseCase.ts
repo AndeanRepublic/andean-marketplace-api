@@ -1,13 +1,13 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { UserRepository } from '../../datastore/Customer.repo';
+import { CustomerProfileRepository } from '../../datastore/Customer.repo';
 import { OrderRepository } from '../../datastore/Order.repo';
 import { Order } from '../../../domain/entities/Order';
 
 @Injectable()
 export class GetOrdersByCustomerUseCase {
   constructor(
-    @Inject(UserRepository)
-    private userRepository: UserRepository,
+    @Inject(CustomerProfileRepository)
+    private userRepository: CustomerProfileRepository,
     @Inject(OrderRepository)
     private orderRepository: OrderRepository,
   ) {}
@@ -15,7 +15,7 @@ export class GetOrdersByCustomerUseCase {
   async handle(customerId: string): Promise<Order[]> {
     const customerFound = await this.userRepository.getCustomerById(customerId);
     if (!customerFound) {
-      throw new NotFoundException('Customer not found');
+      throw new NotFoundException('CustomerProfile not found');
     }
     return this.orderRepository.getOrdersByCustomerId(customerId);
   }

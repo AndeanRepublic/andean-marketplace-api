@@ -27,8 +27,7 @@ export class OrderRepositoryImpl extends OrderRepository {
     const created = new this.orderModel({
       _id: crypto.randomUUID(),
       id: order.id,
-      customerId: order.customerId,
-      items: order.items,
+      customerId: order.userId,
       totalAmount: order.totalAmount,
       status: order.status,
       paymentMethod: order.paymentMethod,

@@ -1,54 +1,42 @@
 import { ConflictException, Inject, Injectable } from '@nestjs/common';
-import { SellerRepository } from '../../datastore/Seller.repo';
-import { Seller } from '../../../domain/entities/Seller';
+import { SellerProfileRepository } from '../../datastore/Seller.repo';
+import { SellerProfile } from '../../../domain/entities/SellerProfile';
 import { CreateSellerDto } from '../../../infra/controllers/dto/CreateSellerDto';
 import { AccountRepository } from '../../datastore/Account.repo';
-import { AccountType } from '../../../domain/enums/AccountType';
+import { AccountRole } from '../../../domain/enums/AccountRole';
 import { AccountStatus } from '../../../domain/enums/AccountStatus';
 import { Account } from '../../../domain/entities/Account';
+import { SellerProfileMapper } from '../../../infra/services/SellerProfileMapper';
 
 @Injectable()
 export class CreateSellerUseCase {
   constructor(
-    @Inject(SellerRepository)
-    private readonly sellerRepository: SellerRepository,
+    @Inject(SellerProfileRepository)
+    private readonly sellerRepository: SellerProfileRepository,
     @Inject(AccountRepository)
     private readonly accountRepository: AccountRepository,
   ) {}
 
-  async handle(sellerDto: CreateSellerDto): Promise<Seller> {
-    let foundSeller: Seller | null =
-      await this.sellerRepository.getSellerByEmail(sellerDto.email);
-    if (foundSeller) {
+  async handle(sellerDto: CreateSellerDto): Promise<SellerProfile> {
+    const accountFound: Account | null =
+      await this.accountRepository.getAccountByEmail(sellerDto.email);
+    if (accountFound) {
       throw new ConflictException('Email already in use');
     }
-    foundSeller = await this.sellerRepository.getSellerByPhoneNumber(
-      sellerDto.phoneNumber,
-    );
-    if (foundSeller) {
-      throw new ConflictException('Phone number already in use');
-    }
-
-    const sellerToSave = new Seller(
-      crypto.randomUUID(),
-      sellerDto.typePerson,
-      sellerDto.numberDocument,
-      sellerDto.ruc ?? '',
-      sellerDto.commercialName,
-      sellerDto.address,
-      sellerDto.phoneNumber,
-      sellerDto.email,
-    );
-    await this.sellerRepository.saveSeller(sellerToSave);
-
     // Create account
+    const userId: string = crypto.randomUUID();
     const accountToSave: Account = {
-      userId: sellerToSave.id,
+      userId: userId,
+      name: sellerDto.name,
+      email: sellerDto.email,
       password: sellerDto.password,
-      type: AccountType.SELLER,
       status: AccountStatus.PENDING,
+      role: AccountRole.SELLER,
     };
     await this.accountRepository.saveAccount(accountToSave);
+
+    const sellerToSave = SellerProfileMapper.fromDto(userId, sellerDto);
+    await this.sellerRepository.saveSeller(sellerToSave);
     return sellerToSave;
   }
 }

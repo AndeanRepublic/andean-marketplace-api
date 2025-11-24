@@ -1,11 +1,16 @@
-import { Seller } from '../../domain/entities/Seller';
+import { SellerProfile } from '../../domain/entities/SellerProfile';
 
-export abstract class SellerRepository {
-  abstract getAllSellers(): Promise<Seller[]>;
-  abstract getSellerByEmail(email: string): Promise<Seller | null>;
-  abstract getSellerByPhoneNumber(phoneNumber: string): Promise<Seller | null>;
-  abstract getSellerById(id: string): Promise<Seller | null>;
-  abstract saveSeller(seller: Seller): Promise<Seller>;
-  // updateSeller(seller: Seller): Promise<void>;
+export abstract class SellerProfileRepository {
+  abstract getAllSellers(): Promise<SellerProfile[]>;
+  abstract getSellerByPhoneNumber(
+    phoneNumber: string,
+  ): Promise<SellerProfile | null>;
+  abstract getSellerById(id: string): Promise<SellerProfile | null>;
+  abstract getSellerByUserId(userId: string): Promise<SellerProfile | null>;
+  abstract saveSeller(seller: SellerProfile): Promise<SellerProfile>;
+  abstract updateSellerByUserId(
+    userId: string,
+    profile: SellerProfile,
+  ): Promise<void>;
   // deleteSellerById(id: string): Promise<void>;
 }
