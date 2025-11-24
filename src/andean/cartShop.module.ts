@@ -14,6 +14,9 @@ import { CartShopRepository } from './app/datastore/CartShop.repo';
 import { CartShopRepoImpl } from './infra/datastore/cartShop.repo.impl';
 import { ProductsModule } from './product.module';
 import { UsersModule } from './users.module';
+import { CartItemSchema } from './infra/persistence/cartShopItem.schema';
+import { CartShopItemRepository } from './app/datastore/CartShopItem.repo';
+import { CartShopItemRepoImpl } from './infra/datastore/cartShopItem.repo.impl';
 
 @Module({
   imports: [
@@ -21,6 +24,10 @@ import { UsersModule } from './users.module';
       {
         name: 'CartShop',
         schema: CartShopSchema,
+      },
+      {
+        name: 'CartShopItem',
+        schema: CartItemSchema,
       },
     ]),
     ProductsModule,
@@ -35,6 +42,10 @@ import { UsersModule } from './users.module';
     {
       provide: ProductRepository,
       useClass: ProductRepoImpl,
+    },
+    {
+      provide: CartShopItemRepository,
+      useClass: CartShopItemRepoImpl,
     },
     {
       provide: CustomerProfileRepository,

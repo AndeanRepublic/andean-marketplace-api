@@ -16,7 +16,7 @@ export class ProductRepoImpl extends ProductRepository {
   }
 
   async getAllBySellerId(sellerId: string): Promise<Product[]> {
-    const docs = await this.productModel.find({ sellerId }).lean().exec();
+    const docs = await this.productModel.find({ sellerId }).exec();
     return docs.map((doc: ProductDocument) => ProductMapper.toDomain(doc));
   }
 
@@ -26,7 +26,7 @@ export class ProductRepoImpl extends ProductRepository {
   }
 
   async getProductById(id: string): Promise<Product | null> {
-    const doc = await this.productModel.findById(id).lean().exec();
+    const doc = await this.productModel.findById(id).exec();
     return doc ? ProductMapper.toDomain(doc) : null;
   }
 

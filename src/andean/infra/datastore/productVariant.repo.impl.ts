@@ -15,6 +15,11 @@ export class ProductVariantRepoImpl extends ProductVariantRepository {
     super();
   }
 
+  async getVariantById(id: string): Promise<ProductVariant | null> {
+    const doc = await this.variantModel.findById(id).exec();
+    return doc ? ProductVariantMapper.toDomain(doc) : null;
+  }
+
   async saveProductVariant(variant: ProductVariant): Promise<ProductVariant> {
     const persistence = ProductVariantMapper.toPersistence(variant);
     const created = new this.variantModel(persistence);

@@ -17,6 +17,8 @@ import { AccountRepoImpl } from './infra/datastore/account.repo.impl';
 import { HashService } from './infra/services/HashService';
 import { UpdateCustomerProfileUseCase } from './app/use_cases/users/UpdateCustomerProfileUseCase';
 import { UpdateSellerProfileUseCase } from './app/use_cases/users/UpdateSellerProfileUseCase';
+import { GetCustomerProfileUseCase } from './app/use_cases/users/GetCustomerProfileUseCase';
+import { GetSellerProfileUseCase } from './app/use_cases/users/GetSellerProfileUseCase';
 
 @Module({
   imports: [
@@ -43,6 +45,8 @@ import { UpdateSellerProfileUseCase } from './app/use_cases/users/UpdateSellerPr
     CreateSellerUseCase,
     UpdateCustomerProfileUseCase,
     UpdateSellerProfileUseCase,
+    GetCustomerProfileUseCase,
+    GetSellerProfileUseCase,
     HashService,
     {
       provide: CustomerProfileRepository,

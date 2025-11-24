@@ -1,29 +1,21 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { CartShopRepository } from '../../datastore/CartShop.repo';
-import { ProductRepository } from '../../datastore/Product.repo';
-import { CartShop } from '../../../domain/entities/CartShop';
 import { CustomerProfileRepository } from '../../datastore/Customer.repo';
+import { CartShopItemRepository } from '../../datastore/CartShopItem.repo';
 
 @Injectable()
 export class RemoveItemFromCartUseCase {
   constructor(
-    @Inject(CartShopRepository)
-    private readonly cartShopRepository: CartShopRepository,
     @Inject(CustomerProfileRepository)
     private readonly userRepository: CustomerProfileRepository,
-    @Inject(ProductRepository)
-    private readonly productRepository: ProductRepository,
+    @Inject(CartShopItemRepository)
+    private readonly cartItemRepository: CartShopItemRepository,
   ) {}
 
-  async handle(customerId: string, productId: string): Promise<CartShop> {
-    const customerFound = await this.userRepository.getCustomerById(customerId);
+  async handle(userId: string, itemId: string): Promise<void> {
+    const customerFound = await this.userRepository.getCustomerById(userId);
     if (!customerFound) {
       throw new NotFoundException('CustomerProfile not found');
     }
-    const productFound = await this.productRepository.getProductById(productId);
-    if (!productFound) {
-      throw new NotFoundException('Product not found');
-    }
-    return new CartShop(customerId, productId);
+    await this.cartItemRepository.deleteItem(itemId);
   }
 }
