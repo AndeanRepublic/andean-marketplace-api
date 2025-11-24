@@ -28,15 +28,22 @@ export class AccountRepoImpl extends AccountRepository {
       _id: crypto.randomUUID(),
       userId: account.userId,
       password: hashedPassword,
-      type: account.type,
+      type: account.role,
       status: account.status,
     });
     const savedAccount = await created.save();
     return new Account(
       savedAccount.userId,
+      savedAccount.name,
+      savedAccount.email,
       savedAccount.password,
       savedAccount.status,
       savedAccount.type,
     );
+  }
+
+  async getAccountByEmail(email: string): Promise<Account | null> {
+    const doc = await this.accountModel.findOne({ email }).exec();
+    return doc ? AccountMapper.toDomain(doc) : null;
   }
 }

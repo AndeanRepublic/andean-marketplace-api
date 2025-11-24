@@ -1,7 +1,7 @@
 import { IsString, IsNotEmpty, IsEnum } from 'class-validator';
 import { CoinType } from '../../../domain/enums/CoinType';
 
-export class CreateUserDto {
+export class CreateCustomerDto {
   @IsString()
   @IsNotEmpty()
   name: string;

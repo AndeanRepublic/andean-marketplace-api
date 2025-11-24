@@ -8,12 +8,15 @@ import { GetCartByUserUseCase } from './app/use_cases/cart_shop/GetCartByUserUse
 import { RemoveItemFromCartUseCase } from './app/use_cases/cart_shop/RemoveItemFromCartUseCase';
 import { ProductRepository } from './app/datastore/Product.repo';
 import { ProductRepoImpl } from './infra/datastore/product.repo.impl';
-import { UserRepository } from './app/datastore/Customer.repo';
-import { UserRepositoryImpl } from './infra/datastore/user.repo.impl';
+import { CustomerProfileRepository } from './app/datastore/Customer.repo';
+import { CustomerProfileRepositoryImpl } from './infra/datastore/customer.repo.impl';
 import { CartShopRepository } from './app/datastore/CartShop.repo';
 import { CartShopRepoImpl } from './infra/datastore/cartShop.repo.impl';
 import { ProductsModule } from './product.module';
 import { UsersModule } from './users.module';
+import { CartItemSchema } from './infra/persistence/cartShopItem.schema';
+import { CartShopItemRepository } from './app/datastore/CartShopItem.repo';
+import { CartShopItemRepoImpl } from './infra/datastore/cartShopItem.repo.impl';
 
 @Module({
   imports: [
@@ -21,6 +24,10 @@ import { UsersModule } from './users.module';
       {
         name: 'CartShop',
         schema: CartShopSchema,
+      },
+      {
+        name: 'CartShopItem',
+        schema: CartItemSchema,
       },
     ]),
     ProductsModule,
@@ -37,8 +44,12 @@ import { UsersModule } from './users.module';
       useClass: ProductRepoImpl,
     },
     {
-      provide: UserRepository,
-      useClass: UserRepositoryImpl,
+      provide: CartShopItemRepository,
+      useClass: CartShopItemRepoImpl,
+    },
+    {
+      provide: CustomerProfileRepository,
+      useClass: CustomerProfileRepositoryImpl,
     },
     {
       provide: CartShopRepository,

@@ -11,10 +11,14 @@ import { GetProductByIdUseCase } from './app/use_cases/products/GetProductByIdUs
 import { GetProductsByShopUseCase } from './app/use_cases/products/GetProductsByShopUseCase';
 import { ShopRepository } from './app/datastore/Shop.repo';
 import { ShopRepoImpl } from './infra/datastore/shop.repo.impl';
-import { SellerRepository } from './app/datastore/Seller.repo';
-import { SellerRepositoryImpl } from './infra/datastore/seller.repo.impl';
+import { SellerProfileRepository } from './app/datastore/Seller.repo';
+import { SellerProfileRepositoryImpl } from './infra/datastore/seller.repo.impl';
 import { ShopsModule } from './shop.module';
 import { UsersModule } from './users.module';
+import { CreateVariantUseCase } from './app/use_cases/products/CreateVariantUseCase';
+import { ProductVariantRepository } from './app/datastore/ProductVariant.repo';
+import { ProductVariantRepoImpl } from './infra/datastore/productVariant.repo.impl';
+import { ProductVariantSchema } from './infra/persistence/productVariant.schema';
 
 @Module({
   imports: [
@@ -22,6 +26,10 @@ import { UsersModule } from './users.module';
       {
         name: 'Product',
         schema: ProductSchema,
+      },
+      {
+        name: 'ProductVariant',
+        schema: ProductVariantSchema,
       },
     ]),
     ShopsModule,
@@ -34,6 +42,7 @@ import { UsersModule } from './users.module';
     GetProductsByShopUseCase,
     DeleteProductUseCase,
     GetProductByIdUseCase,
+    CreateVariantUseCase,
     {
       provide: ProductRepository,
       useClass: ProductRepoImpl,
@@ -43,10 +52,14 @@ import { UsersModule } from './users.module';
       useClass: ShopRepoImpl,
     },
     {
-      provide: SellerRepository,
-      useClass: SellerRepositoryImpl,
+      provide: SellerProfileRepository,
+      useClass: SellerProfileRepositoryImpl,
+    },
+    {
+      provide: ProductVariantRepository,
+      useClass: ProductVariantRepoImpl,
     },
   ],
-  exports: [ProductRepository, MongooseModule],
+  exports: [ProductRepository, ProductVariantRepository, MongooseModule],
 })
 export class ProductsModule {}

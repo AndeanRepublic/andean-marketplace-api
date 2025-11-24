@@ -3,7 +3,7 @@ import { ProductRepository } from '../../app/datastore/Product.repo';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ProductDocument } from '../persistence/product.schema';
-import { Product } from '../../domain/entities/Product';
+import { Product } from '../../domain/entities/products/Product';
 import { ProductMapper } from '../services/ProductMapper';
 
 @Injectable()
@@ -16,7 +16,7 @@ export class ProductRepoImpl extends ProductRepository {
   }
 
   async getAllBySellerId(sellerId: string): Promise<Product[]> {
-    const docs = await this.productModel.find({ sellerId }).lean().exec();
+    const docs = await this.productModel.find({ sellerId }).exec();
     return docs.map((doc: ProductDocument) => ProductMapper.toDomain(doc));
   }
 
@@ -26,23 +26,12 @@ export class ProductRepoImpl extends ProductRepository {
   }
 
   async getProductById(id: string): Promise<Product | null> {
-    const doc = await this.productModel.findById(id).lean().exec();
+    const doc = await this.productModel.findById(id).exec();
     return doc ? ProductMapper.toDomain(doc) : null;
   }
 
   async saveProduct(product: Product): Promise<Product> {
-    const created = new this.productModel({
-      _id: crypto.randomUUID(),
-      id: product.id,
-      shopId: product.shopId,
-      sellerId: product.sellerId,
-      name: product.name,
-      description: product.description,
-      price: product.price,
-      stock: product.stock,
-      category: product.category,
-      status: product.status,
-    });
+    const created = new this.productModel(ProductMapper.toPersistence(product));
     const savedProduct = await created.save();
     return ProductMapper.toDomain(savedProduct);
   }

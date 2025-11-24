@@ -5,8 +5,11 @@ import { GetCartByUserUseCase } from '../../app/use_cases/cart_shop/GetCartByUse
 import { RemoveItemFromCartUseCase } from '../../app/use_cases/cart_shop/RemoveItemFromCartUseCase';
 import { CartShop } from '../../domain/entities/CartShop';
 import { AddCartItemDto } from './dto/AddCartItemDto';
+const root_path = 'users/customers/:userId/cart';
+const path_cart_items = '/items';
+const path_remove_cart_item = path_cart_items + '/:itemId';
 
-@Controller('users/customers/:customerId/cart')
+@Controller(root_path)
 export class CartShopController {
   constructor(
     private readonly addItemToCartUseCase: AddItemToCartUseCase,
@@ -16,29 +19,28 @@ export class CartShopController {
   ) {}
 
   @Get('')
-  async findByCustomerId(
-    @Param('customerId') customerId: string,
-  ): Promise<CartShop> {
-    return this.getCartByUserUseCase.handle(customerId);
+  async getCustomerCart(@Param('userId') userId: string): Promise<CartShop> {
+    return this.getCartByUserUseCase.handle(userId);
   }
 
-  @Post('/products')
+  @Post(path_cart_items)
   async addItemToCart(
-    @Param('customerId') customerId: string,
+    @Param('userId') userId: string,
     @Body() body: AddCartItemDto,
   ): Promise<CartShop> {
-    return this.addItemToCartUseCase.handle(customerId, body);
+    return this.addItemToCartUseCase.handle(userId, body);
   }
 
   @Delete('')
-  async cleanCart(@Param('customerId') customerId: string): Promise<void> {
-    return this.cleanCartUseCase.handle(customerId);
+  async cleanCart(@Param('userId') userId: string): Promise<void> {
+    return this.cleanCartUseCase.handle(userId);
   }
 
-  @Delete('/products/:productId')
+  @Delete(path_remove_cart_item)
   async removeItemFromCart(
-    @Param('customerId') customerId: string,
-    @Param('productId') productId: string): Promise<CartShop> {
-    return this.removeItemFromCartUseCase.handle(customerId, productId);
+    @Param('userId') userId: string,
+    @Param('itemId') itemId: string,
+  ): Promise<void> {
+    return this.removeItemFromCartUseCase.handle(userId, itemId);
   }
 }

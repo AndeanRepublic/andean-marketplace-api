@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { Seller } from '../../../domain/entities/Seller';
-import { SellerRepository } from '../../datastore/Seller.repo';
+import { SellerProfile } from '../../../domain/entities/SellerProfile';
+import { SellerProfileRepository } from '../../datastore/Seller.repo';
 
 @Injectable()
 export class GetAllSellersUseCase {
-  constructor(private readonly sellerRepository: SellerRepository) {}
+  constructor(private readonly sellerRepository: SellerProfileRepository) {}
 
-  async handle(): Promise<Seller[]> {
+  async handle(): Promise<SellerProfile[]> {
     return this.sellerRepository.getAllSellers();
   }
 }

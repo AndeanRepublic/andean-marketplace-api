@@ -8,8 +8,8 @@ import { GetBankAccountByIdUseCase } from './app/use_cases/bank_accounts/GetBank
 import { DeleteBankAccountUseCase } from './app/use_cases/bank_accounts/DeleteBankAccountUseCase';
 import { SellerBankAccountRepository } from './app/datastore/SellerBankAccount.repo';
 import { SellerBankAccountRepoImpl } from './infra/datastore/sellerBankAccount.repo.impl';
-import { SellerRepository } from './app/datastore/Seller.repo';
-import { SellerRepositoryImpl } from './infra/datastore/seller.repo.impl';
+import { SellerProfileRepository } from './app/datastore/Seller.repo';
+import { SellerProfileRepositoryImpl } from './infra/datastore/seller.repo.impl';
 import { UsersModule } from './users.module';
 
 @Module({
@@ -33,8 +33,8 @@ import { UsersModule } from './users.module';
       useClass: SellerBankAccountRepoImpl,
     },
     {
-      provide: SellerRepository,
-      useClass: SellerRepositoryImpl,
+      provide: SellerProfileRepository,
+      useClass: SellerProfileRepositoryImpl,
     },
   ],
   exports: [SellerBankAccountRepository],
