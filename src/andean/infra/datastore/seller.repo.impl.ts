@@ -2,14 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { SellerProfileRepository } from '../../app/datastore/Seller.repo';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { SellerDocument } from '../persistence/seller.schema';
+import { SellerProfileDocument } from '../persistence/sellerProfileSchema';
 import { SellerProfile } from '../../domain/entities/SellerProfile';
-import { CustomerProfileMapper } from '../services/SellerProfileMapper';
+import { SellerProfileMapper } from '../services/SellerProfileMapper';
 
 @Injectable()
 export class SellerProfileRepositoryImpl extends SellerProfileRepository {
   constructor(
-    @InjectModel('Seller') private readonly sellerModel: Model<SellerDocument>,
+    @InjectModel('SellerProfile')
+    private readonly sellerModel: Model<SellerProfileDocument>,
   ) {
     super();
   }
@@ -18,34 +19,32 @@ export class SellerProfileRepositoryImpl extends SellerProfileRepository {
     return this.sellerModel.findOne({ id }).exec();
   }
 
-  async saveSeller(seller: SellerProfile): Promise<SellerProfile> {
-    const created = new this.sellerModel({
-      _id: crypto.randomUUID(),
-      id: seller.id,
-      typePerson: seller.typePerson,
-      numberDocument: seller.numberDocument,
-      ruc: seller.ruc,
-      commercialName: seller.commercialName,
-      address: seller.address,
-      phoneNumber: seller.phoneNumber,
-    });
+  async getSellerByUserId(userId: string): Promise<SellerProfile | null> {
+    return this.sellerModel.findOne({ userId: userId }).exec();
+  }
 
+  async saveSeller(seller: SellerProfile): Promise<SellerProfile> {
+    const created = new this.sellerModel(
+      SellerProfileMapper.toPersistence(seller),
+    );
     const savedSeller = await created.save();
-    return new SellerProfile(
-      seller.id,
-      seller.name,
-      savedSeller.typePerson,
-      savedSeller.numberDocument,
-      savedSeller.ruc,
-      savedSeller.commercialName,
-      savedSeller.address,
-      savedSeller.phoneNumber,
+    return SellerProfileMapper.toDomain(savedSeller);
+  }
+
+  async updateSellerByUserId(
+    userId: string,
+    profile: SellerProfile,
+  ): Promise<void> {
+    await this.sellerModel.findOneAndUpdate(
+      { userId },
+      SellerProfileMapper.toPersistence(profile),
+      { new: true },
     );
   }
 
   async getAllSellers(): Promise<SellerProfile[]> {
     const docs = await this.sellerModel.find().exec();
-    return docs.map((doc) => CustomerProfileMapper.toDomain(doc));
+    return docs.map((doc) => SellerProfileMapper.toDomain(doc));
   }
 
   async getSellerByPhoneNumber(

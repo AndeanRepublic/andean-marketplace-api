@@ -1,11 +1,12 @@
 import { CustomerProfileRepository } from '../../datastore/Customer.repo';
-import { CreateUserDto } from '../../../infra/controllers/dto/CreateUserDto';
+import { CreateCustomerDto } from '../../../infra/controllers/dto/CreateCustomerDto';
 import { CustomerProfile } from '../../../domain/entities/CustomerProfile';
 import { ConflictException, Inject, Injectable } from '@nestjs/common';
 import { AccountRepository } from '../../datastore/Account.repo';
 import { Account } from '../../../domain/entities/Account';
 import { AccountRole } from '../../../domain/enums/AccountRole';
 import { AccountStatus } from '../../../domain/enums/AccountStatus';
+import { CustomerProfileMapper } from '../../../infra/services/CustomerProfileMapper';
 
 @Injectable()
 export class CreateCustomerUseCase {
@@ -16,32 +17,26 @@ export class CreateCustomerUseCase {
     private readonly accountRepository: AccountRepository,
   ) {}
 
-  async handle(userDto: CreateUserDto): Promise<CustomerProfile> {
+  async handle(userDto: CreateCustomerDto): Promise<CustomerProfile> {
     const accountFound: Account | null =
       await this.accountRepository.getAccountByEmail(userDto.email);
     if (accountFound) {
       throw new ConflictException('Email already in use');
     }
-    const customerToSave = new CustomerProfile(
-      crypto.randomUUID(),
-      userDto.name,
-      userDto.country,
-      userDto.phoneNumber,
-      userDto.language,
-      userDto.coin,
-    );
-    await this.userRepository.saveCustomer(customerToSave);
-
+    const userId: string = crypto.randomUUID();
     // Create account
     const accountToSave: Account = {
-      userId: customerToSave.id,
-      password: userDto.password,
+      userId: userId,
       name: userDto.name,
       email: userDto.email,
-      type: AccountRole.USER,
+      password: userDto.password,
       status: AccountStatus.ENABLED,
+      role: AccountRole.USER,
     };
     await this.accountRepository.saveAccount(accountToSave);
+
+    const customerToSave = CustomerProfileMapper.fromDto(userId, userDto);
+    await this.userRepository.saveCustomer(customerToSave);
     return customerToSave;
   }
 }

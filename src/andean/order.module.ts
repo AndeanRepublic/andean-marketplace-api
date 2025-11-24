@@ -9,7 +9,7 @@ import { UpdateOrderStatusUseCase } from './app/use_cases/orders/UpdateOrderStat
 import { OrderRepository } from './app/datastore/Order.repo';
 import { OrderRepositoryImpl } from './infra/datastore/order.repo.impl';
 import { CustomerProfileRepository } from './app/datastore/Customer.repo';
-import { CustomerProfileRepositoryImpl } from './infra/datastore/user.repo.impl';
+import { CustomerProfileRepositoryImpl } from './infra/datastore/customer.repo.impl';
 import { UsersModule } from './users.module';
 
 @Module({
