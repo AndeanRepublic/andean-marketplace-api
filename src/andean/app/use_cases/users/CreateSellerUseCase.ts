@@ -23,20 +23,20 @@ export class CreateSellerUseCase {
     if (accountFound) {
       throw new ConflictException('Email already in use');
     }
-    const sellerToSave = SellerProfileMapper.fromDto(sellerDto);
-    await this.sellerRepository.saveSeller(sellerToSave);
-
     // Create account
+    const userId: string = crypto.randomUUID();
     const accountToSave: Account = {
-      userId: sellerToSave.id,
+      userId: userId,
       name: sellerDto.name,
       email: sellerDto.email,
       password: sellerDto.password,
       status: AccountStatus.PENDING,
       role: AccountRole.SELLER,
     };
-
     await this.accountRepository.saveAccount(accountToSave);
+
+    const sellerToSave = SellerProfileMapper.fromDto(userId, sellerDto);
+    await this.sellerRepository.saveSeller(sellerToSave);
     return sellerToSave;
   }
 }
