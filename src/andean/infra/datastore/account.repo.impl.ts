@@ -6,6 +6,7 @@ import { Model } from 'mongoose';
 import { Account } from '../../domain/entities/Account';
 import { AccountMapper } from '../services/AccountMapper';
 import { HashService } from '../services/HashService';
+import { AccountStatus } from '../../domain/enums/AccountStatus';
 
 @Injectable()
 export class AccountRepoImpl extends AccountRepository {
@@ -28,6 +29,7 @@ export class AccountRepoImpl extends AccountRepository {
       _id: crypto.randomUUID(),
       userId: account.userId,
       password: hashedPassword,
+      email: account.email,
       type: account.role,
       status: account.status,
     });
@@ -45,5 +47,12 @@ export class AccountRepoImpl extends AccountRepository {
   async getAccountByEmail(email: string): Promise<Account | null> {
     const doc = await this.accountModel.findOne({ email }).exec();
     return doc ? AccountMapper.toDomain(doc) : null;
+  }
+
+  async updateAccountStatus(
+    userId: string,
+    status: AccountStatus,
+  ): Promise<void> {
+    await this.accountModel.findOneAndUpdate({ userId }, { status }).exec();
   }
 }
