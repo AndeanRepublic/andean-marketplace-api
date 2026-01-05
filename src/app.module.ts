@@ -12,6 +12,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { UploadModule } from './andean/upload.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { AdminModule } from './andean/admin.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { join } from 'path';
     CartShopModule,
     OrdersModule,
     UploadModule,
+    AdminModule,
   ],
   controllers: [],
   providers: [],
