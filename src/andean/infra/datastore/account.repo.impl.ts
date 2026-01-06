@@ -27,6 +27,8 @@ export class AccountRepoImpl extends AccountRepository {
     const created = new this.accountModel({
       _id: crypto.randomUUID(),
       userId: account.userId,
+      name: account.name,
+      email: account.email,
       password: hashedPassword,
       type: account.role,
       status: account.status,

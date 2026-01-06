@@ -47,7 +47,8 @@ export class CustomerProfileMapper {
   static toPersistence(profile: CustomerProfile) {
     return {
       _id: crypto.randomUUID(),
-      id: profile.userId,
+      id: profile.id,
+      userId: profile.userId,
       name: profile.name,
       country: profile.country,
       phoneNumber: profile.phoneNumber,
