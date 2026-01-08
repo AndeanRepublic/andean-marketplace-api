@@ -22,7 +22,7 @@ export class CartShopRepoImpl extends CartShopRepository {
   async createCart(cart: CartShop): Promise<CartShop> {
     const created = new this.cartShopModel(CartShopMapper.toPersistence(cart));
     const cartSaved = await created.save();
-    return CartShopMapper.toDomain(cartSaved);
+    return CartShopMapper.fromDocument(cartSaved);
   }
 
   async clearCart(customerId: string): Promise<void> {

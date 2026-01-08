@@ -4,7 +4,7 @@ import { CreateCustomerDto } from '../controllers/dto/CreateCustomerDto';
 import { UpdateCustomerProfileDto } from '../controllers/dto/UpdateCustomerProfileDto';
 
 export class CustomerProfileMapper {
-  static toDomain(doc: CustomerProfileDocument): CustomerProfile {
+  static fromDocument(doc: CustomerProfileDocument): CustomerProfile {
     return new CustomerProfile(
       doc.id,
       doc.userId,
@@ -16,7 +16,10 @@ export class CustomerProfileMapper {
     );
   }
 
-  static fromDto(userId: string, dto: CreateCustomerDto): CustomerProfile {
+  static fromCreateDto(
+    userId: string,
+    dto: CreateCustomerDto,
+  ): CustomerProfile {
     return new CustomerProfile(
       crypto.randomUUID(),
       userId,

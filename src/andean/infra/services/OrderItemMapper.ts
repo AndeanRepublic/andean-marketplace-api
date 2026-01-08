@@ -2,7 +2,7 @@ import { OrderItemDocument } from '../persistence/orderItem.schema';
 import { OrderItem } from '../../domain/entities/OrderItem';
 
 export class OrderItemMapper {
-  static toDomain(doc: OrderItemDocument): OrderItem {
+  static fromDocument(doc: OrderItemDocument): OrderItem {
     return new OrderItem(
       doc.id,
       doc.userId,

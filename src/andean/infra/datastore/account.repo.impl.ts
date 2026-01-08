@@ -19,7 +19,7 @@ export class AccountRepoImpl extends AccountRepository {
 
   async getAccountByUserId(userId: string): Promise<Account | null> {
     const doc = await this.accountModel.findOne({ userId }).exec();
-    return doc ? AccountMapper.toDomain(doc) : null;
+    return doc ? AccountMapper.fromDocument(doc) : null;
   }
 
   async saveAccount(account: Account): Promise<Account> {
@@ -46,6 +46,6 @@ export class AccountRepoImpl extends AccountRepository {
 
   async getAccountByEmail(email: string): Promise<Account | null> {
     const doc = await this.accountModel.findOne({ email }).exec();
-    return doc ? AccountMapper.toDomain(doc) : null;
+    return doc ? AccountMapper.fromDocument(doc) : null;
   }
 }

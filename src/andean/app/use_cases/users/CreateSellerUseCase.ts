@@ -35,7 +35,7 @@ export class CreateSellerUseCase {
     };
     await this.accountRepository.saveAccount(accountToSave);
 
-    const sellerToSave = SellerProfileMapper.fromDto(userId, sellerDto);
+    const sellerToSave = SellerProfileMapper.fromCreateDto(userId, sellerDto);
     await this.sellerRepository.saveSeller(sellerToSave);
     return sellerToSave;
   }

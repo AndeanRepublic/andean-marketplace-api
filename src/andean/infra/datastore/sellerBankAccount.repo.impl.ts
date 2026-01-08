@@ -28,12 +28,12 @@ export class SellerBankAccountRepoImpl extends SellerBankAccountRepository {
       bank: bankAccount.bank,
     });
     const savedBankAccount = await created.save();
-    return BankAccountMapper.toDomain(savedBankAccount);
+    return BankAccountMapper.fromDocument(savedBankAccount);
   }
 
   async getBankAccountById(id: string): Promise<SellerBankAccount | null> {
     const doc = await this.bankAccountModel.findById(id).exec();
-    return doc ? BankAccountMapper.toDomain(doc) : null;
+    return doc ? BankAccountMapper.fromDocument(doc) : null;
   }
 
   async getBankAccountsBySellerId(
@@ -41,7 +41,7 @@ export class SellerBankAccountRepoImpl extends SellerBankAccountRepository {
   ): Promise<SellerBankAccount[]> {
     const docs = await this.bankAccountModel.find({ sellerId }).exec();
     return docs.map((doc: BankAccountDocument) =>
-      BankAccountMapper.toDomain(doc),
+      BankAccountMapper.fromDocument(doc),
     );
   }
 

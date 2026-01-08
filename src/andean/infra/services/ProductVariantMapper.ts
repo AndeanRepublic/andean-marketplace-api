@@ -4,7 +4,7 @@ import { CreateVariantDto } from '../controllers/dto/products/CreateVariantDto';
 import { ProductStatus } from '../../domain/enums/ProductStatus';
 
 export class ProductVariantMapper {
-  static toDomain(doc: ProductVariantDocument): ProductVariant {
+  static fromDocument(doc: ProductVariantDocument): ProductVariant {
     return new ProductVariant(
       doc.id,
       doc.productId,
@@ -20,7 +20,10 @@ export class ProductVariantMapper {
     );
   }
 
-  static fromDto(dto: CreateVariantDto, productId: string): ProductVariant {
+  static fromCreateDto(
+    dto: CreateVariantDto,
+    productId: string,
+  ): ProductVariant {
     return new ProductVariant(
       crypto.randomUUID(),
       productId,

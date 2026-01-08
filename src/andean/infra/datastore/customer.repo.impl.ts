@@ -20,7 +20,7 @@ export class CustomerProfileRepositoryImpl extends CustomerProfileRepository {
       CustomerProfileMapper.toPersistence(user),
     );
     const savedCustomer = await created.save();
-    return CustomerProfileMapper.toDomain(savedCustomer);
+    return CustomerProfileMapper.fromDocument(savedCustomer);
   }
 
   async getCustomerById(id: string): Promise<CustomerProfile | null> {
@@ -29,7 +29,7 @@ export class CustomerProfileRepositoryImpl extends CustomerProfileRepository {
 
   async getAllCustomers(): Promise<CustomerProfile[]> {
     const docs = await this.userModel.find().exec();
-    return docs.map((doc) => CustomerProfileMapper.toDomain(doc));
+    return docs.map((doc) => CustomerProfileMapper.fromDocument(doc));
   }
 
   async getCustomerByUserId(userId: string): Promise<CustomerProfile | null> {

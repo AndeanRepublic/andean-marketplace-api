@@ -17,19 +17,19 @@ export class ProductVariantRepoImpl extends ProductVariantRepository {
 
   async getVariantById(id: string): Promise<ProductVariant | null> {
     const doc = await this.variantModel.findById(id).exec();
-    return doc ? ProductVariantMapper.toDomain(doc) : null;
+    return doc ? ProductVariantMapper.fromDocument(doc) : null;
   }
 
   async saveProductVariant(variant: ProductVariant): Promise<ProductVariant> {
     const persistence = ProductVariantMapper.toPersistence(variant);
     const created = new this.variantModel(persistence);
     const saved = await created.save();
-    return ProductVariantMapper.toDomain(saved);
+    return ProductVariantMapper.fromDocument(saved);
   }
 
   async getVariantsByProductId(productId: string): Promise<ProductVariant[]> {
     const docs = await this.variantModel.find({ productId }).exec();
-    return docs.map((doc) => ProductVariantMapper.toDomain(doc));
+    return docs.map((doc) => ProductVariantMapper.fromDocument(doc));
   }
 
   async deleteProductVariant(id: string): Promise<void> {

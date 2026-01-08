@@ -19,7 +19,10 @@ export class CreateProductUseCase {
     if (!shopFound) {
       throw new NotFoundException('Shop not found');
     }
-    const productToSave = ProductMapper.fromDto(productDto, shopFound.sellerId);
+    const productToSave = ProductMapper.fromCreateDto(
+      productDto,
+      shopFound.sellerId,
+    );
     return this.productRepository.saveProduct(productToSave);
   }
 }

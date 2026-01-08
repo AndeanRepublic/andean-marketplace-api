@@ -28,7 +28,7 @@ export class SellerProfileRepositoryImpl extends SellerProfileRepository {
       SellerProfileMapper.toPersistence(seller),
     );
     const savedSeller = await created.save();
-    return SellerProfileMapper.toDomain(savedSeller);
+    return SellerProfileMapper.fromDocument(savedSeller);
   }
 
   async updateSellerByUserId(
@@ -44,7 +44,7 @@ export class SellerProfileRepositoryImpl extends SellerProfileRepository {
 
   async getAllSellers(): Promise<SellerProfile[]> {
     const docs = await this.sellerModel.find().exec();
-    return docs.map((doc) => SellerProfileMapper.toDomain(doc));
+    return docs.map((doc) => SellerProfileMapper.fromDocument(doc));
   }
 
   async getSellerByPhoneNumber(
