@@ -8,6 +8,9 @@ export abstract class CustomerProfileRepository {
   ): Promise<CustomerProfile | null>;
   abstract saveCustomer(user: CustomerProfile): Promise<CustomerProfile>;
   abstract getCustomerById(id: string): Promise<CustomerProfile | null>;
-  abstract updateCustomerById(userId: string, profile: CustomerProfile): Promise<void>;
+  abstract updateCustomerById(
+    userId: string,
+    profile: CustomerProfile,
+  ): Promise<void>;
   // deleteUserById(id: string): Promise<void>;
 }

@@ -1,4 +1,4 @@
-import { Document, Schema } from 'mongoose';
+import { Document, Schema, Types } from 'mongoose';
 import { AccountRole } from '../../domain/enums/AccountRole';
 import { AccountStatus } from '../../domain/enums/AccountStatus';
 
@@ -20,7 +20,7 @@ export const AccountSchema = new Schema({
   },
 });
 
-export interface AccountDocument extends Document {
+export interface AccountDocument extends Document<string> {
   _id: string;
   userId: string;
   name: string;

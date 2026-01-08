@@ -1,4 +1,4 @@
-import { Schema } from 'mongoose';
+import { Document, Schema } from 'mongoose';
 import { ShopCategory } from '../../domain/enums/ShopCategory';
 
 export const ShopSchema = new Schema({
@@ -18,7 +18,7 @@ export const ShopSchema = new Schema({
   shippingArea: String,
 });
 
-export interface ShopDocument extends Document {
+export interface ShopDocument extends Document<string> {
   _id: string;
   id: string;
   sellerId: string;
