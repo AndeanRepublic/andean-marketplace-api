@@ -1,3 +1,4 @@
+import { plainToInstance, instanceToPlain } from 'class-transformer';
 import { CustomerProfileDocument } from '../persistence/customerProfileSchema';
 import { CustomerProfile } from '../../domain/entities/CustomerProfile';
 import { CreateCustomerDto } from '../controllers/dto/CreateCustomerDto';
@@ -5,30 +6,24 @@ import { UpdateCustomerProfileDto } from '../controllers/dto/UpdateCustomerProfi
 
 export class CustomerProfileMapper {
   static fromDocument(doc: CustomerProfileDocument): CustomerProfile {
-    return new CustomerProfile(
-      doc.id,
-      doc.userId,
-      doc.name,
-      doc.country,
-      doc.phoneNumber,
-      doc.language,
-      doc.coin,
-    );
+    const plain = doc.toObject();
+    const { _id, ...rest } = plain;
+    return plainToInstance(CustomerProfile, rest);
   }
 
   static fromCreateDto(
     userId: string,
     dto: CreateCustomerDto,
   ): CustomerProfile {
-    return new CustomerProfile(
-      crypto.randomUUID(),
-      userId,
-      dto.name,
-      dto.country,
-      dto.phoneNumber,
-      dto.language,
-      dto.coin,
-    );
+    const { email, password, ...customerData } = dto;
+
+    const plain = {
+      id: crypto.randomUUID(),
+      userId: userId,
+      ...customerData,
+    };
+
+    return plainToInstance(CustomerProfile, plain);
   }
 
   static fromUpdateDto(
@@ -36,27 +31,22 @@ export class CustomerProfileMapper {
     userId: string,
     dto: UpdateCustomerProfileDto,
   ) {
-    return new CustomerProfile(
-      id,
-      userId,
-      dto.name,
-      dto.country,
-      dto.phoneNumber,
-      dto.language,
-      dto.coin,
-    );
+    const { birthDate, profilePictureUrl, ...customerData } = dto;
+
+    const plain = {
+      id: id,
+      userId: userId,
+      ...customerData,
+    };
+
+    return plainToInstance(CustomerProfile, plain);
   }
 
   static toPersistence(profile: CustomerProfile) {
+    const plain = instanceToPlain(profile);
     return {
       _id: crypto.randomUUID(),
-      id: profile.id,
-      userId: profile.userId,
-      name: profile.name,
-      country: profile.country,
-      phoneNumber: profile.phoneNumber,
-      language: profile.language,
-      coin: profile.coin,
+      ...plain,
     };
   }
 }
