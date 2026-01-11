@@ -1,4 +1,4 @@
-import { Document, Schema } from 'mongoose';
+import { Document, Schema, Types } from 'mongoose';
 import { PersonType } from '../../domain/enums/PersonType';
 
 export const SellerProfileSchema = new Schema({
@@ -18,7 +18,7 @@ export const SellerProfileSchema = new Schema({
   phoneNumber: String,
 });
 
-export interface SellerProfileDocument extends Document {
+export interface SellerProfileDocument extends Document<string> {
   _id: string;
   id: string;
   userId: string;

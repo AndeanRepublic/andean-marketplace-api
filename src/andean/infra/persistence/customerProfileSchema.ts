@@ -1,4 +1,4 @@
-import { Document, Schema } from 'mongoose';
+import { Document, Schema, Types } from 'mongoose';
 import { CoinType } from '../../domain/enums/CoinType';
 
 export const CustomerProfileSchema = new Schema({
@@ -16,7 +16,7 @@ export const CustomerProfileSchema = new Schema({
   },
 });
 
-export interface CustomerProfileDocument extends Document {
+export interface CustomerProfileDocument extends Document<string> {
   _id: string;
   id: string;
   userId: string;

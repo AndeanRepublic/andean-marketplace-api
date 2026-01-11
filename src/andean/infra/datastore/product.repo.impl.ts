@@ -17,23 +17,23 @@ export class ProductRepoImpl extends ProductRepository {
 
   async getAllBySellerId(sellerId: string): Promise<Product[]> {
     const docs = await this.productModel.find({ sellerId }).exec();
-    return docs.map((doc: ProductDocument) => ProductMapper.toDomain(doc));
+    return docs.map((doc: ProductDocument) => ProductMapper.fromDocument(doc));
   }
 
   async getAllByShopId(shopId: string): Promise<Product[]> {
     const docs = await this.productModel.find({ shopId }).exec();
-    return docs.map((doc: ProductDocument) => ProductMapper.toDomain(doc));
+    return docs.map((doc: ProductDocument) => ProductMapper.fromDocument(doc));
   }
 
   async getProductById(id: string): Promise<Product | null> {
     const doc = await this.productModel.findById(id).exec();
-    return doc ? ProductMapper.toDomain(doc) : null;
+    return doc ? ProductMapper.fromDocument(doc) : null;
   }
 
   async saveProduct(product: Product): Promise<Product> {
     const created = new this.productModel(ProductMapper.toPersistence(product));
     const savedProduct = await created.save();
-    return ProductMapper.toDomain(savedProduct);
+    return ProductMapper.fromDocument(savedProduct);
   }
 
   async deleteProduct(id: string): Promise<void> {

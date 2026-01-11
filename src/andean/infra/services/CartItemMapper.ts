@@ -2,7 +2,7 @@ import { CartShopItemDocument } from '../persistence/cartShopItem.schema';
 import { CartItem } from '../../domain/entities/CartItem';
 
 export class CartItemMapper {
-  static toDomain(doc: CartShopItemDocument): CartItem {
+  static fromDocument(doc: CartShopItemDocument): CartItem {
     return new CartItem(
       doc.id,
       doc.userId,

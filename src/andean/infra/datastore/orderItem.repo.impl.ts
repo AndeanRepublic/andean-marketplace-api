@@ -20,7 +20,7 @@ export class OrderItemRepoImpl extends OrderItemRepo {
       OrderItemMapper.toPersistence(item),
     );
     const savedItem = await created.save();
-    return OrderItemMapper.toDomain(savedItem);
+    return OrderItemMapper.fromDocument(savedItem);
   }
 
   async deleteItem(itemId: string): Promise<void> {

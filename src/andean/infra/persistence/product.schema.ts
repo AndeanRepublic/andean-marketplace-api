@@ -1,4 +1,4 @@
-import { Document, Schema } from 'mongoose';
+import { Document, Schema, Types } from 'mongoose';
 import { ProductStatus } from '../../domain/enums/ProductStatus';
 import { TimeModel } from '../../domain/entities/products/TimeModel';
 
@@ -32,7 +32,7 @@ export const ProductSchema = new Schema({
   },
 });
 
-export interface ProductDocument extends Document {
+export interface ProductDocument extends Document<string> {
   _id: string;
   id: string;
   shopId: string;

@@ -17,12 +17,12 @@ export class ShopRepoImpl extends ShopRepository {
 
   async getAllBySellerId(sellerId: string): Promise<Shop[]> {
     const docs = await this.shopModel.find({ sellerId }).exec();
-    return docs.map((doc: ShopDocument) => ShopMapper.toDomain(doc));
+    return docs.map((doc: ShopDocument) => ShopMapper.fromDocument(doc));
   }
 
   async getById(id: string): Promise<Shop | null> {
     const doc = await this.shopModel.findById(id).exec();
-    return doc ? ShopMapper.toDomain(doc) : null;
+    return doc ? ShopMapper.fromDocument(doc) : null;
   }
 
   async saveShop(shop: Shop): Promise<Shop> {
@@ -37,7 +37,7 @@ export class ShopRepoImpl extends ShopRepository {
       shippingArea: shop.shippingArea,
     });
     const savedShop = await created.save();
-    return ShopMapper.toDomain(savedShop);
+    return ShopMapper.fromDocument(savedShop);
   }
 
   async deleteShop(id: string): Promise<void> {
@@ -46,6 +46,6 @@ export class ShopRepoImpl extends ShopRepository {
 
   async getAllByCategory(category: ShopCategory): Promise<Shop[]> {
     const docs = await this.shopModel.find({ categories: category }).exec();
-    return docs.map((doc: ShopDocument) => ShopMapper.toDomain(doc));
+    return docs.map((doc: ShopDocument) => ShopMapper.fromDocument(doc));
   }
 }

@@ -22,7 +22,7 @@ export class CreateVariantUseCase {
     if (!productFound) {
       throw new NotFoundException('Product not found');
     }
-    const variant = ProductVariantMapper.fromDto(dto, productId);
+    const variant = ProductVariantMapper.fromCreateDto(dto, productId);
     return this.productVariantRepository.saveProductVariant(variant);
   }
 }
