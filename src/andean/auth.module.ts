@@ -5,13 +5,17 @@ import { UsersModule } from './users.module';
 import { HashService } from './infra/services/HashService';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+import { JwtStrategy } from './infra/core/jwt.strategy';
 
 @Module({
   imports: [
     ConfigModule,
+    PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
+
       useFactory: (configService: ConfigService) => {
         const secret =
           configService.get<string>('JWT_SECRET') ||
@@ -26,10 +30,11 @@ import { JwtModule } from '@nestjs/jwt';
           },
         };
       },
+
     }),
     UsersModule,
   ],
   controllers: [AuthController],
-  providers: [LoginUseCase, HashService],
+  providers: [LoginUseCase, HashService, JwtStrategy],
 })
 export class AuthModule {}
