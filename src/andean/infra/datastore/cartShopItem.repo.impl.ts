@@ -18,14 +18,14 @@ export class CartShopItemRepoImpl extends CartShopItemRepository {
   async getItemsByCartId(cartId: string): Promise<CartItem[]> {
     const docs = await this.cartShopItemModel.find({ cartId }).exec();
     return docs.map((doc: CartShopItemDocument) =>
-      CartItemMapper.toDomain(doc),
+      CartItemMapper.fromDocument(doc),
     );
   }
 
   async getItemsByUserId(userId: string): Promise<CartItem[]> {
     const docs = await this.cartShopItemModel.find({ userId }).exec();
     return docs.map((doc: CartShopItemDocument) =>
-      CartItemMapper.toDomain(doc),
+      CartItemMapper.fromDocument(doc),
     );
   }
 
@@ -34,7 +34,7 @@ export class CartShopItemRepoImpl extends CartShopItemRepository {
       CartItemMapper.toPersistence(item),
     );
     const savedItem = await created.save();
-    return CartItemMapper.toDomain(savedItem);
+    return CartItemMapper.fromDocument(savedItem);
   }
 
   async deleteItem(itemId: string): Promise<void> {

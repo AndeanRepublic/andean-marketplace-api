@@ -2,7 +2,7 @@ import { BankAccountDocument } from '../persistence/bankAccount.schema';
 import { SellerBankAccount } from '../../domain/entities/SellerBankAccount';
 
 export class BankAccountMapper {
-  static toDomain(doc: BankAccountDocument): SellerBankAccount {
+  static fromDocument(doc: BankAccountDocument): SellerBankAccount {
     return new SellerBankAccount(
       doc.id,
       doc.sellerId,

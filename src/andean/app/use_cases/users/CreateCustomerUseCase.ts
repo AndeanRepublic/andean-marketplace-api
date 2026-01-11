@@ -35,7 +35,7 @@ export class CreateCustomerUseCase {
     };
     await this.accountRepository.saveAccount(accountToSave);
 
-    const customerToSave = CustomerProfileMapper.fromDto(userId, userDto);
+    const customerToSave = CustomerProfileMapper.fromCreateDto(userId, userDto);
     await this.userRepository.saveCustomer(customerToSave);
     return customerToSave;
   }

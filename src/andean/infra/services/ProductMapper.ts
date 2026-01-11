@@ -4,7 +4,7 @@ import { CreateProductDto } from '../controllers/dto/products/CreateProductDto';
 import { ProductStatus } from '../../domain/enums/ProductStatus';
 
 export class ProductMapper {
-  static toDomain(doc: ProductDocument): Product {
+  static fromDocument(doc: ProductDocument): Product {
     return new Product(
       doc.id,
       doc.shopId,
@@ -23,7 +23,7 @@ export class ProductMapper {
     );
   }
 
-  static fromDto(dto: CreateProductDto, sellerId: string): Product {
+  static fromCreateDto(dto: CreateProductDto, sellerId: string): Product {
     return new Product(
       crypto.randomUUID(),
       dto.shopId,

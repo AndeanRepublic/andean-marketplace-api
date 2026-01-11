@@ -2,7 +2,7 @@ import { ShopDocument } from '../persistence/shop.schema';
 import { Shop } from '../../domain/entities/Shop';
 
 export class ShopMapper {
-  static toDomain(doc: ShopDocument): Shop {
+  static fromDocument(doc: ShopDocument): Shop {
     return new Shop(
       doc.id,
       doc.sellerId,

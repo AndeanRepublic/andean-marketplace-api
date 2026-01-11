@@ -4,7 +4,7 @@ import { CreateSellerDto } from '../controllers/dto/CreateSellerDto';
 import { UpdateSellerProfileDto } from '../controllers/dto/UpdateSellerProfileDto';
 
 export class SellerProfileMapper {
-  static toDomain(doc: SellerProfileDocument): SellerProfile {
+  static fromDocument(doc: SellerProfileDocument): SellerProfile {
     return new SellerProfile(
       doc.id,
       doc.userId,
@@ -18,7 +18,7 @@ export class SellerProfileMapper {
     );
   }
 
-  static fromDto(userId: string, dto: CreateSellerDto): SellerProfile {
+  static fromCreateDto(userId: string, dto: CreateSellerDto): SellerProfile {
     return new SellerProfile(
       crypto.randomUUID(),
       userId,
