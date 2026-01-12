@@ -31,7 +31,7 @@ export class CreateSellerUseCase {
       email: sellerDto.email,
       password: sellerDto.password,
       status: AccountStatus.PENDING,
-      role: AccountRole.SELLER,
+      roles: [AccountRole.SELLER],
     };
     await this.accountRepository.saveAccount(accountToSave);
 

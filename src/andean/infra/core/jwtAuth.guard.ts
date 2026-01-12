@@ -40,7 +40,7 @@ export class JwtAuthGuard implements CanActivate {
 			// so that we can access it in our route handlers
 			request['user'] = {
 				userId: payload.sub,
-				role: payload.role,
+				roles: payload.roles,
 			};
 		} catch {
 			throw new UnauthorizedException('Invalid token');
