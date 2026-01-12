@@ -1,40 +1,54 @@
 import { IsString, IsNotEmpty, IsOptional, IsEnum } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PersonType } from '../../../domain/enums/PersonType';
 
 export class CreateSellerDto {
-  @IsEnum(PersonType)
-  @IsNotEmpty()
-  typePerson: PersonType;
+	@ApiProperty({
+		description: 'Tipo de persona (natural o jurídica)',
+		enum: PersonType,
+		example: PersonType.NATURAL
+	})
+	@IsEnum(PersonType)
+	@IsNotEmpty()
+	typePerson: PersonType;
 
-  @IsString()
-  @IsNotEmpty()
-  numberDocument: string;
+	@ApiProperty({ description: 'Número de documento (DNI/Pasaporte)', example: '12345678' })
+	@IsString()
+	@IsNotEmpty()
+	numberDocument: string;
 
-  @IsString()
-  @IsOptional()
-  ruc?: string;
+	@ApiPropertyOptional({ description: 'RUC (solo para personas jurídicas)', example: '20123456789' })
+	@IsString()
+	@IsOptional()
+	ruc?: string;
 
-  @IsString()
-  @IsNotEmpty()
-  name: string;
+	@ApiProperty({ description: 'Nombre legal del vendedor', example: 'María García' })
+	@IsString()
+	@IsNotEmpty()
+	name: string;
 
-  @IsString()
-  @IsNotEmpty()
-  commercialName: string;
+	@ApiProperty({ description: 'Nombre comercial de la tienda', example: 'Textiles Andinos' })
+	@IsString()
+	@IsNotEmpty()
+	commercialName: string;
 
-  @IsString()
-  @IsNotEmpty()
-  address: string;
+	@ApiProperty({ description: 'Dirección física', example: 'Av. Los Incas 123, Cusco' })
+	@IsString()
+	@IsNotEmpty()
+	address: string;
 
-  @IsString()
-  @IsNotEmpty()
-  phoneNumber: string;
+	@ApiProperty({ description: 'Número de teléfono', example: '+51987654321' })
+	@IsString()
+	@IsNotEmpty()
+	phoneNumber: string;
 
-  @IsString()
-  @IsNotEmpty()
-  email: string;
+	@ApiProperty({ description: 'Correo electrónico', example: 'maria@textiles.com' })
+	@IsString()
+	@IsNotEmpty()
+	email: string;
 
-  @IsString()
-  @IsNotEmpty()
-  password: string;
+	@ApiProperty({ description: 'Contraseña para la cuenta', example: 'SecurePass123!' })
+	@IsString()
+	@IsNotEmpty()
+	password: string;
 }

@@ -31,7 +31,6 @@ export class AccountRepoImpl extends AccountRepository {
       name: account.name,
       email: account.email,
       password: hashedPassword,
-      email: account.email,
       type: account.role,
       status: account.status,
     });
