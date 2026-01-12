@@ -4,6 +4,7 @@ import { UpdateAccountStatusUseCase } from './app/use_cases/users/UpdateAccountS
 import { AccountRepository } from './app/datastore/Account.repo';
 import { AccountRepoImpl } from './infra/datastore/account.repo.impl';
 import { UsersModule } from './users.module';
+import { AuthModule } from './auth.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AccountSchema } from './infra/persistence/account.schema';
 import { HashService } from './infra/services/HashService';
@@ -11,26 +12,27 @@ import { GetAllCustomerUseCase } from './app/use_cases/users/GetAllCustomerUseCa
 import { GetAllSellersUseCase } from './app/use_cases/users/GetAllSellersUseCase';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      {
-        name: 'Account',
-        schema: AccountSchema,
-      },
-    ]),
-    UsersModule,
-  ],
-  controllers: [AdminController],
-  providers: [
-    HashService,
-    UpdateAccountStatusUseCase,
-    GetAllCustomerUseCase,
-    GetAllSellersUseCase,
-    {
-      provide: AccountRepository,
-      useClass: AccountRepoImpl,
-    },
-  ],
-  exports: [MongooseModule],
+	imports: [
+		MongooseModule.forFeature([
+			{
+				name: 'Account',
+				schema: AccountSchema,
+			},
+		]),
+		UsersModule,
+		AuthModule, // Import AuthModule to access JwtAuthGuard and JwtService
+	],
+	controllers: [AdminController],
+	providers: [
+		HashService,
+		UpdateAccountStatusUseCase,
+		GetAllCustomerUseCase,
+		GetAllSellersUseCase,
+		{
+			provide: AccountRepository,
+			useClass: AccountRepoImpl,
+		},
+	],
+	exports: [MongooseModule],
 })
-export class AdminModule {}
+export class AdminModule { }

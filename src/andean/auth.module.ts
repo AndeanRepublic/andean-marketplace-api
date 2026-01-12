@@ -34,6 +34,6 @@ import { JwtAuthGuard } from './infra/core/jwtAuth.guard';
 	],
 	controllers: [AuthController],
 	providers: [LoginUseCase, HashService, JwtAuthGuard],
-	exports: [JwtAuthGuard], // Export the guard so other modules can use it
+	exports: [JwtAuthGuard, JwtModule], // Export both the guard and JwtModule
 })
 export class AuthModule { }
