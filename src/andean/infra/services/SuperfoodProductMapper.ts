@@ -11,7 +11,7 @@ import { SuperfoodElaborationTime } from '../../domain/entities/superfoods/Super
 import { SuperfoodOptions } from '../../domain/entities/superfoods/SuperfoodOptions';
 import { SuperfoodOptionsItem } from '../../domain/entities/superfoods/SuperfoodOptionsItem';
 import { SuperfoodVariant } from '../../domain/entities/superfoods/SuperfoodVariant';
-import { ProductTraceability } from '../../domain/entities/superfoods/ProductTraceability';
+import { ProductTraceability } from '../../domain/entities/ProductTraceability';
 
 export class SuperfoodProductMapper {
 	static fromDocument(doc: SuperfoodProductDocument): SuperfoodProduct {
