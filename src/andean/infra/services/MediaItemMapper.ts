@@ -1,5 +1,5 @@
 import { MediaItemDocument } from '../persistence/mediaItem.schema';
-import { MediaItem } from '../../domain/entities/superfoods/MediaItem';
+import { MediaItem } from '../../domain/entities/MediaItem';
 
 export class MediaItemMapper {
 	static fromDocument(doc: MediaItemDocument): MediaItem {
