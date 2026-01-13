@@ -7,6 +7,7 @@ import { Account } from '../../domain/entities/Account';
 import { AccountMapper } from '../services/AccountMapper';
 import { HashService } from '../services/HashService';
 import { AccountStatus } from '../../domain/enums/AccountStatus';
+import { AccountRole } from '../../domain/enums/AccountRole';
 
 @Injectable()
 export class AccountRepoImpl extends AccountRepository {
@@ -55,5 +56,12 @@ export class AccountRepoImpl extends AccountRepository {
 		status: AccountStatus,
 	): Promise<void> {
 		await this.accountModel.findOneAndUpdate({ userId }, { status }).exec();
+	}
+
+	async updateAccountRoles(
+		userId: string,
+		roles: AccountRole[],
+	): Promise<void> {
+		await this.accountModel.findOneAndUpdate({ userId }, { type: roles }).exec();
 	}
 }

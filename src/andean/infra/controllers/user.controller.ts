@@ -62,6 +62,7 @@ export class UserController {
 		return this.getCustomerProfileUseCase.handle(userId);
 	}
 
+
 	@Get(path_seller_profile)
 	@ApiOperation({ summary: 'Obtener perfil de un vendedor' })
 	@ApiResponse({
@@ -77,6 +78,7 @@ export class UserController {
 		return this.getSellerProfileUseCase.handle(userId);
 	}
 
+
 	@Put(path_customer_profile)
 	@ApiOperation({ summary: 'Actualizar perfil de cliente', description: 'Actualiza la información del perfil de un cliente existente' })
 	@ApiResponse({ status: 200, description: 'Perfil del cliente actualizado exitosamente' })
@@ -90,6 +92,7 @@ export class UserController {
 		return this.updateCustomerProfileUseCase.handle(userId, body);
 	}
 
+
 	@Put(path_seller_profile)
 	@ApiOperation({ summary: 'Actualizar perfil de vendedor', description: 'Actualiza la información del perfil de un vendedor existente' })
 	@ApiResponse({ status: 200, description: 'Perfil del vendedor actualizado exitosamente' })
@@ -102,6 +105,7 @@ export class UserController {
 	): Promise<void> {
 		return this.updateSellerProfileUseCase.handle(userId, body);
 	}
+
 
 	@Post(path_customers)
 	@ApiOperation({ summary: 'Crear un nuevo cliente', description: 'Registra un nuevo cliente en el marketplace' })
@@ -118,6 +122,7 @@ export class UserController {
 		return this.createCustomerUseCase.handle(body);
 	}
 
+
 	@Get(path_sellers)
 	@ApiOperation({ summary: 'Obtener todos los vendedores' })
 	@ApiResponse({
@@ -129,15 +134,19 @@ export class UserController {
 		return this.getAllSellersUseCase.handle();
 	}
 
+
 	@Post(path_sellers)
-	@ApiOperation({ summary: 'Crear un nuevo vendedor', description: 'Registra un nuevo vendedor en el marketplace' })
+	@ApiOperation({ 
+		summary: 'Crear un nuevo vendedor', 
+		description: 'Registra un nuevo vendedor en el marketplace. Puede proporcionar userId para agregar rol de vendedor a usuario existente, o email/password para crear nueva cuenta.' 
+	})
 	@ApiResponse({
 		status: 201,
 		description: 'Vendedor creado exitosamente',
 		type: SellerProfileResponse,
 	})
-	@ApiResponse({ status: 400, description: 'Datos de entrada inválidos' })
-	@ApiResponse({ status: 409, description: 'El email ya está registrado' })
+	@ApiResponse({ status: 400, description: 'Datos de entrada inválidos o faltan email/password sin userId' })
+	@ApiResponse({ status: 409, description: 'Usuario no encontrado (cuando se proporciona userId)' })
 	async createSeller(@Body() body: CreateSellerDto): Promise<SellerProfile> {
 		return this.createSellerUseCase.handle(body);
 	}
