@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { TextileCategorySchema } from './infra/persistence/textileProducts/textileCategory.schema';
 import { TextileTypeSchema } from './infra/persistence/textileProducts/textileType.schema';
 import { TextileStyleSchema } from './infra/persistence/textileProducts/textileStyle.schema';
+import { TextileSubcategorySchema } from './infra/persistence/textileProducts/textileSubcategory.schema';
 import { UsersModule } from './users.module';
 import { CreateTextileCategoryUseCase } from './app/use_cases/textileProducts/CreateTextileCategoryUseCase';
 import { TextileCategoryRepository } from './app/datastore/textileProducts/TextileCategory.repo';
@@ -11,6 +12,8 @@ import { TextileTypeRepository } from './app/datastore/textileProducts/TextileTy
 import { TextileTypeRepositoryImpl } from './infra/datastore/textileProducts/textileType.repo.impl';
 import { TextileStyleRepository } from './app/datastore/textileProducts/TextileStyle.repo';
 import { TextileStyleRepositoryImpl } from './infra/datastore/textileProducts/textileStyle.repo.impl';
+import { TextileSubcategoryRepository } from './app/datastore/textileProducts/TextileSubcategory.repo';
+import { TextileSubcategoryRepositoryImpl } from './infra/datastore/textileProducts/textileSubcategory.repo.impl';
 import { TextileProductController } from './infra/controllers/textileProduct.controller';
 import { UpdateTextileCategoryUseCase } from './app/use_cases/textileProducts/UpdateTextileCategoryUseCase';
 import { GetAllTextileCategoriesUseCase } from './app/use_cases/textileProducts/GetAllTextileCategoriesUseCase';
@@ -26,6 +29,11 @@ import { UpdateTextileStyleUseCase } from './app/use_cases/textileProducts/Updat
 import { GetAllTextileStylesUseCase } from './app/use_cases/textileProducts/GetAllTextileStylesUseCase';
 import { GetByIdTextileStyleUseCase } from './app/use_cases/textileProducts/GetByIdTextileStyleUseCase';
 import { DeleteTextileStyleUseCase } from './app/use_cases/textileProducts/DeleteTextileStyleUseCase';
+import { CreateTextileSubcategoryUseCase } from './app/use_cases/textileProducts/CreateTextileSubcategoryUseCase';
+import { UpdateTextileSubcategoryUseCase } from './app/use_cases/textileProducts/UpdateTextileSubcategoryUseCase';
+import { GetAllTextileSubcategoriesUseCase } from './app/use_cases/textileProducts/GetAllTextileSubcategoriesUseCase';
+import { GetByIdTextileSubcategoryUseCase } from './app/use_cases/textileProducts/GetByIdTextileSubcategoryUseCase';
+import { DeleteTextileSubcategoryUseCase } from './app/use_cases/textileProducts/DeleteTextileSubcategoryUseCase';
 
 @Module({
   imports: [
@@ -41,6 +49,10 @@ import { DeleteTextileStyleUseCase } from './app/use_cases/textileProducts/Delet
       {
         name: 'TextileStyle',
         schema: TextileStyleSchema,
+      },
+      {
+        name: 'TextileSubcategory',
+        schema: TextileSubcategorySchema,
       },
     ]),
     UsersModule,
@@ -62,6 +74,11 @@ import { DeleteTextileStyleUseCase } from './app/use_cases/textileProducts/Delet
     GetAllTextileStylesUseCase,
     GetByIdTextileStyleUseCase,
     DeleteTextileStyleUseCase,
+    CreateTextileSubcategoryUseCase,
+    UpdateTextileSubcategoryUseCase,
+    GetAllTextileSubcategoriesUseCase,
+    GetByIdTextileSubcategoryUseCase,
+    DeleteTextileSubcategoryUseCase,
     {
       provide: TextileCategoryRepository,
       useClass: TextileCategoryRepositoryImpl,
@@ -74,11 +91,16 @@ import { DeleteTextileStyleUseCase } from './app/use_cases/textileProducts/Delet
       provide: TextileStyleRepository,
       useClass: TextileStyleRepositoryImpl,
     },
+    {
+      provide: TextileSubcategoryRepository,
+      useClass: TextileSubcategoryRepositoryImpl,
+    },
   ],
   exports: [
     TextileCategoryRepository,
     TextileTypeRepository,
     TextileStyleRepository,
+    TextileSubcategoryRepository,
     MongooseModule,
   ],
 })
