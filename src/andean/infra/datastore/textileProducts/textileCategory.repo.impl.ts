@@ -26,9 +26,11 @@ export class TextileCategoryRepositoryImpl extends TextileCategoryRepository {
   }
 
   async saveCategory(category: TextileCategory): Promise<TextileCategory> {
-    const created = new this.textileCategoryModel(
-      TextileCategoryMapper.toPersistence(category),
-    );
+    const plain = TextileCategoryMapper.toPersistence(category);
+    const created = new this.textileCategoryModel({
+      _id: crypto.randomUUID(),
+      ...plain,
+    });
     const savedCategory = await created.save();
     return TextileCategoryMapper.fromDocument(savedCategory);
   }
