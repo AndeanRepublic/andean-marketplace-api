@@ -13,6 +13,7 @@ import { UploadModule } from './andean/upload.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { AdminModule } from './andean/admin.module';
+import { TextileProductModule } from './andean/textileProduct.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { AdminModule } from './andean/admin.module';
     OrdersModule,
     UploadModule,
     AdminModule,
+    TextileProductModule,
   ],
   controllers: [],
   providers: [],
