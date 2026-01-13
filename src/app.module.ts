@@ -13,37 +13,39 @@ import { UploadModule } from './andean/upload.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { AdminModule } from './andean/admin.module';
+import { CommunityModule } from './andean/community.module';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGO_URI'),
-      }),
-    }),
-    MulterModule.register({
-      dest: join(__dirname, '..', 'uploads'),
-    }),
-    ServeStaticModule.forRoot({
-      rootPath: './uploads',
-      serveRoot: '/public',
-    }),
-    UsersModule,
-    AuthModule,
-    ProductsModule,
-    ShopsModule,
-    BankAccountsModule,
-    CartShopModule,
-    OrdersModule,
-    UploadModule,
-    AdminModule,
-  ],
-  controllers: [],
-  providers: [],
+	imports: [
+		ConfigModule.forRoot({
+			isGlobal: true,
+		}),
+		MongooseModule.forRootAsync({
+			imports: [ConfigModule],
+			inject: [ConfigService],
+			useFactory: (configService: ConfigService) => ({
+				uri: configService.get<string>('MONGO_URI'),
+			}),
+		}),
+		MulterModule.register({
+			dest: join(__dirname, '..', 'uploads'),
+		}),
+		ServeStaticModule.forRoot({
+			rootPath: './uploads',
+			serveRoot: '/public',
+		}),
+		UsersModule,
+		AuthModule,
+		ProductsModule,
+		ShopsModule,
+		BankAccountsModule,
+		CartShopModule,
+		OrdersModule,
+		UploadModule,
+		AdminModule,
+		CommunityModule,
+	],
+	controllers: [],
+	providers: [],
 })
-export class AppModule {}
+export class AppModule { }
