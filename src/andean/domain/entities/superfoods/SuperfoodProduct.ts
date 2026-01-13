@@ -6,7 +6,7 @@ import { SuperfoodNutritionalItem } from './SuperfoodNutritionalItem';
 import { SuperfoodDetailTraceability } from './SuperfoodDetailTraceability';
 import { SuperfoodOptions } from './SuperfoodOptions';
 import { SuperfoodVariant } from './SuperfoodVariant';
-import { ProductTraceability } from './ProductTraceability';
+import { ProductTraceability } from '../ProductTraceability';
 
 export class SuperfoodProduct {
 	constructor(
