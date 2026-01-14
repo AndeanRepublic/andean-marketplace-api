@@ -3,6 +3,7 @@ import * as crypto from 'crypto';
 import { SuperfoodSalesUnitSizeRepository } from '../../../datastore/superfoods/SuperfoodSalesUnitSize.repo';
 import { SuperfoodSalesUnitSize } from '../../../../domain/entities/superfoods/SuperfoodSalesUnitSize';
 import { CreateSuperfoodSalesUnitSizeDto } from '../../../../infra/controllers/dto/superfoods/CreateSuperfoodSalesUnitSizeDto';
+import { SuperfoodSalesUnitSizeResponse } from '../../../modules/SuperfoodSalesUnitSizeResponse';
 
 @Injectable()
 export class CreateSuperfoodSalesUnitSizeUseCase {
@@ -10,7 +11,7 @@ export class CreateSuperfoodSalesUnitSizeUseCase {
 		private readonly salesUnitSizeRepository: SuperfoodSalesUnitSizeRepository,
 	) { }
 
-	async handle(dto: CreateSuperfoodSalesUnitSizeDto): Promise<SuperfoodSalesUnitSize> {
+	async handle(dto: CreateSuperfoodSalesUnitSizeDto): Promise<SuperfoodSalesUnitSizeResponse> {
 		const salesUnitSize = new SuperfoodSalesUnitSize(
 			crypto.randomUUID(),
 			dto.name,
@@ -18,6 +19,13 @@ export class CreateSuperfoodSalesUnitSizeUseCase {
 			new Date(),
 		);
 
-		return await this.salesUnitSizeRepository.save(salesUnitSize);
+		const savedSize = await this.salesUnitSizeRepository.save(salesUnitSize);
+		return {
+			id: savedSize.id,
+			name: savedSize.name,
+			icon: dto.icon,
+			createdAt: savedSize.createdAt!,
+			updatedAt: savedSize.updatedAt!,
+		};
 	}
 }

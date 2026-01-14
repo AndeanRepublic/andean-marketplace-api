@@ -3,6 +3,7 @@ import * as crypto from 'crypto';
 import { SuperfoodProductPresentationRepository } from '../../../datastore/superfoods/SuperfoodProductPresentation.repo';
 import { SuperfoodProductPresentation } from '../../../../domain/entities/superfoods/SuperfoodProductPresentation';
 import { CreateSuperfoodProductPresentationDto } from '../../../../infra/controllers/dto/superfoods/CreateSuperfoodProductPresentationDto';
+import { SuperfoodProductPresentationResponse } from '../../../modules/SuperfoodProductPresentationResponse';
 
 @Injectable()
 export class CreateSuperfoodProductPresentationUseCase {
@@ -10,7 +11,7 @@ export class CreateSuperfoodProductPresentationUseCase {
 		private readonly productPresentationRepository: SuperfoodProductPresentationRepository,
 	) { }
 
-	async handle(dto: CreateSuperfoodProductPresentationDto): Promise<SuperfoodProductPresentation> {
+	async handle(dto: CreateSuperfoodProductPresentationDto): Promise<SuperfoodProductPresentationResponse> {
 		const productPresentation = new SuperfoodProductPresentation(
 			crypto.randomUUID(),
 			dto.name,
@@ -18,6 +19,13 @@ export class CreateSuperfoodProductPresentationUseCase {
 			new Date(),
 		);
 
-		return await this.productPresentationRepository.save(productPresentation);
+		const savedPresentation = await this.productPresentationRepository.save(productPresentation);
+		return {
+			id: savedPresentation.id,
+			name: savedPresentation.name,
+			icon: dto.icon,
+			createdAt: savedPresentation.createdAt!,
+			updatedAt: savedPresentation.updatedAt!,
+		};
 	}
 }

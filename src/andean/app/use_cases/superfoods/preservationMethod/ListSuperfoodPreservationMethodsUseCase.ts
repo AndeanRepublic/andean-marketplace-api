@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { SuperfoodPreservationMethodRepository } from '../../../datastore/superfoods/SuperfoodPreservationMethod.repo';
 import { SuperfoodPreservationMethod } from '../../../../domain/entities/superfoods/SuperfoodPreservationMethod';
+import { SuperfoodPreservationMethodResponse } from '../../../modules/SuperfoodPreservationMethodResponse';
 
 @Injectable()
 export class ListSuperfoodPreservationMethodsUseCase {
@@ -8,7 +9,13 @@ export class ListSuperfoodPreservationMethodsUseCase {
 		private readonly preservationMethodRepository: SuperfoodPreservationMethodRepository,
 	) { }
 
-	async handle(): Promise<SuperfoodPreservationMethod[]> {
-		return await this.preservationMethodRepository.getAll();
+	async handle(): Promise<SuperfoodPreservationMethodResponse[]> {
+		const methods = await this.preservationMethodRepository.getAll();
+		return methods.map(method => ({
+			id: method.id,
+			name: method.name,
+			createdAt: method.createdAt!,
+			updatedAt: method.updatedAt!,
+		}));
 	}
 }
