@@ -1,0 +1,18 @@
+import { ApiProperty } from '@nestjs/swagger';
+
+export class SuperfoodBenefitResponse {
+	@ApiProperty({ description: 'ID único del beneficio' })
+	id: string;
+
+	@ApiProperty({ description: 'Nombre del beneficio', example: 'Mejora la digestión' })
+	name: string;
+
+	@ApiProperty({ description: 'URL del icono', required: false })
+	icon?: string;
+
+	@ApiProperty({ description: 'Fecha de creación' })
+	createdAt: Date;
+
+	@ApiProperty({ description: 'Fecha de última actualización' })
+	updatedAt: Date;
+}
