@@ -23,38 +23,10 @@ export class UpdateSuperfoodProductUseCase {
 		// 1. Validar que el producto existe
 		const existingProduct = await this.superfoodProductRepository.getSuperfoodProductById(productId);
 		if (!existingProduct) {
-			throw new NotFoundException(`Producto con ID ${productId} no encontrado`);
+			throw new NotFoundException(`Product with ID ${productId} not found`);
 		}
 
-		// 2. Validaciones de negocio si se actualizan precios/stock
-		if (dto.priceInventory?.basePrice !== undefined && dto.priceInventory.basePrice <= 0) {
-			throw new BadRequestException('El precio base debe ser mayor a 0');
-		}
-
-		if (dto.priceInventory?.totalStock !== undefined && dto.priceInventory.totalStock < 0) {
-			throw new BadRequestException('El stock total no puede ser negativo');
-		}
-
-		// 3. Validar variantes duplicadas si se actualizan
-		if (dto.variants && dto.variants.length > 0) {
-			const combinations = dto.variants.map(v => JSON.stringify(v.combination));
-			const uniqueCombinations = new Set(combinations);
-			if (combinations.length !== uniqueCombinations.size) {
-				throw new BadRequestException('Hay variantes con combinaciones duplicadas');
-			}
-
-			// Validar precios y stocks de variantes
-			for (const variant of dto.variants) {
-				if (variant.price < 0) {
-					throw new BadRequestException('El precio de cada variante debe ser mayor o igual a 0');
-				}
-				if (variant.stock < 0) {
-					throw new BadRequestException('El stock de cada variante debe ser mayor o igual a 0');
-				}
-			}
-		}
-
-		// 4. Crear entidad actualizada mezclando existente con nuevo
+		// 2. Crear entidad actualizada mezclando existente con nuevo
 		const updatedBaseInfo = dto.baseInfo
 			? new SuperfoodBasicInfo(
 				dto.baseInfo.title ?? existingProduct.baseInfo.title,
@@ -96,8 +68,9 @@ export class UpdateSuperfoodProductUseCase {
 
 		const updatedNutritionalContent = dto.nutritionalContent
 			? dto.nutritionalContent.map(
-				(item) => new SuperfoodNutritionalItem(
-					crypto.randomUUID(), // Nuevo ID ya que estamos reemplazando el array completo
+				(item, index) => new SuperfoodNutritionalItem(
+					// Preservar ID existente si el item está en la misma posición, sino crear nuevo
+					existingProduct.nutritionalContent[index]?.id ?? crypto.randomUUID(),
 					item.quantity,
 					item.nutrient,
 					item.strikingFeature,
@@ -122,12 +95,14 @@ export class UpdateSuperfoodProductUseCase {
 			: existingProduct.detailTraceability;
 
 		const updatedOptions = dto.options
-			? dto.options.map((opt) =>
+			? dto.options.map((opt, optIndex) =>
 				new SuperfoodOptions(
-					crypto.randomUUID(), // Nuevo ID ya que estamos reemplazando el array completo
+					// Preservar ID existente si la opción está en la misma posición, sino crear nuevo
+					existingProduct.options[optIndex]?.id ?? crypto.randomUUID(),
 					opt.name,
-					opt.values.map((val) => new SuperfoodOptionsItem(
-						crypto.randomUUID(), // Nuevo ID para cada valor
+					opt.values.map((val, valIndex) => new SuperfoodOptionsItem(
+						// Preservar ID existente si el valor está en la misma posición, sino crear nuevo
+						existingProduct.options[optIndex]?.values[valIndex]?.id ?? crypto.randomUUID(),
 						val.label,
 						val.mediaIds || []
 					))
@@ -135,9 +110,10 @@ export class UpdateSuperfoodProductUseCase {
 			)
 			: existingProduct.options;
 		const updatedVariants = dto.variants
-			? dto.variants.map((variant) =>
+			? dto.variants.map((variant, index) =>
 				new SuperfoodVariant(
-					crypto.randomUUID(), // Nuevo ID ya que estamos reemplazando el array completo
+					// Preservar ID existente si la variante está en la misma posición, sino crear nuevo
+					existingProduct.variants[index]?.id ?? crypto.randomUUID(),
 					variant.combination, variant.price,
 					variant.stock
 				)
@@ -160,7 +136,7 @@ export class UpdateSuperfoodProductUseCase {
 			new Date(), // updatedAt
 		);
 
-		// 5. Guardar cambios
+		// 3. Guardar cambios
 		return this.superfoodProductRepository.updateSuperfoodProduct(updatedProduct);
 	}
 }
