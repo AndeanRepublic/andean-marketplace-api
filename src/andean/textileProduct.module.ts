@@ -6,6 +6,7 @@ import { TextileStyleSchema } from './infra/persistence/textileProducts/textileS
 import { TextileSubcategorySchema } from './infra/persistence/textileProducts/textileSubcategory.schema';
 import { TextileCraftTechniqueSchema } from './infra/persistence/textileProducts/textileCraftTechnique.schema';
 import { TextilePrincipalUseSchema } from './infra/persistence/textileProducts/textilePrincipalUse.schema';
+import { TextileProductSchema } from './infra/persistence/textileProducts/textileProduct.schema';
 import { UsersModule } from './users.module';
 import { CreateTextileCategoryUseCase } from './app/use_cases/textileProducts/CreateTextileCategoryUseCase';
 import { TextileCategoryRepository } from './app/datastore/textileProducts/TextileCategory.repo';
@@ -46,10 +47,17 @@ import { UpdateTextilePrincipalUseUseCase } from './app/use_cases/textileProduct
 import { GetAllTextilePrincipalUsesUseCase } from './app/use_cases/textileProducts/GetAllTextilePrincipalUsesUseCase';
 import { GetByIdTextilePrincipalUseUseCase } from './app/use_cases/textileProducts/GetByIdTextilePrincipalUseUseCase';
 import { DeleteTextilePrincipalUseUseCase } from './app/use_cases/textileProducts/DeleteTextilePrincipalUseUseCase';
+import { CreateTextileProductUseCase } from './app/use_cases/textileProducts/CreateTextileProductUseCase';
+import { UpdateTextileProductUseCase } from './app/use_cases/textileProducts/UpdateTextileProductUseCase';
+import { GetAllTextileProductsUseCase } from './app/use_cases/textileProducts/GetAllTextileProductsUseCase';
+import { GetByIdTextileProductUseCase } from './app/use_cases/textileProducts/GetByIdTextileProductUseCase';
+import { DeleteTextileProductUseCase } from './app/use_cases/textileProducts/DeleteTextileProductUseCase';
 import { TextileCraftTechniqueRepository } from './app/datastore/textileProducts/TextileCraftTechnique.repo';
 import { TextileCraftTechniqueRepositoryImpl } from './infra/datastore/textileProducts/textileCraftTechnique.repo.impl';
 import { TextilePrincipalUseRepository } from './app/datastore/textileProducts/TextilePrincipalUse.repo';
 import { TextilePrincipalUseRepositoryImpl } from './infra/datastore/textileProducts/textilePrincipalUse.repo.impl';
+import { TextileProductRepository } from './app/datastore/textileProducts/TextileProduct.repo';
+import { TextileProductRepositoryImpl } from './infra/datastore/textileProducts/textileProduct.repo.impl';
 
 @Module({
   imports: [
@@ -77,6 +85,10 @@ import { TextilePrincipalUseRepositoryImpl } from './infra/datastore/textileProd
       {
         name: 'TextilePrincipalUse',
         schema: TextilePrincipalUseSchema,
+      },
+      {
+        name: 'TextileProduct',
+        schema: TextileProductSchema,
       },
     ]),
     UsersModule,
@@ -113,6 +125,11 @@ import { TextilePrincipalUseRepositoryImpl } from './infra/datastore/textileProd
     GetAllTextilePrincipalUsesUseCase,
     GetByIdTextilePrincipalUseUseCase,
     DeleteTextilePrincipalUseUseCase,
+    CreateTextileProductUseCase,
+    UpdateTextileProductUseCase,
+    GetAllTextileProductsUseCase,
+    GetByIdTextileProductUseCase,
+    DeleteTextileProductUseCase,
     {
       provide: TextileCategoryRepository,
       useClass: TextileCategoryRepositoryImpl,
@@ -137,6 +154,10 @@ import { TextilePrincipalUseRepositoryImpl } from './infra/datastore/textileProd
       provide: TextilePrincipalUseRepository,
       useClass: TextilePrincipalUseRepositoryImpl,
     },
+    {
+      provide: TextileProductRepository,
+      useClass: TextileProductRepositoryImpl,
+    },
   ],
   exports: [
     TextileCategoryRepository,
@@ -145,6 +166,7 @@ import { TextilePrincipalUseRepositoryImpl } from './infra/datastore/textileProd
     TextileSubcategoryRepository,
     TextileCraftTechniqueRepository,
     TextilePrincipalUseRepository,
+    TextileProductRepository,
     MongooseModule,
   ],
 })

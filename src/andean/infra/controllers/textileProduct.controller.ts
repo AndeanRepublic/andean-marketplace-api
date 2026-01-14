@@ -49,7 +49,15 @@ import { UpdateTextilePrincipalUseUseCase } from 'src/andean/app/use_cases/texti
 import { GetAllTextilePrincipalUsesUseCase } from 'src/andean/app/use_cases/textileProducts/GetAllTextilePrincipalUsesUseCase';
 import { GetByIdTextilePrincipalUseUseCase } from 'src/andean/app/use_cases/textileProducts/GetByIdTextilePrincipalUseUseCase';
 import { DeleteTextilePrincipalUseUseCase } from 'src/andean/app/use_cases/textileProducts/DeleteTextilePrincipalUseUseCase';
+import { CreateTextileProductUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileProductUseCase';
+import { TextileProduct } from 'src/andean/domain/entities/textileProducts/TextileProduct';
+import { CreateTextileProductDto } from './dto/textileProducts/CreateTextileProductDto';
+import { UpdateTextileProductUseCase } from 'src/andean/app/use_cases/textileProducts/UpdateTextileProductUseCase';
+import { GetAllTextileProductsUseCase } from 'src/andean/app/use_cases/textileProducts/GetAllTextileProductsUseCase';
+import { GetByIdTextileProductUseCase } from 'src/andean/app/use_cases/textileProducts/GetByIdTextileProductUseCase';
+import { DeleteTextileProductUseCase } from 'src/andean/app/use_cases/textileProducts/DeleteTextileProductUseCase';
 
+const path_textile_product_id = '/:id';
 const path_textile_categories = '/categories';
 const path_textile_categories_id = '/categories/:id';
 const path_textile_types = '/types';
@@ -96,6 +104,11 @@ export class TextileProductController {
     private readonly getAllTextilePrincipalUsesUseCase: GetAllTextilePrincipalUsesUseCase,
     private readonly getByIdTextilePrincipalUseUseCase: GetByIdTextilePrincipalUseUseCase,
     private readonly deleteTextilePrincipalUseUseCase: DeleteTextilePrincipalUseUseCase,
+    private readonly createTextileProductUseCase: CreateTextileProductUseCase,
+    private readonly updateTextileProductUseCase: UpdateTextileProductUseCase,
+    private readonly getAllTextileProductsUseCase: GetAllTextileProductsUseCase,
+    private readonly getByIdTextileProductUseCase: GetByIdTextileProductUseCase,
+    private readonly deleteTextileProductUseCase: DeleteTextileProductUseCase,
   ) {}
 
   @Post(path_textile_categories)
@@ -284,5 +297,37 @@ export class TextileProductController {
   @Delete(path_textile_principal_uses_id)
   async deleteTextilePrincipalUse(@Param('id') id: string): Promise<void> {
     return this.deleteTextilePrincipalUseUseCase.handle(id);
+  }
+
+  @Post()
+  async createTextileProduct(
+    @Body() body: CreateTextileProductDto,
+  ): Promise<TextileProduct> {
+    return this.createTextileProductUseCase.handle(body);
+  }
+
+  @Put(path_textile_product_id)
+  async updateTextileProduct(
+    @Param('id') id: string,
+    @Body() body: CreateTextileProductDto,
+  ): Promise<TextileProduct> {
+    return this.updateTextileProductUseCase.handle(id, body);
+  }
+
+  @Get()
+  async getAllTextileProducts(): Promise<TextileProduct[]> {
+    return this.getAllTextileProductsUseCase.handle();
+  }
+
+  @Get(path_textile_product_id)
+  async getByIdTextileProduct(
+    @Param('id') id: string,
+  ): Promise<TextileProduct> {
+    return this.getByIdTextileProductUseCase.handle(id);
+  }
+
+  @Delete(path_textile_product_id)
+  async deleteTextileProduct(@Param('id') id: string): Promise<void> {
+    return this.deleteTextileProductUseCase.handle(id);
   }
 }
