@@ -37,7 +37,7 @@ export class LoginUseCase {
   }
 
   private async generateToken(account: Account): Promise<SessionToken> {
-    const payload = { sub: account.userId, role: account.role };
+    const payload = { sub: account.userId, roles: account.roles };
     const jwtToken = await this.jwtService.signAsync(payload);
     return new SessionToken(
       jwtToken,
