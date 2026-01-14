@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { SuperfoodSalesUnitSizeRepository } from '../../../app/datastore/superfoods/SuperfoodSalesUnitSize.repo';
 import { SuperfoodSalesUnitSize } from '../../../domain/entities/superfoods/SuperfoodSalesUnitSize';
 import { SuperfoodSalesUnitSizeDocument } from '../../persistence/superfood/superfoodSalesUnitSize.schema';
-import { SuperfoodSalesUnitSizeMapper } from '../../services/SuperfoodSalesUnitSizeMapper';
+import { SuperfoodSalesUnitSizeMapper } from '../../services/superfood/SuperfoodSalesUnitSizeMapper';
 
 @Injectable()
 export class SuperfoodSalesUnitSizeRepoImpl implements SuperfoodSalesUnitSizeRepository {

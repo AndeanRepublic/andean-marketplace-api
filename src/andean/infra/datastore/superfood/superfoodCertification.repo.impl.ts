@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { SuperfoodCertificationRepository } from '../../../app/datastore/superfoods/SuperfoodCertification.repo';
 import { SuperfoodCertification } from '../../../domain/entities/superfoods/SuperfoodCertification';
 import { SuperfoodCertificationDocument } from '../../persistence/superfood/superfoodCertification.schema';
-import { SuperfoodCertificationMapper } from '../../services/SuperfoodCertificationMapper';
+import { SuperfoodCertificationMapper } from '../../services/superfood/SuperfoodCertificationMapper';
 
 @Injectable()
 export class SuperfoodCertificationRepoImpl implements SuperfoodCertificationRepository {

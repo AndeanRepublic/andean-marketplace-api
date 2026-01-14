@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { SuperfoodNutritionalFeatureRepository } from '../../../app/datastore/superfoods/SuperfoodNutritionalFeature.repo';
 import { SuperfoodNutritionalFeature } from '../../../domain/entities/superfoods/SuperfoodNutritionalFeature';
 import { SuperfoodNutritionalFeatureDocument } from '../../persistence/superfood/superfoodNutritionalFeature.schema';
-import { SuperfoodNutritionalFeatureMapper } from '../../services/SuperfoodNutritionalFeatureMapper';
+import { SuperfoodNutritionalFeatureMapper } from '../../services/superfood/SuperfoodNutritionalFeatureMapper';
 
 @Injectable()
 export class SuperfoodNutritionalFeatureRepoImpl implements SuperfoodNutritionalFeatureRepository {

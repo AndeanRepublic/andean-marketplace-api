@@ -1,17 +1,17 @@
-import { SuperfoodProductDocument } from '../persistence/superfood/superfood.schema';
-import { SuperfoodProduct } from '../../domain/entities/superfoods/SuperfoodProduct';
-import { CreateSuperfoodDto } from '../controllers/dto/superfoods/CreateSuperfoodDto';
-import { SuperfoodProductStatus } from '../../domain/enums/SuperfoodProductStatus';
-import { SuperfoodBasicInfo } from '../../domain/entities/superfoods/SuperfoodBasicInfo';
-import { SuperfoodPriceInventory } from '../../domain/entities/superfoods/SuperfoodPriceInventory';
-import { SuperfoodDetailProduct } from '../../domain/entities/superfoods/SuperfoodDetailProduct';
-import { SuperfoodNutritionalItem } from '../../domain/entities/superfoods/SuperfoodNutritionalItem';
-import { SuperfoodDetailTraceability, Origin } from '../../domain/entities/superfoods/SuperfoodDetailTraceability';
-import { SuperfoodElaborationTime } from '../../domain/entities/superfoods/SuperfoodElaborationTime';
-import { SuperfoodOptions } from '../../domain/entities/superfoods/SuperfoodOptions';
-import { SuperfoodOptionsItem } from '../../domain/entities/superfoods/SuperfoodOptionsItem';
-import { SuperfoodVariant } from '../../domain/entities/superfoods/SuperfoodVariant';
-import { ProductTraceability } from '../../domain/entities/ProductTraceability';
+import { SuperfoodProductDocument } from '../../persistence/superfood/superfood.schema';
+import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
+import { CreateSuperfoodDto } from '../../controllers/dto/superfoods/CreateSuperfoodDto';
+import { SuperfoodProductStatus } from '../../../domain/enums/SuperfoodProductStatus';
+import { SuperfoodBasicInfo } from '../../../domain/entities/superfoods/SuperfoodBasicInfo';
+import { SuperfoodPriceInventory } from '../../../domain/entities/superfoods/SuperfoodPriceInventory';
+import { SuperfoodDetailProduct } from '../../../domain/entities/superfoods/SuperfoodDetailProduct';
+import { SuperfoodNutritionalItem } from '../../../domain/entities/superfoods/SuperfoodNutritionalItem';
+import { SuperfoodDetailTraceability, Origin } from '../../../domain/entities/superfoods/SuperfoodDetailTraceability';
+import { SuperfoodElaborationTime } from '../../../domain/entities/superfoods/SuperfoodElaborationTime';
+import { SuperfoodOptions } from '../../../domain/entities/superfoods/SuperfoodOptions';
+import { SuperfoodOptionsItem } from '../../../domain/entities/superfoods/SuperfoodOptionsItem';
+import { SuperfoodVariant } from '../../../domain/entities/superfoods/SuperfoodVariant';
+import { ProductTraceability } from '../../../domain/entities/ProductTraceability';
 
 export class SuperfoodProductMapper {
 	static fromDocument(doc: SuperfoodProductDocument): SuperfoodProduct {

@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { SuperfoodPreservationMethodRepository } from '../../../app/datastore/superfoods/SuperfoodPreservationMethod.repo';
 import { SuperfoodPreservationMethod } from '../../../domain/entities/superfoods/SuperfoodPreservationMethod';
 import { SuperfoodPreservationMethodDocument } from '../../persistence/superfood/superfoodPreservationMethod.schema';
-import { SuperfoodPreservationMethodMapper } from '../../services/SuperfoodPreservationMethodMapper';
+import { SuperfoodPreservationMethodMapper } from '../../services/superfood/SuperfoodPreservationMethodMapper';
 
 @Injectable()
 export class SuperfoodPreservationMethodRepoImpl implements SuperfoodPreservationMethodRepository {

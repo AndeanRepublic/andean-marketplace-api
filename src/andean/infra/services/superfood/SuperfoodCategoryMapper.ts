@@ -1,5 +1,5 @@
-import { SuperfoodCategoryDocument } from '../persistence/superfood/superfoodCategory.schema';
-import { SuperfoodCategory } from '../../domain/entities/superfoods/SuperfoodCategory';
+import { SuperfoodCategoryDocument } from '../../persistence/superfood/superfoodCategory.schema';
+import { SuperfoodCategory } from '../../../domain/entities/superfoods/SuperfoodCategory';
 
 export class SuperfoodCategoryMapper {
 	static fromDocument(doc: SuperfoodCategoryDocument): SuperfoodCategory {

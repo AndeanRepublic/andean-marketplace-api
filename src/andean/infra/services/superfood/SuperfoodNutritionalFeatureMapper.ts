@@ -1,5 +1,5 @@
-import { SuperfoodNutritionalFeatureDocument } from '../persistence/superfood/superfoodNutritionalFeature.schema';
-import { SuperfoodNutritionalFeature } from '../../domain/entities/superfoods/SuperfoodNutritionalFeature';
+import { SuperfoodNutritionalFeatureDocument } from '../../persistence/superfood/superfoodNutritionalFeature.schema';
+import { SuperfoodNutritionalFeature } from '../../../domain/entities/superfoods/SuperfoodNutritionalFeature';
 
 export class SuperfoodNutritionalFeatureMapper {
 	static fromDocument(doc: SuperfoodNutritionalFeatureDocument): SuperfoodNutritionalFeature {

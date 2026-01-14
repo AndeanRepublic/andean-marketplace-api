@@ -1,5 +1,5 @@
-import { SuperfoodProductPresentationDocument } from '../persistence/superfood/superfoodProductPresentation.schema';
-import { SuperfoodProductPresentation } from '../../domain/entities/superfoods/SuperfoodProductPresentation';
+import { SuperfoodProductPresentationDocument } from '../../persistence/superfood/superfoodProductPresentation.schema';
+import { SuperfoodProductPresentation } from '../../../domain/entities/superfoods/SuperfoodProductPresentation';
 
 export class SuperfoodProductPresentationMapper {
 	static fromDocument(doc: SuperfoodProductPresentationDocument): SuperfoodProductPresentation {

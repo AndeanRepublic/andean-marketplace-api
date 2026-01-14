@@ -1,5 +1,5 @@
-import { SuperfoodCertificationDocument } from '../persistence/superfood/superfoodCertification.schema';
-import { SuperfoodCertification } from '../../domain/entities/superfoods/SuperfoodCertification';
+import { SuperfoodCertificationDocument } from '../../persistence/superfood/superfoodCertification.schema';
+import { SuperfoodCertification } from '../../../domain/entities/superfoods/SuperfoodCertification';
 
 export class SuperfoodCertificationMapper {
 	static fromDocument(doc: SuperfoodCertificationDocument): SuperfoodCertification {

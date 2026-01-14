@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { SuperfoodBenefitRepository } from '../../../app/datastore/superfoods/SuperfoodBenefit.repo';
 import { SuperfoodBenefit } from '../../../domain/entities/superfoods/SuperfoodBenefit';
 import { SuperfoodBenefitDocument } from '../../persistence/superfood/superfoodBenefit.schema';
-import { SuperfoodBenefitMapper } from '../../services/SuperfoodBenefitMapper';
+import { SuperfoodBenefitMapper } from '../../services/superfood/SuperfoodBenefitMapper';
 
 @Injectable()
 export class SuperfoodBenefitRepoImpl implements SuperfoodBenefitRepository {

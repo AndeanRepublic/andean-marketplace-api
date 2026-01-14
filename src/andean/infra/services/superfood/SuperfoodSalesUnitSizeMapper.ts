@@ -1,5 +1,5 @@
-import { SuperfoodSalesUnitSizeDocument } from '../persistence/superfood/superfoodSalesUnitSize.schema';
-import { SuperfoodSalesUnitSize } from '../../domain/entities/superfoods/SuperfoodSalesUnitSize';
+import { SuperfoodSalesUnitSizeDocument } from '../../persistence/superfood/superfoodSalesUnitSize.schema';
+import { SuperfoodSalesUnitSize } from '../../../domain/entities/superfoods/SuperfoodSalesUnitSize';
 
 export class SuperfoodSalesUnitSizeMapper {
 	static fromDocument(doc: SuperfoodSalesUnitSizeDocument): SuperfoodSalesUnitSize {

@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { SuperfoodTypeRepository } from '../../../app/datastore/superfoods/SuperfoodType.repo';
 import { SuperfoodType } from '../../../domain/entities/superfoods/SuperfoodType';
 import { SuperfoodTypeDocument } from '../../persistence/superfood/superfoodType.schema';
-import { SuperfoodTypeMapper } from '../../services/SuperfoodTypeMapper';
+import { SuperfoodTypeMapper } from '../../services/superfood/SuperfoodTypeMapper';
 
 @Injectable()
 export class SuperfoodTypeRepoImpl implements SuperfoodTypeRepository {
