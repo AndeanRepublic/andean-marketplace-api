@@ -3,6 +3,7 @@ import * as crypto from 'crypto';
 import { SuperfoodCategoryRepository } from '../../../datastore/superfoods/SuperfoodCategory.repo';
 import { SuperfoodCategory } from '../../../../domain/entities/superfoods/SuperfoodCategory';
 import { CreateSuperfoodCategoryDto } from '../../../../infra/controllers/dto/superfoods/CreateSuperfoodCategoryDto';
+import { SuperfoodCategoryResponse } from '../../../modules/SuperfoodCategoryResponse';
 
 @Injectable()
 export class CreateSuperfoodCategoryUseCase {
@@ -10,7 +11,7 @@ export class CreateSuperfoodCategoryUseCase {
 		private readonly categoryRepository: SuperfoodCategoryRepository,
 	) { }
 
-	async handle(dto: CreateSuperfoodCategoryDto): Promise<SuperfoodCategory> {
+	async handle(dto: CreateSuperfoodCategoryDto): Promise<SuperfoodCategoryResponse> {
 		const category = new SuperfoodCategory(
 			crypto.randomUUID(),
 			dto.name,
@@ -19,6 +20,13 @@ export class CreateSuperfoodCategoryUseCase {
 			new Date(),
 		);
 
-		return await this.categoryRepository.saveCategory(category);
+		const savedCategory = await this.categoryRepository.saveCategory(category);
+		return {
+			id: savedCategory.id,
+			name: savedCategory.name,
+			status: savedCategory.status,
+			createdAt: savedCategory.createdAt!,
+			updatedAt: savedCategory.updatedAt!,
+		};
 	}
 }

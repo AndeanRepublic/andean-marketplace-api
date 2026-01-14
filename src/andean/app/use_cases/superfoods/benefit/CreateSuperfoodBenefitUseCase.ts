@@ -3,6 +3,7 @@ import * as crypto from 'crypto';
 import { SuperfoodBenefitRepository } from '../../../datastore/superfoods/SuperfoodBenefit.repo';
 import { SuperfoodBenefit } from '../../../../domain/entities/superfoods/SuperfoodBenefit';
 import { CreateSuperfoodBenefitDto } from '../../../../infra/controllers/dto/superfoods/CreateSuperfoodBenefitDto';
+import { SuperfoodBenefitResponse } from '../../../modules/SuperfoodBenefitResponse';
 
 @Injectable()
 export class CreateSuperfoodBenefitUseCase {
@@ -10,7 +11,7 @@ export class CreateSuperfoodBenefitUseCase {
 		private readonly benefitRepository: SuperfoodBenefitRepository,
 	) { }
 
-	async handle(dto: CreateSuperfoodBenefitDto): Promise<SuperfoodBenefit> {
+	async handle(dto: CreateSuperfoodBenefitDto): Promise<SuperfoodBenefitResponse> {
 		const benefit = new SuperfoodBenefit(
 			crypto.randomUUID(),
 			dto.name,
@@ -19,6 +20,13 @@ export class CreateSuperfoodBenefitUseCase {
 			new Date(),
 		);
 
-		return await this.benefitRepository.save(benefit);
+		const savedBenefit = await this.benefitRepository.save(benefit);
+		return {
+			id: savedBenefit.id,
+			name: savedBenefit.name,
+			icon: savedBenefit.icon,
+			createdAt: savedBenefit.createdAt!,
+			updatedAt: savedBenefit.updatedAt!,
+		};
 	}
 }

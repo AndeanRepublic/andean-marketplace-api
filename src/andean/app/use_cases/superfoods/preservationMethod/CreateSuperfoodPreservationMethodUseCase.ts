@@ -3,6 +3,7 @@ import * as crypto from 'crypto';
 import { SuperfoodPreservationMethodRepository } from '../../../datastore/superfoods/SuperfoodPreservationMethod.repo';
 import { SuperfoodPreservationMethod } from '../../../../domain/entities/superfoods/SuperfoodPreservationMethod';
 import { CreateSuperfoodPreservationMethodDto } from '../../../../infra/controllers/dto/superfoods/CreateSuperfoodPreservationMethodDto';
+import { SuperfoodPreservationMethodResponse } from '../../../modules/SuperfoodPreservationMethodResponse';
 
 @Injectable()
 export class CreateSuperfoodPreservationMethodUseCase {
@@ -10,7 +11,7 @@ export class CreateSuperfoodPreservationMethodUseCase {
 		private readonly preservationMethodRepository: SuperfoodPreservationMethodRepository,
 	) { }
 
-	async handle(dto: CreateSuperfoodPreservationMethodDto): Promise<SuperfoodPreservationMethod> {
+	async handle(dto: CreateSuperfoodPreservationMethodDto): Promise<SuperfoodPreservationMethodResponse> {
 		const preservationMethod = new SuperfoodPreservationMethod(
 			crypto.randomUUID(),
 			dto.name,
@@ -18,6 +19,13 @@ export class CreateSuperfoodPreservationMethodUseCase {
 			new Date(),
 		);
 
-		return await this.preservationMethodRepository.save(preservationMethod);
+		const savedMethod = await this.preservationMethodRepository.save(preservationMethod);
+		return {
+			id: savedMethod.id,
+			name: savedMethod.name,
+			icon: dto.icon,
+			createdAt: savedMethod.createdAt!,
+			updatedAt: savedMethod.updatedAt!,
+		};
 	}
 }

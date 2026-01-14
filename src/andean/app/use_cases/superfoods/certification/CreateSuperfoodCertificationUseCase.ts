@@ -3,6 +3,7 @@ import * as crypto from 'crypto';
 import { SuperfoodCertificationRepository } from '../../../datastore/superfoods/SuperfoodCertification.repo';
 import { SuperfoodCertification } from '../../../../domain/entities/superfoods/SuperfoodCertification';
 import { CreateSuperfoodCertificationDto } from '../../../../infra/controllers/dto/superfoods/CreateSuperfoodCertificationDto';
+import { SuperfoodCertificationResponse } from '../../../modules/SuperfoodCertificationResponse';
 
 @Injectable()
 export class CreateSuperfoodCertificationUseCase {
@@ -10,7 +11,7 @@ export class CreateSuperfoodCertificationUseCase {
 		private readonly certificationRepository: SuperfoodCertificationRepository,
 	) { }
 
-	async handle(dto: CreateSuperfoodCertificationDto): Promise<SuperfoodCertification> {
+	async handle(dto: CreateSuperfoodCertificationDto): Promise<SuperfoodCertificationResponse> {
 		const certification = new SuperfoodCertification(
 			crypto.randomUUID(),
 			dto.name,
@@ -18,6 +19,13 @@ export class CreateSuperfoodCertificationUseCase {
 			new Date(),
 		);
 
-		return await this.certificationRepository.save(certification);
+		const savedCertification = await this.certificationRepository.save(certification);
+		return {
+			id: savedCertification.id,
+			name: savedCertification.name,
+			icon: dto.icon,
+			createdAt: savedCertification.createdAt!,
+			updatedAt: savedCertification.updatedAt!,
+		};
 	}
 }
