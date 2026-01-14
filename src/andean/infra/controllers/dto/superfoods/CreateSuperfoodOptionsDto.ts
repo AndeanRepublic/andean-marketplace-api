@@ -8,10 +8,10 @@ export class CreateSuperfoodOptionsItemDto {
 	@IsNotEmpty()
 	label: string;
 
-	@ApiProperty({ description: 'URLs de imágenes del item', type: [String], required: false })
+	@ApiProperty({ description: 'IDs de MediaItems', type: [String], required: false })
 	@IsArray()
 	@IsOptional()
-	images?: string[];
+	mediaIds?: string[];
 }
 
 export class CreateSuperfoodOptionsDto {
