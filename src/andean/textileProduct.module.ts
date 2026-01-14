@@ -4,6 +4,7 @@ import { TextileCategorySchema } from './infra/persistence/textileProducts/texti
 import { TextileTypeSchema } from './infra/persistence/textileProducts/textileType.schema';
 import { TextileStyleSchema } from './infra/persistence/textileProducts/textileStyle.schema';
 import { TextileSubcategorySchema } from './infra/persistence/textileProducts/textileSubcategory.schema';
+import { TextileCraftTechniqueSchema } from './infra/persistence/textileProducts/textileCraftTechnique.schema';
 import { UsersModule } from './users.module';
 import { CreateTextileCategoryUseCase } from './app/use_cases/textileProducts/CreateTextileCategoryUseCase';
 import { TextileCategoryRepository } from './app/datastore/textileProducts/TextileCategory.repo';
@@ -34,6 +35,13 @@ import { UpdateTextileSubcategoryUseCase } from './app/use_cases/textileProducts
 import { GetAllTextileSubcategoriesUseCase } from './app/use_cases/textileProducts/GetAllTextileSubcategoriesUseCase';
 import { GetByIdTextileSubcategoryUseCase } from './app/use_cases/textileProducts/GetByIdTextileSubcategoryUseCase';
 import { DeleteTextileSubcategoryUseCase } from './app/use_cases/textileProducts/DeleteTextileSubcategoryUseCase';
+import { CreateTextileCraftTechniqueUseCase } from './app/use_cases/textileProducts/CreateTextileCraftTechniqueUseCase';
+import { UpdateTextileCraftTechniqueUseCase } from './app/use_cases/textileProducts/UpdateTextileCraftTechniqueUseCase';
+import { GetAllTextileCraftTechniquesUseCase } from './app/use_cases/textileProducts/GetAllTextileCraftTechniquesUseCase';
+import { GetByIdTextileCraftTechniqueUseCase } from './app/use_cases/textileProducts/GetByIdTextileCraftTechniqueUseCase';
+import { DeleteTextileCraftTechniqueUseCase } from './app/use_cases/textileProducts/DeleteTextileCraftTechniqueUseCase';
+import { TextileCraftTechniqueRepository } from './app/datastore/textileProducts/TextileCraftTechnique.repo';
+import { TextileCraftTechniqueRepositoryImpl } from './infra/datastore/textileProducts/textileCraftTechnique.repo.impl';
 
 @Module({
   imports: [
@@ -53,6 +61,10 @@ import { DeleteTextileSubcategoryUseCase } from './app/use_cases/textileProducts
       {
         name: 'TextileSubcategory',
         schema: TextileSubcategorySchema,
+      },
+      {
+        name: 'TextileCraftTechnique',
+        schema: TextileCraftTechniqueSchema,
       },
     ]),
     UsersModule,
@@ -79,6 +91,11 @@ import { DeleteTextileSubcategoryUseCase } from './app/use_cases/textileProducts
     GetAllTextileSubcategoriesUseCase,
     GetByIdTextileSubcategoryUseCase,
     DeleteTextileSubcategoryUseCase,
+    CreateTextileCraftTechniqueUseCase,
+    UpdateTextileCraftTechniqueUseCase,
+    GetAllTextileCraftTechniquesUseCase,
+    GetByIdTextileCraftTechniqueUseCase,
+    DeleteTextileCraftTechniqueUseCase,
     {
       provide: TextileCategoryRepository,
       useClass: TextileCategoryRepositoryImpl,
@@ -95,12 +112,17 @@ import { DeleteTextileSubcategoryUseCase } from './app/use_cases/textileProducts
       provide: TextileSubcategoryRepository,
       useClass: TextileSubcategoryRepositoryImpl,
     },
+    {
+      provide: TextileCraftTechniqueRepository,
+      useClass: TextileCraftTechniqueRepositoryImpl,
+    },
   ],
   exports: [
     TextileCategoryRepository,
     TextileTypeRepository,
     TextileStyleRepository,
     TextileSubcategoryRepository,
+    TextileCraftTechniqueRepository,
     MongooseModule,
   ],
 })
