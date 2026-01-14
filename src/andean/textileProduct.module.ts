@@ -7,7 +7,10 @@ import { TextileSubcategorySchema } from './infra/persistence/textileProducts/te
 import { TextileCraftTechniqueSchema } from './infra/persistence/textileProducts/textileCraftTechnique.schema';
 import { TextilePrincipalUseSchema } from './infra/persistence/textileProducts/textilePrincipalUse.schema';
 import { TextileProductSchema } from './infra/persistence/textileProducts/textileProduct.schema';
+import { TextileCertificationSchema } from './infra/persistence/textileProducts/textileCertification.schema';
 import { UsersModule } from './users.module';
+import { ShopsModule } from './shop.module';
+import { OriginProductModule } from './originProduct.module';
 import { CreateTextileCategoryUseCase } from './app/use_cases/textileProducts/CreateTextileCategoryUseCase';
 import { TextileCategoryRepository } from './app/datastore/textileProducts/TextileCategory.repo';
 import { TextileCategoryRepositoryImpl } from './infra/datastore/textileProducts/textileCategory.repo.impl';
@@ -58,6 +61,16 @@ import { TextilePrincipalUseRepository } from './app/datastore/textileProducts/T
 import { TextilePrincipalUseRepositoryImpl } from './infra/datastore/textileProducts/textilePrincipalUse.repo.impl';
 import { TextileProductRepository } from './app/datastore/textileProducts/TextileProduct.repo';
 import { TextileProductRepositoryImpl } from './infra/datastore/textileProducts/textileProduct.repo.impl';
+import { TextileCertificationRepository } from './app/datastore/textileProducts/TextileCertification.repo';
+import { TextileCertificationRepositoryImpl } from './infra/datastore/textileProducts/textileCertification.repo.impl';
+import { CreateTextileCertificationUseCase } from './app/use_cases/textileProducts/CreateTextileCertificationUseCase';
+import { UpdateTextileCertificationUseCase } from './app/use_cases/textileProducts/UpdateTextileCertificationUseCase';
+import { GetAllTextileCertificationsUseCase } from './app/use_cases/textileProducts/GetAllTextileCertificationsUseCase';
+import { GetByIdTextileCertificationUseCase } from './app/use_cases/textileProducts/GetByIdTextileCertificationUseCase';
+import { DeleteTextileCertificationUseCase } from './app/use_cases/textileProducts/DeleteTextileCertificationUseCase';
+import { CommunityRepositoryImpl } from './infra/datastore/community.repo.impl';
+import { CommunityRepository } from './app/datastore/community.repo';
+import { CommunitySchema } from './infra/persistence/community.schema';
 
 @Module({
   imports: [
@@ -90,8 +103,18 @@ import { TextileProductRepositoryImpl } from './infra/datastore/textileProducts/
         name: 'TextileProduct',
         schema: TextileProductSchema,
       },
+      {
+        name: 'TextileCertification',
+        schema: TextileCertificationSchema,
+      },
+      {
+        name: 'Community',
+        schema: CommunitySchema,
+      },
     ]),
     UsersModule,
+    ShopsModule,
+    OriginProductModule,
   ],
   controllers: [TextileProductController],
   providers: [
@@ -130,6 +153,11 @@ import { TextileProductRepositoryImpl } from './infra/datastore/textileProducts/
     GetAllTextileProductsUseCase,
     GetByIdTextileProductUseCase,
     DeleteTextileProductUseCase,
+    CreateTextileCertificationUseCase,
+    UpdateTextileCertificationUseCase,
+    GetAllTextileCertificationsUseCase,
+    GetByIdTextileCertificationUseCase,
+    DeleteTextileCertificationUseCase,
     {
       provide: TextileCategoryRepository,
       useClass: TextileCategoryRepositoryImpl,
@@ -158,6 +186,14 @@ import { TextileProductRepositoryImpl } from './infra/datastore/textileProducts/
       provide: TextileProductRepository,
       useClass: TextileProductRepositoryImpl,
     },
+    {
+      provide: TextileCertificationRepository,
+      useClass: TextileCertificationRepositoryImpl,
+    },
+    {
+      provide: CommunityRepository,
+      useClass: CommunityRepositoryImpl,
+    },
   ],
   exports: [
     TextileCategoryRepository,
@@ -167,6 +203,7 @@ import { TextileProductRepositoryImpl } from './infra/datastore/textileProducts/
     TextileCraftTechniqueRepository,
     TextilePrincipalUseRepository,
     TextileProductRepository,
+    TextileCertificationRepository,
     MongooseModule,
   ],
 })

@@ -6,6 +6,12 @@ import { BaseInfo } from 'src/andean/domain/entities/textileProducts/BaseInfo';
 import { PriceInventary } from 'src/andean/domain/entities/textileProducts/PriceInventary';
 import { Atribute } from 'src/andean/domain/entities/textileProducts/Atribute';
 import { PreparationTime } from 'src/andean/domain/entities/textileProducts/PreparationTime';
+import { DetailTraceability } from 'src/andean/domain/entities/textileProducts/DetailTraceability';
+import { TextileOptions } from 'src/andean/domain/entities/textileProducts/TextileOptions';
+import { TextileOptionsItem } from 'src/andean/domain/entities/textileProducts/TextileOptionsItem';
+import { TextileVariant } from 'src/andean/domain/entities/textileProducts/TextileVariant';
+import { ProductTraceability } from 'src/andean/domain/entities/ProductTraceability';
+import * as crypto from 'crypto';
 
 export class TextileProductMapper {
   static fromDocument(doc: TextileProductDocument): TextileProduct {
@@ -27,11 +33,41 @@ export class TextileProductMapper {
       });
     }
 
+    const detailTraceability = plainToInstance(
+      DetailTraceability,
+      rest.detailTraceability,
+    );
+
+    let productTraceability: ProductTraceability | null = null;
+    if (rest.productTraceability) {
+      productTraceability = plainToInstance(
+        ProductTraceability,
+        rest.productTraceability,
+      );
+    }
+
+    const options = (rest.options || []).map((opt: any) => {
+      const values = (opt.values || []).map((item: any) =>
+        plainToInstance(TextileOptionsItem, item),
+      );
+      return plainToInstance(TextileOptions, { ...opt, values });
+    });
+
+    const variants = (rest.variants || []).map((variant: any) =>
+      plainToInstance(TextileVariant, variant),
+    );
+
     return plainToInstance(TextileProduct, {
       ...rest,
       baseInfo,
       priceInventary,
       atribute,
+      detailTraceability,
+      productTraceability,
+      options,
+      variants,
+      createdAt: rest.createdAt || new Date(),
+      updatedAt: rest.updatedAt || new Date(),
     });
   }
 
@@ -52,12 +88,49 @@ export class TextileProductMapper {
       });
     }
 
+    const detailTraceability = plainToInstance(
+      DetailTraceability,
+      dto.detailTraceability,
+    );
+
+    let productTraceability: ProductTraceability | null = null;
+    if (dto.productTraceability) {
+      productTraceability = plainToInstance(
+        ProductTraceability,
+        dto.productTraceability,
+      );
+    }
+
+    const options = (dto.options || []).map((opt) => {
+      const values = (opt.values || []).map((item) =>
+        plainToInstance(TextileOptionsItem, {
+          ...item,
+          id: crypto.randomUUID(),
+        }),
+      );
+      return plainToInstance(TextileOptions, {
+        ...opt,
+        id: crypto.randomUUID(),
+        values,
+      });
+    });
+
+    const variants = (dto.variants || []).map((variant) =>
+      plainToInstance(TextileVariant, { ...variant, id: crypto.randomUUID() }),
+    );
+
     const plain = {
       id: crypto.randomUUID(),
       ...textileProductData,
       baseInfo,
       priceInventary,
       atribute,
+      detailTraceability,
+      productTraceability,
+      options,
+      variants,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
 
     return plainToInstance(TextileProduct, plain);
@@ -83,12 +156,52 @@ export class TextileProductMapper {
       });
     }
 
+    const detailTraceability = plainToInstance(
+      DetailTraceability,
+      dto.detailTraceability,
+    );
+
+    let productTraceability: ProductTraceability | null = null;
+    if (dto.productTraceability) {
+      productTraceability = plainToInstance(
+        ProductTraceability,
+        dto.productTraceability,
+      );
+    }
+
+    const options = (dto.options || []).map((opt) => {
+      const values = (opt.values || []).map((item) =>
+        plainToInstance(TextileOptionsItem, {
+          ...item,
+          id: crypto.randomUUID(),
+        }),
+      );
+      return plainToInstance(TextileOptions, {
+        ...opt,
+        id: crypto.randomUUID(),
+        values,
+      });
+    });
+
+    const variants = (dto.variants || []).map((variant) =>
+      plainToInstance(TextileVariant, {
+        ...variant,
+        id: crypto.randomUUID(),
+      }),
+    );
+
     const plain = {
       id: id,
       ...textileProductData,
       baseInfo,
       priceInventary,
       atribute,
+      detailTraceability,
+      productTraceability,
+      options,
+      variants,
+      updatedAt: new Date(),
+      // createdAt no se incluye aquí, se preserva del documento original
     };
 
     return plainToInstance(TextileProduct, plain);

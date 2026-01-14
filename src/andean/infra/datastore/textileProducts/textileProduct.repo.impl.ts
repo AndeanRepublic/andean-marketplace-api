@@ -40,8 +40,9 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
     product: TextileProduct,
   ): Promise<TextileProduct> {
     const plain = TextileProductMapper.toPersistence(product);
+    const { createdAt, ...updateData } = plain;
     const updated = await this.textileProductModel
-      .findOneAndUpdate({ id }, plain, { new: true })
+      .findOneAndUpdate({ id }, { $set: updateData }, { new: true })
       .exec();
     return TextileProductMapper.fromDocument(updated!);
   }

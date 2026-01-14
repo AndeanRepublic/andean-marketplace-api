@@ -56,6 +56,13 @@ import { UpdateTextileProductUseCase } from 'src/andean/app/use_cases/textilePro
 import { GetAllTextileProductsUseCase } from 'src/andean/app/use_cases/textileProducts/GetAllTextileProductsUseCase';
 import { GetByIdTextileProductUseCase } from 'src/andean/app/use_cases/textileProducts/GetByIdTextileProductUseCase';
 import { DeleteTextileProductUseCase } from 'src/andean/app/use_cases/textileProducts/DeleteTextileProductUseCase';
+import { CreateTextileCertificationUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileCertificationUseCase';
+import { TextileCertification } from 'src/andean/domain/entities/textileProducts/TextileCertification';
+import { CreateTextileCertificationDto } from './dto/textileProducts/CreateTextileCertificationDto';
+import { UpdateTextileCertificationUseCase } from 'src/andean/app/use_cases/textileProducts/UpdateTextileCertificationUseCase';
+import { GetAllTextileCertificationsUseCase } from 'src/andean/app/use_cases/textileProducts/GetAllTextileCertificationsUseCase';
+import { GetByIdTextileCertificationUseCase } from 'src/andean/app/use_cases/textileProducts/GetByIdTextileCertificationUseCase';
+import { DeleteTextileCertificationUseCase } from 'src/andean/app/use_cases/textileProducts/DeleteTextileCertificationUseCase';
 
 const path_textile_product_id = '/:id';
 const path_textile_categories = '/categories';
@@ -70,6 +77,8 @@ const path_textile_craft_techniques = '/craft-techniques';
 const path_textile_craft_techniques_id = '/craft-techniques/:id';
 const path_textile_principal_uses = '/principal-uses';
 const path_textile_principal_uses_id = '/principal-uses/:id';
+const path_textile_certifications = '/certifications';
+const path_textile_certifications_id = '/certifications/:id';
 
 @Controller('textile-products')
 export class TextileProductController {
@@ -109,6 +118,11 @@ export class TextileProductController {
     private readonly getAllTextileProductsUseCase: GetAllTextileProductsUseCase,
     private readonly getByIdTextileProductUseCase: GetByIdTextileProductUseCase,
     private readonly deleteTextileProductUseCase: DeleteTextileProductUseCase,
+    private readonly createTextileCertificationUseCase: CreateTextileCertificationUseCase,
+    private readonly updateTextileCertificationUseCase: UpdateTextileCertificationUseCase,
+    private readonly getAllTextileCertificationsUseCase: GetAllTextileCertificationsUseCase,
+    private readonly getByIdTextileCertificationUseCase: GetByIdTextileCertificationUseCase,
+    private readonly deleteTextileCertificationUseCase: DeleteTextileCertificationUseCase,
   ) {}
 
   @Post(path_textile_categories)
@@ -329,5 +343,37 @@ export class TextileProductController {
   @Delete(path_textile_product_id)
   async deleteTextileProduct(@Param('id') id: string): Promise<void> {
     return this.deleteTextileProductUseCase.handle(id);
+  }
+
+  @Post(path_textile_certifications)
+  async createTextileCertification(
+    @Body() body: CreateTextileCertificationDto,
+  ): Promise<TextileCertification> {
+    return this.createTextileCertificationUseCase.handle(body);
+  }
+
+  @Put(path_textile_certifications_id)
+  async updateTextileCertification(
+    @Param('id') id: string,
+    @Body() body: CreateTextileCertificationDto,
+  ): Promise<TextileCertification> {
+    return this.updateTextileCertificationUseCase.handle(id, body);
+  }
+
+  @Get(path_textile_certifications)
+  async getAllTextileCertifications(): Promise<TextileCertification[]> {
+    return this.getAllTextileCertificationsUseCase.handle();
+  }
+
+  @Get(path_textile_certifications_id)
+  async getByIdTextileCertification(
+    @Param('id') id: string,
+  ): Promise<TextileCertification> {
+    return this.getByIdTextileCertificationUseCase.handle(id);
+  }
+
+  @Delete(path_textile_certifications_id)
+  async deleteTextileCertification(@Param('id') id: string): Promise<void> {
+    return this.deleteTextileCertificationUseCase.handle(id);
   }
 }

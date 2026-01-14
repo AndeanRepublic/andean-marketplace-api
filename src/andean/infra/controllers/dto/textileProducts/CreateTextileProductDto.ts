@@ -8,12 +8,15 @@ import {
   ValidateNested,
   IsInt,
   Min,
+  IsBoolean,
+  IsObject,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { TextileProductStatus } from 'src/andean/domain/enums/TextileProductStatus';
 import { OwnerType } from 'src/andean/domain/enums/OwnerType';
 import { Gender } from 'src/andean/domain/enums/Gender';
 import { Season } from 'src/andean/domain/enums/Season';
+import { ToolUsed } from 'src/andean/domain/enums/ToolUsed';
 
 export class PreparationTimeDto {
   @IsInt()
@@ -97,6 +100,93 @@ export class AtributeDto {
   preparationTime: PreparationTimeDto;
 }
 
+export class TextileOptionsItemDto {
+  @IsString()
+  @IsNotEmpty()
+  label: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  mediaIds?: string[];
+}
+
+export class TextileOptionsDto {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => TextileOptionsItemDto)
+  @IsNotEmpty()
+  values: TextileOptionsItemDto[];
+}
+
+export class TextileVariantDto {
+  @IsObject()
+  @IsNotEmpty()
+  combination: Record<string, string>;
+
+  @IsNumber()
+  @Min(0)
+  @IsNotEmpty()
+  price: number;
+
+  @IsInt()
+  @Min(0)
+  @IsNotEmpty()
+  stock: number;
+}
+
+export class DetailTraceabilityDto {
+  @IsBoolean()
+  @IsNotEmpty()
+  isHandmade: boolean;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsNotEmpty()
+  secondaryMaterial: string[];
+
+  @IsString()
+  @IsNotEmpty()
+  originProductCommunityId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  craftTechniqueId: string;
+
+  @IsEnum(ToolUsed)
+  @IsNotEmpty()
+  toolUsed: ToolUsed;
+
+  @IsBoolean()
+  @IsNotEmpty()
+  isArtisanExclusive: boolean;
+
+  @IsBoolean()
+  @IsNotEmpty()
+  isOriginalCreation: boolean;
+
+  @IsBoolean()
+  @IsNotEmpty()
+  isRegisteredDesign: boolean;
+
+  @IsBoolean()
+  @IsNotEmpty()
+  isBackorderAvailable: boolean;
+
+  @IsInt()
+  @Min(0)
+  @IsNotEmpty()
+  leadTime: number;
+
+  @IsString()
+  @IsNotEmpty()
+  certificationId: string;
+}
+
 export class CreateTextileProductDto {
   @IsString()
   @IsNotEmpty()
@@ -120,4 +210,24 @@ export class CreateTextileProductDto {
   @Type(() => AtributeDto)
   @IsOptional()
   atribute?: AtributeDto;
+
+  @ValidateNested()
+  @Type(() => DetailTraceabilityDto)
+  @IsNotEmpty()
+  detailTraceability: DetailTraceabilityDto;
+
+  @IsOptional()
+  productTraceability?: any;
+
+  @IsArray()
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => TextileOptionsDto)
+  options?: TextileOptionsDto[];
+
+  @IsArray()
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => TextileVariantDto)
+  variants?: TextileVariantDto[];
 }
