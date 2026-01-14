@@ -1,7 +1,12 @@
-// Entidad general compartida con Textiles y Experiencias
-// Por ahora se deja como any para ser definida posteriormente
+import { ProductType } from '../enums/ProductType';
+import { TraceabilityEpoch } from './traceability/TraceabilityEpoch';
+
 export class ProductTraceability {
 	constructor(
-		public data: any,  // Será definido cuando se implemente la estructura general
+		public id: string,
+		public productId: string,
+		public productType: ProductType,
+		public blockchainLink: string,
+		public epochs: TraceabilityEpoch[],
 	) { }
 }
