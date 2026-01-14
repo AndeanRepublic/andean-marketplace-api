@@ -13,6 +13,10 @@ import { UploadModule } from './andean/upload.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { AdminModule } from './andean/admin.module';
+import { CommunityModule } from './andean/community.module';
+import { OriginProductModule } from './andean/originProduct.module';
+import { ProductTraceabilityModule } from './andean/productTraceability.module';
+import { SuperfoodModule } from './andean/superfood.module';
 import { TextileProductModule } from './andean/textileProduct.module';
 
 @Module({
@@ -43,6 +47,10 @@ import { TextileProductModule } from './andean/textileProduct.module';
     OrdersModule,
     UploadModule,
     AdminModule,
+    CommunityModule,
+    OriginProductModule,
+    ProductTraceabilityModule,
+    SuperfoodModule,
     TextileProductModule,
   ],
   controllers: [],

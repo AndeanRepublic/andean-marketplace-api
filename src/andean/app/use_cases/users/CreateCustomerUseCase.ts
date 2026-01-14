@@ -15,7 +15,7 @@ export class CreateCustomerUseCase {
     private readonly userRepository: CustomerProfileRepository,
     @Inject(AccountRepository)
     private readonly accountRepository: AccountRepository,
-  ) {}
+  ) { }
 
   async handle(userDto: CreateCustomerDto): Promise<CustomerProfile> {
     const accountFound: Account | null =
@@ -31,7 +31,7 @@ export class CreateCustomerUseCase {
       email: userDto.email,
       password: userDto.password,
       status: AccountStatus.ENABLED,
-      role: AccountRole.USER,
+      roles: [AccountRole.USER],
     };
     await this.accountRepository.saveAccount(accountToSave);
 

@@ -6,25 +6,25 @@ import { Payload } from '../../domain/interfaces/Payload';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+	constructor(private reflector: Reflector) { }
 
-  canActivate(context: ExecutionContext): boolean {
-    const requiredRoles = this.reflector.getAllAndOverride<string[]>(
-      ROLES_KEY,
-      [context.getHandler(), context.getClass()],
-    );
+	canActivate(context: ExecutionContext): boolean {
+		const requiredRoles = this.reflector.getAllAndOverride<string[]>(
+			ROLES_KEY,
+			[context.getHandler(), context.getClass()],
+		);
 
-    if (!requiredRoles || requiredRoles.length === 0) {
-      return true;
-    }
+		if (!requiredRoles || requiredRoles.length === 0) {
+			return true;
+		}
 
-    const request: Request = context.switchToHttp().getRequest();
-    const user: Payload = <Payload>request.user;
+		const request: Request = context.switchToHttp().getRequest();
+		const user: Payload = <Payload>request.user;
 
-    if (!user || !user.role) {
-      return false;
-    }
+		if (!user || !user.roles || user.roles.length === 0) {
+			return false;
+		}
 
-    return requiredRoles.includes(user.role);
-  }
+		return requiredRoles.some(role => user.roles.includes(role as any));
+	}
 }
