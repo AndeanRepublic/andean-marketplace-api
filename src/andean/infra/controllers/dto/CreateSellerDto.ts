@@ -3,6 +3,14 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PersonType } from '../../../domain/enums/PersonType';
 
 export class CreateSellerDto {
+	@ApiPropertyOptional({
+		description: 'ID del usuario existente (si ya tiene cuenta como cliente)',
+		example: '123e4567-e89b-12d3-a456-426614174000'
+	})
+	@IsString()
+	@IsOptional()
+	userId?: string;
+
 	@ApiProperty({
 		description: 'Tipo de persona (natural o jurídica)',
 		enum: PersonType,
@@ -42,13 +50,13 @@ export class CreateSellerDto {
 	@IsNotEmpty()
 	phoneNumber: string;
 
-	@ApiProperty({ description: 'Correo electrónico', example: 'maria@textiles.com' })
+	@ApiPropertyOptional({ description: 'Correo electrónico (requerido si no se proporciona userId)', example: 'maria@textiles.com' })
 	@IsString()
-	@IsNotEmpty()
-	email: string;
+	@IsOptional()
+	email?: string;
 
-	@ApiProperty({ description: 'Contraseña para la cuenta', example: 'SecurePass123!' })
+	@ApiPropertyOptional({ description: 'Contraseña para la cuenta (requerido si no se proporciona userId)', example: 'SecurePass123!' })
 	@IsString()
-	@IsNotEmpty()
-	password: string;
+	@IsOptional()
+	password?: string;
 }
