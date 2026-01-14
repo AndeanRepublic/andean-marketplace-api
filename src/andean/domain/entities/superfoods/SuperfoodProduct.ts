@@ -18,7 +18,7 @@ export class SuperfoodProduct {
 		public detailProduct: SuperfoodDetailProduct,
 		public nutritionalContent: SuperfoodNutritionalItem[],
 		public detailTraceability: SuperfoodDetailTraceability,
-		public productTraceability: ProductTraceability,  
+		public productTraceability: ProductTraceability | null,  // Managed separately
 		public options: SuperfoodOptions[],               // Product options (e.g., color, size)
 		public variants: SuperfoodVariant[],              // Product variants with specific combinations
 		public createdAt: Date,

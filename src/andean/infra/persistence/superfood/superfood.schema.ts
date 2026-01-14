@@ -8,7 +8,7 @@ import { SuperfoodOwnerType } from '../../../domain/enums/SuperfoodOwnerType';
 const SuperfoodOptionsItemSchema = new Schema({
 	id: { type: String, required: true },
 	label: { type: String, required: true },
-	images: { type: [String], default: [] },
+	mediaIds: { type: [String], default: [] },
 });
 
 const SuperfoodOptionsSchema = new Schema({

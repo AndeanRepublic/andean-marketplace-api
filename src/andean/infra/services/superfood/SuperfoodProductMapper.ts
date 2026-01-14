@@ -71,13 +71,14 @@ export class SuperfoodProductMapper {
 			doc.detailTraceability.certification,
 		);
 
-		const productTraceability = new ProductTraceability(doc.productTraceability);
+		// ProductTraceability is stored separately, not in superfood document
+		const productTraceability = null;
 
 		const options = doc.options?.map((opt: any) =>
 			new SuperfoodOptions(
 				opt.id,
 				opt.name,
-				opt.values.map((val: any) => new SuperfoodOptionsItem(val.id, val.label, val.images))
+				opt.values.map((val: any) => new SuperfoodOptionsItem(val.id, val.label, val.mediaIds || []))
 			)
 		) || [];
 
@@ -166,7 +167,8 @@ export class SuperfoodProductMapper {
 			dto.detailProduct.certification || '',
 		);
 
-		const productTraceability = new ProductTraceability(dto.productTraceability || {});
+		// ProductTraceability is created separately via product-traceability endpoint
+		const productTraceability = null;
 
 		const options = dto.options?.map((opt) =>
 			new SuperfoodOptions(
@@ -175,7 +177,7 @@ export class SuperfoodProductMapper {
 				opt.values.map((val) => new SuperfoodOptionsItem(
 					crypto.randomUUID(),
 					val.label,
-					val.images
+					val.mediaIds || []
 				))
 			)
 		) || [];
@@ -258,14 +260,14 @@ export class SuperfoodProductMapper {
 				canCauseAllergies: product.detailTraceability.canCauseAllergies,
 				certification: product.detailTraceability.certification,
 			},
-			productTraceability: product.productTraceability.data,
+			// productTraceability is managed separately via product-traceability endpoint
 			options: product.options.map(opt => ({
 				id: opt.id,
 				name: opt.name,
 				values: opt.values.map(val => ({
 					id: val.id,
 					label: val.label,
-					images: val.images,
+					mediaIds: val.mediaIds,
 				})),
 			})),
 			variants: product.variants.map(variant => ({
