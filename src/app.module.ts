@@ -15,6 +15,7 @@ import { join } from 'path';
 import { AdminModule } from './andean/admin.module';
 import { CommunityModule } from './andean/community.module';
 import { OriginProductModule } from './andean/originProduct.module';
+import { ProductTraceabilityModule } from './andean/productTraceability.module';
 
 @Module({
 	imports: [
@@ -46,6 +47,7 @@ import { OriginProductModule } from './andean/originProduct.module';
 		AdminModule,
 		CommunityModule,
 		OriginProductModule,
+		ProductTraceabilityModule,
 	],
 	controllers: [],
 	providers: [],
