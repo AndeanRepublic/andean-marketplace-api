@@ -14,6 +14,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { AdminModule } from './andean/admin.module';
 import { CommunityModule } from './andean/community.module';
+import { OriginProductModule } from './andean/originProduct.module';
 
 @Module({
 	imports: [
@@ -44,6 +45,7 @@ import { CommunityModule } from './andean/community.module';
 		UploadModule,
 		AdminModule,
 		CommunityModule,
+		OriginProductModule,
 	],
 	controllers: [],
 	providers: [],
