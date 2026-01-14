@@ -39,7 +39,7 @@ export class UpdateProductTraceabilityUseCase {
 		if (dto.productType) updateData.productType = dto.productType;
 		if (dto.blockchainLink) updateData.blockchainLink = dto.blockchainLink;
 		if (dto.epochs) {
-			updateData.epochs = dto.epochs.map(epoch => 
+			updateData.epochs = dto.epochs.map(epoch =>
 				new TraceabilityEpoch(
 					epoch.title,
 					epoch.country,
