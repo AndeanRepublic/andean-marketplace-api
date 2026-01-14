@@ -1,4 +1,4 @@
-import { SuperfoodSalesUnitSizeDocument } from '../persistence/superfoodSalesUnitSize.schema';
+import { SuperfoodSalesUnitSizeDocument } from '../persistence/superfood/superfoodSalesUnitSize.schema';
 import { SuperfoodSalesUnitSize } from '../../domain/entities/superfoods/SuperfoodSalesUnitSize';
 
 export class SuperfoodSalesUnitSizeMapper {

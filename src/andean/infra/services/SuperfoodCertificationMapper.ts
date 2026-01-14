@@ -1,4 +1,4 @@
-import { SuperfoodCertificationDocument } from '../persistence/superfoodCertification.schema';
+import { SuperfoodCertificationDocument } from '../persistence/superfood/superfoodCertification.schema';
 import { SuperfoodCertification } from '../../domain/entities/superfoods/SuperfoodCertification';
 
 export class SuperfoodCertificationMapper {

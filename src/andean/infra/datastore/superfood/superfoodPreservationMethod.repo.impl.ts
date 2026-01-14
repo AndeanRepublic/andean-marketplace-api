@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { SuperfoodPreservationMethodRepository } from '../../../app/datastore/superfoods/SuperfoodPreservationMethod.repo';
 import { SuperfoodPreservationMethod } from '../../../domain/entities/superfoods/SuperfoodPreservationMethod';
-import { SuperfoodPreservationMethodDocument } from '../../persistence/superfoodPreservationMethod.schema';
+import { SuperfoodPreservationMethodDocument } from '../../persistence/superfood/superfoodPreservationMethod.schema';
 import { SuperfoodPreservationMethodMapper } from '../../services/SuperfoodPreservationMethodMapper';
 
 @Injectable()

@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { SuperfoodSalesUnitSizeRepository } from '../../../app/datastore/superfoods/SuperfoodSalesUnitSize.repo';
 import { SuperfoodSalesUnitSize } from '../../../domain/entities/superfoods/SuperfoodSalesUnitSize';
-import { SuperfoodSalesUnitSizeDocument } from '../../persistence/superfoodSalesUnitSize.schema';
+import { SuperfoodSalesUnitSizeDocument } from '../../persistence/superfood/superfoodSalesUnitSize.schema';
 import { SuperfoodSalesUnitSizeMapper } from '../../services/SuperfoodSalesUnitSizeMapper';
 
 @Injectable()

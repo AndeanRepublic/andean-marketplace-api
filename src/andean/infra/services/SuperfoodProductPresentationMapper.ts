@@ -1,4 +1,4 @@
-import { SuperfoodProductPresentationDocument } from '../persistence/superfoodProductPresentation.schema';
+import { SuperfoodProductPresentationDocument } from '../persistence/superfood/superfoodProductPresentation.schema';
 import { SuperfoodProductPresentation } from '../../domain/entities/superfoods/SuperfoodProductPresentation';
 
 export class SuperfoodProductPresentationMapper {

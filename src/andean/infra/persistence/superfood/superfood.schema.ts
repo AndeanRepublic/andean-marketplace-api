@@ -1,8 +1,8 @@
 import { Document, Schema } from 'mongoose';
-import { SuperfoodProductStatus } from '../../domain/enums/SuperfoodProductStatus';
-import { SuperfoodConsumptionWay } from '../../domain/enums/SuperfoodConsumptionWay';
-import { SuperfoodProductionMethod } from '../../domain/enums/SuperfoodProductionMethod';
-import { SuperfoodOwnerType } from '../../domain/enums/SuperfoodOwnerType';
+import { SuperfoodProductStatus } from '../../../domain/enums/SuperfoodProductStatus';
+import { SuperfoodConsumptionWay } from '../../../domain/enums/SuperfoodConsumptionWay';
+import { SuperfoodProductionMethod } from '../../../domain/enums/SuperfoodProductionMethod';
+import { SuperfoodOwnerType } from '../../../domain/enums/SuperfoodOwnerType';
 
 // Nested schemas
 const SuperfoodOptionsItemSchema = new Schema({

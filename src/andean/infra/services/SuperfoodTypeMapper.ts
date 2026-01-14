@@ -1,4 +1,4 @@
-import { SuperfoodTypeDocument } from '../persistence/superfoodType.schema';
+import { SuperfoodTypeDocument } from '../persistence/superfood/superfoodType.schema';
 import { SuperfoodType } from '../../domain/entities/superfoods/SuperfoodType';
 
 export class SuperfoodTypeMapper {

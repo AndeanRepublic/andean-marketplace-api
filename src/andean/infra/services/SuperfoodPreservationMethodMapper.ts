@@ -1,4 +1,4 @@
-import { SuperfoodPreservationMethodDocument } from '../persistence/superfoodPreservationMethod.schema';
+import { SuperfoodPreservationMethodDocument } from '../persistence/superfood/superfoodPreservationMethod.schema';
 import { SuperfoodPreservationMethod } from '../../domain/entities/superfoods/SuperfoodPreservationMethod';
 
 export class SuperfoodPreservationMethodMapper {

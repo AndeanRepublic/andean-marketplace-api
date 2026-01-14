@@ -1,4 +1,4 @@
-import { SuperfoodNutritionalFeatureDocument } from '../persistence/superfoodNutritionalFeature.schema';
+import { SuperfoodNutritionalFeatureDocument } from '../persistence/superfood/superfoodNutritionalFeature.schema';
 import { SuperfoodNutritionalFeature } from '../../domain/entities/superfoods/SuperfoodNutritionalFeature';
 
 export class SuperfoodNutritionalFeatureMapper {

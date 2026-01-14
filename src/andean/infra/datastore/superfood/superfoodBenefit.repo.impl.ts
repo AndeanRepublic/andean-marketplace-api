@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { SuperfoodBenefitRepository } from '../../../app/datastore/superfoods/SuperfoodBenefit.repo';
 import { SuperfoodBenefit } from '../../../domain/entities/superfoods/SuperfoodBenefit';
-import { SuperfoodBenefitDocument } from '../../persistence/superfoodBenefit.schema';
+import { SuperfoodBenefitDocument } from '../../persistence/superfood/superfoodBenefit.schema';
 import { SuperfoodBenefitMapper } from '../../services/SuperfoodBenefitMapper';
 
 @Injectable()

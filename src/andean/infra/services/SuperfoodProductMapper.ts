@@ -1,4 +1,4 @@
-import { SuperfoodProductDocument } from '../persistence/superfood.schema';
+import { SuperfoodProductDocument } from '../persistence/superfood/superfood.schema';
 import { SuperfoodProduct } from '../../domain/entities/superfoods/SuperfoodProduct';
 import { CreateSuperfoodDto } from '../controllers/dto/superfoods/CreateSuperfoodDto';
 import { SuperfoodProductStatus } from '../../domain/enums/SuperfoodProductStatus';

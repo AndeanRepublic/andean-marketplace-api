@@ -1,4 +1,4 @@
-import { SuperfoodBenefitDocument } from '../persistence/superfoodBenefit.schema';
+import { SuperfoodBenefitDocument } from '../persistence/superfood/superfoodBenefit.schema';
 import { SuperfoodBenefit } from '../../domain/entities/superfoods/SuperfoodBenefit';
 
 export class SuperfoodBenefitMapper {
