@@ -1,4 +1,4 @@
-import { SuperfoodSalesUnitSize } from '../../domain/entities/superfoods/SuperfoodSalesUnitSize';
+import { SuperfoodSalesUnitSize } from '../../../domain/entities/superfoods/SuperfoodSalesUnitSize';
 
 export abstract class SuperfoodSalesUnitSizeRepository {
 	abstract getById(id: string): Promise<SuperfoodSalesUnitSize | null>;

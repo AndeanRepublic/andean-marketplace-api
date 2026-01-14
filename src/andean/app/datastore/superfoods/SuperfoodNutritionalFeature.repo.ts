@@ -1,4 +1,4 @@
-import { SuperfoodNutritionalFeature } from '../../domain/entities/superfoods/SuperfoodNutritionalFeature';
+import { SuperfoodNutritionalFeature } from '../../../domain/entities/superfoods/SuperfoodNutritionalFeature';
 
 export abstract class SuperfoodNutritionalFeatureRepository {
 	abstract getById(id: string): Promise<SuperfoodNutritionalFeature | null>;

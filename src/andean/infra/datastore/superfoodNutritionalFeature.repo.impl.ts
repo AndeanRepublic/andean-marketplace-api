@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { SuperfoodNutritionalFeatureRepository } from '../../app/datastore/SuperfoodNutritionalFeature.repo';
+import { SuperfoodNutritionalFeatureRepository } from '../../app/datastore/superfoods/SuperfoodNutritionalFeature.repo';
 import { SuperfoodNutritionalFeature } from '../../domain/entities/superfoods/SuperfoodNutritionalFeature';
 import { SuperfoodNutritionalFeatureDocument } from '../persistence/superfoodNutritionalFeature.schema';
 import { SuperfoodNutritionalFeatureMapper } from '../services/SuperfoodNutritionalFeatureMapper';

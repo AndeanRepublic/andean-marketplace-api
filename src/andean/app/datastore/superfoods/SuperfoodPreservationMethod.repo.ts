@@ -1,4 +1,4 @@
-import { SuperfoodPreservationMethod } from '../../domain/entities/superfoods/SuperfoodPreservationMethod';
+import { SuperfoodPreservationMethod } from '../../../domain/entities/superfoods/SuperfoodPreservationMethod';
 
 export abstract class SuperfoodPreservationMethodRepository {
 	abstract getById(id: string): Promise<SuperfoodPreservationMethod | null>;
