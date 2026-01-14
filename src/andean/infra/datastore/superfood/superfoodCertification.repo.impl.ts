@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { SuperfoodCertificationRepository } from '../../app/datastore/superfoods/SuperfoodCertification.repo';
-import { SuperfoodCertification } from '../../domain/entities/superfoods/SuperfoodCertification';
-import { SuperfoodCertificationDocument } from '../persistence/superfoodCertification.schema';
-import { SuperfoodCertificationMapper } from '../services/SuperfoodCertificationMapper';
+import { SuperfoodCertificationRepository } from '../../../app/datastore/superfoods/SuperfoodCertification.repo';
+import { SuperfoodCertification } from '../../../domain/entities/superfoods/SuperfoodCertification';
+import { SuperfoodCertificationDocument } from '../../persistence/superfoodCertification.schema';
+import { SuperfoodCertificationMapper } from '../../services/SuperfoodCertificationMapper';
 
 @Injectable()
 export class SuperfoodCertificationRepoImpl implements SuperfoodCertificationRepository {

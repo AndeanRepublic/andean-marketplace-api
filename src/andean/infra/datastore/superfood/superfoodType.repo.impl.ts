@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { SuperfoodTypeRepository } from '../../app/datastore/superfoods/SuperfoodType.repo';
-import { SuperfoodType } from '../../domain/entities/superfoods/SuperfoodType';
-import { SuperfoodTypeDocument } from '../persistence/superfoodType.schema';
-import { SuperfoodTypeMapper } from '../services/SuperfoodTypeMapper';
+import { SuperfoodTypeRepository } from '../../../app/datastore/superfoods/SuperfoodType.repo';
+import { SuperfoodType } from '../../../domain/entities/superfoods/SuperfoodType';
+import { SuperfoodTypeDocument } from '../../persistence/superfoodType.schema';
+import { SuperfoodTypeMapper } from '../../services/SuperfoodTypeMapper';
 
 @Injectable()
 export class SuperfoodTypeRepoImpl implements SuperfoodTypeRepository {

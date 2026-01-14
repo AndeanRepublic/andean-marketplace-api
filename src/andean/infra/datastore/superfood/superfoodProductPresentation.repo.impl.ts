@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { SuperfoodProductPresentationRepository } from '../../app/datastore/superfoods/SuperfoodProductPresentation.repo';
-import { SuperfoodProductPresentation } from '../../domain/entities/superfoods/SuperfoodProductPresentation';
-import { SuperfoodProductPresentationDocument } from '../persistence/superfoodProductPresentation.schema';
-import { SuperfoodProductPresentationMapper } from '../services/SuperfoodProductPresentationMapper';
+import { SuperfoodProductPresentationRepository } from '../../../app/datastore/superfoods/SuperfoodProductPresentation.repo';
+import { SuperfoodProductPresentation } from '../../../domain/entities/superfoods/SuperfoodProductPresentation';
+import { SuperfoodProductPresentationDocument } from '../../persistence/superfoodProductPresentation.schema';
+import { SuperfoodProductPresentationMapper } from '../../services/SuperfoodProductPresentationMapper';
 
 @Injectable()
 export class SuperfoodProductPresentationRepoImpl implements SuperfoodProductPresentationRepository {
