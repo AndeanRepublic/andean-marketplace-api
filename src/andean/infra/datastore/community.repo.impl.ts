@@ -1,16 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { ICommunityRepository } from '../../app/datastore/community.repository.interface';
+import { CommunityRepository as CommunityRepositoryBase } from '../../app/datastore/community.repo';
 import { Community } from '../../domain/entities/community/Community';
 import { CommunityDocument } from '../persistence/community.schema';
 import { CommunityMapper } from '../services/CommunityMapper';
 
 @Injectable()
-export class CommunityRepository implements ICommunityRepository {
+export class CommunityRepositoryImpl extends CommunityRepositoryBase {
 	constructor(
 		@InjectModel('Community') private communityModel: Model<CommunityDocument>,
-	) { }
+	) {
+		super();
+	}
 
 	async create(community: Community): Promise<Community> {
 		const document = {

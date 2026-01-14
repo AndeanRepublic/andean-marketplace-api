@@ -5,7 +5,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { CommunitySchema } from './infra/persistence/community.schema';
 
 // Repository
-import { CommunityRepository } from './infra/datastore/community.repository';
+import { CommunityRepository } from './app/datastore/community.repo';
+import { CommunityRepositoryImpl } from './infra/datastore/community.repo.impl';
 
 // Use Cases
 import { CreateCommunityUseCase } from './app/use_cases/community/CreateCommunityUseCase';
@@ -17,9 +18,6 @@ import { DeleteCommunityUseCase } from './app/use_cases/community/DeleteCommunit
 // Controller
 import { CommunityController } from './infra/controllers/community.controller';
 
-// Repository Token
-export const COMMUNITY_REPOSITORY = 'ICommunityRepository';
-
 @Module({
 	imports: [
 		MongooseModule.forFeature([
@@ -30,8 +28,8 @@ export const COMMUNITY_REPOSITORY = 'ICommunityRepository';
 	providers: [
 		// Repository
 		{
-			provide: COMMUNITY_REPOSITORY,
-			useClass: CommunityRepository,
+			provide: CommunityRepository,
+			useClass: CommunityRepositoryImpl,
 		},
 
 		// Use Cases
@@ -41,6 +39,6 @@ export const COMMUNITY_REPOSITORY = 'ICommunityRepository';
 		ListCommunityUseCase,
 		DeleteCommunityUseCase,
 	],
-	exports: [COMMUNITY_REPOSITORY],
+	exports: [CommunityRepository],
 })
 export class CommunityModule { }

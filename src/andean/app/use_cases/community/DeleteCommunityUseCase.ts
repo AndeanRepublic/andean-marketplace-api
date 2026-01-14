@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { ICommunityRepository } from '../../datastore/community.repository.interface';
+import { CommunityRepository } from '../../datastore/community.repo';
 
 @Injectable()
 export class DeleteCommunityUseCase {
 	constructor(
-		private readonly communityRepository: ICommunityRepository,
+		private readonly communityRepository: CommunityRepository,
 	) { }
 
 	async execute(id: string): Promise<void> {

@@ -1,5 +1,5 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { ICommunityRepository } from '../../datastore/community.repository.interface';
+import { CommunityRepository } from '../../datastore/community.repo';
 import { Community } from '../../../domain/entities/community/Community';
 import { CreateCommunityDto } from '../../../infra/controllers/dto/community/CreateCommunityDto';
 import * as crypto from 'crypto';
@@ -7,7 +7,7 @@ import * as crypto from 'crypto';
 @Injectable()
 export class CreateCommunityUseCase {
 	constructor(
-		private readonly communityRepository: ICommunityRepository,
+		private readonly communityRepository: CommunityRepository,
 	) { }
 
 	async execute(dto: CreateCommunityDto): Promise<Community> {

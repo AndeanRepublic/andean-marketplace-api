@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { ICommunityRepository } from '../../datastore/community.repository.interface';
+import { CommunityRepository } from '../../datastore/community.repo';
 import { Community } from '../../../domain/entities/community/Community';
 import { UpdateCommunityDto } from '../../../infra/controllers/dto/community/UpdateCommunityDto';
 
 @Injectable()
 export class UpdateCommunityUseCase {
 	constructor(
-		private readonly communityRepository: ICommunityRepository,
+		private readonly communityRepository: CommunityRepository,
 	) { }
 
 	async execute(id: string, dto: UpdateCommunityDto): Promise<Community> {
