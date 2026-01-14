@@ -19,8 +19,6 @@ export class OriginProductCommunityRepositoryImpl extends OriginProductCommunity
 			id: community.id,
 			name: community.name,
 			regionId: community.regionId,
-			createdAt: community.createdAt,
-			updatedAt: community.updatedAt,
 		};
 		const created = await this.communityModel.create(document);
 		return OriginProductCommunityMapper.fromDocument(created);
@@ -49,13 +47,8 @@ export class OriginProductCommunityRepositoryImpl extends OriginProductCommunity
 	}
 
 	async update(id: string, community: Partial<OriginProductCommunity>): Promise<OriginProductCommunity | null> {
-		const updateData = {
-			...community,
-			updatedAt: new Date(),
-		};
-
 		const updated = await this.communityModel
-			.findOneAndUpdate({ id }, updateData, { new: true })
+			.findOneAndUpdate({ id }, community, { new: true })
 			.exec();
 
 		return updated ? OriginProductCommunityMapper.fromDocument(updated) : null;

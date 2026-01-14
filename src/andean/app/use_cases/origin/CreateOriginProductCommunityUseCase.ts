@@ -30,8 +30,6 @@ export class CreateOriginProductCommunityUseCase {
 			crypto.randomUUID(),
 			dto.name,
 			dto.regionId,
-			new Date(),
-			new Date(),
 		);
 
 		// Persistir

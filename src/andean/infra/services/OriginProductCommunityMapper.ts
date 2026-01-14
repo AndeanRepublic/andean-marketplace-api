@@ -9,8 +9,6 @@ export class OriginProductCommunityMapper {
 			doc.id,
 			doc.name,
 			doc.regionId,
-			doc.createdAt,
-			doc.updatedAt,
 		);
 	}
 
@@ -19,8 +17,6 @@ export class OriginProductCommunityMapper {
 			id: crypto.randomUUID(),
 			name: dto.name,
 			regionId: dto.regionId,
-			createdAt: new Date(),
-			updatedAt: new Date(),
 		};
 	}
 }

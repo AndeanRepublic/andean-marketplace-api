@@ -8,8 +8,6 @@ export class OriginProductRegionMapper {
 		return new OriginProductRegion(
 			doc.id,
 			doc.name,
-			doc.createdAt,
-			doc.updatedAt,
 		);
 	}
 
@@ -17,8 +15,6 @@ export class OriginProductRegionMapper {
 		return {
 			id: crypto.randomUUID(),
 			name: dto.name,
-			createdAt: new Date(),
-			updatedAt: new Date(),
 		};
 	}
 }

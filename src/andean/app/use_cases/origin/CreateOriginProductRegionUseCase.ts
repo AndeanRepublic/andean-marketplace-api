@@ -21,8 +21,6 @@ export class CreateOriginProductRegionUseCase {
 		const region = new OriginProductRegion(
 			crypto.randomUUID(),
 			dto.name,
-			new Date(),
-			new Date(),
 		);
 
 		// Persistir

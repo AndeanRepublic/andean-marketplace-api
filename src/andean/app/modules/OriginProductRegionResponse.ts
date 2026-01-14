@@ -12,16 +12,4 @@ export class OriginProductRegionResponse {
 		example: 'Cusco',
 	})
 	name: string;
-
-	@ApiProperty({
-		description: 'Fecha de creación',
-		example: '2026-01-13T10:00:00.000Z',
-	})
-	createdAt: Date;
-
-	@ApiProperty({
-		description: 'Fecha de última actualización',
-		example: '2026-01-13T10:00:00.000Z',
-	})
-	updatedAt: Date;
 }

@@ -108,8 +108,6 @@ export class OriginProductRegionController {
 		return {
 			id: region.id,
 			name: region.name,
-			createdAt: region.createdAt,
-			updatedAt: region.updatedAt,
 		};
 	}
 }

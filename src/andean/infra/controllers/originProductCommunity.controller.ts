@@ -113,8 +113,6 @@ export class OriginProductCommunityController {
 			id: community.id,
 			name: community.name,
 			regionId: community.regionId,
-			createdAt: community.createdAt,
-			updatedAt: community.updatedAt,
 		};
 	}
 }

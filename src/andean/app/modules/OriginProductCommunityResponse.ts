@@ -18,16 +18,4 @@ export class OriginProductCommunityResponse {
 		example: '550e8400-e29b-41d4-a716-446655440000',
 	})
 	regionId: string;
-
-	@ApiProperty({
-		description: 'Fecha de creación',
-		example: '2026-01-13T10:00:00.000Z',
-	})
-	createdAt: Date;
-
-	@ApiProperty({
-		description: 'Fecha de última actualización',
-		example: '2026-01-13T10:00:00.000Z',
-	})
-	updatedAt: Date;
 }

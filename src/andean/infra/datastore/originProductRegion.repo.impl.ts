@@ -18,8 +18,6 @@ export class OriginProductRegionRepositoryImpl extends OriginProductRegionReposi
 		const document = {
 			id: region.id,
 			name: region.name,
-			createdAt: region.createdAt,
-			updatedAt: region.updatedAt,
 		};
 		const created = await this.regionModel.create(document);
 		return OriginProductRegionMapper.fromDocument(created);
@@ -43,13 +41,8 @@ export class OriginProductRegionRepositoryImpl extends OriginProductRegionReposi
 	}
 
 	async update(id: string, region: Partial<OriginProductRegion>): Promise<OriginProductRegion | null> {
-		const updateData = {
-			...region,
-			updatedAt: new Date(),
-		};
-
 		const updated = await this.regionModel
-			.findOneAndUpdate({ id }, updateData, { new: true })
+			.findOneAndUpdate({ id }, region, { new: true })
 			.exec();
 
 		return updated ? OriginProductRegionMapper.fromDocument(updated) : null;
