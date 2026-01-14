@@ -16,6 +16,7 @@ import { AdminModule } from './andean/admin.module';
 import { CommunityModule } from './andean/community.module';
 import { OriginProductModule } from './andean/originProduct.module';
 import { ProductTraceabilityModule } from './andean/productTraceability.module';
+import { SuperfoodModule } from './andean/superfood.module';
 
 @Module({
 	imports: [
@@ -48,6 +49,7 @@ import { ProductTraceabilityModule } from './andean/productTraceability.module';
 		CommunityModule,
 		OriginProductModule,
 		ProductTraceabilityModule,
+		SuperfoodModule,
 	],
 	controllers: [],
 	providers: [],
