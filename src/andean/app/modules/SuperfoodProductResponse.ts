@@ -92,17 +92,6 @@ export class SuperfoodNutritionalItemResponse {
 	selected: boolean;
 }
 
-export class OriginResponse {
-	@ApiProperty({ description: 'Departamento de origen' })
-	department: string;
-
-	@ApiProperty({ description: 'Provincia de origen' })
-	province: string;
-
-	@ApiProperty({ description: 'Distrito de origen' })
-	district: string;
-}
-
 export class SuperfoodDetailTraceabilityResponse {
 	@ApiProperty({ description: 'Si es hecho a mano' })
 	handmade: boolean;
@@ -110,8 +99,8 @@ export class SuperfoodDetailTraceabilityResponse {
 	@ApiProperty({ description: 'Materiales secundarios usados', type: [String] })
 	secondaryMaterials: string[];
 
-	@ApiProperty({ type: OriginResponse, description: 'Origen geográfico del producto' })
-	origin: OriginResponse;
+	@ApiProperty({ description: 'ID de la comunidad de origen del producto' })
+	originProductCommunityId: string;
 
 	@ApiProperty({ enum: SuperfoodProductionMethod, description: 'Método de producción' })
 	productionMethod: SuperfoodProductionMethod;

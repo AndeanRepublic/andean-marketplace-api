@@ -4,23 +4,6 @@ import { Type } from 'class-transformer';
 import { SuperfoodConsumptionWay } from '../../../../domain/enums/SuperfoodConsumptionWay';
 import { SuperfoodProductionMethod } from '../../../../domain/enums/SuperfoodProductionMethod';
 
-export class CreateOriginDto {
-	@ApiProperty()
-	@IsString()
-	@IsNotEmpty()
-	department: string;
-
-	@ApiProperty()
-	@IsString()
-	@IsNotEmpty()
-	province: string;
-
-	@ApiProperty()
-	@IsString()
-	@IsNotEmpty()
-	district: string;
-}
-
 export class CreateElaborationTimeDto {
 	@ApiProperty()
 	@IsNumber()
@@ -80,10 +63,10 @@ export class CreateSuperfoodDetailDto {
 	@IsOptional()
 	secondaryMaterials?: string[];
 
-	@ApiProperty({ type: CreateOriginDto })
-	@ValidateNested()
-	@Type(() => CreateOriginDto)
-	origin: CreateOriginDto;
+	@ApiProperty({ description: 'ID de la comunidad de origen del producto' })
+	@IsString()
+	@IsNotEmpty()
+	originProductCommunityId: string;
 
 	@ApiProperty({ enum: SuperfoodProductionMethod })
 	@IsEnum(SuperfoodProductionMethod)

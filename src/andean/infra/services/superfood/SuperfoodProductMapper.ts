@@ -6,7 +6,7 @@ import { SuperfoodBasicInfo } from '../../../domain/entities/superfoods/Superfoo
 import { SuperfoodPriceInventory } from '../../../domain/entities/superfoods/SuperfoodPriceInventory';
 import { SuperfoodDetailProduct } from '../../../domain/entities/superfoods/SuperfoodDetailProduct';
 import { SuperfoodNutritionalItem } from '../../../domain/entities/superfoods/SuperfoodNutritionalItem';
-import { SuperfoodDetailTraceability, Origin } from '../../../domain/entities/superfoods/SuperfoodDetailTraceability';
+import { SuperfoodDetailTraceability } from '../../../domain/entities/superfoods/SuperfoodDetailTraceability';
 import { SuperfoodElaborationTime } from '../../../domain/entities/superfoods/SuperfoodElaborationTime';
 import { SuperfoodOptions } from '../../../domain/entities/superfoods/SuperfoodOptions';
 import { SuperfoodOptionsItem } from '../../../domain/entities/superfoods/SuperfoodOptionsItem';
@@ -58,16 +58,10 @@ export class SuperfoodProductMapper {
 			)
 		);
 
-		const origin = new Origin(
-			doc.detailTraceability.origin.department,
-			doc.detailTraceability.origin.province,
-			doc.detailTraceability.origin.district,
-		);
-
 		const detailTraceability = new SuperfoodDetailTraceability(
 			doc.detailTraceability.handmade,
 			doc.detailTraceability.secondaryMaterials,
-			origin,
+			doc.detailTraceability.originProductCommunityId,
 			doc.detailTraceability.productionMethod,
 			doc.detailTraceability.preservationMethod,
 			doc.detailTraceability.isArtesanal,
@@ -159,16 +153,10 @@ export class SuperfoodProductMapper {
 			)
 		);
 
-		const origin = new Origin(
-			dto.detailProduct.origin.department,
-			dto.detailProduct.origin.province,
-			dto.detailProduct.origin.district,
-		);
-
 		const detailTraceability = new SuperfoodDetailTraceability(
 			dto.detailProduct.handmade,
 			dto.detailProduct.secondaryMaterials || [],
-			origin,
+			dto.detailProduct.originProductCommunityId,
 			dto.detailProduct.productionMethod,
 			dto.detailProduct.preservationMethod,
 			dto.detailProduct.isArtesanal,
@@ -261,11 +249,7 @@ export class SuperfoodProductMapper {
 			detailTraceability: {
 				handmade: product.detailTraceability.handmade,
 				secondaryMaterials: product.detailTraceability.secondaryMaterials,
-				origin: {
-					department: product.detailTraceability.origin.department,
-					province: product.detailTraceability.origin.province,
-					district: product.detailTraceability.origin.district,
-				},
+				originProductCommunityId: product.detailTraceability.originProductCommunityId,
 				productionMethod: product.detailTraceability.productionMethod,
 				preservationMethod: product.detailTraceability.preservationMethod,
 				isArtesanal: product.detailTraceability.isArtesanal,

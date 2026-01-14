@@ -54,16 +54,10 @@ const SuperfoodNutritionalItemSchema = new Schema({
 	selected: { type: Boolean, default: false },
 });
 
-const OriginSchema = new Schema({
-	department: { type: String, required: true },
-	province: { type: String, required: true },
-	district: { type: String, required: true },
-}, { _id: false });
-
 const SuperfoodDetailTraceabilitySchema = new Schema({
 	handmade: { type: Boolean, required: true },
 	secondaryMaterials: { type: [String], default: [] },
-	origin: { type: OriginSchema, required: true },
+	originProductCommunityId: { type: String, required: true },
 	productionMethod: {
 		type: String,
 		enum: Object.values(SuperfoodProductionMethod),
