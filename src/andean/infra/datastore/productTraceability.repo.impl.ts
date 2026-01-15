@@ -5,23 +5,23 @@ import { ProductTraceabilityRepository } from '../../app/datastore/productTracea
 import { ProductTraceability } from '../../domain/entities/ProductTraceability';
 import { ProductTraceabilityDocument } from '../persistence/productTraceability.schema';
 import { ProductTraceabilityMapper } from '../services/ProductTraceabilityMapper';
-import { ProductType } from '../../domain/enums/ProductType';
 
 @Injectable()
 export class ProductTraceabilityRepositoryImpl extends ProductTraceabilityRepository {
 	constructor(
-		@InjectModel('ProductTraceability') private traceabilityModel: Model<ProductTraceabilityDocument>,
+		@InjectModel('ProductTraceability')
+		private traceabilityModel: Model<ProductTraceabilityDocument>,
 	) {
 		super();
 	}
 
-	async create(traceability: ProductTraceability): Promise<ProductTraceability> {
+	async create(
+		traceability: ProductTraceability,
+	): Promise<ProductTraceability> {
 		const document = {
 			id: traceability.id,
-			productId: traceability.productId,
-			productType: traceability.productType,
 			blockchainLink: traceability.blockchainLink,
-			epochs: traceability.epochs.map(epoch => ({
+			epochs: traceability.epochs.map((epoch) => ({
 				title: epoch.title,
 				country: epoch.country,
 				city: epoch.city,
@@ -44,30 +44,17 @@ export class ProductTraceabilityRepositoryImpl extends ProductTraceabilityReposi
 		return documents.map((doc) => ProductTraceabilityMapper.fromDocument(doc));
 	}
 
-	async findByProductId(productId: string): Promise<ProductTraceability | null> {
-		const document = await this.traceabilityModel.findOne({ productId }).exec();
-		return document ? ProductTraceabilityMapper.fromDocument(document) : null;
-	}
-
-	async findByProductType(productType: ProductType): Promise<ProductTraceability[]> {
-		const documents = await this.traceabilityModel.find({ productType }).exec();
-		return documents.map((doc) => ProductTraceabilityMapper.fromDocument(doc));
-	}
-
-	async update(id: string, traceability: Partial<ProductTraceability>): Promise<ProductTraceability | null> {
+	async update(
+		id: string,
+		traceability: Partial<ProductTraceability>,
+	): Promise<ProductTraceability | null> {
 		const updateData: any = {};
 
-		if (traceability.productId !== undefined) {
-			updateData.productId = traceability.productId;
-		}
-		if (traceability.productType !== undefined) {
-			updateData.productType = traceability.productType;
-		}
 		if (traceability.blockchainLink !== undefined) {
 			updateData.blockchainLink = traceability.blockchainLink;
 		}
 		if (traceability.epochs !== undefined) {
-			updateData.epochs = traceability.epochs.map(epoch => ({
+			updateData.epochs = traceability.epochs.map((epoch) => ({
 				title: epoch.title,
 				country: epoch.country,
 				city: epoch.city,
