@@ -17,6 +17,7 @@ import { CommunityModule } from './andean/community.module';
 import { OriginProductModule } from './andean/originProduct.module';
 import { ProductTraceabilityModule } from './andean/productTraceability.module';
 import { SuperfoodModule } from './andean/superfood.module';
+import { MediaItemModule } from './andean/mediaItem.module';
 
 @Module({
 	imports: [
@@ -50,6 +51,7 @@ import { SuperfoodModule } from './andean/superfood.module';
 		OriginProductModule,
 		ProductTraceabilityModule,
 		SuperfoodModule,
+		MediaItemModule,
 	],
 	controllers: [],
 	providers: [],
