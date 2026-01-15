@@ -36,21 +36,21 @@ const TextileVariantSchema = new Schema(
 
 const DetailTraceabilitySchema = new Schema(
   {
-    isHandmade: { type: Boolean, required: true },
+    isHandmade: { type: Boolean, required: false },
     secondaryMaterial: { type: [String], default: [] },
-    originProductCommunityId: { type: String, required: true },
-    craftTechniqueId: { type: String, required: true },
+    originProductCommunityId: { type: String, required: false },
+    craftTechniqueId: { type: String, required: false },
     toolUsed: {
       type: String,
       enum: Object.values(ToolUsed),
-      required: true,
+      required: false,
     },
-    isArtisanExclusive: { type: Boolean, required: true },
-    isOriginalCreation: { type: Boolean, required: true },
-    isRegisteredDesign: { type: Boolean, required: true },
-    isBackorderAvailable: { type: Boolean, required: true },
-    leadTime: { type: Number, required: true },
-    certificationId: { type: String, required: true },
+    isArtisanExclusive: { type: Boolean, required: false },
+    isOriginalCreation: { type: Boolean, required: false },
+    isRegisteredDesign: { type: Boolean, required: false },
+    isBackorderAvailable: { type: Boolean, required: false },
+    leadTime: { type: Number, required: false },
+    certificationId: { type: String, required: false },
   },
   { _id: false },
 );
@@ -58,7 +58,7 @@ const DetailTraceabilitySchema = new Schema(
 export const TextileProductSchema = new Schema({
   _id: String,
   id: String,
-  categoryId: String,
+  categoryId: { type: String, required: false },
   status: {
     type: String,
     enum: Object.values(TextileProductStatus),
@@ -78,7 +78,7 @@ export const TextileProductSchema = new Schema({
   priceInventary: {
     basePrice: Number,
     totalStock: Number,
-    SKU: String,
+    SKU: { type: String, required: false },
   },
   atribute: {
     textileTypeId: String,
@@ -98,10 +98,10 @@ export const TextileProductSchema = new Schema({
       hours: Number,
     },
   },
-  detailTraceability: { type: DetailTraceabilitySchema, required: true },
-  productTraceability: { type: Schema.Types.Mixed },
-  options: { type: [TextileOptionsSchema], default: [] },
-  variants: { type: [TextileVariantSchema], default: [] },
+  detailTraceability: { type: DetailTraceabilitySchema, required: false },
+  productTraceability: { type: Schema.Types.Mixed, required: false },
+  options: { type: [TextileOptionsSchema], default: [], required: false },
+  variants: { type: [TextileVariantSchema], default: [], required: false },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
@@ -109,7 +109,7 @@ export const TextileProductSchema = new Schema({
 export interface TextileProductDocument extends Document<string> {
   _id: string;
   id: string;
-  categoryId: string;
+  categoryId?: string;
   status: TextileProductStatus;
   baseInfo: {
     title: string;
@@ -121,36 +121,36 @@ export interface TextileProductDocument extends Document<string> {
   priceInventary: {
     basePrice: number;
     totalStock: number;
-    SKU: string;
+    SKU?: string;
   };
   atribute?: {
-    textileTypeId: string;
-    subcategoryId: string;
-    gender: Gender;
-    textileStyleId: string;
-    season: Season;
-    principalUse: string[];
-    preparationTime: {
-      days: number;
-      hours: number;
+    textileTypeId?: string;
+    subcategoryId?: string;
+    gender?: Gender;
+    textileStyleId?: string;
+    season?: Season;
+    principalUse?: string[];
+    preparationTime?: {
+      days?: number;
+      hours?: number;
     };
   };
-  detailTraceability: {
-    isHandmade: boolean;
-    secondaryMaterial: string[];
-    originProductCommunityId: string;
-    craftTechniqueId: string;
-    toolUsed: ToolUsed;
-    isArtisanExclusive: boolean;
-    isOriginalCreation: boolean;
-    isRegisteredDesign: boolean;
-    isBackorderAvailable: boolean;
-    leadTime: number;
-    certificationId: string;
+  detailTraceability?: {
+    isHandmade?: boolean;
+    secondaryMaterial?: string[];
+    originProductCommunityId?: string;
+    craftTechniqueId?: string;
+    toolUsed?: ToolUsed;
+    isArtisanExclusive?: boolean;
+    isOriginalCreation?: boolean;
+    isRegisteredDesign?: boolean;
+    isBackorderAvailable?: boolean;
+    leadTime?: number;
+    certificationId?: string;
   };
-  productTraceability: any;
-  options: any[];
-  variants: any[];
+  productTraceability?: any;
+  options?: any[];
+  variants?: any[];
   createdAt: Date;
   updatedAt: Date;
 }

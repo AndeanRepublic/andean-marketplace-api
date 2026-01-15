@@ -52,12 +52,13 @@ export class UpdateTextileProductUseCase {
       throw new NotFoundException('Textile product not found');
     }
 
-    // Validate categoryId
-    const categoryFound = await this.textileCategoryRepository.getCategoryById(
-      dto.categoryId,
-    );
-    if (!categoryFound) {
-      throw new NotFoundException('TextileCategory not found');
+    // Validate categoryId solo si existe
+    if (dto.categoryId) {
+      const categoryFound =
+        await this.textileCategoryRepository.getCategoryById(dto.categoryId);
+      if (!categoryFound) {
+        throw new NotFoundException('TextileCategory not found');
+      }
     }
 
     // Validate ownerId according to ownerType
@@ -78,70 +79,88 @@ export class UpdateTextileProductUseCase {
       }
     }
 
-    // Validate detailTraceability.originProductCommunityId
-    const originCommunityFound =
-      await this.originProductCommunityRepository.findById(
-        dto.detailTraceability.originProductCommunityId,
-      );
-    if (!originCommunityFound) {
-      throw new NotFoundException('OriginProductCommunity not found');
-    }
+    // Validate detailTraceability solo si existe
+    if (dto.detailTraceability) {
+      // Validate originProductCommunityId solo si existe
+      if (dto.detailTraceability.originProductCommunityId) {
+        const originCommunityFound =
+          await this.originProductCommunityRepository.findById(
+            dto.detailTraceability.originProductCommunityId,
+          );
+        if (!originCommunityFound) {
+          throw new NotFoundException('OriginProductCommunity not found');
+        }
+      }
 
-    // Validate detailTraceability.craftTechniqueId
-    const craftTechniqueFound =
-      await this.textileCraftTechniqueRepository.getTextileCraftTechniqueById(
-        dto.detailTraceability.craftTechniqueId,
-      );
-    if (!craftTechniqueFound) {
-      throw new NotFoundException('TextileCraftTechnique not found');
-    }
+      // Validate craftTechniqueId solo si existe
+      if (dto.detailTraceability.craftTechniqueId) {
+        const craftTechniqueFound =
+          await this.textileCraftTechniqueRepository.getTextileCraftTechniqueById(
+            dto.detailTraceability.craftTechniqueId,
+          );
+        if (!craftTechniqueFound) {
+          throw new NotFoundException('TextileCraftTechnique not found');
+        }
+      }
 
-    // Validate detailTraceability.certificationId
-    const certificationFound =
-      await this.textileCertificationRepository.getTextileCertificationById(
-        dto.detailTraceability.certificationId,
-      );
-    if (!certificationFound) {
-      throw new NotFoundException('TextileCertification not found');
+      // Validate certificationId solo si existe
+      if (dto.detailTraceability.certificationId) {
+        const certificationFound =
+          await this.textileCertificationRepository.getTextileCertificationById(
+            dto.detailTraceability.certificationId,
+          );
+        if (!certificationFound) {
+          throw new NotFoundException('TextileCertification not found');
+        }
+      }
     }
 
     // Validate attributes if they exist
     if (dto.atribute) {
-      // Validate textileTypeId
-      const typeFound = await this.textileTypeRepository.getTextileTypeById(
-        dto.atribute.textileTypeId,
-      );
-      if (!typeFound) {
-        throw new NotFoundException('TextileType not found');
-      }
-
-      // Validate subcategoryId
-      const subcategoryFound =
-        await this.textileSubcategoryRepository.getTextileSubcategoryById(
-          dto.atribute.subcategoryId,
+      // Validate textileTypeId solo si existe
+      if (dto.atribute.textileTypeId) {
+        const typeFound = await this.textileTypeRepository.getTextileTypeById(
+          dto.atribute.textileTypeId,
         );
-      if (!subcategoryFound) {
-        throw new NotFoundException('TextileSubcategory not found');
+        if (!typeFound) {
+          throw new NotFoundException('TextileType not found');
+        }
       }
 
-      // Validate textileStyleId
-      const styleFound = await this.textileStyleRepository.getTextileStyleById(
-        dto.atribute.textileStyleId,
-      );
-      if (!styleFound) {
-        throw new NotFoundException('TextileStyle not found');
+      // Validate subcategoryId solo si existe
+      if (dto.atribute.subcategoryId) {
+        const subcategoryFound =
+          await this.textileSubcategoryRepository.getTextileSubcategoryById(
+            dto.atribute.subcategoryId,
+          );
+        if (!subcategoryFound) {
+          throw new NotFoundException('TextileSubcategory not found');
+        }
       }
 
-      // Validate principalUse (array)
-      for (const principalUseId of dto.atribute.principalUse) {
-        const principalUseFound =
-          await this.textilePrincipalUseRepository.getTextilePrincipalUseById(
-            principalUseId,
+      // Validate textileStyleId solo si existe
+      if (dto.atribute.textileStyleId) {
+        const styleFound =
+          await this.textileStyleRepository.getTextileStyleById(
+            dto.atribute.textileStyleId,
           );
-        if (!principalUseFound) {
-          throw new NotFoundException(
-            `TextilePrincipalUse with id ${principalUseId} not found`,
-          );
+        if (!styleFound) {
+          throw new NotFoundException('TextileStyle not found');
+        }
+      }
+
+      // Validate principalUse (array) solo si existe y tiene elementos
+      if (dto.atribute.principalUse && dto.atribute.principalUse.length > 0) {
+        for (const principalUseId of dto.atribute.principalUse) {
+          const principalUseFound =
+            await this.textilePrincipalUseRepository.getTextilePrincipalUseById(
+              principalUseId,
+            );
+          if (!principalUseFound) {
+            throw new NotFoundException(
+              `TextilePrincipalUse with id ${principalUseId} not found`,
+            );
+          }
         }
       }
     }

@@ -8,19 +8,20 @@ import { TextileOptions } from './TextileOptions';
 import { TextileVariant } from './TextileVariant';
 
 export class TextileProduct {
-  constructor(
-    public id: string,
-    public categoryId: string,
-    public status: TextileProductStatus,
-    public baseInfo: BaseInfo,
-    public priceInventary: PriceInventary,
-    public detailTraceability: DetailTraceability,
-    public productTraceability: ProductTraceability | null,
-    public options: TextileOptions[],
-    public variants: TextileVariant[],
-    public createdAt: Date,
-    public updatedAt: Date,
+	constructor(
+		public id: string,
 
-    public atribute?: Atribute,
-  ) {}
+		public status: TextileProductStatus,
+		public baseInfo: BaseInfo,
+		public priceInventary: PriceInventary,
+		public createdAt: Date,
+		public updatedAt: Date,
+
+		public categoryId?: string,
+		public atribute?: Atribute,
+		public detailTraceability?: DetailTraceability,
+		public productTraceability?: ProductTraceability,
+		public options?: TextileOptions[],
+		public variants?: TextileVariant[],
+	) {}
 }

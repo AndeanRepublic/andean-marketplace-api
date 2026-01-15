@@ -17,6 +17,7 @@ import { OwnerType } from 'src/andean/domain/enums/OwnerType';
 import { Gender } from 'src/andean/domain/enums/Gender';
 import { Season } from 'src/andean/domain/enums/Season';
 import { ToolUsed } from 'src/andean/domain/enums/ToolUsed';
+import { CreateProductTraceabilityDto } from '../traceability/CreateProductTraceabilityDto';
 
 export class PreparationTimeDto {
   @IsInt()
@@ -64,40 +65,40 @@ export class PriceInventaryDto {
   totalStock: number;
 
   @IsString()
-  @IsNotEmpty()
-  SKU: string;
+  @IsOptional()
+  SKU?: string;
 }
 
 export class AtributeDto {
   @IsString()
-  @IsNotEmpty()
-  textileTypeId: string;
+  @IsOptional()
+  textileTypeId?: string;
 
   @IsString()
-  @IsNotEmpty()
-  subcategoryId: string;
+  @IsOptional()
+  subcategoryId?: string;
 
   @IsEnum(Gender)
-  @IsNotEmpty()
-  gender: Gender;
+  @IsOptional()
+  gender?: Gender;
 
   @IsString()
-  @IsNotEmpty()
-  textileStyleId: string;
+  @IsOptional()
+  textileStyleId?: string;
 
   @IsEnum(Season)
-  @IsNotEmpty()
-  season: Season;
+  @IsOptional()
+  season?: Season;
 
   @IsArray()
   @IsString({ each: true })
-  @IsNotEmpty()
-  principalUse: string[];
+  @IsOptional()
+  principalUse?: string[];
 
   @ValidateNested()
   @Type(() => PreparationTimeDto)
-  @IsNotEmpty()
-  preparationTime: PreparationTimeDto;
+  @IsOptional()
+  preparationTime?: PreparationTimeDto;
 }
 
 export class TextileOptionsItemDto {
@@ -141,57 +142,53 @@ export class TextileVariantDto {
 
 export class DetailTraceabilityDto {
   @IsBoolean()
-  @IsNotEmpty()
-  isHandmade: boolean;
+  @IsOptional()
+  isHandmade?: boolean;
 
   @IsArray()
   @IsString({ each: true })
-  @IsNotEmpty()
-  secondaryMaterial: string[];
+  @IsOptional()
+  secondaryMaterial?: string[];
 
   @IsString()
-  @IsNotEmpty()
-  originProductCommunityId: string;
+  @IsOptional()
+  originProductCommunityId?: string;
 
   @IsString()
-  @IsNotEmpty()
-  craftTechniqueId: string;
+  @IsOptional()
+  craftTechniqueId?: string;
 
   @IsEnum(ToolUsed)
-  @IsNotEmpty()
-  toolUsed: ToolUsed;
+  @IsOptional()
+  toolUsed?: ToolUsed;
 
   @IsBoolean()
-  @IsNotEmpty()
-  isArtisanExclusive: boolean;
+  @IsOptional()
+  isArtisanExclusive?: boolean;
 
   @IsBoolean()
-  @IsNotEmpty()
-  isOriginalCreation: boolean;
+  @IsOptional()
+  isOriginalCreation?: boolean;
 
   @IsBoolean()
-  @IsNotEmpty()
-  isRegisteredDesign: boolean;
+  @IsOptional()
+  isRegisteredDesign?: boolean;
 
   @IsBoolean()
-  @IsNotEmpty()
-  isBackorderAvailable: boolean;
+  @IsOptional()
+  isBackorderAvailable?: boolean;
 
   @IsInt()
   @Min(0)
-  @IsNotEmpty()
-  leadTime: number;
+  @IsOptional()
+  leadTime?: number;
 
   @IsString()
-  @IsNotEmpty()
-  certificationId: string;
+  @IsOptional()
+  certificationId?: string;
 }
 
 export class CreateTextileProductDto {
-  @IsString()
-  @IsNotEmpty()
-  categoryId: string;
-
   @IsEnum(TextileProductStatus)
   @IsNotEmpty()
   status: TextileProductStatus;
@@ -206,6 +203,10 @@ export class CreateTextileProductDto {
   @IsNotEmpty()
   priceInventary: PriceInventaryDto;
 
+  @IsString()
+  @IsOptional()
+  categoryId?: string;
+
   @ValidateNested()
   @Type(() => AtributeDto)
   @IsOptional()
@@ -213,11 +214,11 @@ export class CreateTextileProductDto {
 
   @ValidateNested()
   @Type(() => DetailTraceabilityDto)
-  @IsNotEmpty()
-  detailTraceability: DetailTraceabilityDto;
+  @IsOptional()
+  detailTraceability?: DetailTraceabilityDto;
 
   @IsOptional()
-  productTraceability?: any;
+  productTraceability?: CreateProductTraceabilityDto;
 
   @IsArray()
   @IsOptional()
