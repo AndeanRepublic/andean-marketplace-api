@@ -6,7 +6,7 @@ export class SuperfoodBenefitMapper {
 		return new SuperfoodBenefit(
 			doc.id,
 			doc.name,
-			doc.icon,
+			doc.iconId,
 			doc.createdAt,
 			doc.updatedAt,
 		);
@@ -16,7 +16,7 @@ export class SuperfoodBenefitMapper {
 		return {
 			id: entity.id,
 			name: entity.name,
-			icon: entity.icon,
+			iconId: entity.iconId,
 			createdAt: entity.createdAt || new Date(),
 			updatedAt: entity.updatedAt || new Date(),
 		};
