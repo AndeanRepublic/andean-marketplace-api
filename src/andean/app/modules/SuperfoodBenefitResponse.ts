@@ -7,8 +7,8 @@ export class SuperfoodBenefitResponse {
 	@ApiProperty({ description: 'Nombre del beneficio', example: 'Mejora la digestión' })
 	name: string;
 
-	@ApiProperty({ description: 'URL del icono', required: false })
-	icon?: string;
+	@ApiProperty({ description: 'ID del MediaItem que representa el icono', required: false })
+	iconId?: string;
 
 	@ApiProperty({ description: 'Fecha de creación' })
 	createdAt: Date;
