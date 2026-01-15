@@ -13,11 +13,11 @@ export class CreateSuperfoodBenefitDto {
 	name: string;
 
 	@ApiProperty({
-		description: 'URL del icono del beneficio',
-		example: 'https://example.com/icons/digestion.svg',
+		description: 'ID del MediaItem que representa el icono del beneficio',
+		example: '123e4567-e89b-12d3-a456-426614174000',
 		required: false,
 	})
 	@IsString()
 	@IsOptional()
-	icon?: string;
+	iconId?: string;
 }
