@@ -19,14 +19,14 @@ describe('SuperfoodBenefitController (e2e)', () => {
 	const mockBenefitResponse: SuperfoodBenefitResponse = {
 		id: '123e4567-e89b-12d3-a456-426614174000',
 		name: 'Mejora la digestión',
-		icon: 'https://example.com/icons/digestion.svg',
+		iconId: '123e4567-e89b-12d3-a456-426614174001',
 		createdAt: new Date('2026-01-01'),
 		updatedAt: new Date('2026-01-01'),
 	};
 
 	const createDto = {
 		name: 'Aumenta energía',
-		icon: 'https://example.com/icons/energy.svg',
+		iconId: '123e4567-e89b-12d3-a456-426614174002',
 	};
 
 	beforeAll(async () => {
@@ -99,7 +99,7 @@ describe('SuperfoodBenefitController (e2e)', () => {
 				.expect((res) => {
 					expect(res.body).toHaveProperty('id');
 					expect(res.body).toHaveProperty('name');
-					expect(res.body).toHaveProperty('icon');
+					expect(res.body).toHaveProperty('iconId');
 					expect(res.body).toHaveProperty('createdAt');
 					expect(res.body).toHaveProperty('updatedAt');
 				});
@@ -108,19 +108,19 @@ describe('SuperfoodBenefitController (e2e)', () => {
 		it('should return 400 when name is missing', () => {
 			return request(app.getHttpServer())
 				.post('/superfood-benefits')
-				.send({ icon: 'https://example.com/icon.svg' })
+				.send({ iconId: '123e4567-e89b-12d3-a456-426614174003' })
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 
 		it('should return 400 when name is empty string', () => {
 			return request(app.getHttpServer())
 				.post('/superfood-benefits')
-				.send({ name: '', icon: 'https://example.com/icon.svg' })
+				.send({ name: '', iconId: '123e4567-e89b-12d3-a456-426614174003' })
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 
-		it('should create benefit without icon (optional field)', () => {
-			const benefitWithoutIcon = { ...mockBenefitResponse, icon: undefined };
+		it('should create benefit without iconId (optional field)', () => {
+			const benefitWithoutIcon = { ...mockBenefitResponse, iconId: undefined };
 			jest.spyOn(createSuperfoodBenefitUseCase, 'handle').mockResolvedValueOnce(benefitWithoutIcon);
 
 			return request(app.getHttpServer())
@@ -144,7 +144,7 @@ describe('SuperfoodBenefitController (e2e)', () => {
 				.expect((res) => {
 					expect(res.body).toHaveProperty('id', mockBenefitResponse.id);
 					expect(res.body).toHaveProperty('name', mockBenefitResponse.name);
-					expect(res.body).toHaveProperty('icon', mockBenefitResponse.icon);
+					expect(res.body).toHaveProperty('iconId', mockBenefitResponse.iconId);
 					expect(res.body).toHaveProperty('createdAt');
 					expect(res.body).toHaveProperty('updatedAt');
 				});

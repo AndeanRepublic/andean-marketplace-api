@@ -19,14 +19,14 @@ describe('SuperfoodNutritionalFeatureController (e2e)', () => {
 	const mockNutritionalFeatureResponse: SuperfoodNutritionalFeatureResponse = {
 		id: '123e4567-e89b-12d3-a456-426614174000',
 		name: 'Alto en proteínas',
-		icon: 'https://example.com/icons/protein.svg',
+		iconId: '123e4567-e89b-12d3-a456-426614174001',
 		createdAt: new Date('2026-01-01'),
 		updatedAt: new Date('2026-01-01'),
 	};
 
 	const createDto = {
 		name: 'Rico en fibra',
-		icon: 'https://example.com/icons/fiber.svg',
+		iconId: '123e4567-e89b-12d3-a456-426614174002',
 	};
 
 	beforeAll(async () => {
@@ -99,7 +99,7 @@ describe('SuperfoodNutritionalFeatureController (e2e)', () => {
 				.expect((res) => {
 					expect(res.body).toHaveProperty('id');
 					expect(res.body).toHaveProperty('name');
-					expect(res.body).toHaveProperty('icon');
+					expect(res.body).toHaveProperty('iconId');
 					expect(res.body).toHaveProperty('createdAt');
 					expect(res.body).toHaveProperty('updatedAt');
 				});
@@ -108,19 +108,19 @@ describe('SuperfoodNutritionalFeatureController (e2e)', () => {
 		it('should return 400 when name is missing', () => {
 			return request(app.getHttpServer())
 				.post('/superfood-nutritional-features')
-				.send({ icon: 'https://example.com/icon.svg' })
+				.send({ iconId: '123e4567-e89b-12d3-a456-426614174003' })
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 
 		it('should return 400 when name is empty string', () => {
 			return request(app.getHttpServer())
 				.post('/superfood-nutritional-features')
-				.send({ name: '', icon: 'https://example.com/icon.svg' })
+				.send({ name: '', iconId: '123e4567-e89b-12d3-a456-426614174003' })
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 
-		it('should create nutritional feature without icon (optional field)', () => {
-			const featureWithoutIcon = { ...mockNutritionalFeatureResponse, icon: undefined };
+		it('should create nutritional feature without iconId (optional field)', () => {
+			const featureWithoutIcon = { ...mockNutritionalFeatureResponse, iconId: undefined };
 			jest.spyOn(createSuperfoodNutritionalFeatureUseCase, 'handle').mockResolvedValueOnce(featureWithoutIcon);
 
 			return request(app.getHttpServer())
@@ -144,7 +144,7 @@ describe('SuperfoodNutritionalFeatureController (e2e)', () => {
 				.expect((res) => {
 					expect(res.body).toHaveProperty('id', mockNutritionalFeatureResponse.id);
 					expect(res.body).toHaveProperty('name', mockNutritionalFeatureResponse.name);
-					expect(res.body).toHaveProperty('icon', mockNutritionalFeatureResponse.icon);
+					expect(res.body).toHaveProperty('iconId', mockNutritionalFeatureResponse.iconId);
 					expect(res.body).toHaveProperty('createdAt');
 					expect(res.body).toHaveProperty('updatedAt');
 				});
@@ -180,7 +180,7 @@ describe('SuperfoodNutritionalFeatureController (e2e)', () => {
 					expect(res.body).toHaveLength(2);
 					expect(res.body[0]).toHaveProperty('id');
 					expect(res.body[0]).toHaveProperty('name');
-					expect(res.body[0]).toHaveProperty('icon');
+					expect(res.body[0]).toHaveProperty('iconId');
 					expect(res.body[1]).toHaveProperty('id');
 					expect(res.body[1]).toHaveProperty('name');
 				});
