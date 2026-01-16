@@ -71,7 +71,7 @@ export class UpdateTextileProductUseCase {
 
     // Validate communityId according to ownerType
     if (dto.baseInfo.ownerType === OwnerType.COMMUNITY) {
-      const communityFound = await this.communityRepository.findById(
+      const communityFound = await this.communityRepository.getById(
         dto.baseInfo.ownerId,
       );
       if (!communityFound) {
@@ -84,7 +84,7 @@ export class UpdateTextileProductUseCase {
       // Validate originProductCommunityId solo si existe
       if (dto.detailTraceability.originProductCommunityId) {
         const originCommunityFound =
-          await this.originProductCommunityRepository.findById(
+          await this.originProductCommunityRepository.getById(
             dto.detailTraceability.originProductCommunityId,
           );
         if (!originCommunityFound) {

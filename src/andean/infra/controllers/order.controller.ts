@@ -22,12 +22,12 @@ export class OrderController {
 	}
 
 	@Get('/:id')
-	async findById(@Param('id') id: string): Promise<Order | null> {
+	async getById(@Param('id') id: string): Promise<Order | null> {
 		return this.getOrderByIdUseCase.handle(id);
 	}
 
 	@Get('/by-customer/:customerId')
-	async findByCustomerId(
+	async getByCustomerId(
 		@Param('customerId') customerId: string,
 	): Promise<Order[]> {
 		return this.getOrdersByCustomerUseCase.handle(customerId);

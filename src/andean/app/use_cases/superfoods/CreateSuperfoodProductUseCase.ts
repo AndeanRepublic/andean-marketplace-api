@@ -49,7 +49,7 @@ export class CreateSuperfoodProductUseCase {
 				throw new NotFoundException(`Shop with ID ${dto.baseInfo.ownerId} not found`);
 			}
 		} else if (dto.baseInfo.ownerType === SuperfoodOwnerType.COMMUNITY) {
-			const communityFound = await this.communityRepository.findById(dto.baseInfo.ownerId);
+			const communityFound = await this.communityRepository.getById(dto.baseInfo.ownerId);
 			if (!communityFound) {
 				throw new NotFoundException(`Community with ID ${dto.baseInfo.ownerId} not found`);
 			}
