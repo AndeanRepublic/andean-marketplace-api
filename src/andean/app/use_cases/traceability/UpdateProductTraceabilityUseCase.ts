@@ -12,14 +12,14 @@ import { UpdateProductTraceabilityDto } from '../../../infra/controllers/dto/tra
 export class UpdateProductTraceabilityUseCase {
 	constructor(
 		private readonly traceabilityRepository: ProductTraceabilityRepository,
-	) {}
+	) { }
 
 	async execute(
 		id: string,
 		dto: UpdateProductTraceabilityDto,
 	): Promise<ProductTraceability> {
 		// Verificar existencia
-		const existing = await this.traceabilityRepository.findById(id);
+		const existing = await this.traceabilityRepository.getById(id);
 		if (!existing) {
 			throw new NotFoundException(`Traceability with id ${id} not found`);
 		}
