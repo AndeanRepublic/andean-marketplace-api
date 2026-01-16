@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { SuperfoodSalesUnitSizeRepository } from '../../../datastore/superfoods/SuperfoodSalesUnitSize.repo';
 import { SuperfoodSalesUnitSize } from '../../../../domain/entities/superfoods/SuperfoodSalesUnitSize';
 import { SuperfoodSalesUnitSizeResponse } from '../../../modules/SuperfoodSalesUnitSizeResponse';
+import { SuperfoodSalesUnitSizeMapper } from '../../../../infra/services/superfood/SuperfoodSalesUnitSizeMapper';
 
 @Injectable()
 export class GetSuperfoodSalesUnitSizeByIdUseCase {
@@ -16,11 +17,6 @@ export class GetSuperfoodSalesUnitSizeByIdUseCase {
 			throw new NotFoundException(`SuperfoodSalesUnitSize with ID ${id} not found`);
 		}
 
-		return {
-			id: salesUnitSize.id,
-			name: salesUnitSize.name,
-			createdAt: salesUnitSize.createdAt!,
-			updatedAt: salesUnitSize.updatedAt!,
-		};
+		return SuperfoodSalesUnitSizeMapper.toResponse(salesUnitSize);
 	}
 }

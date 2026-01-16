@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import * as crypto from 'crypto';
 import { SuperfoodSalesUnitSizeRepository } from '../../../datastore/superfoods/SuperfoodSalesUnitSize.repo';
 import { SuperfoodSalesUnitSize } from '../../../../domain/entities/superfoods/SuperfoodSalesUnitSize';
 import { CreateSuperfoodSalesUnitSizeDto } from '../../../../infra/controllers/dto/superfoods/CreateSuperfoodSalesUnitSizeDto';
 import { SuperfoodSalesUnitSizeResponse } from '../../../modules/SuperfoodSalesUnitSizeResponse';
+import { SuperfoodSalesUnitSizeMapper } from '../../../../infra/services/superfood/SuperfoodSalesUnitSizeMapper';
 
 @Injectable()
 export class CreateSuperfoodSalesUnitSizeUseCase {
@@ -12,20 +12,10 @@ export class CreateSuperfoodSalesUnitSizeUseCase {
 	) { }
 
 	async handle(dto: CreateSuperfoodSalesUnitSizeDto): Promise<SuperfoodSalesUnitSizeResponse> {
-		const salesUnitSize = new SuperfoodSalesUnitSize(
-			crypto.randomUUID(),
-			dto.name,
-			new Date(),
-			new Date(),
-		);
+		// Crear entidad usando mapper
+		const salesUnitSize = SuperfoodSalesUnitSizeMapper.fromCreateDto(dto);
 
 		const savedSize = await this.salesUnitSizeRepository.save(salesUnitSize);
-		return {
-			id: savedSize.id,
-			name: savedSize.name,
-			icon: dto.icon,
-			createdAt: savedSize.createdAt!,
-			updatedAt: savedSize.updatedAt!,
-		};
+		return SuperfoodSalesUnitSizeMapper.toResponse(savedSize);
 	}
 }

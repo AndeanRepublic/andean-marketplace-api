@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { SuperfoodSalesUnitSizeRepository } from '../../../datastore/superfoods/SuperfoodSalesUnitSize.repo';
 import { SuperfoodSalesUnitSize } from '../../../../domain/entities/superfoods/SuperfoodSalesUnitSize';
 import { SuperfoodSalesUnitSizeResponse } from '../../../modules/SuperfoodSalesUnitSizeResponse';
+import { SuperfoodSalesUnitSizeMapper } from '../../../../infra/services/superfood/SuperfoodSalesUnitSizeMapper';
 
 @Injectable()
 export class ListSuperfoodSalesUnitSizesUseCase {
@@ -11,11 +12,6 @@ export class ListSuperfoodSalesUnitSizesUseCase {
 
 	async handle(): Promise<SuperfoodSalesUnitSizeResponse[]> {
 		const sizes = await this.salesUnitSizeRepository.getAll();
-		return sizes.map(size => ({
-			id: size.id,
-			name: size.name,
-			createdAt: size.createdAt!,
-			updatedAt: size.updatedAt!,
-		}));
+		return sizes.map(size => SuperfoodSalesUnitSizeMapper.toResponse(size));
 	}
 }
