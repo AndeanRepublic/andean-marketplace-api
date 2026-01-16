@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { SuperfoodProductPresentationRepository } from '../../../datastore/superfoods/SuperfoodProductPresentation.repo';
 import { SuperfoodProductPresentation } from '../../../../domain/entities/superfoods/SuperfoodProductPresentation';
 import { SuperfoodProductPresentationResponse } from '../../../modules/SuperfoodProductPresentationResponse';
+import { SuperfoodProductPresentationMapper } from '../../../../infra/services/superfood/SuperfoodProductPresentationMapper';
 
 @Injectable()
 export class GetSuperfoodProductPresentationByIdUseCase {
@@ -16,11 +17,6 @@ export class GetSuperfoodProductPresentationByIdUseCase {
 			throw new NotFoundException(`SuperfoodProductPresentation with ID ${id} not found`);
 		}
 
-		return {
-			id: productPresentation.id,
-			name: productPresentation.name,
-			createdAt: productPresentation.createdAt!,
-			updatedAt: productPresentation.updatedAt!,
-		};
+		return SuperfoodProductPresentationMapper.toResponse(productPresentation);
 	}
 }
