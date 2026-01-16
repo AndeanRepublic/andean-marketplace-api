@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { SuperfoodCertificationRepository } from '../../../datastore/superfoods/SuperfoodCertification.repo';
 import { SuperfoodCertification } from '../../../../domain/entities/superfoods/SuperfoodCertification';
 import { SuperfoodCertificationResponse } from '../../../modules/SuperfoodCertificationResponse';
+import { SuperfoodCertificationMapper } from '../../../../infra/services/superfood/SuperfoodCertificationMapper';
 
 @Injectable()
 export class GetSuperfoodCertificationByIdUseCase {
@@ -16,11 +17,6 @@ export class GetSuperfoodCertificationByIdUseCase {
 			throw new NotFoundException(`SuperfoodCertification with ID ${id} not found`);
 		}
 
-		return {
-			id: certification.id,
-			name: certification.name,
-			createdAt: certification.createdAt!,
-			updatedAt: certification.updatedAt!,
-		};
+		return SuperfoodCertificationMapper.toResponse(certification);
 	}
 }
