@@ -172,16 +172,16 @@ export const SuperfoodProductSchema = new Schema({
 
 export interface SuperfoodProductDocument extends Document {
 	id: string;
-	categoryId: string;
+	categoryId?: string;
 	status: SuperfoodProductStatus;
 	baseInfo: any;
 	priceInventory: any;
-	detailProduct: any;
-	nutritionalContent: any[];
-	detailTraceability: any;
-	productTraceability: any;
-	options: any[];
-	variants: any[];
+	detailProduct?: any;
+	nutritionalContent?: any[];
+	detailTraceability?: any;
+	productTraceability?: any;
+	options?: any[];
+	variants?: any[];
 	createdAt: Date;
 	updatedAt: Date;
 }
