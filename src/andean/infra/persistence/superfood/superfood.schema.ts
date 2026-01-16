@@ -19,32 +19,45 @@ const SuperfoodOptionsSchema = new Schema({
 
 const SuperfoodVariantSchema = new Schema({
 	id: { type: String, required: true },
-	combination: { type: Schema.Types.Mixed, required: true },  // Object with optionId -> value
+	combination: { type: Schema.Types.Mixed, required: true }, // Object with optionId -> value
 	price: { type: Number, required: true },
 	stock: { type: Number, required: true },
 });
 
-const SuperfoodBasicInfoSchema = new Schema({
-	title: { type: String, required: true },
-	mediaIds: { type: [String], default: [] },  // IDs referencing MediaItem collection
-	description: { type: String, required: true },
-	general_features: { type: [String], default: [] },
-	nutritional_features: { type: [String], default: [] },  // IDs
-	benefits: { type: [String], default: [] },  // IDs
-	ownerType: { type: String, enum: Object.values(SuperfoodOwnerType), required: true },
-	ownerId: { type: String, required: true },
-}, { _id: false });
+const SuperfoodBasicInfoSchema = new Schema(
+	{
+		title: { type: String, required: true },
+		mediaIds: { type: [String], default: [] }, // IDs referencing MediaItem collection
+		description: { type: String, required: true },
+		general_features: { type: [String], default: [] },
+		nutritional_features: { type: [String], default: [] }, // IDs
+		benefits: { type: [String], default: [] }, // IDs
+		ownerType: {
+			type: String,
+			enum: Object.values(SuperfoodOwnerType),
+			required: true,
+		},
+		ownerId: { type: String, required: true },
+	},
+	{ _id: false },
+);
 
-const SuperfoodPriceInventorySchema = new Schema({
-	basePrice: { type: Number, required: true },
-	totalStock: { type: Number, required: true },
-	SKU: { type: String, required: true },
-}, { _id: false });
+const SuperfoodPriceInventorySchema = new Schema(
+	{
+		basePrice: { type: Number, required: true },
+		totalStock: { type: Number, required: true },
+		SKU: { type: String, required: false },
+	},
+	{ _id: false },
+);
 
-const SuperfoodElaborationTimeSchema = new Schema({
-	days: { type: Number, required: true },
-	hours: { type: Number, required: true },
-}, { _id: false });
+const SuperfoodElaborationTimeSchema = new Schema(
+	{
+		days: { type: Number, required: false },
+		hours: { type: Number, required: false },
+	},
+	{ _id: false },
+);
 
 const SuperfoodNutritionalItemSchema = new Schema({
 	id: { type: String, required: true },
@@ -54,71 +67,121 @@ const SuperfoodNutritionalItemSchema = new Schema({
 	selected: { type: Boolean, default: false },
 });
 
-const SuperfoodDetailTraceabilitySchema = new Schema({
-	handmade: { type: Boolean, required: true },
-	secondaryMaterials: { type: [String], default: [] },
-	originProductCommunityId: { type: String, required: true },
-	productionMethod: {
-		type: String,
-		enum: Object.values(SuperfoodProductionMethod),
-		required: true
+const SuperfoodDetailTraceabilitySchema = new Schema(
+	{
+		handmade: { type: Boolean, required: false },
+		secondaryMaterials: { type: [String], default: [] },
+		originProductCommunityId: { type: String, required: false },
+		productionMethod: {
+			type: String,
+			enum: Object.values(SuperfoodProductionMethod),
+			required: false,
+		},
+		preservationMethod: { type: String, required: false }, // ID reference
+		isArtesanal: { type: Boolean, required: false },
+		isNatural: { type: Boolean, required: false },
+		isEatableWithoutPrep: { type: Boolean, required: false },
+		canCauseAllergies: { type: Boolean, required: false },
+		certification: { type: String }, // ID reference
 	},
-	preservationMethod: { type: String, required: true },  // ID reference
-	isArtesanal: { type: Boolean, required: true },
-	isNatural: { type: Boolean, required: true },
-	isEatableWithoutPrep: { type: Boolean, required: true },
-	canCauseAllergies: { type: Boolean, required: true },
-	certification: { type: String },  // ID reference
-}, { _id: false });
+	{ _id: false },
+);
 
-const SuperfoodDetailProductSchema = new Schema({
-	type: { type: String, required: true },  // ID reference
-	productPresentation: { type: String, required: true },  // ID reference
-	consumptionWay: {
-		type: String,
-		enum: Object.values(SuperfoodConsumptionWay),
-		required: true
+const SuperfoodEpochSchema = new Schema(
+	{
+		title: { type: String, required: true },
+		country: { type: String, required: true },
+		city: { type: String, required: true },
+		description: { type: String, required: true },
+		processName: { type: String, required: true },
+		supplier: { type: String, required: true },
 	},
-	consumptionSuggestions: { type: String },
-	salesUnitSize: { type: String, required: true },  // ID reference
-	medicRecommendations: { type: String },
-	healthWarnings: { type: String },
-	elaborationTime: { type: SuperfoodElaborationTimeSchema, required: true },
-}, { _id: false });
+	{ _id: false },
+);
+
+const SuperfoodProductTraceabilitySchema = new Schema(
+	{
+		blockchainLink: { type: String, required: true },
+		epochs: { type: [SuperfoodEpochSchema], required: true },
+	},
+	{ _id: false },
+);
+
+const SuperfoodDetailProductSchema = new Schema(
+	{
+		type: { type: String, required: false }, // ID reference
+		productPresentation: { type: String, required: false }, // ID reference
+		consumptionWay: {
+			type: String,
+			enum: Object.values(SuperfoodConsumptionWay),
+			required: false,
+		},
+		consumptionSuggestions: { type: String },
+		salesUnitSize: { type: String, required: false }, // ID reference
+		medicRecommendations: { type: String },
+		healthWarnings: { type: String },
+		elaborationTime: { type: SuperfoodElaborationTimeSchema, required: false },
+		handmade: { type: Boolean, required: false },
+		secondaryMaterials: { type: [String], default: [] },
+		originProductCommunityId: { type: String, required: false },
+		productionMethod: {
+			type: String,
+			enum: Object.values(SuperfoodProductionMethod),
+			required: false,
+		},
+		preservationMethod: { type: String, required: false },
+		isArtesanal: { type: Boolean, required: false },
+		isNatural: { type: Boolean, required: false },
+		isEatableWithoutPrep: { type: Boolean, required: false },
+		canCauseAllergies: { type: Boolean, required: false },
+		certification: { type: String },
+	},
+	{ _id: false },
+);
 
 // Main schema
 export const SuperfoodProductSchema = new Schema({
 	id: { type: String, required: true, unique: true },
-	categoryId: { type: String, required: true },
+	categoryId: { type: String, required: false },
 	status: {
 		type: String,
 		enum: Object.values(SuperfoodProductStatus),
-		required: true
+		required: true,
 	},
 	baseInfo: { type: SuperfoodBasicInfoSchema, required: true },
 	priceInventory: { type: SuperfoodPriceInventorySchema, required: true },
-	detailProduct: { type: SuperfoodDetailProductSchema, required: true },
-	nutritionalContent: { type: [SuperfoodNutritionalItemSchema], default: [] },
-	detailTraceability: { type: SuperfoodDetailTraceabilitySchema, required: true },
-	productTraceability: { type: Schema.Types.Mixed },  // General traceability (shared)
-	options: { type: [SuperfoodOptionsSchema], default: [] },
-	variants: { type: [SuperfoodVariantSchema], default: [] },
+	detailProduct: { type: SuperfoodDetailProductSchema, required: false },
+	nutritionalContent: {
+		type: [SuperfoodNutritionalItemSchema],
+		default: [],
+		required: false,
+	},
+	detailTraceability: {
+		type: SuperfoodDetailTraceabilitySchema,
+		required: false,
+	},
+	productTraceability: {
+		type: SuperfoodProductTraceabilitySchema,
+		required: false,
+	},
+	options: { type: [SuperfoodOptionsSchema], default: [], required: false },
+	variants: { type: [SuperfoodVariantSchema], default: [], required: false },
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 });
 
 export interface SuperfoodProductDocument extends Document {
 	id: string;
-	categoryId: string;
+	categoryId?: string;
 	status: SuperfoodProductStatus;
 	baseInfo: any;
 	priceInventory: any;
-	detailProduct: any;
-	nutritionalContent: any[];
-	detailTraceability: any;
-	productTraceability: any;
-	options: any[];
-	variants: any[];
+	detailProduct?: any;
+	nutritionalContent?: any[];
+	detailTraceability?: any;
+	productTraceability?: any;
+	options?: any[];
+	variants?: any[];
 	createdAt: Date;
 	updatedAt: Date;
 }

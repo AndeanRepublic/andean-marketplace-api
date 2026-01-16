@@ -9,12 +9,7 @@ import {
 	HttpCode,
 	HttpStatus,
 } from '@nestjs/common';
-import {
-	ApiTags,
-	ApiOperation,
-	ApiResponse,
-	ApiParam,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateSuperfoodDto } from './dto/superfoods/CreateSuperfoodDto';
 import { UpdateSuperfoodDto } from './dto/superfoods/UpdateSuperfoodDto';
 import { SuperfoodProduct } from '../../domain/entities/superfoods/SuperfoodProduct';
@@ -35,13 +30,14 @@ export class SuperfoodController {
 		private readonly getSuperfoodProductsByCategoryUseCase: GetSuperfoodProductsByCategoryUseCase,
 		private readonly updateSuperfoodProductUseCase: UpdateSuperfoodProductUseCase,
 		private readonly deleteSuperfoodProductUseCase: DeleteSuperfoodProductUseCase,
-	) { }
+	) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
 		summary: 'Crear nuevo producto superfood',
-		description: 'Crea un nuevo producto superfood con toda su información nutricional, trazabilidad, opciones y variantes',
+		description:
+			'Crea un nuevo producto superfood con toda su información nutricional, trazabilidad, opciones y variantes',
 	})
 	@ApiResponse({
 		status: 201,
@@ -50,7 +46,8 @@ export class SuperfoodController {
 	})
 	@ApiResponse({
 		status: 400,
-		description: 'Datos de entrada inválidos (precio <= 0, stock negativo, variantes duplicadas)',
+		description:
+			'Datos de entrada inválidos (precio <= 0, stock negativo, variantes duplicadas)',
 	})
 	@ApiResponse({
 		status: 404,
@@ -65,7 +62,8 @@ export class SuperfoodController {
 	@Get('/:productId')
 	@ApiOperation({
 		summary: 'Obtener producto superfood por ID',
-		description: 'Retorna toda la información completa de un producto superfood específico incluyendo información base, precios, inventario, detalles nutricionales, trazabilidad, opciones y variantes',
+		description:
+			'Retorna toda la información completa de un producto superfood específico incluyendo información base, precios, inventario, detalles nutricionales, trazabilidad, opciones y variantes',
 	})
 	@ApiParam({
 		name: 'productId',
@@ -90,7 +88,8 @@ export class SuperfoodController {
 	@Get('/owner/:ownerId')
 	@ApiOperation({
 		summary: 'Obtener productos superfood por owner',
-		description: 'Retorna todos los productos de un shop o comunidad específica. Útil para listar el catálogo de un vendedor.',
+		description:
+			'Retorna todos los productos de un shop o comunidad específica. Útil para listar el catálogo de un vendedor.',
 	})
 	@ApiParam({
 		name: 'ownerId',
@@ -99,7 +98,8 @@ export class SuperfoodController {
 	})
 	@ApiResponse({
 		status: 200,
-		description: 'Lista de productos del owner (puede ser array vacío si no tiene productos)',
+		description:
+			'Lista de productos del owner (puede ser array vacío si no tiene productos)',
 		type: [SuperfoodProduct],
 	})
 	async getSuperfoodsByOwner(
@@ -111,7 +111,8 @@ export class SuperfoodController {
 	@Get('/category/:categoryId')
 	@ApiOperation({
 		summary: 'Obtener productos superfood por categoría',
-		description: 'Retorna todos los productos de una categoría específica (ej: Quinua, Maca, Cacao). Útil para filtros de navegación y catálogos por categoría.',
+		description:
+			'Retorna todos los productos de una categoría específica (ej: Quinua, Maca, Cacao). Útil para filtros de navegación y catálogos por categoría.',
 	})
 	@ApiParam({
 		name: 'categoryId',
@@ -136,7 +137,8 @@ export class SuperfoodController {
 	@Patch('/:productId')
 	@ApiOperation({
 		summary: 'Actualizar producto superfood',
-		description: 'Actualiza los datos de un producto superfood existente. Solo se actualizan los campos enviados en el body. Los campos no enviados mantienen su valor actual.',
+		description:
+			'Actualiza los datos de un producto superfood existente. Solo se actualizan los campos enviados en el body. Los campos no enviados mantienen su valor actual.',
 	})
 	@ApiParam({
 		name: 'productId',
@@ -154,11 +156,12 @@ export class SuperfoodController {
 	})
 	@ApiResponse({
 		status: 400,
-		description: 'Datos de actualización inválidos (precio <= 0, stock negativo, variantes duplicadas)',
+		description:
+			'Datos de actualización inválidos (precio <= 0, stock negativo, variantes duplicadas)',
 	})
 	async updateSuperfood(
 		@Param('productId') productId: string,
-		@Body() dto: UpdateSuperfoodDto,
+		@Body() dto: CreateSuperfoodDto,
 	): Promise<SuperfoodProduct> {
 		return this.updateSuperfoodProductUseCase.handle(productId, dto);
 	}
@@ -167,7 +170,8 @@ export class SuperfoodController {
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@ApiOperation({
 		summary: 'Eliminar producto superfood',
-		description: 'Elimina permanentemente un producto superfood del sistema. Esta acción no se puede deshacer.',
+		description:
+			'Elimina permanentemente un producto superfood del sistema. Esta acción no se puede deshacer.',
 	})
 	@ApiParam({
 		name: 'productId',
@@ -176,15 +180,14 @@ export class SuperfoodController {
 	})
 	@ApiResponse({
 		status: 204,
-		description: 'Producto eliminado exitosamente (sin contenido en la respuesta)',
+		description:
+			'Producto eliminado exitosamente (sin contenido en la respuesta)',
 	})
 	@ApiResponse({
 		status: 404,
 		description: 'Producto no encontrado',
 	})
-	async deleteSuperfood(
-		@Param('productId') productId: string,
-	): Promise<void> {
+	async deleteSuperfood(@Param('productId') productId: string): Promise<void> {
 		return this.deleteSuperfoodProductUseCase.handle(productId);
 	}
 }

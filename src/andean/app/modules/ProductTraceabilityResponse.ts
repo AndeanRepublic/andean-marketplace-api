@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ProductType } from '../../domain/enums/ProductType';
 
 export class TraceabilityEpochResponse {
 	@ApiProperty({
@@ -45,19 +44,6 @@ export class ProductTraceabilityResponse {
 		example: '550e8400-e29b-41d4-a716-446655440000',
 	})
 	id: string;
-
-	@ApiProperty({
-		description: 'ID del producto',
-		example: '550e8400-e29b-41d4-a716-446655440000',
-	})
-	productId: string;
-
-	@ApiProperty({
-		description: 'Tipo de producto',
-		enum: ProductType,
-		example: ProductType.SUPERFOOD,
-	})
-	productType: ProductType;
 
 	@ApiProperty({
 		description: 'Enlace a blockchain',

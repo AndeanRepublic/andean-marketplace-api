@@ -11,17 +11,18 @@ import { ProductTraceability } from '../ProductTraceability';
 export class SuperfoodProduct {
 	constructor(
 		public id: string,
-		public categoryId: string,  // Reference to SuperfoodCategories
 		public status: SuperfoodProductStatus,
 		public baseInfo: SuperfoodBasicInfo,
 		public priceInventory: SuperfoodPriceInventory,
-		public detailProduct: SuperfoodDetailProduct,
-		public nutritionalContent: SuperfoodNutritionalItem[],
-		public detailTraceability: SuperfoodDetailTraceability,
-		public productTraceability: ProductTraceability | null,  // Managed separately
-		public options: SuperfoodOptions[],               // Product options (e.g., color, size)
-		public variants: SuperfoodVariant[],              // Product variants with specific combinations
 		public createdAt: Date,
 		public updatedAt: Date,
-	) { }
+
+		public categoryId?: string, // Reference to SuperfoodCategories
+		public detailProduct?: SuperfoodDetailProduct,
+		public nutritionalContent?: SuperfoodNutritionalItem[],
+		public detailTraceability?: SuperfoodDetailTraceability,
+		public productTraceability?: ProductTraceability,
+		public options?: SuperfoodOptions[], // Product options (e.g., color, size)
+		public variants?: SuperfoodVariant[], // Product variants with specific combinations
+	) {}
 }

@@ -9,38 +9,31 @@ import * as crypto from 'crypto';
 export class CreateProductTraceabilityUseCase {
 	constructor(
 		private readonly traceabilityRepository: ProductTraceabilityRepository,
-	) { }
+	) {}
 
-	async execute(dto: CreateProductTraceabilityDto): Promise<ProductTraceability> {
-		// Validar que no exista ya una trazabilidad para este producto
-		const existing = await this.traceabilityRepository.findByProductId(dto.productId);
-		if (existing) {
-			throw new BadRequestException(
-				`Traceability for product ${dto.productId} already exists. Use update instead.`
-			);
-		}
-
+	async execute(
+		dto: CreateProductTraceabilityDto,
+	): Promise<ProductTraceability> {
 		// Validar que haya al menos una época
 		if (!dto.epochs || dto.epochs.length === 0) {
 			throw new BadRequestException('At least one epoch is required');
 		}
 
 		// Crear entidad de dominio
-		const epochs = dto.epochs.map(epoch =>
-			new TraceabilityEpoch(
-				epoch.title,
-				epoch.country,
-				epoch.city,
-				epoch.description,
-				epoch.processName,
-				epoch.supplier,
-			)
+		const epochs = dto.epochs.map(
+			(epoch) =>
+				new TraceabilityEpoch(
+					epoch.title,
+					epoch.country,
+					epoch.city,
+					epoch.description,
+					epoch.processName,
+					epoch.supplier,
+				),
 		);
 
 		const traceability = new ProductTraceability(
 			crypto.randomUUID(),
-			dto.productId,
-			dto.productType,
 			dto.blockchainLink,
 			epochs,
 		);

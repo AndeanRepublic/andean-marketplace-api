@@ -1,0 +1,50 @@
+import { Injectable } from '@nestjs/common';
+import { TextilePrincipalUseRepository } from '../../../app/datastore/textileProducts/TextilePrincipalUse.repo';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { TextilePrincipalUseDocument } from '../../persistence/textileProducts/textilePrincipalUse.schema';
+import { TextilePrincipalUse } from 'src/andean/domain/entities/textileProducts/TextilePrincipalUse';
+import { TextilePrincipalUseMapper } from '../../services/textileProducts/TextilePrincipalUseMapper';
+
+@Injectable()
+export class TextilePrincipalUseRepositoryImpl extends TextilePrincipalUseRepository {
+  constructor(
+    @InjectModel('TextilePrincipalUse')
+    private readonly textilePrincipalUseModel: Model<TextilePrincipalUseDocument>,
+  ) {
+    super();
+  }
+
+  async getAllTextilePrincipalUses(): Promise<TextilePrincipalUse[]> {
+    const docs = await this.textilePrincipalUseModel.find().exec();
+    return docs.map((doc) => TextilePrincipalUseMapper.fromDocument(doc));
+  }
+
+  async getTextilePrincipalUseById(id: string): Promise<TextilePrincipalUse | null> {
+    const doc = await this.textilePrincipalUseModel.findOne({ id }).exec();
+    return doc ? TextilePrincipalUseMapper.fromDocument(doc) : null;
+  }
+
+  async saveTextilePrincipalUse(principalUse: TextilePrincipalUse): Promise<TextilePrincipalUse> {
+    const plain = TextilePrincipalUseMapper.toPersistence(principalUse);
+    const created = new this.textilePrincipalUseModel({
+      _id: crypto.randomUUID(),
+      ...plain,
+    });
+    const savedPrincipalUse = await created.save();
+    return TextilePrincipalUseMapper.fromDocument(savedPrincipalUse);
+  }
+
+  async updateTextilePrincipalUse(id: string, principalUse: TextilePrincipalUse): Promise<TextilePrincipalUse> {
+    const plain = TextilePrincipalUseMapper.toPersistence(principalUse);
+    const updated = await this.textilePrincipalUseModel
+      .findOneAndUpdate({ id }, plain, { new: true })
+      .exec();
+    return TextilePrincipalUseMapper.fromDocument(updated!);
+  }
+
+  async deleteTextilePrincipalUse(id: string): Promise<void> {
+    await this.textilePrincipalUseModel.deleteOne({ id }).exec();
+    return;
+  }
+}

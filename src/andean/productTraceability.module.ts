@@ -12,7 +12,6 @@ import { ProductTraceabilityRepositoryImpl } from './infra/datastore/productTrac
 import { CreateProductTraceabilityUseCase } from './app/use_cases/traceability/CreateProductTraceabilityUseCase';
 import { UpdateProductTraceabilityUseCase } from './app/use_cases/traceability/UpdateProductTraceabilityUseCase';
 import { GetProductTraceabilityByIdUseCase } from './app/use_cases/traceability/GetProductTraceabilityByIdUseCase';
-import { GetProductTraceabilityByProductIdUseCase } from './app/use_cases/traceability/GetProductTraceabilityByProductIdUseCase';
 import { ListProductTraceabilityUseCase } from './app/use_cases/traceability/ListProductTraceabilityUseCase';
 import { DeleteProductTraceabilityUseCase } from './app/use_cases/traceability/DeleteProductTraceabilityUseCase';
 
@@ -37,10 +36,9 @@ import { ProductTraceabilityController } from './infra/controllers/productTracea
 		CreateProductTraceabilityUseCase,
 		UpdateProductTraceabilityUseCase,
 		GetProductTraceabilityByIdUseCase,
-		GetProductTraceabilityByProductIdUseCase,
 		ListProductTraceabilityUseCase,
 		DeleteProductTraceabilityUseCase,
 	],
 	exports: [ProductTraceabilityRepository],
 })
-export class ProductTraceabilityModule { }
+export class ProductTraceabilityModule {}
