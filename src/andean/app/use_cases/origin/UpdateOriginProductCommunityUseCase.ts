@@ -13,14 +13,14 @@ export class UpdateOriginProductCommunityUseCase {
 
 	async execute(id: string, dto: UpdateOriginProductCommunityDto): Promise<OriginProductCommunity> {
 		// Verificar existencia
-		const existing = await this.communityRepository.findById(id);
+		const existing = await this.communityRepository.getById(id);
 		if (!existing) {
 			throw new NotFoundException(`Community with id ${id} not found`);
 		}
 
 		// Si se intenta cambiar el regionId, validar que la región exista
 		if (dto.regionId && dto.regionId !== existing.regionId) {
-			const region = await this.regionRepository.findById(dto.regionId);
+			const region = await this.regionRepository.getById(dto.regionId);
 			if (!region) {
 				throw new NotFoundException(`Region with id ${dto.regionId} not found`);
 			}
@@ -28,7 +28,7 @@ export class UpdateOriginProductCommunityUseCase {
 
 		// Si se intenta cambiar el nombre, validar que no exista otra comunidad con ese nombre
 		if (dto.name && dto.name !== existing.name) {
-			const communityWithSameName = await this.communityRepository.findByName(dto.name);
+			const communityWithSameName = await this.communityRepository.getByName(dto.name);
 			if (communityWithSameName) {
 				throw new BadRequestException(`Community with name "${dto.name}" already exists`);
 			}

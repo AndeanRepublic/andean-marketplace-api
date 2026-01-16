@@ -14,13 +14,13 @@ export class CreateOriginProductCommunityUseCase {
 
 	async execute(dto: CreateOriginProductCommunityDto): Promise<OriginProductCommunity> {
 		// Validar que la región exista
-		const region = await this.regionRepository.findById(dto.regionId);
+		const region = await this.regionRepository.getById(dto.regionId);
 		if (!region) {
 			throw new NotFoundException(`Region with id ${dto.regionId} not found`);
 		}
 
 		// Validar que no exista una comunidad con el mismo nombre
-		const existingCommunity = await this.communityRepository.findByName(dto.name);
+		const existingCommunity = await this.communityRepository.getByName(dto.name);
 		if (existingCommunity) {
 			throw new BadRequestException(`Community with name "${dto.name}" already exists`);
 		}
