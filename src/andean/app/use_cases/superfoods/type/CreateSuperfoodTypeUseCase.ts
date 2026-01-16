@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import * as crypto from 'crypto';
 import { SuperfoodTypeRepository } from '../../../datastore/superfoods/SuperfoodType.repo';
 import { SuperfoodType } from '../../../../domain/entities/superfoods/SuperfoodType';
 import { CreateSuperfoodTypeDto } from '../../../../infra/controllers/dto/superfoods/CreateSuperfoodTypeDto';
 import { SuperfoodTypeResponse } from '../../../modules/SuperfoodTypeResponse';
+import { SuperfoodTypeMapper } from '../../../../infra/services/superfood/SuperfoodTypeMapper';
 
 @Injectable()
 export class CreateSuperfoodTypeUseCase {
@@ -12,20 +12,10 @@ export class CreateSuperfoodTypeUseCase {
 	) { }
 
 	async handle(dto: CreateSuperfoodTypeDto): Promise<SuperfoodTypeResponse> {
-		const type = new SuperfoodType(
-			crypto.randomUUID(),
-			dto.name,
-			new Date(),
-			new Date(),
-		);
+		// Crear entidad usando mapper
+		const type = SuperfoodTypeMapper.fromCreateDto(dto);
 
 		const savedType = await this.typeRepository.save(type);
-		return {
-			id: savedType.id,
-			name: savedType.name,
-			icon: dto.icon,
-			createdAt: savedType.createdAt!,
-			updatedAt: savedType.updatedAt!,
-		};
+		return SuperfoodTypeMapper.toResponse(savedType);
 	}
 }

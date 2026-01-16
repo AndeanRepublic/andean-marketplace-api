@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { SuperfoodTypeRepository } from '../../../datastore/superfoods/SuperfoodType.repo';
 import { SuperfoodType } from '../../../../domain/entities/superfoods/SuperfoodType';
 import { SuperfoodTypeResponse } from '../../../modules/SuperfoodTypeResponse';
+import { SuperfoodTypeMapper } from '../../../../infra/services/superfood/SuperfoodTypeMapper';
 
 @Injectable()
 export class GetSuperfoodTypeByIdUseCase {
@@ -16,11 +17,6 @@ export class GetSuperfoodTypeByIdUseCase {
 			throw new NotFoundException(`SuperfoodType with ID ${id} not found`);
 		}
 
-		return {
-			id: type.id,
-			name: type.name,
-			createdAt: type.createdAt!,
-			updatedAt: type.updatedAt!,
-		};
+		return SuperfoodTypeMapper.toResponse(type);
 	}
 }
