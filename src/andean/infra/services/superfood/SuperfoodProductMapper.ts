@@ -12,89 +12,68 @@ import { SuperfoodOptions } from '../../../domain/entities/superfoods/SuperfoodO
 import { SuperfoodOptionsItem } from '../../../domain/entities/superfoods/SuperfoodOptionsItem';
 import { SuperfoodVariant } from '../../../domain/entities/superfoods/SuperfoodVariant';
 import { ProductTraceability } from '../../../domain/entities/ProductTraceability';
+import { plainToInstance, instanceToPlain } from 'class-transformer';
+import * as crypto from 'crypto';
 
 export class SuperfoodProductMapper {
 	static fromDocument(doc: SuperfoodProductDocument): SuperfoodProduct {
-		const baseInfo = new SuperfoodBasicInfo(
-			doc.baseInfo.title,
-			doc.baseInfo.mediaIds,
-			doc.baseInfo.description,
-			doc.baseInfo.general_features,
-			doc.baseInfo.nutritional_features,
-			doc.baseInfo.benefits,
-			doc.baseInfo.ownerType,
-			doc.baseInfo.ownerId,
+		const plain = doc.toObject();
+		const { _id, ...rest } = plain;
+
+		const baseInfo = plainToInstance(SuperfoodBasicInfo, rest.baseInfo);
+		const priceInventory = plainToInstance(
+			SuperfoodPriceInventory,
+			rest.priceInventory,
 		);
 
-		const priceInventory = new SuperfoodPriceInventory(
-			doc.priceInventory.basePrice,
-			doc.priceInventory.totalStock,
-			doc.priceInventory.SKU,
+		let detailProduct: SuperfoodDetailProduct | undefined;
+		if (rest.detailProduct) {
+			let elaborationTime: SuperfoodElaborationTime | undefined;
+			if (rest.detailProduct.elaborationTime) {
+				elaborationTime = plainToInstance(
+					SuperfoodElaborationTime,
+					rest.detailProduct.elaborationTime,
+				);
+			}
+			detailProduct = plainToInstance(SuperfoodDetailProduct, {
+				...rest.detailProduct,
+				elaborationTime,
+			});
+		}
+
+		const nutritionalContent = rest.nutritionalContent?.map((item: any) =>
+			plainToInstance(SuperfoodNutritionalItem, item),
 		);
 
-		const elaborationTime = new SuperfoodElaborationTime(
-			doc.detailProduct.elaborationTime.days,
-			doc.detailProduct.elaborationTime.hours,
+		let detailTraceability: SuperfoodDetailTraceability | undefined;
+		if (rest.detailTraceability) {
+			detailTraceability = plainToInstance(
+				SuperfoodDetailTraceability,
+				rest.detailTraceability,
+			);
+		}
+
+		let productTraceability: ProductTraceability | undefined;
+		if (rest.productTraceability) {
+			productTraceability = plainToInstance(
+				ProductTraceability,
+				rest.productTraceability,
+			);
+		}
+
+		const options = rest.options?.map((opt: any) => {
+			const values = (opt.values || []).map((val: any) =>
+				plainToInstance(SuperfoodOptionsItem, val),
+			);
+			return plainToInstance(SuperfoodOptions, { ...opt, values });
+		});
+
+		const variants = rest.variants?.map((variant: any) =>
+			plainToInstance(SuperfoodVariant, variant),
 		);
 
-		const detailProduct = new SuperfoodDetailProduct(
-			doc.detailProduct.type,
-			doc.detailProduct.productPresentation,
-			doc.detailProduct.consumptionWay,
-			doc.detailProduct.consumptionSuggestions,
-			doc.detailProduct.salesUnitSize,
-			doc.detailProduct.medicRecommendations,
-			doc.detailProduct.healthWarnings,
-			elaborationTime,
-		);
-
-		const nutritionalContent = doc.nutritionalContent.map(
-			(item: any) => new SuperfoodNutritionalItem(
-				item.id,
-				item.quantity,
-				item.nutrient,
-				item.strikingFeature,
-				item.selected,
-			)
-		);
-
-		const detailTraceability = new SuperfoodDetailTraceability(
-			doc.detailTraceability.handmade,
-			doc.detailTraceability.secondaryMaterials,
-			doc.detailTraceability.originProductCommunityId,
-			doc.detailTraceability.productionMethod,
-			doc.detailTraceability.preservationMethod,
-			doc.detailTraceability.isArtesanal,
-			doc.detailTraceability.isNatural,
-			doc.detailTraceability.isEatableWithoutPrep,
-			doc.detailTraceability.canCauseAllergies,
-			doc.detailTraceability.certification,
-		);
-
-		// ProductTraceability is stored separately, not in superfood document
-		const productTraceability = null;
-
-		const options = doc.options?.map((opt: any) =>
-			new SuperfoodOptions(
-				opt.id,
-				opt.name,
-				opt.values.map((val: any) => new SuperfoodOptionsItem(val.id, val.label, val.mediaIds || []))
-			)
-		) || [];
-
-		const variants = doc.variants?.map((variant: any) =>
-			new SuperfoodVariant(
-				variant.id,
-				variant.combination,
-				variant.price,
-				variant.stock
-			)
-		) || [];
-
-		return new SuperfoodProduct(
-			doc.id,
-			doc.categoryId,
-			doc.status,
+		return plainToInstance(SuperfoodProduct, {
+			...rest,
 			baseInfo,
 			priceInventory,
 			detailProduct,
@@ -103,98 +82,82 @@ export class SuperfoodProductMapper {
 			productTraceability,
 			options,
 			variants,
-			doc.createdAt,
-			doc.updatedAt,
-		);
+			createdAt: rest.createdAt || new Date(),
+			updatedAt: rest.updatedAt || new Date(),
+		});
 	}
 
 	static fromCreateDto(dto: CreateSuperfoodDto): SuperfoodProduct {
-		const id = crypto.randomUUID();
-
-		const baseInfo = new SuperfoodBasicInfo(
-			dto.baseInfo.title,
-			dto.baseInfo.mediaIds || [],
-			dto.baseInfo.description,
-			dto.baseInfo.general_features || [],
-			dto.baseInfo.nutritional_features || [],
-			dto.baseInfo.benefits || [],
-			dto.baseInfo.ownerType,
-			dto.baseInfo.ownerId,
+		const { ...superfoodProductData } = dto;
+		const baseInfo = plainToInstance(SuperfoodBasicInfo, dto.baseInfo);
+		const priceInventory = plainToInstance(
+			SuperfoodPriceInventory,
+			dto.priceInventory,
 		);
 
-		const priceInventory = new SuperfoodPriceInventory(
-			dto.priceInventory.basePrice,
-			dto.priceInventory.totalStock,
-			dto.priceInventory.SKU,
+		let detailProduct: SuperfoodDetailProduct | undefined;
+		if (dto.detailProduct) {
+			let elaborationTime: SuperfoodElaborationTime | undefined;
+			if (dto.detailProduct.elaborationTime) {
+				elaborationTime = plainToInstance(
+					SuperfoodElaborationTime,
+					dto.detailProduct.elaborationTime,
+				);
+			}
+			detailProduct = plainToInstance(SuperfoodDetailProduct, {
+				...dto.detailProduct,
+				elaborationTime,
+			});
+		}
+
+		const nutritionalContent = dto.nutritionalContent?.map(
+			(item: any): SuperfoodNutritionalItem =>
+				plainToInstance(SuperfoodNutritionalItem, {
+					...item,
+					id: crypto.randomUUID(),
+				}),
 		);
 
-		const elaborationTime = new SuperfoodElaborationTime(
-			dto.detailProduct.elaborationTime.days,
-			dto.detailProduct.elaborationTime.hours,
-		);
+		let detailTraceability: SuperfoodDetailTraceability | undefined;
+		if (dto.detailTraceability) {
+			detailTraceability = plainToInstance(
+				SuperfoodDetailTraceability,
+				dto.detailTraceability,
+			);
+		}
 
-		const detailProduct = new SuperfoodDetailProduct(
-			dto.detailProduct.type,
-			dto.detailProduct.productPresentation,
-			dto.detailProduct.consumptionWay,
-			dto.detailProduct.consumptionSuggestions || '',
-			dto.detailProduct.salesUnitSize,
-			dto.detailProduct.medicRecommendations || '',
-			dto.detailProduct.healthWarnings || '',
-			elaborationTime,
-		);
+		let productTraceability: ProductTraceability | undefined;
+		if (dto.productTraceability) {
+			productTraceability = plainToInstance(
+				ProductTraceability,
+				dto.productTraceability,
+			);
+		}
 
-		const nutritionalContent = dto.nutritionalContent.map(
-			(item) => new SuperfoodNutritionalItem(
-				crypto.randomUUID(),
-				item.quantity,
-				item.nutrient,
-				item.strikingFeature,
-				item.selected || false,
-			)
-		);
-
-		const detailTraceability = new SuperfoodDetailTraceability(
-			dto.detailProduct.handmade,
-			dto.detailProduct.secondaryMaterials || [],
-			dto.detailProduct.originProductCommunityId,
-			dto.detailProduct.productionMethod,
-			dto.detailProduct.preservationMethod,
-			dto.detailProduct.isArtesanal,
-			dto.detailProduct.isNatural,
-			dto.detailProduct.isEatableWithoutPrep,
-			dto.detailProduct.canCauseAllergies,
-			dto.detailProduct.certification || '',
-		);
-
-		// ProductTraceability is created separately via product-traceability endpoint
-		const productTraceability = null;
-
-		const options = dto.options?.map((opt) =>
-			new SuperfoodOptions(
-				crypto.randomUUID(),
-				opt.name,
-				opt.values.map((val) => new SuperfoodOptionsItem(
-					crypto.randomUUID(),
-					val.label,
-					val.mediaIds || []
-				))
-			)
-		) || [];
+		const options = dto.options?.map((opt) => {
+			const values = (opt.values || []).map((val) =>
+				plainToInstance(SuperfoodOptionsItem, {
+					...val,
+					id: crypto.randomUUID(),
+				}),
+			);
+			return plainToInstance(SuperfoodOptions, {
+				...opt,
+				id: crypto.randomUUID(),
+				values,
+			});
+		});
 
 		const variants = dto.variants?.map((variant) =>
-			new SuperfoodVariant(
-				crypto.randomUUID(),
-				variant.combination,
-				variant.price,
-				variant.stock
-			)
-		) || [];
+			plainToInstance(SuperfoodVariant, {
+				...variant,
+				id: crypto.randomUUID(),
+			}),
+		);
 
-		return new SuperfoodProduct(
-			id,
-			dto.categoryId,
-			dto.status || SuperfoodProductStatus.PENDING,
+		const plain = {
+			id: crypto.randomUUID(),
+			...superfoodProductData,
 			baseInfo,
 			priceInventory,
 			detailProduct,
@@ -203,81 +166,105 @@ export class SuperfoodProductMapper {
 			productTraceability,
 			options,
 			variants,
-			new Date(),
-			new Date(),
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		};
+
+		return plainToInstance(SuperfoodProduct, plain);
+	}
+
+	static fromUpdateDto(id: string, dto: CreateSuperfoodDto): SuperfoodProduct {
+		const { ...superfoodProductData } = dto;
+		const baseInfo = plainToInstance(SuperfoodBasicInfo, dto.baseInfo);
+		const priceInventory = plainToInstance(
+			SuperfoodPriceInventory,
+			dto.priceInventory,
 		);
+
+		let detailProduct: SuperfoodDetailProduct | undefined;
+		if (dto.detailProduct) {
+			let elaborationTime: SuperfoodElaborationTime | undefined;
+			if (dto.detailProduct.elaborationTime) {
+				elaborationTime = plainToInstance(
+					SuperfoodElaborationTime,
+					dto.detailProduct.elaborationTime,
+				);
+			}
+			detailProduct = plainToInstance(SuperfoodDetailProduct, {
+				...dto.detailProduct,
+				elaborationTime,
+			});
+		}
+
+		const nutritionalContent = dto.nutritionalContent?.map(
+			(item: any): SuperfoodNutritionalItem =>
+				plainToInstance(SuperfoodNutritionalItem, {
+					...item,
+					id: crypto.randomUUID(),
+				}),
+		);
+
+		let detailTraceability: SuperfoodDetailTraceability | undefined;
+		if (dto.detailTraceability) {
+			detailTraceability = plainToInstance(
+				SuperfoodDetailTraceability,
+				dto.detailTraceability,
+			);
+		}
+
+		let productTraceability: ProductTraceability | undefined;
+		if (dto.productTraceability) {
+			productTraceability = plainToInstance(
+				ProductTraceability,
+				dto.productTraceability,
+			);
+		}
+
+		const options = dto.options?.map((opt) => {
+			const values = (opt.values || []).map((val) =>
+				plainToInstance(SuperfoodOptionsItem, {
+					...val,
+					id: crypto.randomUUID(),
+				}),
+			);
+			return plainToInstance(SuperfoodOptions, {
+				...opt,
+				id: crypto.randomUUID(),
+				values,
+			});
+		});
+
+		const variants = dto.variants?.map((variant) =>
+			plainToInstance(SuperfoodVariant, {
+				...variant,
+				id: crypto.randomUUID(),
+			}),
+		);
+
+		const plain = {
+			id: id,
+			...superfoodProductData,
+			baseInfo,
+			priceInventory,
+			detailProduct,
+			nutritionalContent,
+			detailTraceability,
+			productTraceability,
+			options,
+			variants,
+			updatedAt: new Date(),
+			// createdAt no se incluye aquí, se preserva del documento original
+		};
+
+		return plainToInstance(SuperfoodProduct, plain);
 	}
 
 	static toPersistence(product: SuperfoodProduct) {
+		const plain = instanceToPlain(product);
+		const { _id, ...updateData } = plain;
+
 		return {
-			id: product.id,
-			categoryId: product.categoryId,
-			status: product.status,
-			baseInfo: {
-				title: product.baseInfo.title,
-				mediaIds: product.baseInfo.mediaIds,
-				description: product.baseInfo.description,
-				general_features: product.baseInfo.general_features,
-				nutritional_features: product.baseInfo.nutritional_features,
-				benefits: product.baseInfo.benefits,
-				ownerType: product.baseInfo.ownerType,
-				ownerId: product.baseInfo.ownerId,
-			},
-			priceInventory: {
-				basePrice: product.priceInventory.basePrice,
-				totalStock: product.priceInventory.totalStock,
-				SKU: product.priceInventory.SKU,
-			},
-			detailProduct: {
-				type: product.detailProduct.type,
-				productPresentation: product.detailProduct.productPresentation,
-				consumptionWay: product.detailProduct.consumptionWay,
-				consumptionSuggestions: product.detailProduct.consumptionSuggestions,
-				salesUnitSize: product.detailProduct.salesUnitSize,
-				medicRecommendations: product.detailProduct.medicRecommendations,
-				healthWarnings: product.detailProduct.healthWarnings,
-				elaborationTime: {
-					days: product.detailProduct.elaborationTime.days,
-					hours: product.detailProduct.elaborationTime.hours,
-				},
-			},
-			nutritionalContent: product.nutritionalContent.map(item => ({
-				id: item.id,
-				quantity: item.quantity,
-				nutrient: item.nutrient,
-				strikingFeature: item.strikingFeature,
-				selected: item.selected,
-			})),
-			detailTraceability: {
-				handmade: product.detailTraceability.handmade,
-				secondaryMaterials: product.detailTraceability.secondaryMaterials,
-				originProductCommunityId: product.detailTraceability.originProductCommunityId,
-				productionMethod: product.detailTraceability.productionMethod,
-				preservationMethod: product.detailTraceability.preservationMethod,
-				isArtesanal: product.detailTraceability.isArtesanal,
-				isNatural: product.detailTraceability.isNatural,
-				isEatableWithoutPrep: product.detailTraceability.isEatableWithoutPrep,
-				canCauseAllergies: product.detailTraceability.canCauseAllergies,
-				certification: product.detailTraceability.certification,
-			},
-			// productTraceability is managed separately via product-traceability endpoint
-			options: product.options.map(opt => ({
-				id: opt.id,
-				name: opt.name,
-				values: opt.values.map(val => ({
-					id: val.id,
-					label: val.label,
-					mediaIds: val.mediaIds,
-				})),
-			})),
-			variants: product.variants.map(variant => ({
-				id: variant.id,
-				combination: variant.combination,
-				price: variant.price,
-				stock: variant.stock,
-			})),
-			createdAt: product.createdAt,
-			updatedAt: product.updatedAt,
+			...updateData,
 		};
 	}
 }

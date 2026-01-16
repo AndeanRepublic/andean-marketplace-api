@@ -1,4 +1,13 @@
-import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested, Min } from 'class-validator';
+import {
+	IsArray,
+	IsEnum,
+	IsNotEmpty,
+	IsNumber,
+	IsOptional,
+	IsString,
+	ValidateNested,
+	Min,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { SuperfoodProductStatus } from '../../../../domain/enums/SuperfoodProductStatus';
@@ -8,6 +17,8 @@ import { CreateSuperfoodNutritionalDto } from './CreateSuperfoodNutritionalDto';
 import { CreateSuperfoodOptionsDto } from './CreateSuperfoodOptionsDto';
 import { CreateSuperfoodVariantDto } from './CreateSuperfoodVariantDto';
 import { UniqueVariantCombinations } from '../../../validators/UniqueVariantCombinations.validator';
+import { CreateSuperfoodDetailTraceabilityDto } from './CreateSuperfoodDetailTraceabilityDto';
+import { CreateProductTraceabilityDto } from '../traceability/CreateProductTraceabilityDto';
 
 export class CreateSuperfoodPriceInventoryDto {
 	@ApiProperty({ description: 'Precio base del producto', example: 25.50, minimum: 0.01 })
@@ -24,17 +35,15 @@ export class CreateSuperfoodPriceInventoryDto {
 
 	@ApiProperty()
 	@IsString()
-	@IsNotEmpty()
-	SKU: string;
+	@IsOptional()
+	SKU?: string;
 }
 
 export class CreateSuperfoodDto {
-	@ApiProperty({ description: 'ID de categoría de superfood' })
-	@IsString()
-	@IsNotEmpty()
-	categoryId: string;
-
-	@ApiProperty({ enum: SuperfoodProductStatus, default: SuperfoodProductStatus.PENDING })
+	@ApiProperty({
+		enum: SuperfoodProductStatus,
+		default: SuperfoodProductStatus.PENDING,
+	})
 	@IsEnum(SuperfoodProductStatus)
 	@IsNotEmpty()
 	status: SuperfoodProductStatus;
@@ -49,16 +58,23 @@ export class CreateSuperfoodDto {
 	@Type(() => CreateSuperfoodPriceInventoryDto)
 	priceInventory: CreateSuperfoodPriceInventoryDto;
 
-	@ApiProperty({ type: CreateSuperfoodDetailDto })
+	@ApiProperty({ description: 'ID de categoría de superfood', required: false })
+	@IsString()
+	@IsOptional()
+	categoryId?: string;
+
+	@ApiProperty({ type: CreateSuperfoodDetailDto, required: false })
 	@ValidateNested()
 	@Type(() => CreateSuperfoodDetailDto)
-	detailProduct: CreateSuperfoodDetailDto;
+	@IsOptional()
+	detailProduct?: CreateSuperfoodDetailDto;
 
-	@ApiProperty({ type: [CreateSuperfoodNutritionalDto] })
+	@ApiProperty({ type: [CreateSuperfoodNutritionalDto], required: false })
 	@IsArray()
+	@IsOptional()
 	@ValidateNested({ each: true })
 	@Type(() => CreateSuperfoodNutritionalDto)
-	nutritionalContent: CreateSuperfoodNutritionalDto[];
+	nutritionalContent?: CreateSuperfoodNutritionalDto[];
 
 	@ApiProperty({ type: [CreateSuperfoodOptionsDto], required: false })
 	@IsArray()
@@ -77,5 +93,9 @@ export class CreateSuperfoodDto {
 
 	@ApiProperty({ required: false })
 	@IsOptional()
-	productTraceability?: any;  // General traceability (to be defined)
+	productTraceability?: CreateProductTraceabilityDto; // General traceability (to be defined)
+
+	@ApiProperty({ required: false })
+	@IsOptional()
+	detailTraceability?: CreateSuperfoodDetailTraceabilityDto; // Detail traceability
 }

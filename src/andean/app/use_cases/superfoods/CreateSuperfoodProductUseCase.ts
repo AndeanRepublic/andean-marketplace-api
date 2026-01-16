@@ -1,4 +1,9 @@
-import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { SuperfoodProductRepository } from '../../datastore/superfoods/SuperfoodProduct.repo';
 import { ShopRepository } from '../../datastore/Shop.repo';
 import { SuperfoodCategoryRepository } from '../../datastore/superfoods/SuperfoodCategory.repo';
@@ -10,12 +15,12 @@ import { SuperfoodOwnerType } from '../../../domain/enums/SuperfoodOwnerType';
 
 @Injectable()
 export class CreateSuperfoodProductUseCase {
-	constructor(
-		@Inject(SuperfoodProductRepository)
-		private readonly superfoodProductRepository: SuperfoodProductRepository,
+  constructor(
+    @Inject(SuperfoodProductRepository)
+    private readonly superfoodProductRepository: SuperfoodProductRepository,
 
-		@Inject(ShopRepository)
-		private readonly shopRepository: ShopRepository,
+    @Inject(ShopRepository)
+    private readonly shopRepository: ShopRepository,
 
 		@Inject(SuperfoodCategoryRepository)
 		private readonly categoryRepository: SuperfoodCategoryRepository,
@@ -24,12 +29,18 @@ export class CreateSuperfoodProductUseCase {
 		private readonly communityRepository: CommunityRepository,
 	) { }
 
-	async handle(dto: CreateSuperfoodDto): Promise<SuperfoodProduct> {
-		// 1. Validar que la categoría existe
-		const categoryFound = await this.categoryRepository.getCategoryById(dto.categoryId);
-		if (!categoryFound) {
-			throw new NotFoundException(`Category with ID ${dto.categoryId} not found`);
-		}
+  async handle(dto: CreateSuperfoodDto): Promise<SuperfoodProduct> {
+    // 1. Validar que la categoría existe solo si se proporciona
+    if (dto.categoryId) {
+      const categoryFound = await this.categoryRepository.getCategoryById(
+        dto.categoryId,
+      );
+      if (!categoryFound) {
+        throw new NotFoundException(
+          `Categoría con ID ${dto.categoryId} no encontrada`,
+        );
+      }
+    }
 
 		// 2. Validar que el owner existe (shop o community)
 		if (dto.baseInfo.ownerType === SuperfoodOwnerType.SHOP) {

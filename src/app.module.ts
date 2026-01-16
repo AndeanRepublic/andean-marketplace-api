@@ -18,6 +18,7 @@ import { OriginProductModule } from './andean/originProduct.module';
 import { ProductTraceabilityModule } from './andean/productTraceability.module';
 import { SuperfoodModule } from './andean/superfood.module';
 import { MediaItemModule } from './andean/mediaItem.module';
+import { TextileProductModule } from './andean/textileProduct.module';
 
 @Module({
 	imports: [
@@ -52,6 +53,7 @@ import { MediaItemModule } from './andean/mediaItem.module';
 		ProductTraceabilityModule,
 		SuperfoodModule,
 		MediaItemModule,
+		TextileProductModule,
 	],
 	controllers: [],
 	providers: [],
