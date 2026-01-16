@@ -1,10 +1,9 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import * as crypto from 'crypto';
 import { SuperfoodBenefitRepository } from '../../../datastore/superfoods/SuperfoodBenefit.repo';
-import { SuperfoodBenefit } from '../../../../domain/entities/superfoods/SuperfoodBenefit';
 import { CreateSuperfoodBenefitDto } from '../../../../infra/controllers/dto/superfoods/CreateSuperfoodBenefitDto';
 import { SuperfoodBenefitResponse } from '../../../modules/SuperfoodBenefitResponse';
 import { MediaItemRepository } from '../../../datastore/MediaItem.repo';
+import { SuperfoodBenefitMapper } from '../../../../infra/services/superfood/SuperfoodBenefitMapper';
 
 @Injectable()
 export class CreateSuperfoodBenefitUseCase {
@@ -22,21 +21,10 @@ export class CreateSuperfoodBenefitUseCase {
 			}
 		}
 
-		const benefit = new SuperfoodBenefit(
-			crypto.randomUUID(),
-			dto.name,
-			dto.iconId,
-			new Date(),
-			new Date(),
-		);
+		// Crear entidad usando mapper
+		const benefit = SuperfoodBenefitMapper.fromCreateDto(dto);
 
 		const savedBenefit = await this.benefitRepository.save(benefit);
-		return {
-			id: savedBenefit.id,
-			name: savedBenefit.name,
-			iconId: savedBenefit.iconId,
-			createdAt: savedBenefit.createdAt!,
-			updatedAt: savedBenefit.updatedAt!,
-		};
+		return SuperfoodBenefitMapper.toResponse(savedBenefit);
 	}
 }
