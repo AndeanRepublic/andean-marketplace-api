@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { SuperfoodCategoryRepository } from '../../../datastore/superfoods/SuperfoodCategory.repo';
 import { SuperfoodCategory } from '../../../../domain/entities/superfoods/SuperfoodCategory';
 import { SuperfoodCategoryResponse } from '../../../modules/SuperfoodCategoryResponse';
+import { SuperfoodCategoryMapper } from '../../../../infra/services/superfood/SuperfoodCategoryMapper';
 
 @Injectable()
 export class ListSuperfoodCategoriesUseCase {
@@ -11,12 +12,6 @@ export class ListSuperfoodCategoriesUseCase {
 
 	async handle(): Promise<SuperfoodCategoryResponse[]> {
 		const categories = await this.categoryRepository.getAllCategories();
-		return categories.map(category => ({
-			id: category.id,
-			name: category.name,
-			status: category.status,
-			createdAt: category.createdAt!,
-			updatedAt: category.updatedAt!,
-		}));
+		return categories.map(category => SuperfoodCategoryMapper.toResponse(category));
 	}
 }
