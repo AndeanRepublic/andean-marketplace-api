@@ -9,36 +9,35 @@ import { UpdateOrderDto } from './dto/UpdateOrderDto';
 
 @Controller('orders')
 export class OrderController {
-  constructor(
-    private readonly createOrderUseCase: CreateOrderUseCase,
-    private readonly getOrderByIdUseCase: GetOrderByIdUseCase,
-    private readonly getOrdersByCustomerUseCase: GetOrdersByCustomerUseCase,
-    private readonly updateOrderStatusUseCase: UpdateOrderStatusUseCase,
-  ) {}
+	constructor(
+		private readonly createOrderUseCase: CreateOrderUseCase,
+		private readonly getOrderByIdUseCase: GetOrderByIdUseCase,
+		private readonly getOrdersByCustomerUseCase: GetOrdersByCustomerUseCase,
+		private readonly updateOrderStatusUseCase: UpdateOrderStatusUseCase,
+	) { }
 
-  @Post('')
-  async createOrder(@Body() body: CreateOrderDto): Promise<Order> {
-    return this.createOrderUseCase.handle(body);
-  }
+	@Post('')
+	async createOrder(@Body() body: CreateOrderDto): Promise<Order> {
+		return this.createOrderUseCase.handle(body);
+	}
 
-  @Get('/:id')
-  async findById(@Param('id') id: string): Promise<Order | null> {
-    return this.getOrderByIdUseCase.handle(id);
-  }
+	@Get('/:id')
+	async findById(@Param('id') id: string): Promise<Order | null> {
+		return this.getOrderByIdUseCase.handle(id);
+	}
 
-  @Get('/by-customer/:customerId')
-  async findByCustomerId(
-    @Param('customerId') customerId: string,
-  ): Promise<Order[]> {
-    return this.getOrdersByCustomerUseCase.handle(customerId);
-  }
+	@Get('/by-customer/:customerId')
+	async findByCustomerId(
+		@Param('customerId') customerId: string,
+	): Promise<Order[]> {
+		return this.getOrdersByCustomerUseCase.handle(customerId);
+	}
 
-  @Put('/:id')
-  async updateById(
-    @Param('id') id: string,
-    @Body() body: UpdateOrderDto,
-  ): Promise<void> {
-    const newStatus = body.status;
-    return this.updateOrderStatusUseCase.handle(id, newStatus);
-  }
+	@Put('/:id')
+	async updateById(
+		@Param('id') id: string,
+		@Body() body: UpdateOrderDto,
+	): Promise<Order> {
+		return this.updateOrderStatusUseCase.handle(id, body);
+	}
 }
