@@ -34,7 +34,7 @@ export class UpdateOriginProductCommunityUseCase {
 			}
 		}
 
-		// Actualizar pasando DTO directamente
+		// Actualizar
 		const updated = await this.communityRepository.update(id, dto);
 
 		if (!updated) {

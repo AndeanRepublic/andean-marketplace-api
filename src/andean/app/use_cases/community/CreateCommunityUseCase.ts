@@ -12,7 +12,7 @@ export class CreateCommunityUseCase {
 
 	async execute(dto: CreateCommunityDto): Promise<Community> {
 		// Validar que no exista una comunidad con el mismo nombre
-		const existingCommunity = await this.communityRepository.findByName(dto.name);
+		const existingCommunity = await this.communityRepository.getByName(dto.name);
 		if (existingCommunity) {
 			throw new BadRequestException(`Community with name "${dto.name}" already exists`);
 		}
