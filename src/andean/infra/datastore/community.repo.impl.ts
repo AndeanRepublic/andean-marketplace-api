@@ -8,49 +8,49 @@ import { CommunityMapper } from '../services/CommunityMapper';
 
 @Injectable()
 export class CommunityRepositoryImpl extends CommunityRepositoryBase {
-  constructor(
-    @InjectModel('Community') private communityModel: Model<CommunityDocument>,
-  ) {
-    super();
-  }
+	constructor(
+		@InjectModel('Community') private communityModel: Model<CommunityDocument>,
+	) {
+		super();
+	}
 
-  async create(community: Community): Promise<Community> {
-    const plain = CommunityMapper.toPersistence(community);
-    const created = new this.communityModel({
-      _id: crypto.randomUUID(),
-      ...plain,
-    });
-    const savedCommunity = await created.save();
-    return CommunityMapper.fromDocument(savedCommunity);
-  }
+	async create(community: Community): Promise<Community> {
+		const plain = CommunityMapper.toPersistence(community);
+		const created = new this.communityModel({
+			_id: crypto.randomUUID(),
+			...plain,
+		});
+		const savedCommunity = await created.save();
+		return CommunityMapper.fromDocument(savedCommunity);
+	}
 
-  async findById(id: string): Promise<Community | null> {
-    const doc = await this.communityModel.findOne({ id }).exec();
-    return doc ? CommunityMapper.fromDocument(doc) : null;
-  }
+	async getById(id: string): Promise<Community | null> {
+		const doc = await this.communityModel.findOne({ id }).exec();
+		return doc ? CommunityMapper.fromDocument(doc) : null;
+	}
 
-  async findAll(): Promise<Community[]> {
-    const docs = await this.communityModel.find().exec();
-    return docs.map((doc) => CommunityMapper.fromDocument(doc));
-  }
+	async getAll(): Promise<Community[]> {
+		const docs = await this.communityModel.find().exec();
+		return docs.map((doc) => CommunityMapper.fromDocument(doc));
+	}
 
-  async findByName(name: string): Promise<Community | null> {
-    const document = await this.communityModel
-      .findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } })
-      .exec();
-    return document ? CommunityMapper.fromDocument(document) : null;
-  }
+	async getByName(name: string): Promise<Community | null> {
+		const document = await this.communityModel
+			.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } })
+			.exec();
+		return document ? CommunityMapper.fromDocument(document) : null;
+	}
 
-  async update(id: string, community: Community): Promise<Community | null> {
-    const plain = CommunityMapper.toPersistence(community);
-    const updated = await this.communityModel
-      .findOneAndUpdate({ id }, plain, { new: true })
-      .exec();
-    return updated ? CommunityMapper.fromDocument(updated) : null;
-  }
+	async update(id: string, community: Community): Promise<Community | null> {
+		const plain = CommunityMapper.toPersistence(community);
+		const updated = await this.communityModel
+			.findOneAndUpdate({ id }, plain, { new: true })
+			.exec();
+		return updated ? CommunityMapper.fromDocument(updated) : null;
+	}
 
-  async delete(id: string): Promise<boolean> {
-    await this.communityModel.deleteOne({ id }).exec();
-    return true;
-  }
+	async delete(id: string): Promise<boolean> {
+		await this.communityModel.deleteOne({ id }).exec();
+		return true;
+	}
 }
