@@ -1,10 +1,10 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import * as crypto from 'crypto';
 import { SuperfoodNutritionalFeatureRepository } from '../../../datastore/superfoods/SuperfoodNutritionalFeature.repo';
 import { SuperfoodNutritionalFeature } from '../../../../domain/entities/superfoods/SuperfoodNutritionalFeature';
 import { CreateSuperfoodNutritionalFeatureDto } from '../../../../infra/controllers/dto/superfoods/CreateSuperfoodNutritionalFeatureDto';
 import { SuperfoodNutritionalFeatureResponse } from '../../../modules/SuperfoodNutritionalFeatureResponse';
 import { MediaItemRepository } from '../../../datastore/MediaItem.repo';
+import { SuperfoodNutritionalFeatureMapper } from '../../../../infra/services/superfood/SuperfoodNutritionalFeatureMapper';
 
 @Injectable()
 export class CreateSuperfoodNutritionalFeatureUseCase {
@@ -22,21 +22,10 @@ export class CreateSuperfoodNutritionalFeatureUseCase {
 			}
 		}
 
-		const nutritionalFeature = new SuperfoodNutritionalFeature(
-			crypto.randomUUID(),
-			dto.name,
-			dto.iconId,
-			new Date(),
-			new Date(),
-		);
+		// Crear entidad usando mapper
+		const nutritionalFeature = SuperfoodNutritionalFeatureMapper.fromCreateDto(dto);
 
 		const savedFeature = await this.nutritionalFeatureRepository.save(nutritionalFeature);
-		return {
-			id: savedFeature.id,
-			name: savedFeature.name,
-			iconId: savedFeature.iconId,
-			createdAt: savedFeature.createdAt!,
-			updatedAt: savedFeature.updatedAt!,
-		};
+		return SuperfoodNutritionalFeatureMapper.toResponse(savedFeature);
 	}
 }

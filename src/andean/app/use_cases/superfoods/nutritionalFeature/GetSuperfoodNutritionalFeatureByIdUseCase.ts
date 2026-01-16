@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { SuperfoodNutritionalFeatureRepository } from '../../../datastore/superfoods/SuperfoodNutritionalFeature.repo';
 import { SuperfoodNutritionalFeature } from '../../../../domain/entities/superfoods/SuperfoodNutritionalFeature';
 import { SuperfoodNutritionalFeatureResponse } from '../../../modules/SuperfoodNutritionalFeatureResponse';
+import { SuperfoodNutritionalFeatureMapper } from '../../../../infra/services/superfood/SuperfoodNutritionalFeatureMapper';
 
 @Injectable()
 export class GetSuperfoodNutritionalFeatureByIdUseCase {
@@ -16,12 +17,6 @@ export class GetSuperfoodNutritionalFeatureByIdUseCase {
 			throw new NotFoundException(`SuperfoodNutritionalFeature with ID ${id} not found`);
 		}
 
-		return {
-			id: nutritionalFeature.id,
-			name: nutritionalFeature.name,
-			icon: nutritionalFeature.icon,
-			createdAt: nutritionalFeature.createdAt!,
-			updatedAt: nutritionalFeature.updatedAt!,
-		};
+		return SuperfoodNutritionalFeatureMapper.toResponse(nutritionalFeature);
 	}
 }
