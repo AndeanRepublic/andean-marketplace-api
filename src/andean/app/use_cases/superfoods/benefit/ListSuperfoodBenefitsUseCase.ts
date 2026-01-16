@@ -14,7 +14,7 @@ export class ListSuperfoodBenefitsUseCase {
 		return benefits.map(benefit => ({
 			id: benefit.id,
 			name: benefit.name,
-			icon: benefit.icon,
+			icon: benefit.iconId,
 			createdAt: benefit.createdAt!,
 			updatedAt: benefit.updatedAt!,
 		}));

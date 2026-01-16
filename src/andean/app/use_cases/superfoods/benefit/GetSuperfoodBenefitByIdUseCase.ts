@@ -19,7 +19,7 @@ export class GetSuperfoodBenefitByIdUseCase {
 		return {
 			id: benefit.id,
 			name: benefit.name,
-			icon: benefit.icon,
+			iconId: benefit.iconId,
 			createdAt: benefit.createdAt!,
 			updatedAt: benefit.updatedAt!,
 		};
