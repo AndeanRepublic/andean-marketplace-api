@@ -3,7 +3,7 @@ import { OriginProductCommunityRepository } from '../../datastore/originProductC
 import { OriginProductRegionRepository } from '../../datastore/originProductRegion.repo';
 import { OriginProductCommunity } from '../../../domain/entities/origin/OriginProductCommunity';
 import { CreateOriginProductCommunityDto } from '../../../infra/controllers/dto/origin/CreateOriginProductCommunityDto';
-import * as crypto from 'crypto';
+import { OriginProductCommunityMapper } from '../../../infra/services/OriginProductCommunityMapper';
 
 @Injectable()
 export class CreateOriginProductCommunityUseCase {
@@ -25,12 +25,8 @@ export class CreateOriginProductCommunityUseCase {
 			throw new BadRequestException(`Community with name "${dto.name}" already exists`);
 		}
 
-		// Crear entidad de dominio
-		const community = new OriginProductCommunity(
-			crypto.randomUUID(),
-			dto.name,
-			dto.regionId,
-		);
+		// Crear entidad usando mapper
+		const community = OriginProductCommunityMapper.fromCreateDto(dto);
 
 		// Persistir
 		return await this.communityRepository.create(community);

@@ -24,7 +24,7 @@ export class UpdateOriginProductRegionUseCase {
 			}
 		}
 
-		// Actualizar
+		// Actualizar pasando DTO directamente
 		const updated = await this.regionRepository.update(id, dto);
 
 		if (!updated) {
