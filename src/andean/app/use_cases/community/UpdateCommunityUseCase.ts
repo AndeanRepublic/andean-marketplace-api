@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { CommunityRepository } from '../../datastore/community.repo';
 import { Community } from '../../../domain/entities/community/Community';
 import { UpdateCommunityDto } from '../../../infra/controllers/dto/community/UpdateCommunityDto';
+import { CommunityMapper } from '../../../infra/services/CommunityMapper';
 
 @Injectable()
 export class UpdateCommunityUseCase {

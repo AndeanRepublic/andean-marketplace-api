@@ -1,6 +1,7 @@
 import { CommunityDocument } from '../persistence/community.schema';
 import { Community } from '../../domain/entities/community/Community';
 import { CreateCommunityDto } from '../controllers/dto/community/CreateCommunityDto';
+import { UpdateCommunityDto } from '../controllers/dto/community/UpdateCommunityDto';
 import * as crypto from 'crypto';
 
 export class CommunityMapper {
@@ -10,6 +11,24 @@ export class CommunityMapper {
 			doc.name,
 			doc.createdAt,
 			doc.updatedAt,
+		);
+	}
+
+	static fromCreateDto(dto: CreateCommunityDto): Community {
+		return new Community(
+			crypto.randomUUID(),
+			dto.name,
+			new Date(),
+			new Date(),
+		);
+	}
+
+	static fromUpdateDto(dto: UpdateCommunityDto, existing: Community): Community {
+		return new Community(
+			existing.id,
+			dto.name ?? existing.name,
+			existing.createdAt,
+			new Date(),
 		);
 	}
 
