@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { MediaItemRepository } from '../../datastore/MediaItem.repo';
 import { MediaItem } from '../../../domain/entities/MediaItem';
 import { UpdateMediaItemDto } from '../../../infra/controllers/dto/media/UpdateMediaItemDto';
+import { MediaItemMapper } from '../../../infra/services/MediaItemMapper';
 
 @Injectable()
 export class UpdateMediaItemUseCase {
@@ -16,15 +17,7 @@ export class UpdateMediaItemUseCase {
 		}
 
 		try {
-			const updated = new MediaItem(
-				existing.id,
-				dto.type ?? existing.type,
-				dto.name ?? existing.name,
-				dto.url ?? existing.url,
-				existing.createdAt,
-				new Date(),
-			);
-
+			const updated = MediaItemMapper.fromUpdateDto(dto, existing);
 			return await this.mediaItemRepository.update(updated);
 		} catch (error) {
 			throw new BadRequestException(`Error updating media item: ${error.message}`);

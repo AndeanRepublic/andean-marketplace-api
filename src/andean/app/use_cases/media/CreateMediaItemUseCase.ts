@@ -2,7 +2,7 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { MediaItemRepository } from '../../datastore/MediaItem.repo';
 import { MediaItem } from '../../../domain/entities/MediaItem';
 import { CreateMediaItemDto } from '../../../infra/controllers/dto/media/CreateMediaItemDto';
-import * as crypto from 'crypto';
+import { MediaItemMapper } from '../../../infra/services/MediaItemMapper';
 
 @Injectable()
 export class CreateMediaItemUseCase {
@@ -12,15 +12,7 @@ export class CreateMediaItemUseCase {
 
 	async execute(dto: CreateMediaItemDto): Promise<MediaItem> {
 		try {
-			const mediaItem = new MediaItem(
-				crypto.randomUUID(),
-				dto.type,
-				dto.name,
-				dto.url,
-				new Date(),
-				new Date(),
-			);
-
+			const mediaItem = MediaItemMapper.fromCreateDto(dto);
 			return await this.mediaItemRepository.save(mediaItem);
 		} catch (error) {
 			throw new BadRequestException(`Error creating media item: ${error.message}`);
