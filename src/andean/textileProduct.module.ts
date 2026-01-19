@@ -9,6 +9,7 @@ import { TextilePrincipalUseSchema } from './infra/persistence/textileProducts/t
 import { TextileProductSchema } from './infra/persistence/textileProducts/textileProduct.schema';
 import { TextileCertificationSchema } from './infra/persistence/textileProducts/textileCertification.schema';
 import { ColorOptionAlternativeSchema } from './infra/persistence/textileProducts/ColorOptionAlternative.schema';
+import { SizeOptionAlternativeSchema } from './infra/persistence/textileProducts/SizeOptionAlternative.schema';
 import { UsersModule } from './users.module';
 import { ShopsModule } from './shop.module';
 import { OriginProductModule } from './originProduct.module';
@@ -77,6 +78,14 @@ import { UpdateColorOptionAlternativeUseCase } from './app/use_cases/textileProd
 import { DeleteColorOptionAlternativeUseCase } from './app/use_cases/textileProducts/DeleteColorOptionAlternativeUseCase';
 import { ColorOptionAlternativeRepository } from './app/datastore/textileProducts/ColorOptionAlternative.repo';
 import { ColorOptionAlternativeRepositoryImpl } from './infra/datastore/textileProducts/ColorOptionAlternative.repo.impl';
+import { CreateSizeOptionAlternativeUseCase } from './app/use_cases/textileProducts/CreateSizeOptionAlternativeUseCase';
+import { CreateManySizeOptionAlternativesUseCase } from './app/use_cases/textileProducts/CreateManySizeOptionAlternativesUseCase';
+import { GetAllSizeOptionAlternativesUseCase } from './app/use_cases/textileProducts/GetAllSizeOptionAlternativesUseCase';
+import { GetByIdSizeOptionAlternativeUseCase } from './app/use_cases/textileProducts/GetByIdSizeOptionAlternativeUseCase';
+import { UpdateSizeOptionAlternativeUseCase } from './app/use_cases/textileProducts/UpdateSizeOptionAlternativeUseCase';
+import { DeleteSizeOptionAlternativeUseCase } from './app/use_cases/textileProducts/DeleteSizeOptionAlternativeUseCase';
+import { SizeOptionAlternativeRepository } from './app/datastore/textileProducts/SizeOptionAlternative.repo';
+import { SizeOptionAlternativeRepositoryImpl } from './infra/datastore/textileProducts/SizeOptionAlternative.repo.impl';
 import { CommunityRepositoryImpl } from './infra/datastore/community.repo.impl';
 import { CommunityRepository } from './app/datastore/community.repo';
 import { CommunitySchema } from './infra/persistence/community.schema';
@@ -119,6 +128,10 @@ import { CommunitySchema } from './infra/persistence/community.schema';
 			{
 				name: 'ColorOptionAlternative',
 				schema: ColorOptionAlternativeSchema,
+			},
+			{
+				name: 'SizeOptionAlternative',
+				schema: SizeOptionAlternativeSchema,
 			},
 			{
 				name: 'Community',
@@ -177,6 +190,12 @@ import { CommunitySchema } from './infra/persistence/community.schema';
 		GetByIdColorOptionAlternativeUseCase,
 		UpdateColorOptionAlternativeUseCase,
 		DeleteColorOptionAlternativeUseCase,
+		CreateSizeOptionAlternativeUseCase,
+		CreateManySizeOptionAlternativesUseCase,
+		GetAllSizeOptionAlternativesUseCase,
+		GetByIdSizeOptionAlternativeUseCase,
+		UpdateSizeOptionAlternativeUseCase,
+		DeleteSizeOptionAlternativeUseCase,
 		{
 			provide: TextileCategoryRepository,
 			useClass: TextileCategoryRepositoryImpl,
@@ -214,6 +233,10 @@ import { CommunitySchema } from './infra/persistence/community.schema';
 			useClass: ColorOptionAlternativeRepositoryImpl,
 		},
 		{
+			provide: SizeOptionAlternativeRepository,
+			useClass: SizeOptionAlternativeRepositoryImpl,
+		},
+		{
 			provide: CommunityRepository,
 			useClass: CommunityRepositoryImpl,
 		},
@@ -228,6 +251,7 @@ import { CommunitySchema } from './infra/persistence/community.schema';
 		TextileProductRepository,
 		TextileCertificationRepository,
 		ColorOptionAlternativeRepository,
+		SizeOptionAlternativeRepository,
 		MongooseModule,
 	],
 })
