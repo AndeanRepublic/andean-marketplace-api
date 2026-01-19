@@ -23,17 +23,17 @@ export class OriginProductRegionRepositoryImpl extends OriginProductRegionReposi
 		return OriginProductRegionMapper.fromDocument(created);
 	}
 
-	async findById(id: string): Promise<OriginProductRegion | null> {
+	async getById(id: string): Promise<OriginProductRegion | null> {
 		const document = await this.regionModel.findOne({ id }).exec();
 		return document ? OriginProductRegionMapper.fromDocument(document) : null;
 	}
 
-	async findAll(): Promise<OriginProductRegion[]> {
+	async getAll(): Promise<OriginProductRegion[]> {
 		const documents = await this.regionModel.find().exec();
 		return documents.map((doc) => OriginProductRegionMapper.fromDocument(doc));
 	}
 
-	async findByName(name: string): Promise<OriginProductRegion | null> {
+	async getByName(name: string): Promise<OriginProductRegion | null> {
 		const document = await this.regionModel
 			.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } })
 			.exec();

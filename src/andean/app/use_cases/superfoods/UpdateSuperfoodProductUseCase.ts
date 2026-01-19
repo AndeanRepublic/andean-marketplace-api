@@ -9,6 +9,7 @@ import { UpdateSuperfoodDto } from '../../../infra/controllers/dto/superfoods/Up
 import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
 import { SuperfoodProductMapper } from '../../../infra/services/superfood/SuperfoodProductMapper';
 import { SuperfoodCategoryRepository } from '../../datastore/superfoods/SuperfoodCategory.repo';
+import { CommunityRepository } from '../../datastore/community.repo';
 import { ShopRepository } from '../../datastore/Shop.repo';
 import { SuperfoodOwnerType } from '../../../domain/enums/SuperfoodOwnerType';
 import { instanceToPlain } from 'class-transformer';
@@ -23,7 +24,9 @@ export class UpdateSuperfoodProductUseCase {
 		private readonly categoryRepository: SuperfoodCategoryRepository,
 		@Inject(ShopRepository)
 		private readonly shopRepository: ShopRepository,
-	) {}
+		@Inject(CommunityRepository)
+		private readonly communityRepository: CommunityRepository,
+	) { }
 
 	async handle(
 		productId: string,
@@ -61,7 +64,14 @@ export class UpdateSuperfoodProductUseCase {
 				}
 			}
 		}
-		// TODO: Agregar validación para COMMUNITY cuando se implemente
+		else if (dto.baseInfo?.ownerType === SuperfoodOwnerType.COMMUNITY) {
+			if (dto.baseInfo?.ownerId) {
+				const communityFound = await this.communityRepository.getById(dto.baseInfo.ownerId);
+				if (!communityFound) {
+					throw new NotFoundException(`Community with ID ${dto.baseInfo.ownerId} not found`);
+				}
+			}
+		}
 
 		// 4. Validaciones de negocio si se actualizan precios/stock
 		if (

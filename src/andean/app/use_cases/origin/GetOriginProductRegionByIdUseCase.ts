@@ -9,7 +9,7 @@ export class GetOriginProductRegionByIdUseCase {
 	) { }
 
 	async execute(id: string): Promise<OriginProductRegion> {
-		const region = await this.regionRepository.findById(id);
+		const region = await this.regionRepository.getById(id);
 
 		if (!region) {
 			throw new NotFoundException(`Region with id ${id} not found`);

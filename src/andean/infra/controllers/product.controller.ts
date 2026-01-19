@@ -43,14 +43,14 @@ export class ProductController {
 	}
 
 	@Get('/by-seller/:sellerId')
-	async findBySellerId(
+	async getBySellerId(
 		@Param('sellerId') sellerId: string,
 	): Promise<Product[]> {
 		return this.getProductsBySellerIdUseCase.handle(sellerId);
 	}
 
 	@Get('/by-shop/:shopId')
-	async findByShop(@Param('shopId') shopId: string): Promise<Product[]> {
+	async getByShop(@Param('shopId') shopId: string): Promise<Product[]> {
 		return this.getProductsByShopUseCase.handle(shopId);
 	}
 
@@ -59,7 +59,7 @@ export class ProductController {
 	@ApiParam({ name: 'productId', description: 'ID del producto' })
 	@ApiResponse({ status: 200, description: 'Producto encontrado' })
 	@ApiResponse({ status: 404, description: 'Producto no encontrado' })
-	async findById(@Param('productId') productId: string): Promise<Product> {
+	async getById(@Param('productId') productId: string): Promise<Product> {
 		return this.getProductByIdUseCase.handle(productId);
 	}
 

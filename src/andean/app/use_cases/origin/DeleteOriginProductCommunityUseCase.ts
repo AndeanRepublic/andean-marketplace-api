@@ -8,7 +8,7 @@ export class DeleteOriginProductCommunityUseCase {
 	) { }
 
 	async execute(id: string): Promise<void> {
-		const existing = await this.communityRepository.findById(id);
+		const existing = await this.communityRepository.getById(id);
 
 		if (!existing) {
 			throw new NotFoundException(`Community with id ${id} not found`);

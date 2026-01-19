@@ -8,7 +8,7 @@ export class DeleteProductTraceabilityUseCase {
 	) { }
 
 	async execute(id: string): Promise<void> {
-		const existing = await this.traceabilityRepository.findById(id);
+		const existing = await this.traceabilityRepository.getById(id);
 
 		if (!existing) {
 			throw new NotFoundException(`Traceability with id ${id} not found`);

@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { CommunityRepository } from '../../datastore/community.repo';
 import { Community } from '../../../domain/entities/community/Community';
 import { UpdateCommunityDto } from '../../../infra/controllers/dto/community/UpdateCommunityDto';
+import { CommunityMapper } from '../../../infra/services/CommunityMapper';
 
 @Injectable()
 export class UpdateCommunityUseCase {
@@ -11,14 +12,14 @@ export class UpdateCommunityUseCase {
 
 	async execute(id: string, dto: UpdateCommunityDto): Promise<Community> {
 		// Verificar existencia
-		const existing = await this.communityRepository.findById(id);
+		const existing = await this.communityRepository.getById(id);
 		if (!existing) {
 			throw new NotFoundException(`Community with id ${id} not found`);
 		}
 
 		// Si se intenta cambiar el nombre, validar que no exista otra comunidad con ese nombre
 		if (dto.name && dto.name !== existing.name) {
-			const communityWithSameName = await this.communityRepository.findByName(dto.name);
+			const communityWithSameName = await this.communityRepository.getByName(dto.name);
 			if (communityWithSameName) {
 				throw new BadRequestException(`Community with name "${dto.name}" already exists`);
 			}

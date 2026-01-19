@@ -3,32 +3,26 @@ import { CustomerProfileRepository } from '../../datastore/Customer.repo';
 import { OrderRepository } from '../../datastore/Order.repo';
 import { CreateOrderDto } from '../../../infra/controllers/dto/CreateOrderDto';
 import { Order } from '../../../domain/entities/Order';
-import { OrderStatus } from '../../../domain/enums/OrderStatus';
-import { PaymentMethod } from '../../../domain/enums/PaymentMethod';
+import { OrderMapper } from '../../../infra/services/OrderMapper';
 
 @Injectable()
 export class CreateOrderUseCase {
-  constructor(
-    @Inject(CustomerProfileRepository)
-    private readonly userRepository: CustomerProfileRepository,
-    @Inject(OrderRepository)
-    private readonly orderRepository: OrderRepository,
-  ) {}
+	constructor(
+		@Inject(CustomerProfileRepository)
+		private readonly userRepository: CustomerProfileRepository,
+		@Inject(OrderRepository)
+		private readonly orderRepository: OrderRepository,
+	) { }
 
-  async handle(orderDto: CreateOrderDto): Promise<Order> {
-    const customerFound = await this.userRepository.getCustomerById(
-      orderDto.customerId,
-    );
-    if (!customerFound) {
-      throw new NotFoundException('CustomerProfile not found');
-    }
-    const orderToSave = new Order(
-      crypto.randomUUID(),
-      orderDto.customerId,
-      orderDto.totalAmount,
-      OrderStatus.PAID,
-      PaymentMethod[orderDto.paymentMethod as keyof typeof PaymentMethod],
-    );
-    return this.orderRepository.createOrder(orderToSave);
-  }
+	async handle(orderDto: CreateOrderDto): Promise<Order> {
+		const customerFound = await this.userRepository.getCustomerById(
+			orderDto.customerId,
+		);
+		if (!customerFound) {
+			throw new NotFoundException('CustomerProfile not found');
+		}
+
+		const orderToSave = OrderMapper.fromCreateDto(orderDto);
+		return this.orderRepository.createOrder(orderToSave);
+	}
 }

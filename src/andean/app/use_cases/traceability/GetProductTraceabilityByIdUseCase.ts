@@ -9,7 +9,7 @@ export class GetProductTraceabilityByIdUseCase {
 	) { }
 
 	async execute(id: string): Promise<ProductTraceability> {
-		const traceability = await this.traceabilityRepository.findById(id);
+		const traceability = await this.traceabilityRepository.getById(id);
 
 		if (!traceability) {
 			throw new NotFoundException(`Traceability with id ${id} not found`);

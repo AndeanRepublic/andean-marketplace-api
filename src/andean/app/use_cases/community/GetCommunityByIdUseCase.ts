@@ -9,7 +9,7 @@ export class GetCommunityByIdUseCase {
 	) { }
 
 	async execute(id: string): Promise<Community> {
-		const community = await this.communityRepository.findById(id);
+		const community = await this.communityRepository.getById(id);
 
 		if (!community) {
 			throw new NotFoundException(`Community with id ${id} not found`);

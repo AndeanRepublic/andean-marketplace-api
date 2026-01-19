@@ -9,6 +9,6 @@ export class ListOriginProductRegionUseCase {
 	) { }
 
 	async execute(): Promise<OriginProductRegion[]> {
-		return await this.regionRepository.findAll();
+		return await this.regionRepository.getAll();
 	}
 }

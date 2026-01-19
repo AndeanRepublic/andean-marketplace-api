@@ -34,12 +34,12 @@ export class ProductTraceabilityRepositoryImpl extends ProductTraceabilityReposi
 		return ProductTraceabilityMapper.fromDocument(created);
 	}
 
-	async findById(id: string): Promise<ProductTraceability | null> {
+	async getById(id: string): Promise<ProductTraceability | null> {
 		const document = await this.traceabilityModel.findOne({ id }).exec();
 		return document ? ProductTraceabilityMapper.fromDocument(document) : null;
 	}
 
-	async findAll(): Promise<ProductTraceability[]> {
+	async getAll(): Promise<ProductTraceability[]> {
 		const documents = await this.traceabilityModel.find().exec();
 		return documents.map((doc) => ProductTraceabilityMapper.fromDocument(doc));
 	}

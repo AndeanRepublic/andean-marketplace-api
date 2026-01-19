@@ -17,43 +17,45 @@ import { CommunityModule } from './andean/community.module';
 import { OriginProductModule } from './andean/originProduct.module';
 import { ProductTraceabilityModule } from './andean/productTraceability.module';
 import { SuperfoodModule } from './andean/superfood.module';
+import { MediaItemModule } from './andean/mediaItem.module';
 import { TextileProductModule } from './andean/textileProduct.module';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGO_URI'),
-      }),
-    }),
-    MulterModule.register({
-      dest: join(__dirname, '..', 'uploads'),
-    }),
-    ServeStaticModule.forRoot({
-      rootPath: './uploads',
-      serveRoot: '/public',
-    }),
-    UsersModule,
-    AuthModule,
-    ProductsModule,
-    ShopsModule,
-    BankAccountsModule,
-    CartShopModule,
-    OrdersModule,
-    UploadModule,
-    AdminModule,
-    CommunityModule,
-    OriginProductModule,
-    ProductTraceabilityModule,
-    SuperfoodModule,
-    TextileProductModule,
-  ],
-  controllers: [],
-  providers: [],
+	imports: [
+		ConfigModule.forRoot({
+			isGlobal: true,
+		}),
+		MongooseModule.forRootAsync({
+			imports: [ConfigModule],
+			inject: [ConfigService],
+			useFactory: (configService: ConfigService) => ({
+				uri: configService.get<string>('MONGO_URI'),
+			}),
+		}),
+		MulterModule.register({
+			dest: join(__dirname, '..', 'uploads'),
+		}),
+		ServeStaticModule.forRoot({
+			rootPath: './uploads',
+			serveRoot: '/public',
+		}),
+		UsersModule,
+		AuthModule,
+		ProductsModule,
+		ShopsModule,
+		BankAccountsModule,
+		CartShopModule,
+		OrdersModule,
+		UploadModule,
+		AdminModule,
+		CommunityModule,
+		OriginProductModule,
+		ProductTraceabilityModule,
+		SuperfoodModule,
+		MediaItemModule,
+		TextileProductModule,
+	],
+	controllers: [],
+	providers: [],
 })
-export class AppModule {}
+export class AppModule { }

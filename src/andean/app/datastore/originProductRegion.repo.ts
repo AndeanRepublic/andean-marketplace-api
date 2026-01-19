@@ -2,9 +2,9 @@ import { OriginProductRegion } from '../../domain/entities/origin/OriginProductR
 
 export abstract class OriginProductRegionRepository {
 	abstract create(region: OriginProductRegion): Promise<OriginProductRegion>;
-	abstract findById(id: string): Promise<OriginProductRegion | null>;
-	abstract findAll(): Promise<OriginProductRegion[]>;
-	abstract findByName(name: string): Promise<OriginProductRegion | null>;
+	abstract getById(id: string): Promise<OriginProductRegion | null>;
+	abstract getAll(): Promise<OriginProductRegion[]>;
+	abstract getByName(name: string): Promise<OriginProductRegion | null>;
 	abstract update(
 		id: string,
 		region: Partial<OriginProductRegion>,

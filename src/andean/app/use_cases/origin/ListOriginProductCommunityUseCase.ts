@@ -10,8 +10,8 @@ export class ListOriginProductCommunityUseCase {
 
 	async execute(regionId?: string): Promise<OriginProductCommunity[]> {
 		if (regionId) {
-			return await this.communityRepository.findByRegionId(regionId);
+			return await this.communityRepository.getByRegionId(regionId);
 		}
-		return await this.communityRepository.findAll();
+		return await this.communityRepository.getAll();
 	}
 }

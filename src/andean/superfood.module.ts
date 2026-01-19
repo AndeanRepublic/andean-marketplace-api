@@ -13,16 +13,72 @@ import { SuperfoodSalesUnitSizeSchema } from './infra/persistence/superfood/supe
 import { SuperfoodProductPresentationSchema } from './infra/persistence/superfood/superfoodProductPresentation.schema';
 import { SuperfoodTypeSchema } from './infra/persistence/superfood/superfoodType.schema';
 
-// Controller
+// Controllers
 import { SuperfoodController } from './infra/controllers/superfood.controller';
+import { SuperfoodCategoryController } from './infra/controllers/superfoodCategory.controller';
+import { SuperfoodCertificationController } from './infra/controllers/superfoodCertification.controller';
+import { SuperfoodTypeController } from './infra/controllers/superfoodType.controller';
+import { SuperfoodPreservationMethodController } from './infra/controllers/superfoodPreservationMethod.controller';
+import { SuperfoodNutritionalFeatureController } from './infra/controllers/superfoodNutritionalFeature.controller';
+import { SuperfoodBenefitController } from './infra/controllers/superfoodBenefit.controller';
+import { SuperfoodProductPresentationController } from './infra/controllers/superfoodProductPresentation.controller';
+import { SuperfoodSalesUnitSizeController } from './infra/controllers/superfoodSalesUnitSize.controller';
 
-// Use Cases
+// Use Cases - Product
 import { CreateSuperfoodProductUseCase } from './app/use_cases/superfoods/CreateSuperfoodProductUseCase';
 import { GetSuperfoodProductByIdUseCase } from './app/use_cases/superfoods/GetSuperfoodProductByIdUseCase';
 import { GetSuperfoodProductsByOwnerUseCase } from './app/use_cases/superfoods/GetSuperfoodProductsByOwnerUseCase';
 import { GetSuperfoodProductsByCategoryUseCase } from './app/use_cases/superfoods/GetSuperfoodProductsByCategoryUseCase';
 import { UpdateSuperfoodProductUseCase } from './app/use_cases/superfoods/UpdateSuperfoodProductUseCase';
 import { DeleteSuperfoodProductUseCase } from './app/use_cases/superfoods/DeleteSuperfoodProductUseCase';
+
+// Use Cases - Category
+import { CreateSuperfoodCategoryUseCase } from './app/use_cases/superfoods/category/CreateSuperfoodCategoryUseCase';
+import { GetSuperfoodCategoryByIdUseCase } from './app/use_cases/superfoods/category/GetSuperfoodCategoryByIdUseCase';
+import { ListSuperfoodCategoriesUseCase } from './app/use_cases/superfoods/category/ListSuperfoodCategoriesUseCase';
+import { DeleteSuperfoodCategoryUseCase } from './app/use_cases/superfoods/category/DeleteSuperfoodCategoryUseCase';
+
+// Use Cases - Certification
+import { CreateSuperfoodCertificationUseCase } from './app/use_cases/superfoods/certification/CreateSuperfoodCertificationUseCase';
+import { GetSuperfoodCertificationByIdUseCase } from './app/use_cases/superfoods/certification/GetSuperfoodCertificationByIdUseCase';
+import { ListSuperfoodCertificationsUseCase } from './app/use_cases/superfoods/certification/ListSuperfoodCertificationsUseCase';
+import { DeleteSuperfoodCertificationUseCase } from './app/use_cases/superfoods/certification/DeleteSuperfoodCertificationUseCase';
+
+// Use Cases - Type
+import { CreateSuperfoodTypeUseCase } from './app/use_cases/superfoods/type/CreateSuperfoodTypeUseCase';
+import { GetSuperfoodTypeByIdUseCase } from './app/use_cases/superfoods/type/GetSuperfoodTypeByIdUseCase';
+import { ListSuperfoodTypesUseCase } from './app/use_cases/superfoods/type/ListSuperfoodTypesUseCase';
+import { DeleteSuperfoodTypeUseCase } from './app/use_cases/superfoods/type/DeleteSuperfoodTypeUseCase';
+
+// Use Cases - Preservation Method
+import { CreateSuperfoodPreservationMethodUseCase } from './app/use_cases/superfoods/preservationMethod/CreateSuperfoodPreservationMethodUseCase';
+import { GetSuperfoodPreservationMethodByIdUseCase } from './app/use_cases/superfoods/preservationMethod/GetSuperfoodPreservationMethodByIdUseCase';
+import { ListSuperfoodPreservationMethodsUseCase } from './app/use_cases/superfoods/preservationMethod/ListSuperfoodPreservationMethodsUseCase';
+import { DeleteSuperfoodPreservationMethodUseCase } from './app/use_cases/superfoods/preservationMethod/DeleteSuperfoodPreservationMethodUseCase';
+
+// Use Cases - Nutritional Feature
+import { CreateSuperfoodNutritionalFeatureUseCase } from './app/use_cases/superfoods/nutritionalFeature/CreateSuperfoodNutritionalFeatureUseCase';
+import { GetSuperfoodNutritionalFeatureByIdUseCase } from './app/use_cases/superfoods/nutritionalFeature/GetSuperfoodNutritionalFeatureByIdUseCase';
+import { ListSuperfoodNutritionalFeaturesUseCase } from './app/use_cases/superfoods/nutritionalFeature/ListSuperfoodNutritionalFeaturesUseCase';
+import { DeleteSuperfoodNutritionalFeatureUseCase } from './app/use_cases/superfoods/nutritionalFeature/DeleteSuperfoodNutritionalFeatureUseCase';
+
+// Use Cases - Benefit
+import { CreateSuperfoodBenefitUseCase } from './app/use_cases/superfoods/benefit/CreateSuperfoodBenefitUseCase';
+import { GetSuperfoodBenefitByIdUseCase } from './app/use_cases/superfoods/benefit/GetSuperfoodBenefitByIdUseCase';
+import { ListSuperfoodBenefitsUseCase } from './app/use_cases/superfoods/benefit/ListSuperfoodBenefitsUseCase';
+import { DeleteSuperfoodBenefitUseCase } from './app/use_cases/superfoods/benefit/DeleteSuperfoodBenefitUseCase';
+
+// Use Cases - Product Presentation
+import { CreateSuperfoodProductPresentationUseCase } from './app/use_cases/superfoods/productPresentation/CreateSuperfoodProductPresentationUseCase';
+import { GetSuperfoodProductPresentationByIdUseCase } from './app/use_cases/superfoods/productPresentation/GetSuperfoodProductPresentationByIdUseCase';
+import { ListSuperfoodProductPresentationsUseCase } from './app/use_cases/superfoods/productPresentation/ListSuperfoodProductPresentationsUseCase';
+import { DeleteSuperfoodProductPresentationUseCase } from './app/use_cases/superfoods/productPresentation/DeleteSuperfoodProductPresentationUseCase';
+
+// Use Cases - Sales Unit Size
+import { CreateSuperfoodSalesUnitSizeUseCase } from './app/use_cases/superfoods/salesUnitSize/CreateSuperfoodSalesUnitSizeUseCase';
+import { GetSuperfoodSalesUnitSizeByIdUseCase } from './app/use_cases/superfoods/salesUnitSize/GetSuperfoodSalesUnitSizeByIdUseCase';
+import { ListSuperfoodSalesUnitSizesUseCase } from './app/use_cases/superfoods/salesUnitSize/ListSuperfoodSalesUnitSizesUseCase';
+import { DeleteSuperfoodSalesUnitSizeUseCase } from './app/use_cases/superfoods/salesUnitSize/DeleteSuperfoodSalesUnitSizeUseCase';
 
 // Repositories (Abstract)
 import { SuperfoodProductRepository } from './app/datastore/superfoods/SuperfoodProduct.repo';
@@ -50,6 +106,7 @@ import { SuperfoodProductPresentationRepoImpl } from './infra/datastore/superfoo
 
 // Other modules
 import { ShopsModule } from './shop.module';
+import { CommunityModule } from './community.module';
 
 @Module({
 	imports: [
@@ -65,18 +122,76 @@ import { ShopsModule } from './shop.module';
 			{ name: 'SuperfoodProductPresentation', schema: SuperfoodProductPresentationSchema },
 			{ name: 'SuperfoodType', schema: SuperfoodTypeSchema },
 		]),
-		ShopsModule, // Para validar shops cuando ownerType = SHOP
-		// CommunityModule cuando se implemente
+		ShopsModule,
+		CommunityModule,
 	],
-	controllers: [SuperfoodController],
+	controllers: [
+		SuperfoodController,
+		SuperfoodCategoryController,
+		SuperfoodCertificationController,
+		SuperfoodTypeController,
+		SuperfoodPreservationMethodController,
+		SuperfoodNutritionalFeatureController,
+		SuperfoodBenefitController,
+		SuperfoodProductPresentationController,
+		SuperfoodSalesUnitSizeController,
+	],
 	providers: [
-		// Use Cases
+		// Use Cases - Product
 		CreateSuperfoodProductUseCase,
 		GetSuperfoodProductByIdUseCase,
 		GetSuperfoodProductsByOwnerUseCase,
 		GetSuperfoodProductsByCategoryUseCase,
 		UpdateSuperfoodProductUseCase,
 		DeleteSuperfoodProductUseCase,
+
+		// Use Cases - Category
+		CreateSuperfoodCategoryUseCase,
+		GetSuperfoodCategoryByIdUseCase,
+		ListSuperfoodCategoriesUseCase,
+		DeleteSuperfoodCategoryUseCase,
+
+		// Use Cases - Certification
+		CreateSuperfoodCertificationUseCase,
+		GetSuperfoodCertificationByIdUseCase,
+		ListSuperfoodCertificationsUseCase,
+		DeleteSuperfoodCertificationUseCase,
+
+		// Use Cases - Type
+		CreateSuperfoodTypeUseCase,
+		GetSuperfoodTypeByIdUseCase,
+		ListSuperfoodTypesUseCase,
+		DeleteSuperfoodTypeUseCase,
+
+		// Use Cases - Preservation Method
+		CreateSuperfoodPreservationMethodUseCase,
+		GetSuperfoodPreservationMethodByIdUseCase,
+		ListSuperfoodPreservationMethodsUseCase,
+		DeleteSuperfoodPreservationMethodUseCase,
+
+		// Use Cases - Nutritional Feature
+		CreateSuperfoodNutritionalFeatureUseCase,
+		GetSuperfoodNutritionalFeatureByIdUseCase,
+		ListSuperfoodNutritionalFeaturesUseCase,
+		DeleteSuperfoodNutritionalFeatureUseCase,
+
+		// Use Cases - Benefit
+		CreateSuperfoodBenefitUseCase,
+		GetSuperfoodBenefitByIdUseCase,
+		ListSuperfoodBenefitsUseCase,
+		DeleteSuperfoodBenefitUseCase,
+
+		// Use Cases - Product Presentation
+		CreateSuperfoodProductPresentationUseCase,
+		GetSuperfoodProductPresentationByIdUseCase,
+		ListSuperfoodProductPresentationsUseCase,
+		DeleteSuperfoodProductPresentationUseCase,
+
+		// Use Cases - Sales Unit Size
+		CreateSuperfoodSalesUnitSizeUseCase,
+		GetSuperfoodSalesUnitSizeByIdUseCase,
+		ListSuperfoodSalesUnitSizesUseCase,
+		DeleteSuperfoodSalesUnitSizeUseCase,
 
 		// Repository Bindings (Abstract → Implementation)
 		{

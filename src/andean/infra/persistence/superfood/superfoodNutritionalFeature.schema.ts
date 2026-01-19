@@ -3,7 +3,7 @@ import { Document, Schema } from 'mongoose';
 export const SuperfoodNutritionalFeatureSchema = new Schema({
 	id: { type: String, required: true, unique: true },
 	name: { type: String, required: true },
-	icon: { type: String },  // URL to icon
+	iconId: { type: String },  // Reference to MediaItem
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 });
@@ -11,7 +11,7 @@ export const SuperfoodNutritionalFeatureSchema = new Schema({
 export interface SuperfoodNutritionalFeatureDocument extends Document {
 	id: string;
 	name: string;
-	icon?: string;
+	iconId?: string;
 	createdAt: Date;
 	updatedAt: Date;
 }

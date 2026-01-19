@@ -9,6 +9,6 @@ export class ListCommunityUseCase {
 	) { }
 
 	async execute(): Promise<Community[]> {
-		return await this.communityRepository.findAll();
+		return await this.communityRepository.getAll();
 	}
 }
