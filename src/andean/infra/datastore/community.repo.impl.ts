@@ -5,6 +5,7 @@ import { CommunityRepository as CommunityRepositoryBase } from '../../app/datast
 import { Community } from '../../domain/entities/community/Community';
 import { CommunityDocument } from '../persistence/community.schema';
 import { CommunityMapper } from '../services/CommunityMapper';
+import { MongoIdUtils } from '../utils/MongoIdUtils';
 
 @Injectable()
 export class CommunityRepositoryImpl extends CommunityRepositoryBase {
@@ -24,7 +25,7 @@ export class CommunityRepositoryImpl extends CommunityRepositoryBase {
 
 	async getById(id: string): Promise<Community | null> {
 		// Convertir string a ObjectId para la consulta
-		const objectId = CommunityMapper.toObjectId(id);
+		const objectId = MongoIdUtils.stringToObjectId(id);
 		const doc = await this.communityModel.findById(objectId).exec();
 		return doc ? CommunityMapper.fromDocument(doc) : null;
 	}
@@ -44,7 +45,7 @@ export class CommunityRepositoryImpl extends CommunityRepositoryBase {
 	async update(id: string, community: Community): Promise<Community | null> {
 		const plain = CommunityMapper.toPersistence(community);
 		// Convertir string a ObjectId para la consulta
-		const objectId = CommunityMapper.toObjectId(id);
+		const objectId = MongoIdUtils.stringToObjectId(id);
 		const updated = await this.communityModel
 			.findByIdAndUpdate(objectId, plain, { new: true })
 			.exec();
@@ -53,7 +54,7 @@ export class CommunityRepositoryImpl extends CommunityRepositoryBase {
 
 	async delete(id: string): Promise<boolean> {
 		// Convertir string a ObjectId para la consulta
-		const objectId = CommunityMapper.toObjectId(id);
+		const objectId = MongoIdUtils.stringToObjectId(id);
 		await this.communityModel.findByIdAndDelete(objectId).exec();
 		return true;
 	}
