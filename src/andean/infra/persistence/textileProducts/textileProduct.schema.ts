@@ -57,6 +57,7 @@ const TextileOptionsItemSchema = new Schema(
 		id: { type: String, required: true },
 		label: { type: String, required: true },
 		mediaIds: { type: [String], default: [] },
+		idOpcionAlternative: { type: String, required: false },
 	},
 	{ _id: false },
 );
