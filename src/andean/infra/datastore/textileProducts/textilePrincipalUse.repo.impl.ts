@@ -5,6 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { TextilePrincipalUseDocument } from '../../persistence/textileProducts/textilePrincipalUse.schema';
 import { TextilePrincipalUse } from 'src/andean/domain/entities/textileProducts/TextilePrincipalUse';
 import { TextilePrincipalUseMapper } from '../../services/textileProducts/TextilePrincipalUseMapper';
+import { MongoIdUtils } from '../../utils/MongoIdUtils';
 
 @Injectable()
 export class TextilePrincipalUseRepositoryImpl extends TextilePrincipalUseRepository {
@@ -21,30 +22,30 @@ export class TextilePrincipalUseRepositoryImpl extends TextilePrincipalUseReposi
   }
 
   async getTextilePrincipalUseById(id: string): Promise<TextilePrincipalUse | null> {
-    const doc = await this.textilePrincipalUseModel.findOne({ id }).exec();
+    const objectId = MongoIdUtils.stringToObjectId(id);
+    const doc = await this.textilePrincipalUseModel.findById(objectId).exec();
     return doc ? TextilePrincipalUseMapper.fromDocument(doc) : null;
   }
 
   async saveTextilePrincipalUse(principalUse: TextilePrincipalUse): Promise<TextilePrincipalUse> {
     const plain = TextilePrincipalUseMapper.toPersistence(principalUse);
-    const created = new this.textilePrincipalUseModel({
-      _id: crypto.randomUUID(),
-      ...plain,
-    });
+    const created = new this.textilePrincipalUseModel(plain);
     const savedPrincipalUse = await created.save();
     return TextilePrincipalUseMapper.fromDocument(savedPrincipalUse);
   }
 
   async updateTextilePrincipalUse(id: string, principalUse: TextilePrincipalUse): Promise<TextilePrincipalUse> {
     const plain = TextilePrincipalUseMapper.toPersistence(principalUse);
+    const objectId = MongoIdUtils.stringToObjectId(id);
     const updated = await this.textilePrincipalUseModel
-      .findOneAndUpdate({ id }, plain, { new: true })
+      .findByIdAndUpdate(objectId, plain, { new: true })
       .exec();
     return TextilePrincipalUseMapper.fromDocument(updated!);
   }
 
   async deleteTextilePrincipalUse(id: string): Promise<void> {
-    await this.textilePrincipalUseModel.deleteOne({ id }).exec();
+    const objectId = MongoIdUtils.stringToObjectId(id);
+    await this.textilePrincipalUseModel.findByIdAndDelete(objectId).exec();
     return;
   }
 }

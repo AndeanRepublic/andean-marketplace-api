@@ -48,11 +48,4 @@ export class CommunityMapper {
 		const { id, ...dataForDB } = plain;
 		return dataForDB;
 	}
-
-	/**
-	 * Convierte string id a ObjectId para consultas en MongoDB
-	 */
-	static toObjectId(id: string): Types.ObjectId {
-		return new Types.ObjectId(id);
-	}
 }

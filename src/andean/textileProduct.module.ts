@@ -8,6 +8,7 @@ import { TextileCraftTechniqueSchema } from './infra/persistence/textileProducts
 import { TextilePrincipalUseSchema } from './infra/persistence/textileProducts/textilePrincipalUse.schema';
 import { TextileProductSchema } from './infra/persistence/textileProducts/textileProduct.schema';
 import { TextileCertificationSchema } from './infra/persistence/textileProducts/textileCertification.schema';
+import { ColorOptionAlternativeSchema } from './infra/persistence/textileProducts/ColorOptionAlternative.schema';
 import { UsersModule } from './users.module';
 import { ShopsModule } from './shop.module';
 import { OriginProductModule } from './originProduct.module';
@@ -68,143 +69,166 @@ import { UpdateTextileCertificationUseCase } from './app/use_cases/textileProduc
 import { GetAllTextileCertificationsUseCase } from './app/use_cases/textileProducts/GetAllTextileCertificationsUseCase';
 import { GetByIdTextileCertificationUseCase } from './app/use_cases/textileProducts/GetByIdTextileCertificationUseCase';
 import { DeleteTextileCertificationUseCase } from './app/use_cases/textileProducts/DeleteTextileCertificationUseCase';
+import { CreateColorOptionAlternativeUseCase } from './app/use_cases/textileProducts/CreateColorOptionAlternativeUseCase';
+import { CreateManyColorOptionAlternativesUseCase } from './app/use_cases/textileProducts/CreateManyColorOptionAlternativesUseCase';
+import { GetAllColorOptionAlternativesUseCase } from './app/use_cases/textileProducts/GetAllColorOptionAlternativesUseCase';
+import { GetByIdColorOptionAlternativeUseCase } from './app/use_cases/textileProducts/GetByIdColorOptionAlternativeUseCase';
+import { UpdateColorOptionAlternativeUseCase } from './app/use_cases/textileProducts/UpdateColorOptionAlternativeUseCase';
+import { DeleteColorOptionAlternativeUseCase } from './app/use_cases/textileProducts/DeleteColorOptionAlternativeUseCase';
+import { ColorOptionAlternativeRepository } from './app/datastore/textileProducts/ColorOptionAlternative.repo';
+import { ColorOptionAlternativeRepositoryImpl } from './infra/datastore/textileProducts/ColorOptionAlternative.repo.impl';
 import { CommunityRepositoryImpl } from './infra/datastore/community.repo.impl';
 import { CommunityRepository } from './app/datastore/community.repo';
 import { CommunitySchema } from './infra/persistence/community.schema';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      {
-        name: 'TextileCategory',
-        schema: TextileCategorySchema,
-      },
-      {
-        name: 'TextileType',
-        schema: TextileTypeSchema,
-      },
-      {
-        name: 'TextileStyle',
-        schema: TextileStyleSchema,
-      },
-      {
-        name: 'TextileSubcategory',
-        schema: TextileSubcategorySchema,
-      },
-      {
-        name: 'TextileCraftTechnique',
-        schema: TextileCraftTechniqueSchema,
-      },
-      {
-        name: 'TextilePrincipalUse',
-        schema: TextilePrincipalUseSchema,
-      },
-      {
-        name: 'TextileProduct',
-        schema: TextileProductSchema,
-      },
-      {
-        name: 'TextileCertification',
-        schema: TextileCertificationSchema,
-      },
-      {
-        name: 'Community',
-        schema: CommunitySchema,
-      },
-    ]),
-    UsersModule,
-    ShopsModule,
-    OriginProductModule,
-  ],
-  controllers: [TextileProductController],
-  providers: [
-    CreateTextileCategoryUseCase,
-    UpdateTextileCategoryUseCase,
-    GetAllTextileCategoriesUseCase,
-    GetByIdTextileCategoryUseCase,
-    DeleteTextileCategoryUseCase,
-    CreateTextileTypeUseCase,
-    UpdateTextileTypeUseCase,
-    GetAllTextileTypesUseCase,
-    GetByIdTextileTypeUseCase,
-    DeleteTextileTypeUseCase,
-    CreateTextileStyleUseCase,
-    UpdateTextileStyleUseCase,
-    GetAllTextileStylesUseCase,
-    GetByIdTextileStyleUseCase,
-    DeleteTextileStyleUseCase,
-    CreateTextileSubcategoryUseCase,
-    UpdateTextileSubcategoryUseCase,
-    GetAllTextileSubcategoriesUseCase,
-    GetByIdTextileSubcategoryUseCase,
-    DeleteTextileSubcategoryUseCase,
-    CreateTextileCraftTechniqueUseCase,
-    UpdateTextileCraftTechniqueUseCase,
-    GetAllTextileCraftTechniquesUseCase,
-    GetByIdTextileCraftTechniqueUseCase,
-    DeleteTextileCraftTechniqueUseCase,
-    CreateTextilePrincipalUseUseCase,
-    UpdateTextilePrincipalUseUseCase,
-    GetAllTextilePrincipalUsesUseCase,
-    GetByIdTextilePrincipalUseUseCase,
-    DeleteTextilePrincipalUseUseCase,
-    CreateTextileProductUseCase,
-    UpdateTextileProductUseCase,
-    GetAllTextileProductsUseCase,
-    GetByIdTextileProductUseCase,
-    DeleteTextileProductUseCase,
-    CreateTextileCertificationUseCase,
-    UpdateTextileCertificationUseCase,
-    GetAllTextileCertificationsUseCase,
-    GetByIdTextileCertificationUseCase,
-    DeleteTextileCertificationUseCase,
-    {
-      provide: TextileCategoryRepository,
-      useClass: TextileCategoryRepositoryImpl,
-    },
-    {
-      provide: TextileTypeRepository,
-      useClass: TextileTypeRepositoryImpl,
-    },
-    {
-      provide: TextileStyleRepository,
-      useClass: TextileStyleRepositoryImpl,
-    },
-    {
-      provide: TextileSubcategoryRepository,
-      useClass: TextileSubcategoryRepositoryImpl,
-    },
-    {
-      provide: TextileCraftTechniqueRepository,
-      useClass: TextileCraftTechniqueRepositoryImpl,
-    },
-    {
-      provide: TextilePrincipalUseRepository,
-      useClass: TextilePrincipalUseRepositoryImpl,
-    },
-    {
-      provide: TextileProductRepository,
-      useClass: TextileProductRepositoryImpl,
-    },
-    {
-      provide: TextileCertificationRepository,
-      useClass: TextileCertificationRepositoryImpl,
-    },
-    {
-      provide: CommunityRepository,
-      useClass: CommunityRepositoryImpl,
-    },
-  ],
-  exports: [
-    TextileCategoryRepository,
-    TextileTypeRepository,
-    TextileStyleRepository,
-    TextileSubcategoryRepository,
-    TextileCraftTechniqueRepository,
-    TextilePrincipalUseRepository,
-    TextileProductRepository,
-    TextileCertificationRepository,
-    MongooseModule,
-  ],
+	imports: [
+		MongooseModule.forFeature([
+			{
+				name: 'TextileCategory',
+				schema: TextileCategorySchema,
+			},
+			{
+				name: 'TextileType',
+				schema: TextileTypeSchema,
+			},
+			{
+				name: 'TextileStyle',
+				schema: TextileStyleSchema,
+			},
+			{
+				name: 'TextileSubcategory',
+				schema: TextileSubcategorySchema,
+			},
+			{
+				name: 'TextileCraftTechnique',
+				schema: TextileCraftTechniqueSchema,
+			},
+			{
+				name: 'TextilePrincipalUse',
+				schema: TextilePrincipalUseSchema,
+			},
+			{
+				name: 'TextileProduct',
+				schema: TextileProductSchema,
+			},
+			{
+				name: 'TextileCertification',
+				schema: TextileCertificationSchema,
+			},
+			{
+				name: 'ColorOptionAlternative',
+				schema: ColorOptionAlternativeSchema,
+			},
+			{
+				name: 'Community',
+				schema: CommunitySchema,
+			},
+		]),
+		UsersModule,
+		ShopsModule,
+		OriginProductModule,
+	],
+	controllers: [TextileProductController],
+	providers: [
+		CreateTextileCategoryUseCase,
+		UpdateTextileCategoryUseCase,
+		GetAllTextileCategoriesUseCase,
+		GetByIdTextileCategoryUseCase,
+		DeleteTextileCategoryUseCase,
+		CreateTextileTypeUseCase,
+		UpdateTextileTypeUseCase,
+		GetAllTextileTypesUseCase,
+		GetByIdTextileTypeUseCase,
+		DeleteTextileTypeUseCase,
+		CreateTextileStyleUseCase,
+		UpdateTextileStyleUseCase,
+		GetAllTextileStylesUseCase,
+		GetByIdTextileStyleUseCase,
+		DeleteTextileStyleUseCase,
+		CreateTextileSubcategoryUseCase,
+		UpdateTextileSubcategoryUseCase,
+		GetAllTextileSubcategoriesUseCase,
+		GetByIdTextileSubcategoryUseCase,
+		DeleteTextileSubcategoryUseCase,
+		CreateTextileCraftTechniqueUseCase,
+		UpdateTextileCraftTechniqueUseCase,
+		GetAllTextileCraftTechniquesUseCase,
+		GetByIdTextileCraftTechniqueUseCase,
+		DeleteTextileCraftTechniqueUseCase,
+		CreateTextilePrincipalUseUseCase,
+		UpdateTextilePrincipalUseUseCase,
+		GetAllTextilePrincipalUsesUseCase,
+		GetByIdTextilePrincipalUseUseCase,
+		DeleteTextilePrincipalUseUseCase,
+		CreateTextileProductUseCase,
+		UpdateTextileProductUseCase,
+		GetAllTextileProductsUseCase,
+		GetByIdTextileProductUseCase,
+		DeleteTextileProductUseCase,
+		CreateTextileCertificationUseCase,
+		UpdateTextileCertificationUseCase,
+		GetAllTextileCertificationsUseCase,
+		GetByIdTextileCertificationUseCase,
+		DeleteTextileCertificationUseCase,
+		CreateColorOptionAlternativeUseCase,
+		CreateManyColorOptionAlternativesUseCase,
+		GetAllColorOptionAlternativesUseCase,
+		GetByIdColorOptionAlternativeUseCase,
+		UpdateColorOptionAlternativeUseCase,
+		DeleteColorOptionAlternativeUseCase,
+		{
+			provide: TextileCategoryRepository,
+			useClass: TextileCategoryRepositoryImpl,
+		},
+		{
+			provide: TextileTypeRepository,
+			useClass: TextileTypeRepositoryImpl,
+		},
+		{
+			provide: TextileStyleRepository,
+			useClass: TextileStyleRepositoryImpl,
+		},
+		{
+			provide: TextileSubcategoryRepository,
+			useClass: TextileSubcategoryRepositoryImpl,
+		},
+		{
+			provide: TextileCraftTechniqueRepository,
+			useClass: TextileCraftTechniqueRepositoryImpl,
+		},
+		{
+			provide: TextilePrincipalUseRepository,
+			useClass: TextilePrincipalUseRepositoryImpl,
+		},
+		{
+			provide: TextileProductRepository,
+			useClass: TextileProductRepositoryImpl,
+		},
+		{
+			provide: TextileCertificationRepository,
+			useClass: TextileCertificationRepositoryImpl,
+		},
+		{
+			provide: ColorOptionAlternativeRepository,
+			useClass: ColorOptionAlternativeRepositoryImpl,
+		},
+		{
+			provide: CommunityRepository,
+			useClass: CommunityRepositoryImpl,
+		},
+	],
+	exports: [
+		TextileCategoryRepository,
+		TextileTypeRepository,
+		TextileStyleRepository,
+		TextileSubcategoryRepository,
+		TextileCraftTechniqueRepository,
+		TextilePrincipalUseRepository,
+		TextileProductRepository,
+		TextileCertificationRepository,
+		ColorOptionAlternativeRepository,
+		MongooseModule,
+	],
 })
 export class TextileProductModule {}

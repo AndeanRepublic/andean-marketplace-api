@@ -6,12 +6,7 @@ import * as crypto from 'crypto';
 
 export class SuperfoodTypeMapper {
 	static fromDocument(doc: SuperfoodTypeDocument): SuperfoodType {
-		return new SuperfoodType(
-			doc.id,
-			doc.name,
-			doc.createdAt,
-			doc.updatedAt,
-		);
+		return new SuperfoodType(doc.id, doc.name, doc.createdAt, doc.updatedAt);
 	}
 
 	static fromCreateDto(dto: CreateSuperfoodTypeDto): SuperfoodType {

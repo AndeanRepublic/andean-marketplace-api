@@ -11,60 +11,63 @@ import { TextileOptions } from 'src/andean/domain/entities/textileProducts/Texti
 import { TextileOptionsItem } from 'src/andean/domain/entities/textileProducts/TextileOptionsItem';
 import { TextileVariant } from 'src/andean/domain/entities/textileProducts/TextileVariant';
 import { ProductTraceability } from 'src/andean/domain/entities/ProductTraceability';
-import * as crypto from 'crypto';
+import { Types } from 'mongoose';
 
 export class TextileProductMapper {
 	static fromDocument(doc: TextileProductDocument): TextileProduct {
 		const plain = doc.toObject();
-		const { _id, ...rest } = plain;
 
-		const baseInfo = plainToInstance(BaseInfo, rest.baseInfo);
-		const priceInventary = plainToInstance(PriceInventary, rest.priceInventary);
+		const baseInfo = plainToInstance(BaseInfo, plain.baseInfo);
+		const priceInventary = plainToInstance(
+			PriceInventary,
+			plain.priceInventary,
+		);
 
 		let atribute: Atribute | undefined;
-		if (rest.atribute) {
+		if (plain.atribute) {
 			let preparationTime: PreparationTime | undefined;
-			if (rest.atribute.preparationTime) {
+			if (plain.atribute.preparationTime) {
 				preparationTime = plainToInstance(
 					PreparationTime,
-					rest.atribute.preparationTime,
+					plain.atribute.preparationTime,
 				);
 			}
 			atribute = plainToInstance(Atribute, {
-				...rest.atribute,
+				...plain.atribute,
 				preparationTime,
 			});
 		}
 
 		let detailTraceability: DetailTraceability | undefined;
-		if (rest.detailTraceability) {
+		if (plain.detailTraceability) {
 			detailTraceability = plainToInstance(
 				DetailTraceability,
-				rest.detailTraceability,
+				plain.detailTraceability,
 			);
 		}
 
 		let productTraceability: ProductTraceability | undefined;
-		if (rest.productTraceability) {
+		if (plain.productTraceability) {
 			productTraceability = plainToInstance(
 				ProductTraceability,
-				rest.productTraceability,
+				plain.productTraceability,
 			);
 		}
 
-		const options = rest.options?.map((opt: any) => {
+		const options = plain.options?.map((opt: any) => {
 			const values = (opt.values || []).map((item: any) =>
 				plainToInstance(TextileOptionsItem, item),
 			);
 			return plainToInstance(TextileOptions, { ...opt, values });
 		});
 
-		const variants = rest.variants?.map((variant: any) =>
+		const variants = plain.variants?.map((variant: any) =>
 			plainToInstance(TextileVariant, variant),
 		);
 
 		return plainToInstance(TextileProduct, {
-			...rest,
+			id: plain._id.toString(),
+			...plain,
 			baseInfo,
 			priceInventary,
 			atribute,
@@ -72,8 +75,8 @@ export class TextileProductMapper {
 			productTraceability,
 			options,
 			variants,
-			createdAt: rest.createdAt || new Date(),
-			updatedAt: rest.updatedAt || new Date(),
+			createdAt: plain.createdAt || new Date(),
+			updatedAt: plain.updatedAt || new Date(),
 		});
 	}
 
@@ -114,22 +117,25 @@ export class TextileProductMapper {
 			const values = (opt.values || []).map((item) =>
 				plainToInstance(TextileOptionsItem, {
 					...item,
-					id: crypto.randomUUID(),
+					id: new Types.ObjectId().toString(),
 				}),
 			);
 			return plainToInstance(TextileOptions, {
 				...opt,
-				id: crypto.randomUUID(),
+				id: new Types.ObjectId().toString(),
 				values,
 			});
 		});
 
 		const variants = (dto.variants || []).map((variant) =>
-			plainToInstance(TextileVariant, { ...variant, id: crypto.randomUUID() }),
+			plainToInstance(TextileVariant, {
+				...variant,
+				id: new Types.ObjectId().toString(),
+			}),
 		);
 
 		const plain = {
-			id: crypto.randomUUID(),
+			id: new Types.ObjectId().toString(),
 			...textileProductData,
 			baseInfo,
 			priceInventary,
@@ -188,12 +194,12 @@ export class TextileProductMapper {
 			const values = (opt.values || []).map((item) =>
 				plainToInstance(TextileOptionsItem, {
 					...item,
-					id: crypto.randomUUID(),
+					id: new Types.ObjectId().toString(),
 				}),
 			);
 			return plainToInstance(TextileOptions, {
 				...opt,
-				id: crypto.randomUUID(),
+				id: new Types.ObjectId().toString(),
 				values,
 			});
 		});
@@ -201,7 +207,7 @@ export class TextileProductMapper {
 		const variants = dto.variants?.map((variant) =>
 			plainToInstance(TextileVariant, {
 				...variant,
-				id: crypto.randomUUID(),
+				id: new Types.ObjectId().toString(),
 			}),
 		);
 
@@ -224,7 +230,7 @@ export class TextileProductMapper {
 
 	static toPersistence(textileProduct: TextileProduct) {
 		const plain = instanceToPlain(textileProduct);
-		const { _id, ...updateData } = plain;
+		const { id, ...updateData } = plain;
 
 		return {
 			...updateData,
