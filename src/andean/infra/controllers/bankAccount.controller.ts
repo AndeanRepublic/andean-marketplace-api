@@ -23,14 +23,14 @@ export class BankAccountController {
   }
 
   @Get('/:accountId')
-  async findById(
+  async getById(
     @Param('accountId') accountId: string,
   ): Promise<SellerBankAccount> {
     return this.getBankAccountByIdUseCase.handle(accountId);
   }
 
   @Get('/by-seller/:sellerId')
-  async findBySellerId(
+  async getBySellerId(
     @Param('sellerId') sellerId: string,
   ): Promise<SellerBankAccount[]> {
     return this.getBankAccountsBySellerUseCase.handle(sellerId);

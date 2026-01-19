@@ -11,20 +11,20 @@ export class UpdateOriginProductRegionUseCase {
 
 	async execute(id: string, dto: UpdateOriginProductRegionDto): Promise<OriginProductRegion> {
 		// Verificar existencia
-		const existing = await this.regionRepository.findById(id);
+		const existing = await this.regionRepository.getById(id);
 		if (!existing) {
 			throw new NotFoundException(`Region with id ${id} not found`);
 		}
 
 		// Si se intenta cambiar el nombre, validar que no exista otra región con ese nombre
 		if (dto.name && dto.name !== existing.name) {
-			const regionWithSameName = await this.regionRepository.findByName(dto.name);
+			const regionWithSameName = await this.regionRepository.getByName(dto.name);
 			if (regionWithSameName) {
 				throw new BadRequestException(`Region with name "${dto.name}" already exists`);
 			}
 		}
 
-		// Actualizar
+		// Actualizar pasando DTO directamente
 		const updated = await this.regionRepository.update(id, dto);
 
 		if (!updated) {

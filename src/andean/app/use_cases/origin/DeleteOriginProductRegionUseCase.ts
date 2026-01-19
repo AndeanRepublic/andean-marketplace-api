@@ -8,7 +8,7 @@ export class DeleteOriginProductRegionUseCase {
 	) { }
 
 	async execute(id: string): Promise<void> {
-		const existing = await this.regionRepository.findById(id);
+		const existing = await this.regionRepository.getById(id);
 
 		if (!existing) {
 			throw new NotFoundException(`Region with id ${id} not found`);

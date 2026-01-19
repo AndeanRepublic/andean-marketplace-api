@@ -6,6 +6,7 @@ import {
 	IsOptional,
 	IsString,
 	ValidateNested,
+	Min,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
@@ -15,18 +16,21 @@ import { CreateSuperfoodDetailDto } from './CreateSuperfoodDetailDto';
 import { CreateSuperfoodNutritionalDto } from './CreateSuperfoodNutritionalDto';
 import { CreateSuperfoodOptionsDto } from './CreateSuperfoodOptionsDto';
 import { CreateSuperfoodVariantDto } from './CreateSuperfoodVariantDto';
+import { UniqueVariantCombinations } from '../../../validators/UniqueVariantCombinations.validator';
 import { CreateSuperfoodDetailTraceabilityDto } from './CreateSuperfoodDetailTraceabilityDto';
 import { CreateProductTraceabilityDto } from '../traceability/CreateProductTraceabilityDto';
 
 export class CreateSuperfoodPriceInventoryDto {
-	@ApiProperty()
+	@ApiProperty({ description: 'Precio base del producto', example: 25.50, minimum: 0.01 })
 	@IsNumber()
 	@IsNotEmpty()
+	@Min(0.01, { message: 'Base price must be greater than 0' })
 	basePrice: number;
 
-	@ApiProperty()
+	@ApiProperty({ description: 'Stock total disponible', example: 100, minimum: 0 })
 	@IsNumber()
 	@IsNotEmpty()
+	@Min(0, { message: 'Total stock cannot be negative' })
 	totalStock: number;
 
 	@ApiProperty()
@@ -84,6 +88,7 @@ export class CreateSuperfoodDto {
 	@IsOptional()
 	@ValidateNested({ each: true })
 	@Type(() => CreateSuperfoodVariantDto)
+	@UniqueVariantCombinations({ message: 'There are variants with duplicate combinations' })
 	variants?: CreateSuperfoodVariantDto[];
 
 	@ApiProperty({ required: false })

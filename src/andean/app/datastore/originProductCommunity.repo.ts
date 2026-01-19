@@ -2,10 +2,10 @@ import { OriginProductCommunity } from '../../domain/entities/origin/OriginProdu
 
 export abstract class OriginProductCommunityRepository {
 	abstract create(community: OriginProductCommunity): Promise<OriginProductCommunity>;
-	abstract findById(id: string): Promise<OriginProductCommunity | null>;
-	abstract findAll(): Promise<OriginProductCommunity[]>;
-	abstract findByName(name: string): Promise<OriginProductCommunity | null>;
-	abstract findByRegionId(regionId: string): Promise<OriginProductCommunity[]>;
+	abstract getById(id: string): Promise<OriginProductCommunity | null>;
+	abstract getAll(): Promise<OriginProductCommunity[]>;
+	abstract getByName(name: string): Promise<OriginProductCommunity | null>;
+	abstract getByRegionId(regionId: string): Promise<OriginProductCommunity[]>;
 	abstract update(
 		id: string,
 		community: Partial<OriginProductCommunity>,

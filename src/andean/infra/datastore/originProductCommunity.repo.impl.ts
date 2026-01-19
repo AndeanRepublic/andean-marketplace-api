@@ -24,24 +24,24 @@ export class OriginProductCommunityRepositoryImpl extends OriginProductCommunity
 		return OriginProductCommunityMapper.fromDocument(created);
 	}
 
-	async findById(id: string): Promise<OriginProductCommunity | null> {
+	async getById(id: string): Promise<OriginProductCommunity | null> {
 		const document = await this.communityModel.findOne({ id }).exec();
 		return document ? OriginProductCommunityMapper.fromDocument(document) : null;
 	}
 
-	async findAll(): Promise<OriginProductCommunity[]> {
+	async getAll(): Promise<OriginProductCommunity[]> {
 		const documents = await this.communityModel.find().exec();
 		return documents.map((doc) => OriginProductCommunityMapper.fromDocument(doc));
 	}
 
-	async findByName(name: string): Promise<OriginProductCommunity | null> {
+	async getByName(name: string): Promise<OriginProductCommunity | null> {
 		const document = await this.communityModel
 			.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } })
 			.exec();
 		return document ? OriginProductCommunityMapper.fromDocument(document) : null;
 	}
 
-	async findByRegionId(regionId: string): Promise<OriginProductCommunity[]> {
+	async getByRegionId(regionId: string): Promise<OriginProductCommunity[]> {
 		const documents = await this.communityModel.find({ regionId }).exec();
 		return documents.map((doc) => OriginProductCommunityMapper.fromDocument(doc));
 	}
