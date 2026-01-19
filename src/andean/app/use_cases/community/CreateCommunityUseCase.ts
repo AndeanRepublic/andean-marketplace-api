@@ -6,15 +6,17 @@ import { CommunityMapper } from '../../../infra/services/CommunityMapper';
 
 @Injectable()
 export class CreateCommunityUseCase {
-	constructor(
-		private readonly communityRepository: CommunityRepository,
-	) { }
+	constructor(private readonly communityRepository: CommunityRepository) {}
 
 	async execute(dto: CreateCommunityDto): Promise<Community> {
 		// Validar que no exista una comunidad con el mismo nombre
-		const existingCommunity = await this.communityRepository.getByName(dto.name);
+		const existingCommunity = await this.communityRepository.getByName(
+			dto.name,
+		);
 		if (existingCommunity) {
-			throw new BadRequestException(`Community with name "${dto.name}" already exists`);
+			throw new BadRequestException(
+				`Community with name "${dto.name}" already exists`,
+			);
 		}
 
 		// Crear entidad de dominio

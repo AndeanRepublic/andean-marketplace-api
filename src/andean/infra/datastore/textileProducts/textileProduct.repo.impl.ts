@@ -5,6 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { TextileProductDocument } from '../../persistence/textileProducts/textileProduct.schema';
 import { TextileProduct } from 'src/andean/domain/entities/textileProducts/TextileProduct';
 import { TextileProductMapper } from '../../services/textileProducts/TextileProductMapper';
+import { MongoIdUtils } from '../../utils/MongoIdUtils';
 
 @Injectable()
 export class TextileProductRepositoryImpl extends TextileProductRepository {
@@ -21,16 +22,14 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
   }
 
   async getTextileProductById(id: string): Promise<TextileProduct | null> {
-    const doc = await this.textileProductModel.findOne({ id }).exec();
+    const objectId = MongoIdUtils.stringToObjectId(id);
+    const doc = await this.textileProductModel.findById(objectId).exec();
     return doc ? TextileProductMapper.fromDocument(doc) : null;
   }
 
   async saveTextileProduct(product: TextileProduct): Promise<TextileProduct> {
     const plain = TextileProductMapper.toPersistence(product);
-    const created = new this.textileProductModel({
-      _id: crypto.randomUUID(),
-      ...plain,
-    });
+    const created = new this.textileProductModel(plain);
     const savedProduct = await created.save();
     return TextileProductMapper.fromDocument(savedProduct);
   }
@@ -41,14 +40,16 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
   ): Promise<TextileProduct> {
     const plain = TextileProductMapper.toPersistence(product);
     const { createdAt, ...updateData } = plain;
+    const objectId = MongoIdUtils.stringToObjectId(id);
     const updated = await this.textileProductModel
-      .findOneAndUpdate({ id }, { $set: updateData }, { new: true })
+      .findByIdAndUpdate(objectId, { $set: updateData }, { new: true })
       .exec();
     return TextileProductMapper.fromDocument(updated!);
   }
 
   async deleteTextileProduct(id: string): Promise<void> {
-    await this.textileProductModel.deleteOne({ id }).exec();
+    const objectId = MongoIdUtils.stringToObjectId(id);
+    await this.textileProductModel.findByIdAndDelete(objectId).exec();
     return;
   }
 }

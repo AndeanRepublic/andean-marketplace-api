@@ -5,46 +5,50 @@ import { InjectModel } from '@nestjs/mongoose';
 import { TextileStyleDocument } from '../../persistence/textileProducts/textileStyle.schema';
 import { TextileStyle } from 'src/andean/domain/entities/textileProducts/TextileStyle';
 import { TextileStyleMapper } from '../../services/textileProducts/TextileStyleMapper';
+import { MongoIdUtils } from '../../utils/MongoIdUtils';
 
 @Injectable()
 export class TextileStyleRepositoryImpl extends TextileStyleRepository {
-  constructor(
-    @InjectModel('TextileStyle')
-    private readonly textileStyleModel: Model<TextileStyleDocument>,
-  ) {
-    super();
-  }
+	constructor(
+		@InjectModel('TextileStyle')
+		private readonly textileStyleModel: Model<TextileStyleDocument>,
+	) {
+		super();
+	}
 
-  async getAllTextileStyles(): Promise<TextileStyle[]> {
-    const docs = await this.textileStyleModel.find().exec();
-    return docs.map((doc) => TextileStyleMapper.fromDocument(doc));
-  }
+	async getAllTextileStyles(): Promise<TextileStyle[]> {
+		const docs = await this.textileStyleModel.find().exec();
+		return docs.map((doc) => TextileStyleMapper.fromDocument(doc));
+	}
 
-  async getTextileStyleById(id: string): Promise<TextileStyle | null> {
-    const doc = await this.textileStyleModel.findOne({ id }).exec();
-    return doc ? TextileStyleMapper.fromDocument(doc) : null;
-  }
+	async getTextileStyleById(id: string): Promise<TextileStyle | null> {
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		const doc = await this.textileStyleModel.findById(objectId).exec();
+		return doc ? TextileStyleMapper.fromDocument(doc) : null;
+	}
 
-  async saveTextileStyle(style: TextileStyle): Promise<TextileStyle> {
-    const plain = TextileStyleMapper.toPersistence(style);
-    const created = new this.textileStyleModel({
-      _id: crypto.randomUUID(),
-      ...plain,
-    });
-    const savedStyle = await created.save();
-    return TextileStyleMapper.fromDocument(savedStyle);
-  }
+	async saveTextileStyle(style: TextileStyle): Promise<TextileStyle> {
+		const plain = TextileStyleMapper.toPersistence(style);
+		const created = new this.textileStyleModel(plain);
+		const savedStyle = await created.save();
+		return TextileStyleMapper.fromDocument(savedStyle);
+	}
 
-  async updateTextileStyle(id: string, style: TextileStyle): Promise<TextileStyle> {
-    const plain = TextileStyleMapper.toPersistence(style);
-    const updated = await this.textileStyleModel
-      .findOneAndUpdate({ id }, plain, { new: true })
-      .exec();
-    return TextileStyleMapper.fromDocument(updated!);
-  }
+	async updateTextileStyle(
+		id: string,
+		style: TextileStyle,
+	): Promise<TextileStyle> {
+		const plain = TextileStyleMapper.toPersistence(style);
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		const updated = await this.textileStyleModel
+			.findByIdAndUpdate(objectId, plain, { new: true })
+			.exec();
+		return TextileStyleMapper.fromDocument(updated!);
+	}
 
-  async deleteTextileStyle(id: string): Promise<void> {
-    await this.textileStyleModel.deleteOne({ id }).exec();
-    return;
-  }
+	async deleteTextileStyle(id: string): Promise<void> {
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		await this.textileStyleModel.findByIdAndDelete(objectId).exec();
+		return;
+	}
 }
