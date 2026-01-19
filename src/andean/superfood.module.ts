@@ -106,6 +106,7 @@ import { SuperfoodProductPresentationRepoImpl } from './infra/datastore/superfoo
 
 // Other modules
 import { ShopsModule } from './shop.module';
+import { CommunityModule } from './community.module';
 
 @Module({
 	imports: [
@@ -121,8 +122,8 @@ import { ShopsModule } from './shop.module';
 			{ name: 'SuperfoodProductPresentation', schema: SuperfoodProductPresentationSchema },
 			{ name: 'SuperfoodType', schema: SuperfoodTypeSchema },
 		]),
-		ShopsModule, // Para validar shops cuando ownerType = SHOP
-		// CommunityModule cuando se implemente
+		ShopsModule,
+		CommunityModule,
 	],
 	controllers: [
 		SuperfoodController,

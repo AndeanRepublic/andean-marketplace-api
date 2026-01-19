@@ -2,43 +2,57 @@ import { CommunityDocument } from '../persistence/community.schema';
 import { Community } from '../../domain/entities/community/Community';
 import { CreateCommunityDto } from '../controllers/dto/community/CreateCommunityDto';
 import { UpdateCommunityDto } from '../controllers/dto/community/UpdateCommunityDto';
-import * as crypto from 'crypto';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
+import { Types } from 'mongoose';
 
 export class CommunityMapper {
-  static fromDocument(doc: CommunityDocument): Community {
-    const plain = doc.toObject();
-    const { _id, ...rest } = plain;
-    return plainToInstance(Community, rest);
-  }
+	/**
+	 * Convierte un documento de MongoDB a entidad de dominio
+	 * ObjectId (_id) → string (id)
+	 */
+	static fromDocument(doc: CommunityDocument): Community {
+		const plain = doc.toObject();
+		return plainToInstance(Community, {
+			id: plain._id.toString(), // ObjectId → string
+			name: plain.name,
+			createdAt: plain.createdAt,
+			updatedAt: plain.updatedAt,
+		});
+	}
 
-  static fromCreateDto(dto: CreateCommunityDto): Community {
-    const { ...communityData } = dto;
-    const plain = {
-      id: crypto.randomUUID(),
-      ...communityData,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    return plainToInstance(Community, plain);
-  }
+	static fromCreateDto(dto: CreateCommunityDto): Community {
+		const plain = {
+			id: new Types.ObjectId().toString(), // Generar ObjectId temporal como string
+			...dto,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		};
+		return plainToInstance(Community, plain);
+	}
 
-  static fromUpdateDto(id: string, dto: CreateCommunityDto): Community {
-    const { ...communityData } = dto;
-    const plain = {
-      id: id,
-      ...communityData,
-      updatedAt: new Date(),
-    };
-    return plainToInstance(Community, plain);
-  }
+	static fromUpdateDto(id: string, dto: UpdateCommunityDto): Community {
+		const plain = {
+			id: id,
+			...dto,
+			updatedAt: new Date(),
+		};
+		return plainToInstance(Community, plain);
+	}
 
-  static toPersistence(community: Community) {
-    const plain = instanceToPlain(community);
-    const { _id, ...updateData } = plain;
+	/**
+	 * Convierte entidad de dominio a formato de persistencia
+	 * Excluye el 'id' ya que MongoDB usará _id automáticamente
+	 */
+	static toPersistence(community: Community) {
+		const plain = instanceToPlain(community);
+		const { id, ...dataForDB } = plain;
+		return dataForDB;
+	}
 
-    return {
-      ...updateData,
-    };
-  }
+	/**
+	 * Convierte string id a ObjectId para consultas en MongoDB
+	 */
+	static toObjectId(id: string): Types.ObjectId {
+		return new Types.ObjectId(id);
+	}
 }

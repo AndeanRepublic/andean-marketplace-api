@@ -16,16 +16,16 @@ export class CommunityRepositoryImpl extends CommunityRepositoryBase {
 
 	async create(community: Community): Promise<Community> {
 		const plain = CommunityMapper.toPersistence(community);
-		const created = new this.communityModel({
-			_id: crypto.randomUUID(),
-			...plain,
-		});
+		// MongoDB genera automáticamente el _id como ObjectId
+		const created = new this.communityModel(plain);
 		const savedCommunity = await created.save();
 		return CommunityMapper.fromDocument(savedCommunity);
 	}
 
 	async getById(id: string): Promise<Community | null> {
-		const doc = await this.communityModel.findOne({ id }).exec();
+		// Convertir string a ObjectId para la consulta
+		const objectId = CommunityMapper.toObjectId(id);
+		const doc = await this.communityModel.findById(objectId).exec();
 		return doc ? CommunityMapper.fromDocument(doc) : null;
 	}
 
@@ -43,14 +43,18 @@ export class CommunityRepositoryImpl extends CommunityRepositoryBase {
 
 	async update(id: string, community: Community): Promise<Community | null> {
 		const plain = CommunityMapper.toPersistence(community);
+		// Convertir string a ObjectId para la consulta
+		const objectId = CommunityMapper.toObjectId(id);
 		const updated = await this.communityModel
-			.findOneAndUpdate({ id }, plain, { new: true })
+			.findByIdAndUpdate(objectId, plain, { new: true })
 			.exec();
 		return updated ? CommunityMapper.fromDocument(updated) : null;
 	}
 
 	async delete(id: string): Promise<boolean> {
-		await this.communityModel.deleteOne({ id }).exec();
+		// Convertir string a ObjectId para la consulta
+		const objectId = CommunityMapper.toObjectId(id);
+		await this.communityModel.findByIdAndDelete(objectId).exec();
 		return true;
 	}
 }
