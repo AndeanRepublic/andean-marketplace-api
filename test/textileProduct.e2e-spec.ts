@@ -86,6 +86,30 @@ describe('TextileProductController (e2e)', () => {
 		createdAt: new Date('2026-01-01'),
 		updatedAt: new Date('2026-01-01'),
 		categoryId: 'category-poncho-001',
+		options: [
+			{
+				id: 'opt-1',
+				name: 'Color',
+				values: [
+					{ id: 'val-1', label: 'Rojo', mediaIds: [] },
+					{ id: 'val-2', label: 'Azul', mediaIds: [] },
+				],
+			},
+			{
+				id: 'opt-2',
+				name: 'Talla',
+				values: [
+					{ id: 'val-3', label: 'M', mediaIds: [] },
+					{ id: 'val-4', label: 'L', mediaIds: [] },
+				],
+			},
+		],
+		variants: [
+			{ id: 'var-1', combination: { color: 'rojo', talla: 'M' }, price: 150, stock: 10 },
+			{ id: 'var-2', combination: { color: 'rojo', talla: 'L' }, price: 160, stock: 15 },
+			{ id: 'var-3', combination: { color: 'azul', talla: 'M' }, price: 155, stock: 8 },
+			{ id: 'var-4', combination: { color: 'azul', talla: 'L' }, price: 165, stock: 12 },
+		],
 	} as TextileProduct;
 
 	const createDto = {
@@ -407,7 +431,132 @@ describe('TextileProductController (e2e)', () => {
 				.get('/textile-products?page=3&per_page=15')
 				.expect(HttpStatus.OK);
 
-			expect(spy).toHaveBeenCalledWith(3, 15);
+			expect(spy).toHaveBeenCalledWith({ page: 3, perPage: 15 });
+		});
+
+		it('should filter textile products by color', async () => {
+			const filteredResponse = {
+				products: [mockTextileProduct],
+				pagination: { total: 1, page: 1, per_page: 10 },
+			};
+
+			jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(filteredResponse);
+
+			const response = await request(app.getHttpServer())
+				.get('/textile-products?color=rojo')
+				.expect(HttpStatus.OK);
+
+			expect(response.body).toHaveProperty('products');
+			expect(response.body.products).toHaveLength(1);
+		});
+
+		it('should filter textile products by size', async () => {
+			const filteredResponse = {
+				products: [mockTextileProduct],
+				pagination: { total: 1, page: 1, per_page: 10 },
+			};
+
+			jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(filteredResponse);
+
+			const response = await request(app.getHttpServer())
+				.get('/textile-products?size=M')
+				.expect(HttpStatus.OK);
+
+			expect(response.body).toHaveProperty('products');
+		});
+
+		it('should filter textile products by price range', async () => {
+			const filteredResponse = {
+				products: [mockTextileProduct],
+				pagination: { total: 1, page: 1, per_page: 10 },
+			};
+
+			jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(filteredResponse);
+
+			const response = await request(app.getHttpServer())
+				.get('/textile-products?min_price=100&max_price=200')
+				.expect(HttpStatus.OK);
+
+			expect(response.body).toHaveProperty('products');
+			expect(response.body.pagination).toHaveProperty('total');
+		});
+
+		it('should filter textile products by color and size combined', async () => {
+			const filteredResponse = {
+				products: [mockTextileProduct],
+				pagination: { total: 1, page: 1, per_page: 10 },
+			};
+
+			const spy = jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(filteredResponse);
+
+			await request(app.getHttpServer())
+				.get('/textile-products?color=rojo&size=L')
+				.expect(HttpStatus.OK);
+
+			expect(spy).toHaveBeenCalledWith({ color: 'rojo', size: 'L' });
+		});
+
+		it('should filter textile products by category_id', async () => {
+			const filteredResponse = {
+				products: [mockTextileProduct],
+				pagination: { total: 1, page: 1, per_page: 10 },
+			};
+
+			const spy = jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(filteredResponse);
+
+			await request(app.getHttpServer())
+				.get('/textile-products?category_id=category-poncho-001')
+				.expect(HttpStatus.OK);
+
+			expect(spy).toHaveBeenCalledWith({ categoryId: 'category-poncho-001' });
+		});
+
+		it('should filter textile products by owner_id', async () => {
+			const filteredResponse = {
+				products: [mockTextileProduct],
+				pagination: { total: 1, page: 1, per_page: 10 },
+			};
+
+			const spy = jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(filteredResponse);
+
+			await request(app.getHttpServer())
+				.get('/textile-products?owner_id=shop-123')
+				.expect(HttpStatus.OK);
+
+			expect(spy).toHaveBeenCalledWith({ ownerId: 'shop-123' });
+		});
+
+		it('should combine multiple filters (category, color, size, price, pagination)', async () => {
+			const filteredResponse = {
+				products: [mockTextileProduct],
+				pagination: { total: 1, page: 2, per_page: 20 },
+			};
+
+			const spy = jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(filteredResponse);
+
+			await request(app.getHttpServer())
+				.get('/textile-products?category_id=category-poncho-001&color=rojo&size=L&min_price=100&max_price=200&page=2&per_page=20')
+				.expect(HttpStatus.OK);
+
+			expect(spy).toHaveBeenCalledWith({
+				categoryId: 'category-poncho-001',
+				color: 'rojo',
+				size: 'L',
+				minPrice: 100,
+				maxPrice: 200,
+				page: 2,
+				perPage: 20,
+			});
+		});
+
+		it('should work without any filters (backward compatibility)', async () => {
+			const spy = jest.spyOn(getAllTextileProductsUseCase, 'handle');
+
+			await request(app.getHttpServer())
+				.get('/textile-products')
+				.expect(HttpStatus.OK);
+
+			expect(spy).toHaveBeenCalledWith(undefined);
 		});
 	});
 
