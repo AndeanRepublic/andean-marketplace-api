@@ -12,6 +12,7 @@ import {
 	IsObject,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
 import { TextileProductStatus } from 'src/andean/domain/enums/TextileProductStatus';
 import { OwnerType } from 'src/andean/domain/enums/OwnerType';
 import { Gender } from 'src/andean/domain/enums/Gender';
@@ -51,6 +52,11 @@ export class BaseInfoDto {
 	@IsString()
 	@IsNotEmpty()
 	ownerId: string;
+
+	@ApiProperty({ description: 'Información adicional del producto', required: false })
+	@IsString()
+	@IsOptional()
+	information?: string;
 }
 
 export class PriceInventaryDto {
