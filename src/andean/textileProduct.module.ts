@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TextileCategorySchema } from './infra/persistence/textileProducts/textileCategory.schema';
 import { TextileTypeSchema } from './infra/persistence/textileProducts/textileType.schema';
@@ -23,6 +23,7 @@ import { TextileStyleRepositoryImpl } from './infra/datastore/textileProducts/te
 import { TextileSubcategoryRepository } from './app/datastore/textileProducts/TextileSubcategory.repo';
 import { TextileSubcategoryRepositoryImpl } from './infra/datastore/textileProducts/textileSubcategory.repo.impl';
 import { TextileProductController } from './infra/controllers/textileProduct.controller';
+import { ReviewController } from './infra/controllers/Review.controller';
 import { UpdateTextileCategoryUseCase } from './app/use_cases/textileProducts/UpdateTextileCategoryUseCase';
 import { GetAllTextileCategoriesUseCase } from './app/use_cases/textileProducts/GetAllTextileCategoriesUseCase';
 import { GetByIdTextileCategoryUseCase } from './app/use_cases/textileProducts/GetByIdTextileCategoryUseCase';
@@ -89,6 +90,15 @@ import { SizeOptionAlternativeRepositoryImpl } from './infra/datastore/textilePr
 import { CommunityRepositoryImpl } from './infra/datastore/community.repo.impl';
 import { CommunityRepository } from './app/datastore/community.repo';
 import { CommunitySchema } from './infra/persistence/community.schema';
+import { ReviewSchema } from './infra/persistence/Review.schema';
+import { ReviewRepository } from './app/datastore/Review.repo';
+import { ReviewRepositoryImpl } from './infra/datastore/Review.repo.impl';
+import { CreateReviewUseCase } from './app/use_cases/CreateReviewUseCase';
+import { GetAllReviewsUseCase } from './app/use_cases/GetAllReviewsUseCase';
+import { GetByIdReviewUseCase } from './app/use_cases/GetByIdReviewUseCase';
+import { UpdateReviewUseCase } from './app/use_cases/UpdateReviewUseCase';
+import { DeleteReviewUseCase } from './app/use_cases/DeleteReviewUseCase';
+import { SuperfoodModule } from './superfood.module';
 
 @Module({
 	imports: [
@@ -137,12 +147,17 @@ import { CommunitySchema } from './infra/persistence/community.schema';
 				name: 'Community',
 				schema: CommunitySchema,
 			},
+			{
+				name: 'Review',
+				schema: ReviewSchema,
+			},
 		]),
 		UsersModule,
 		ShopsModule,
 		OriginProductModule,
+		forwardRef(() => SuperfoodModule),
 	],
-	controllers: [TextileProductController],
+	controllers: [TextileProductController, ReviewController],
 	providers: [
 		CreateTextileCategoryUseCase,
 		UpdateTextileCategoryUseCase,
@@ -196,6 +211,11 @@ import { CommunitySchema } from './infra/persistence/community.schema';
 		GetByIdSizeOptionAlternativeUseCase,
 		UpdateSizeOptionAlternativeUseCase,
 		DeleteSizeOptionAlternativeUseCase,
+		CreateReviewUseCase,
+		GetAllReviewsUseCase,
+		GetByIdReviewUseCase,
+		UpdateReviewUseCase,
+		DeleteReviewUseCase,
 		{
 			provide: TextileCategoryRepository,
 			useClass: TextileCategoryRepositoryImpl,
@@ -240,6 +260,10 @@ import { CommunitySchema } from './infra/persistence/community.schema';
 			provide: CommunityRepository,
 			useClass: CommunityRepositoryImpl,
 		},
+		{
+			provide: ReviewRepository,
+			useClass: ReviewRepositoryImpl,
+		},
 	],
 	exports: [
 		TextileCategoryRepository,
@@ -252,6 +276,7 @@ import { CommunitySchema } from './infra/persistence/community.schema';
 		TextileCertificationRepository,
 		ColorOptionAlternativeRepository,
 		SizeOptionAlternativeRepository,
+		ReviewRepository,
 		MongooseModule,
 	],
 })
