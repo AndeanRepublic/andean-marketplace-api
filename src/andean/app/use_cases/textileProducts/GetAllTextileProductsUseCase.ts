@@ -13,7 +13,11 @@ export class GetAllTextileProductsUseCase {
 	async handle(filters?: ProductFilters): Promise<PaginatedProductsResponse<TextileProduct>> {
 		// Si no hay filtros, usar método legacy
 		if (!filters || Object.keys(filters).length === 0) {
-			const products = await this.textileProductRepository.getAllTextileProducts();
+			const [products, filterCount] = await Promise.all([
+				this.textileProductRepository.getAllTextileProducts(),
+				this.textileProductRepository.getFilterCounts(),
+			]);
+
 			if (products.length === 0) {
 				throw new NotFoundException('No textile products found');
 			}
@@ -26,11 +30,15 @@ export class GetAllTextileProductsUseCase {
 					page: 1,
 					per_page: total,
 				},
+				filterCount,
 			};
 		}
 
 		// Con filtros (incluye paginación, color, size, precios, categoryId, ownerId)
-		const { products, total } = await this.textileProductRepository.getAllWithFilters(filters);
+		const [{ products, total }, filterCount] = await Promise.all([
+			this.textileProductRepository.getAllWithFilters(filters),
+			this.textileProductRepository.getFilterCounts(filters),
+		]);
 
 		if (products.length === 0) {
 			throw new NotFoundException('No textile products found with the specified filters');
@@ -46,6 +54,7 @@ export class GetAllTextileProductsUseCase {
 				page,
 				per_page: perPage,
 			},
+			filterCount,
 		};
 	}
 }

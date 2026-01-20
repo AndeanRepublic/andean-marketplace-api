@@ -6,6 +6,7 @@ import { TextileProductDocument } from '../../persistence/textileProducts/textil
 import { TextileProduct } from 'src/andean/domain/entities/textileProducts/TextileProduct';
 import { TextileProductMapper } from '../../services/textileProducts/TextileProductMapper';
 import { MongoIdUtils } from '../../utils/MongoIdUtils';
+import { FilterCount, FilterCountItem } from 'src/andean/app/modules/PaginatedProductsResponse';
 
 @Injectable()
 export class TextileProductRepositoryImpl extends TextileProductRepository {
@@ -171,5 +172,216 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		await this.textileProductModel.findByIdAndDelete(objectId).exec();
 		return;
+	}
+
+	async getFilterCounts(filters?: any): Promise<FilterCount> {
+		// Construir query base sin filtros de color, size para el conteo
+		const baseQuery: any = {};
+
+		// Mantener filtros de categoryId, ownerId y precio si existen
+		if (filters?.categoryId) {
+			baseQuery.categoryId = filters.categoryId;
+		}
+
+		if (filters?.ownerId) {
+			baseQuery['baseInfo.ownerId'] = filters.ownerId;
+		}
+
+		if (filters?.minPrice !== undefined || filters?.maxPrice !== undefined) {
+			const priceConditions: any[] = [];
+
+			const basePriceCondition: any = {};
+			if (filters?.minPrice !== undefined) {
+				basePriceCondition['priceInventary.basePrice'] = { $gte: filters.minPrice };
+			}
+			if (filters?.maxPrice !== undefined) {
+				basePriceCondition['priceInventary.basePrice'] = {
+					...basePriceCondition['priceInventary.basePrice'],
+					$lte: filters.maxPrice
+				};
+			}
+			if (Object.keys(basePriceCondition).length > 0) {
+				priceConditions.push(basePriceCondition);
+			}
+
+			const variantPriceElemMatch: any = {};
+			if (filters?.minPrice !== undefined) {
+				variantPriceElemMatch.price = { $gte: filters.minPrice };
+			}
+			if (filters?.maxPrice !== undefined) {
+				variantPriceElemMatch.price = {
+					...variantPriceElemMatch.price,
+					$lte: filters.maxPrice
+				};
+			}
+			if (Object.keys(variantPriceElemMatch).length > 0) {
+				priceConditions.push({
+					variants: { $elemMatch: variantPriceElemMatch }
+				});
+			}
+
+			if (priceConditions.length > 0) {
+				baseQuery.$or = priceConditions;
+			}
+		}
+
+		// Aggregation para contar colores
+		const colorAggregation = await this.textileProductModel.aggregate([
+			{ $match: baseQuery },
+			{ $unwind: '$variants' },
+			{
+				$group: {
+					_id: {
+						$toLower: {
+							$ifNull: [
+								'$variants.combination.color',
+								{ $ifNull: ['$variants.combination.Color', null] }
+							]
+						}
+					},
+					count: { $sum: 1 }
+				}
+			},
+			{ $match: { _id: { $ne: null } } },
+			{ $sort: { count: -1 } }
+		]);
+
+		// Aggregation para contar tallas/sizes
+		const sizeAggregation = await this.textileProductModel.aggregate([
+			{ $match: baseQuery },
+			{ $unwind: '$variants' },
+			{
+				$group: {
+					_id: {
+						$toLower: {
+							$ifNull: [
+								'$variants.combination.size',
+								{
+									$ifNull: [
+										'$variants.combination.Size',
+										{
+											$ifNull: [
+												'$variants.combination.talla',
+												{ $ifNull: ['$variants.combination.Talla', null] }
+											]
+										}
+									]
+								}
+							]
+						}
+					},
+					count: { $sum: 1 }
+				}
+			},
+			{ $match: { _id: { $ne: null } } },
+			{ $sort: { count: -1 } }
+		]);
+
+		// Aggregation para contar comunidades
+		const communityAggregation = await this.textileProductModel.aggregate([
+			{ $match: baseQuery },
+			{
+				$match: {
+					'detailTraceability.communityId': { $exists: true, $ne: null }
+				}
+			},
+			{
+				$addFields: {
+					communityObjectId: {
+						$convert: {
+							input: '$detailTraceability.communityId',
+							to: 'objectId',
+							onError: null,
+							onNull: null
+						}
+					}
+				}
+			},
+			{
+				$group: {
+					_id: '$communityObjectId',
+					count: { $sum: 1 }
+				}
+			},
+			{ $match: { _id: { $ne: null } } },
+			{ $sort: { count: -1 } },
+			{
+				$lookup: {
+					from: 'communities',
+					localField: '_id',
+					foreignField: '_id',
+					as: 'community'
+				}
+			},
+			{ $unwind: { path: '$community', preserveNullAndEmptyArrays: false } },
+			{
+				$project: {
+					_id: 0,
+					label: '$community.name',
+					count: 1
+				}
+			}
+		]);
+
+		// Aggregation para contar categorías
+		const categoryAggregation = await this.textileProductModel.aggregate([
+			{ $match: baseQuery },
+			{
+				$match: {
+					categoryId: { $exists: true, $ne: null }
+				}
+			},
+			{
+				$addFields: {
+					categoryObjectId: {
+						$convert: {
+							input: '$categoryId',
+							to: 'objectId',
+							onError: null,
+							onNull: null
+						}
+					}
+				}
+			},
+			{
+				$group: {
+					_id: '$categoryObjectId',
+					count: { $sum: 1 }
+				}
+			},
+			{ $match: { _id: { $ne: null } } },
+			{ $sort: { count: -1 } },
+			{
+				$lookup: {
+					from: 'textilecategories',
+					localField: '_id',
+					foreignField: '_id',
+					as: 'category'
+				}
+			},
+			{ $unwind: { path: '$category', preserveNullAndEmptyArrays: false } },
+			{
+				$project: {
+					_id: 0,
+					label: '$category.name',
+					count: 1
+				}
+			}
+		]);
+
+		const filterCount: FilterCount = {
+			colors: colorAggregation.map((item) => ({
+				label: item._id,
+				count: item.count
+			})),
+			sizes: sizeAggregation.map((item) => ({
+				label: item._id,
+				count: item.count
+			})),
+			communities: communityAggregation,
+			categories: categoryAggregation
+		};
+
+		return filterCount;
 	}
 }
