@@ -6,6 +6,8 @@ import {
 	Param,
 	Put,
 	Delete,
+	Query,
+	ParseIntPipe,
 } from '@nestjs/common';
 import { CreateTextileCategoryUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileCategoryUseCase';
 import { TextileCategory } from 'src/andean/domain/entities/textileProducts/TextileCategory';
@@ -72,6 +74,7 @@ import { UpdateColorOptionAlternativeUseCase } from 'src/andean/app/use_cases/te
 import { DeleteColorOptionAlternativeUseCase } from 'src/andean/app/use_cases/textileProducts/DeleteColorOptionAlternativeUseCase';
 import { CreateManyColorOptionAlternativesUseCase } from 'src/andean/app/use_cases/textileProducts/CreateManyColorOptionAlternativesUseCase';
 import { CreateManyColorOptionAlternativesDto } from './dto/textileProducts/CreateManyColorOptionAlternativesDto';
+import { PaginatedProductsResponse } from 'src/andean/app/modules/PaginatedProductsResponse';
 
 const path_textile_product_id = '/:id';
 const path_textile_categories = '/categories';
@@ -143,7 +146,7 @@ export class TextileProductController {
 		private readonly getByIdColorOptionAlternativeUseCase: GetByIdColorOptionAlternativeUseCase,
 		private readonly deleteColorOptionAlternativeUseCase: DeleteColorOptionAlternativeUseCase,
 		private readonly createManyColorOptionAlternativesUseCase: CreateManyColorOptionAlternativesUseCase,
-	) {}
+	) { }
 
 	@Post(path_textile_categories)
 	async createTextileCategory(
@@ -349,8 +352,11 @@ export class TextileProductController {
 	}
 
 	@Get()
-	async getAllTextileProducts(): Promise<TextileProduct[]> {
-		return this.getAllTextileProductsUseCase.handle();
+	async getAllTextileProducts(
+		@Query('page', new ParseIntPipe({ optional: true })) page?: number,
+		@Query('per_page', new ParseIntPipe({ optional: true })) perPage?: number,
+	): Promise<PaginatedProductsResponse<TextileProduct>> {
+		return this.getAllTextileProductsUseCase.handle(page, perPage);
 	}
 
 	@Get(path_textile_product_id)
