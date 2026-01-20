@@ -2,21 +2,27 @@ import { SuperfoodProductPresentationDocument } from '../../persistence/superfoo
 import { SuperfoodProductPresentation } from '../../../domain/entities/superfoods/SuperfoodProductPresentation';
 import { CreateSuperfoodProductPresentationDto } from '../../controllers/dto/superfoods/CreateSuperfoodProductPresentationDto';
 import { SuperfoodProductPresentationResponse } from '../../../app/modules/SuperfoodProductPresentationResponse';
-import * as crypto from 'crypto';
+import { MongoIdUtils } from '../../utils/MongoIdUtils';
+import { Types } from 'mongoose';
 
 export class SuperfoodProductPresentationMapper {
+	/**
+	 * Convierte documento MongoDB a entidad de dominio
+	 * ObjectId (_id) → string (id)
+	 */
 	static fromDocument(doc: SuperfoodProductPresentationDocument): SuperfoodProductPresentation {
+		const plain = doc.toObject();
 		return new SuperfoodProductPresentation(
-			doc.id,
-			doc.name,
-			doc.createdAt,
-			doc.updatedAt,
+			MongoIdUtils.objectIdToString(plain._id), // ObjectId → string
+			plain.name,
+			plain.createdAt,
+			plain.updatedAt,
 		);
 	}
 
 	static fromCreateDto(dto: CreateSuperfoodProductPresentationDto): SuperfoodProductPresentation {
 		return new SuperfoodProductPresentation(
-			crypto.randomUUID(),
+			new Types.ObjectId().toString(), // Generar ObjectId temporal como string
 			dto.name,
 			new Date(),
 			new Date(),
@@ -32,12 +38,16 @@ export class SuperfoodProductPresentationMapper {
 		};
 	}
 
+	/**
+	 * Convierte entidad a formato de persistencia
+	 * Excluye 'id' ya que MongoDB usará _id automáticamente
+	 */
 	static toPersistence(entity: SuperfoodProductPresentation): any {
 		return {
-			id: entity.id,
 			name: entity.name,
 			createdAt: entity.createdAt || new Date(),
 			updatedAt: entity.updatedAt || new Date(),
 		};
 	}
+
 }
