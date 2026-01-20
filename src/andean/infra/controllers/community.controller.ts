@@ -21,10 +21,20 @@ import { UpdateCommunityUseCase } from '../../app/use_cases/community/UpdateComm
 import { GetCommunityByIdUseCase } from '../../app/use_cases/community/GetCommunityByIdUseCase';
 import { ListCommunityUseCase } from '../../app/use_cases/community/ListCommunityUseCase';
 import { DeleteCommunityUseCase } from '../../app/use_cases/community/DeleteCommunityUseCase';
+import { CreateSealUseCase } from '../../app/use_cases/community/CreateSealUseCase';
+import { GetAllSealsUseCase } from '../../app/use_cases/community/GetAllSealsUseCase';
+import { GetByIdSealUseCase } from '../../app/use_cases/community/GetByIdSealUseCase';
+import { UpdateSealUseCase } from '../../app/use_cases/community/UpdateSealUseCase';
+import { DeleteSealUseCase } from '../../app/use_cases/community/DeleteSealUseCase';
 import { CreateCommunityDto } from './dto/community/CreateCommunityDto';
 import { UpdateCommunityDto } from './dto/community/UpdateCommunityDto';
+import { CreateSealDto } from './dto/community/CreateSealDto';
 import { CommunityResponse } from '../../app/modules/CommunityResponse';
 import { Community } from '../../domain/entities/community/Community';
+import { Seal } from '../../domain/entities/community/Seal';
+
+const path_seals = '/seals';
+const path_seals_id = '/seals/:id';
 
 @ApiTags('Communities')
 @Controller('communities')
@@ -35,6 +45,11 @@ export class CommunityController {
 		private readonly getCommunityByIdUseCase: GetCommunityByIdUseCase,
 		private readonly listCommunityUseCase: ListCommunityUseCase,
 		private readonly deleteCommunityUseCase: DeleteCommunityUseCase,
+		private readonly createSealUseCase: CreateSealUseCase,
+		private readonly getAllSealsUseCase: GetAllSealsUseCase,
+		private readonly getByIdSealUseCase: GetByIdSealUseCase,
+		private readonly updateSealUseCase: UpdateSealUseCase,
+		private readonly deleteSealUseCase: DeleteSealUseCase,
 	) { }
 
 	@Post()
@@ -103,6 +118,38 @@ export class CommunityController {
 	@ApiResponse({ status: 404, description: 'Community not found.' })
 	async delete(@Param('id') id: string): Promise<void> {
 		await this.deleteCommunityUseCase.execute(id);
+	}
+
+	@Post(path_seals)
+	async createSeal(
+		@Body() body: CreateSealDto,
+	): Promise<Seal> {
+		return this.createSealUseCase.handle(body);
+	}
+
+	@Get(path_seals)
+	async getAllSeals(): Promise<Seal[]> {
+		return this.getAllSealsUseCase.handle();
+	}
+
+	@Get(path_seals_id)
+	async getByIdSeal(
+		@Param('id') id: string,
+	): Promise<Seal> {
+		return this.getByIdSealUseCase.handle(id);
+	}
+
+	@Put(path_seals_id)
+	async updateSeal(
+		@Param('id') id: string,
+		@Body() body: CreateSealDto,
+	): Promise<Seal> {
+		return this.updateSealUseCase.handle(id, body);
+	}
+
+	@Delete(path_seals_id)
+	async deleteSeal(@Param('id') id: string): Promise<void> {
+		return this.deleteSealUseCase.handle(id);
 	}
 
 	private toResponse(community: Community): CommunityResponse {

@@ -1,10 +1,10 @@
-import { CommunityDocument } from '../persistence/community.schema';
-import { Community } from '../../domain/entities/community/Community';
-import { CreateCommunityDto } from '../controllers/dto/community/CreateCommunityDto';
-import { UpdateCommunityDto } from '../controllers/dto/community/UpdateCommunityDto';
+import { CommunityDocument } from '../../persistence/community/community.schema';
+import { Community } from '../../../domain/entities/community/Community';
+import { CreateCommunityDto } from '../../controllers/dto/community/CreateCommunityDto';
+import { UpdateCommunityDto } from '../../controllers/dto/community/UpdateCommunityDto';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { Types } from 'mongoose';
-import { MongoIdUtils } from '../utils/MongoIdUtils';
+import { MongoIdUtils } from '../../utils/MongoIdUtils';
 
 export class CommunityMapper {
 	/**
