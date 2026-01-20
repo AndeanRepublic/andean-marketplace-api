@@ -5,6 +5,7 @@ import { SuperfoodCertificationRepository } from '../../../app/datastore/superfo
 import { SuperfoodCertification } from '../../../domain/entities/superfoods/SuperfoodCertification';
 import { SuperfoodCertificationDocument } from '../../persistence/superfood/superfoodCertification.schema';
 import { SuperfoodCertificationMapper } from '../../services/superfood/SuperfoodCertificationMapper';
+import { MongoIdUtils } from '../../utils/MongoIdUtils';
 
 @Injectable()
 export class SuperfoodCertificationRepoImpl implements SuperfoodCertificationRepository {
@@ -14,7 +15,9 @@ export class SuperfoodCertificationRepoImpl implements SuperfoodCertificationRep
 	) { }
 
 	async getById(id: string): Promise<SuperfoodCertification | null> {
-		const doc = await this.model.findOne({ id }).exec();
+		// Convertir string a ObjectId
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		const doc = await this.model.findById(objectId).exec();
 		if (!doc) return null;
 		return SuperfoodCertificationMapper.fromDocument(doc);
 	}
@@ -26,10 +29,8 @@ export class SuperfoodCertificationRepoImpl implements SuperfoodCertificationRep
 
 	async save(certification: SuperfoodCertification): Promise<SuperfoodCertification> {
 		const persistenceData = SuperfoodCertificationMapper.toPersistence(certification);
-		const newDoc = new this.model({
-			_id: crypto.randomUUID(),
-			...persistenceData,
-		});
+		// MongoDB genera automáticamente _id como ObjectId
+		const newDoc = new this.model(persistenceData);
 		const savedDoc = await newDoc.save();
 		return SuperfoodCertificationMapper.fromDocument(savedDoc);
 	}
@@ -38,9 +39,11 @@ export class SuperfoodCertificationRepoImpl implements SuperfoodCertificationRep
 		const persistenceData = SuperfoodCertificationMapper.toPersistence(certification);
 		persistenceData.updatedAt = new Date();
 
+		// Convertir string a ObjectId
+		const objectId = MongoIdUtils.stringToObjectId(certification.id);
 		const updatedDoc = await this.model
-			.findOneAndUpdate(
-				{ id: certification.id },
+			.findByIdAndUpdate(
+				objectId,
 				{ $set: persistenceData },
 				{ new: true }
 			)
@@ -54,6 +57,8 @@ export class SuperfoodCertificationRepoImpl implements SuperfoodCertificationRep
 	}
 
 	async delete(id: string): Promise<void> {
-		await this.model.deleteOne({ id }).exec();
+		// Convertir string a ObjectId
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		await this.model.findByIdAndDelete(objectId).exec();
 	}
 }
