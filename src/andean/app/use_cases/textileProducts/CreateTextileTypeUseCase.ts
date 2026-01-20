@@ -12,7 +12,7 @@ export class CreateTextileTypeUseCase {
   ) {}
 
   async handle(dto: CreateTextileTypeDto): Promise<TextileType> {
-    const typeFound = await this.textileTypeRepository.getTextileTypeById(
+    const typeFound = await this.textileTypeRepository.getTextileTypeByName(
       dto.name,
     );
     if (typeFound) {

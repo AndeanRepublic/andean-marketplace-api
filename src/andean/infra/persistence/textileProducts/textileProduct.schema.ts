@@ -18,6 +18,7 @@ const BaseInfoSchema = new Schema(
 			required: true,
 		},
 		ownerId: { type: String, required: true },
+		information: { type: String, required: false },
 	},
 	{ _id: false },
 );
@@ -57,6 +58,7 @@ const TextileOptionsItemSchema = new Schema(
 		id: { type: String, required: true },
 		label: { type: String, required: true },
 		mediaIds: { type: [String], default: [] },
+		idOpcionAlternative: { type: String, required: false },
 	},
 	{ _id: false },
 );
@@ -122,8 +124,6 @@ const ProductTraceabilitySchema = new Schema(
 );
 
 export const TextileProductSchema = new Schema({
-	_id: String,
-	id: String,
 	categoryId: { type: String, required: false },
 	status: {
 		type: String,
@@ -141,9 +141,7 @@ export const TextileProductSchema = new Schema({
 	updatedAt: { type: Date, default: Date.now },
 });
 
-export interface TextileProductDocument extends Document<string> {
-	_id: string;
-	id: string;
+export interface TextileProductDocument extends Document {
 	categoryId?: string;
 	status: TextileProductStatus;
 	baseInfo: {
@@ -152,6 +150,7 @@ export interface TextileProductDocument extends Document<string> {
 		description: string;
 		ownerType: OwnerType;
 		ownerId: string;
+		information?: string;
 	};
 	priceInventary: {
 		basePrice: number;

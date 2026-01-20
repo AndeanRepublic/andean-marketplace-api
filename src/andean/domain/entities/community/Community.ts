@@ -4,5 +4,6 @@ export class Community {
 		public name: string,
 		public createdAt: Date,
 		public updatedAt: Date,
+		public seals?: string[],
 	) { }
 }

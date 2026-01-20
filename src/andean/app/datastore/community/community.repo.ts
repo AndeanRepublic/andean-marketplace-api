@@ -1,4 +1,4 @@
-import { Community } from '../../domain/entities/community/Community';
+import { Community } from '../../../domain/entities/community/Community';
 
 export abstract class CommunityRepository {
 	abstract create(community: Community): Promise<Community>;

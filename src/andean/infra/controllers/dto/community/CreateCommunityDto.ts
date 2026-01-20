@@ -1,5 +1,5 @@
-import { IsNotEmpty, IsString, MinLength, MaxLength } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString, MinLength, MaxLength, IsArray, IsOptional } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateCommunityDto {
 	@ApiProperty({
@@ -13,4 +13,14 @@ export class CreateCommunityDto {
 	@MinLength(3)
 	@MaxLength(100)
 	name: string;
+
+	@ApiPropertyOptional({
+		description: 'Array de IDs de seals asociados a la comunidad',
+		example: ['67890abcdef1234567890123', '67890abcdef1234567890124'],
+		type: [String],
+	})
+	@IsArray()
+	@IsString({ each: true })
+	@IsOptional()
+	seals?: string[];
 }

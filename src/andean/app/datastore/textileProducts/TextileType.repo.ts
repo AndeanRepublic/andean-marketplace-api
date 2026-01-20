@@ -3,6 +3,7 @@ import { TextileType } from '../../../domain/entities/textileProducts/TextileTyp
 export abstract class TextileTypeRepository {
   abstract getAllTextileTypes(): Promise<TextileType[]>;
   abstract getTextileTypeById(id: string): Promise<TextileType | null>;
+	abstract getTextileTypeByName(name: string): Promise<TextileType | null>;
   abstract saveTextileType(type: TextileType): Promise<TextileType>;
   abstract updateTextileType(
     id: string,

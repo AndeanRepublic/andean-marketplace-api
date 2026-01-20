@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 // Schemas
@@ -23,6 +23,7 @@ import { SuperfoodNutritionalFeatureController } from './infra/controllers/super
 import { SuperfoodBenefitController } from './infra/controllers/superfoodBenefit.controller';
 import { SuperfoodProductPresentationController } from './infra/controllers/superfoodProductPresentation.controller';
 import { SuperfoodSalesUnitSizeController } from './infra/controllers/superfoodSalesUnitSize.controller';
+import { ReviewController } from './infra/controllers/Review.controller';
 
 // Use Cases - Product
 import { CreateSuperfoodProductUseCase } from './app/use_cases/superfoods/CreateSuperfoodProductUseCase';
@@ -107,6 +108,16 @@ import { SuperfoodProductPresentationRepoImpl } from './infra/datastore/superfoo
 // Other modules
 import { ShopsModule } from './shop.module';
 import { CommunityModule } from './community.module';
+import { ReviewSchema } from './infra/persistence/Review.schema';
+import { ReviewRepository } from './app/datastore/Review.repo';
+import { ReviewRepositoryImpl } from './infra/datastore/Review.repo.impl';
+import { CreateReviewUseCase } from './app/use_cases/CreateReviewUseCase';
+import { GetAllReviewsUseCase } from './app/use_cases/GetAllReviewsUseCase';
+import { GetByIdReviewUseCase } from './app/use_cases/GetByIdReviewUseCase';
+import { UpdateReviewUseCase } from './app/use_cases/UpdateReviewUseCase';
+import { DeleteReviewUseCase } from './app/use_cases/DeleteReviewUseCase';
+import { UsersModule } from './users.module';
+import { TextileProductModule } from './textileProduct.module';
 
 @Module({
 	imports: [
@@ -121,9 +132,12 @@ import { CommunityModule } from './community.module';
 			{ name: 'SuperfoodSalesUnitSize', schema: SuperfoodSalesUnitSizeSchema },
 			{ name: 'SuperfoodProductPresentation', schema: SuperfoodProductPresentationSchema },
 			{ name: 'SuperfoodType', schema: SuperfoodTypeSchema },
+			{ name: 'Review', schema: ReviewSchema },
 		]),
 		ShopsModule,
 		CommunityModule,
+		UsersModule,
+		forwardRef(() => TextileProductModule),
 	],
 	controllers: [
 		SuperfoodController,
@@ -135,6 +149,7 @@ import { CommunityModule } from './community.module';
 		SuperfoodBenefitController,
 		SuperfoodProductPresentationController,
 		SuperfoodSalesUnitSizeController,
+		ReviewController,
 	],
 	providers: [
 		// Use Cases - Product
@@ -193,6 +208,13 @@ import { CommunityModule } from './community.module';
 		ListSuperfoodSalesUnitSizesUseCase,
 		DeleteSuperfoodSalesUnitSizeUseCase,
 
+		// Use Cases - Review
+		CreateReviewUseCase,
+		GetAllReviewsUseCase,
+		GetByIdReviewUseCase,
+		UpdateReviewUseCase,
+		DeleteReviewUseCase,
+
 		// Repository Bindings (Abstract → Implementation)
 		{
 			provide: SuperfoodProductRepository,
@@ -234,6 +256,10 @@ import { CommunityModule } from './community.module';
 			provide: SuperfoodProductPresentationRepository,
 			useClass: SuperfoodProductPresentationRepoImpl,
 		},
+		{
+			provide: ReviewRepository,
+			useClass: ReviewRepositoryImpl,
+		},
 	],
 	exports: [
 		SuperfoodProductRepository,
@@ -246,6 +272,7 @@ import { CommunityModule } from './community.module';
 		SuperfoodCertificationRepository,
 		SuperfoodSalesUnitSizeRepository,
 		SuperfoodProductPresentationRepository,
+		ReviewRepository,
 		MongooseModule,
 	],
 })

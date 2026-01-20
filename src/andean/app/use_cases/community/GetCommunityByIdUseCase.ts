@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CommunityRepository } from '../../datastore/community.repo';
+import { CommunityRepository } from '../../datastore/community/community.repo';
 import { Community } from '../../../domain/entities/community/Community';
 
 @Injectable()

@@ -9,7 +9,7 @@ import { UpdateSuperfoodDto } from '../../../infra/controllers/dto/superfoods/Up
 import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
 import { SuperfoodProductMapper } from '../../../infra/services/superfood/SuperfoodProductMapper';
 import { SuperfoodCategoryRepository } from '../../datastore/superfoods/SuperfoodCategory.repo';
-import { CommunityRepository } from '../../datastore/community.repo';
+import { CommunityRepository } from '../../datastore/community/community.repo';
 import { ShopRepository } from '../../datastore/Shop.repo';
 import { SuperfoodOwnerType } from '../../../domain/enums/SuperfoodOwnerType';
 import { instanceToPlain } from 'class-transformer';

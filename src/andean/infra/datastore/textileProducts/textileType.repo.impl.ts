@@ -27,6 +27,15 @@ export class TextileTypeRepositoryImpl extends TextileTypeRepository {
 		return doc ? TextileTypeMapper.fromDocument(doc) : null;
 	}
 
+	async getTextileTypeByName(
+		name: string,
+	): Promise<TextileType | null> {
+		const document = await this.textileTypeModel
+			.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } })
+			.exec();
+		return document ? TextileTypeMapper.fromDocument(document) : null;
+	}
+
 	async saveTextileType(type: TextileType): Promise<TextileType> {
 		const plain = TextileTypeMapper.toPersistence(type);
 		const created = new this.textileTypeModel(plain);
