@@ -355,8 +355,25 @@ export class TextileProductController {
 	async getAllTextileProducts(
 		@Query('page', new ParseIntPipe({ optional: true })) page?: number,
 		@Query('per_page', new ParseIntPipe({ optional: true })) perPage?: number,
+		@Query('color') color?: string,
+		@Query('size') size?: string,
+		@Query('min_price', new ParseIntPipe({ optional: true })) minPrice?: number,
+		@Query('max_price', new ParseIntPipe({ optional: true })) maxPrice?: number,
+		@Query('category_id') categoryId?: string,
+		@Query('owner_id') ownerId?: string,
 	): Promise<PaginatedProductsResponse<TextileProduct>> {
-		return this.getAllTextileProductsUseCase.handle(page, perPage);
+		// Construir objeto de filtros solo con valores definidos
+		const filters: any = {};
+		if (page !== undefined) filters.page = page;
+		if (perPage !== undefined) filters.perPage = perPage;
+		if (color) filters.color = color;
+		if (size) filters.size = size;
+		if (minPrice !== undefined) filters.minPrice = minPrice;
+		if (maxPrice !== undefined) filters.maxPrice = maxPrice;
+		if (categoryId) filters.categoryId = categoryId;
+		if (ownerId) filters.ownerId = ownerId;
+
+		return this.getAllTextileProductsUseCase.handle(Object.keys(filters).length > 0 ? filters : undefined);
 	}
 
 	@Get(path_textile_product_id)

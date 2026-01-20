@@ -57,6 +57,116 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 		return TextileProductMapper.fromDocument(updated!);
 	}
 
+	async getAllWithFilters(filters: any): Promise<{ products: TextileProduct[]; total: number }> {
+		const query: any = {};
+
+		// Filtro por categoryId
+		if (filters.categoryId) {
+			query.categoryId = filters.categoryId;
+		}
+
+		// Filtro por ownerId
+		if (filters.ownerId) {
+			query['baseInfo.ownerId'] = filters.ownerId;
+		}
+
+		// Filtro por color en variants
+		if (filters.color) {
+			query.variants = {
+				...query.variants,
+				$elemMatch: {
+					...((query.variants as any)?.$elemMatch || {}),
+					$or: [
+						{ 'combination.color': { $regex: new RegExp(filters.color, 'i') } },
+						{ 'combination.Color': { $regex: new RegExp(filters.color, 'i') } },
+					]
+				}
+			};
+		}
+
+		// Filtro por size en variants
+		if (filters.size) {
+			if (query.variants?.$elemMatch) {
+				query.variants.$elemMatch.$and = [
+					...(query.variants.$elemMatch.$and || []),
+					{
+						$or: [
+							{ 'combination.size': { $regex: new RegExp(filters.size, 'i') } },
+							{ 'combination.Size': { $regex: new RegExp(filters.size, 'i') } },
+							{ 'combination.talla': { $regex: new RegExp(filters.size, 'i') } },
+							{ 'combination.Talla': { $regex: new RegExp(filters.size, 'i') } },
+						]
+					}
+				];
+			} else {
+				query.variants = {
+					$elemMatch: {
+						$or: [
+							{ 'combination.size': { $regex: new RegExp(filters.size, 'i') } },
+							{ 'combination.Size': { $regex: new RegExp(filters.size, 'i') } },
+							{ 'combination.talla': { $regex: new RegExp(filters.size, 'i') } },
+							{ 'combination.Talla': { $regex: new RegExp(filters.size, 'i') } },
+						]
+					}
+				};
+			}
+		}
+
+		// Filtro por rango de precios (variants.price o priceInventary.basePrice)
+		if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
+			const priceConditions: any[] = [];
+
+			// Condición para priceInventary.basePrice
+			const basePriceCondition: any = {};
+			if (filters.minPrice !== undefined) {
+				basePriceCondition['priceInventary.basePrice'] = { $gte: filters.minPrice };
+			}
+			if (filters.maxPrice !== undefined) {
+				basePriceCondition['priceInventary.basePrice'] = {
+					...basePriceCondition['priceInventary.basePrice'],
+					$lte: filters.maxPrice
+				};
+			}
+			if (Object.keys(basePriceCondition).length > 0) {
+				priceConditions.push(basePriceCondition);
+			}
+
+			// Condición para variants.price
+			const variantPriceElemMatch: any = {};
+			if (filters.minPrice !== undefined) {
+				variantPriceElemMatch.price = { $gte: filters.minPrice };
+			}
+			if (filters.maxPrice !== undefined) {
+				variantPriceElemMatch.price = {
+					...variantPriceElemMatch.price,
+					$lte: filters.maxPrice
+				};
+			}
+			if (Object.keys(variantPriceElemMatch).length > 0) {
+				priceConditions.push({
+					variants: { $elemMatch: variantPriceElemMatch }
+				});
+			}
+
+			if (priceConditions.length > 0) {
+				query.$or = priceConditions;
+			}
+		}
+
+		// Paginación
+		const page = filters.page || 1;
+		const perPage = filters.perPage || 10;
+		const skip = (page - 1) * perPage;
+
+		const [docs, total] = await Promise.all([
+			this.textileProductModel.find(query).skip(skip).limit(perPage).exec(),
+			this.textileProductModel.countDocuments(query).exec(),
+		]);
+
+		const products = docs.map((doc) => TextileProductMapper.fromDocument(doc));
+		return { products, total };
+	}
+
 	async deleteTextileProduct(id: string): Promise<void> {
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		await this.textileProductModel.findByIdAndDelete(objectId).exec();
