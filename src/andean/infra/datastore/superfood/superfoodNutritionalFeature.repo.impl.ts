@@ -5,6 +5,7 @@ import { SuperfoodNutritionalFeatureRepository } from '../../../app/datastore/su
 import { SuperfoodNutritionalFeature } from '../../../domain/entities/superfoods/SuperfoodNutritionalFeature';
 import { SuperfoodNutritionalFeatureDocument } from '../../persistence/superfood/superfoodNutritionalFeature.schema';
 import { SuperfoodNutritionalFeatureMapper } from '../../services/superfood/SuperfoodNutritionalFeatureMapper';
+import { MongoIdUtils } from '../../utils/MongoIdUtils';
 
 @Injectable()
 export class SuperfoodNutritionalFeatureRepoImpl implements SuperfoodNutritionalFeatureRepository {
@@ -14,7 +15,9 @@ export class SuperfoodNutritionalFeatureRepoImpl implements SuperfoodNutritional
 	) { }
 
 	async getById(id: string): Promise<SuperfoodNutritionalFeature | null> {
-		const doc = await this.model.findOne({ id }).exec();
+		// Convertir string a ObjectId
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		const doc = await this.model.findById(objectId).exec();
 		if (!doc) return null;
 		return SuperfoodNutritionalFeatureMapper.fromDocument(doc);
 	}
@@ -26,10 +29,8 @@ export class SuperfoodNutritionalFeatureRepoImpl implements SuperfoodNutritional
 
 	async save(feature: SuperfoodNutritionalFeature): Promise<SuperfoodNutritionalFeature> {
 		const persistenceData = SuperfoodNutritionalFeatureMapper.toPersistence(feature);
-		const newDoc = new this.model({
-			_id: crypto.randomUUID(),
-			...persistenceData,
-		});
+		// MongoDB genera automáticamente _id como ObjectId
+		const newDoc = new this.model(persistenceData);
 		const savedDoc = await newDoc.save();
 		return SuperfoodNutritionalFeatureMapper.fromDocument(savedDoc);
 	}
@@ -38,9 +39,11 @@ export class SuperfoodNutritionalFeatureRepoImpl implements SuperfoodNutritional
 		const persistenceData = SuperfoodNutritionalFeatureMapper.toPersistence(feature);
 		persistenceData.updatedAt = new Date();
 
+		// Convertir string a ObjectId
+		const objectId = MongoIdUtils.stringToObjectId(feature.id);
 		const updatedDoc = await this.model
-			.findOneAndUpdate(
-				{ id: feature.id },
+			.findByIdAndUpdate(
+				objectId,
 				{ $set: persistenceData },
 				{ new: true }
 			)
@@ -54,6 +57,8 @@ export class SuperfoodNutritionalFeatureRepoImpl implements SuperfoodNutritional
 	}
 
 	async delete(id: string): Promise<void> {
-		await this.model.deleteOne({ id }).exec();
+		// Convertir string a ObjectId
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		await this.model.findByIdAndDelete(objectId).exec();
 	}
 }

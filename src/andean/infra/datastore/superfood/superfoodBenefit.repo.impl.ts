@@ -5,6 +5,7 @@ import { SuperfoodBenefitRepository } from '../../../app/datastore/superfoods/Su
 import { SuperfoodBenefit } from '../../../domain/entities/superfoods/SuperfoodBenefit';
 import { SuperfoodBenefitDocument } from '../../persistence/superfood/superfoodBenefit.schema';
 import { SuperfoodBenefitMapper } from '../../services/superfood/SuperfoodBenefitMapper';
+import { MongoIdUtils } from '../../utils/MongoIdUtils';
 
 @Injectable()
 export class SuperfoodBenefitRepoImpl implements SuperfoodBenefitRepository {
@@ -14,7 +15,9 @@ export class SuperfoodBenefitRepoImpl implements SuperfoodBenefitRepository {
 	) { }
 
 	async getById(id: string): Promise<SuperfoodBenefit | null> {
-		const doc = await this.model.findOne({ id }).exec();
+		// Convertir string a ObjectId
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		const doc = await this.model.findById(objectId).exec();
 		if (!doc) return null;
 		return SuperfoodBenefitMapper.fromDocument(doc);
 	}
@@ -26,10 +29,8 @@ export class SuperfoodBenefitRepoImpl implements SuperfoodBenefitRepository {
 
 	async save(benefit: SuperfoodBenefit): Promise<SuperfoodBenefit> {
 		const persistenceData = SuperfoodBenefitMapper.toPersistence(benefit);
-		const newDoc = new this.model({
-			_id: crypto.randomUUID(),
-			...persistenceData,
-		});
+		// MongoDB genera automáticamente _id como ObjectId
+		const newDoc = new this.model(persistenceData);
 		const savedDoc = await newDoc.save();
 		return SuperfoodBenefitMapper.fromDocument(savedDoc);
 	}
@@ -38,9 +39,11 @@ export class SuperfoodBenefitRepoImpl implements SuperfoodBenefitRepository {
 		const persistenceData = SuperfoodBenefitMapper.toPersistence(benefit);
 		persistenceData.updatedAt = new Date();
 
+		// Convertir string a ObjectId
+		const objectId = MongoIdUtils.stringToObjectId(benefit.id);
 		const updatedDoc = await this.model
-			.findOneAndUpdate(
-				{ id: benefit.id },
+			.findByIdAndUpdate(
+				objectId,
 				{ $set: persistenceData },
 				{ new: true }
 			)
@@ -54,6 +57,8 @@ export class SuperfoodBenefitRepoImpl implements SuperfoodBenefitRepository {
 	}
 
 	async delete(id: string): Promise<void> {
-		await this.model.deleteOne({ id }).exec();
+		// Convertir string a ObjectId
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		await this.model.findByIdAndDelete(objectId).exec();
 	}
 }

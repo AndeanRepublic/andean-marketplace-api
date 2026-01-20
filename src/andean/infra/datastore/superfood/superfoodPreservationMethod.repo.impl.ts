@@ -5,6 +5,7 @@ import { SuperfoodPreservationMethodRepository } from '../../../app/datastore/su
 import { SuperfoodPreservationMethod } from '../../../domain/entities/superfoods/SuperfoodPreservationMethod';
 import { SuperfoodPreservationMethodDocument } from '../../persistence/superfood/superfoodPreservationMethod.schema';
 import { SuperfoodPreservationMethodMapper } from '../../services/superfood/SuperfoodPreservationMethodMapper';
+import { MongoIdUtils } from '../../utils/MongoIdUtils';
 
 @Injectable()
 export class SuperfoodPreservationMethodRepoImpl implements SuperfoodPreservationMethodRepository {
@@ -14,7 +15,9 @@ export class SuperfoodPreservationMethodRepoImpl implements SuperfoodPreservatio
 	) { }
 
 	async getById(id: string): Promise<SuperfoodPreservationMethod | null> {
-		const doc = await this.model.findOne({ id }).exec();
+		// Convertir string a ObjectId
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		const doc = await this.model.findById(objectId).exec();
 		if (!doc) return null;
 		return SuperfoodPreservationMethodMapper.fromDocument(doc);
 	}
@@ -26,10 +29,8 @@ export class SuperfoodPreservationMethodRepoImpl implements SuperfoodPreservatio
 
 	async save(method: SuperfoodPreservationMethod): Promise<SuperfoodPreservationMethod> {
 		const persistenceData = SuperfoodPreservationMethodMapper.toPersistence(method);
-		const newDoc = new this.model({
-			_id: crypto.randomUUID(),
-			...persistenceData,
-		});
+		// MongoDB genera automáticamente _id como ObjectId
+		const newDoc = new this.model(persistenceData);
 		const savedDoc = await newDoc.save();
 		return SuperfoodPreservationMethodMapper.fromDocument(savedDoc);
 	}
@@ -38,9 +39,11 @@ export class SuperfoodPreservationMethodRepoImpl implements SuperfoodPreservatio
 		const persistenceData = SuperfoodPreservationMethodMapper.toPersistence(method);
 		persistenceData.updatedAt = new Date();
 
+		// Convertir string a ObjectId
+		const objectId = MongoIdUtils.stringToObjectId(method.id);
 		const updatedDoc = await this.model
-			.findOneAndUpdate(
-				{ id: method.id },
+			.findByIdAndUpdate(
+				objectId,
 				{ $set: persistenceData },
 				{ new: true }
 			)
@@ -54,6 +57,8 @@ export class SuperfoodPreservationMethodRepoImpl implements SuperfoodPreservatio
 	}
 
 	async delete(id: string): Promise<void> {
-		await this.model.deleteOne({ id }).exec();
+		// Convertir string a ObjectId
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		await this.model.findByIdAndDelete(objectId).exec();
 	}
 }

@@ -5,6 +5,7 @@ import { SuperfoodSalesUnitSizeRepository } from '../../../app/datastore/superfo
 import { SuperfoodSalesUnitSize } from '../../../domain/entities/superfoods/SuperfoodSalesUnitSize';
 import { SuperfoodSalesUnitSizeDocument } from '../../persistence/superfood/superfoodSalesUnitSize.schema';
 import { SuperfoodSalesUnitSizeMapper } from '../../services/superfood/SuperfoodSalesUnitSizeMapper';
+import { MongoIdUtils } from '../../utils/MongoIdUtils';
 
 @Injectable()
 export class SuperfoodSalesUnitSizeRepoImpl implements SuperfoodSalesUnitSizeRepository {
@@ -14,7 +15,9 @@ export class SuperfoodSalesUnitSizeRepoImpl implements SuperfoodSalesUnitSizeRep
 	) { }
 
 	async getById(id: string): Promise<SuperfoodSalesUnitSize | null> {
-		const doc = await this.model.findOne({ id }).exec();
+		// Convertir string a ObjectId
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		const doc = await this.model.findById(objectId).exec();
 		if (!doc) return null;
 		return SuperfoodSalesUnitSizeMapper.fromDocument(doc);
 	}
@@ -26,10 +29,8 @@ export class SuperfoodSalesUnitSizeRepoImpl implements SuperfoodSalesUnitSizeRep
 
 	async save(unitSize: SuperfoodSalesUnitSize): Promise<SuperfoodSalesUnitSize> {
 		const persistenceData = SuperfoodSalesUnitSizeMapper.toPersistence(unitSize);
-		const newDoc = new this.model({
-			_id: crypto.randomUUID(),
-			...persistenceData,
-		});
+		// MongoDB genera automáticamente _id como ObjectId
+		const newDoc = new this.model(persistenceData);
 		const savedDoc = await newDoc.save();
 		return SuperfoodSalesUnitSizeMapper.fromDocument(savedDoc);
 	}
@@ -38,9 +39,11 @@ export class SuperfoodSalesUnitSizeRepoImpl implements SuperfoodSalesUnitSizeRep
 		const persistenceData = SuperfoodSalesUnitSizeMapper.toPersistence(unitSize);
 		persistenceData.updatedAt = new Date();
 
+		// Convertir string a ObjectId
+		const objectId = MongoIdUtils.stringToObjectId(unitSize.id);
 		const updatedDoc = await this.model
-			.findOneAndUpdate(
-				{ id: unitSize.id },
+			.findByIdAndUpdate(
+				objectId,
 				{ $set: persistenceData },
 				{ new: true }
 			)
@@ -54,6 +57,8 @@ export class SuperfoodSalesUnitSizeRepoImpl implements SuperfoodSalesUnitSizeRep
 	}
 
 	async delete(id: string): Promise<void> {
-		await this.model.deleteOne({ id }).exec();
+		// Convertir string a ObjectId
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		await this.model.findByIdAndDelete(objectId).exec();
 	}
 }

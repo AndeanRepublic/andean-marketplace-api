@@ -2,16 +2,27 @@ import { SuperfoodTypeDocument } from '../../persistence/superfood/superfoodType
 import { SuperfoodType } from '../../../domain/entities/superfoods/SuperfoodType';
 import { CreateSuperfoodTypeDto } from '../../controllers/dto/superfoods/CreateSuperfoodTypeDto';
 import { SuperfoodTypeResponse } from '../../../app/modules/SuperfoodTypeResponse';
-import * as crypto from 'crypto';
+import { MongoIdUtils } from '../../utils/MongoIdUtils';
+import { Types } from 'mongoose';
 
 export class SuperfoodTypeMapper {
+	/**
+	 * Convierte documento MongoDB a entidad de dominio
+	 * ObjectId (_id) → string (id)
+	 */
 	static fromDocument(doc: SuperfoodTypeDocument): SuperfoodType {
-		return new SuperfoodType(doc.id, doc.name, doc.createdAt, doc.updatedAt);
+		const plain = doc.toObject();
+		return new SuperfoodType(
+			MongoIdUtils.objectIdToString(plain._id), // ObjectId → string
+			plain.name,
+			plain.createdAt,
+			plain.updatedAt
+		);
 	}
 
 	static fromCreateDto(dto: CreateSuperfoodTypeDto): SuperfoodType {
 		return new SuperfoodType(
-			crypto.randomUUID(),
+			new Types.ObjectId().toString(), // Generar ObjectId temporal como string
 			dto.name,
 			new Date(),
 			new Date(),
@@ -27,12 +38,16 @@ export class SuperfoodTypeMapper {
 		};
 	}
 
+	/**
+	 * Convierte entidad a formato de persistencia
+	 * Excluye 'id' ya que MongoDB usará _id automáticamente
+	 */
 	static toPersistence(entity: SuperfoodType): any {
 		return {
-			id: entity.id,
 			name: entity.name,
 			createdAt: entity.createdAt || new Date(),
 			updatedAt: entity.updatedAt || new Date(),
 		};
 	}
+
 }

@@ -5,6 +5,7 @@ import { SuperfoodCategoryRepository } from '../../../app/datastore/superfoods/S
 import { SuperfoodCategory } from '../../../domain/entities/superfoods/SuperfoodCategory';
 import { SuperfoodCategoryDocument } from '../../persistence/superfood/superfoodCategory.schema';
 import { SuperfoodCategoryMapper } from '../../services/superfood/SuperfoodCategoryMapper';
+import { MongoIdUtils } from '../../utils/MongoIdUtils';
 
 @Injectable()
 export class SuperfoodCategoryRepoImpl implements SuperfoodCategoryRepository {
@@ -14,7 +15,9 @@ export class SuperfoodCategoryRepoImpl implements SuperfoodCategoryRepository {
 	) { }
 
 	async getCategoryById(id: string): Promise<SuperfoodCategory | null> {
-		const doc = await this.model.findOne({ id }).exec();
+		// Convertir string a ObjectId
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		const doc = await this.model.findById(objectId).exec();
 		if (!doc) return null;
 		return SuperfoodCategoryMapper.fromDocument(doc);
 	}
@@ -26,10 +29,8 @@ export class SuperfoodCategoryRepoImpl implements SuperfoodCategoryRepository {
 
 	async saveCategory(category: SuperfoodCategory): Promise<SuperfoodCategory> {
 		const persistenceData = SuperfoodCategoryMapper.toPersistence(category);
-		const newDoc = new this.model({
-			_id: crypto.randomUUID(),
-			...persistenceData,
-		});
+		// MongoDB genera automáticamente _id como ObjectId
+		const newDoc = new this.model(persistenceData);
 		const savedDoc = await newDoc.save();
 		return SuperfoodCategoryMapper.fromDocument(savedDoc);
 	}
@@ -38,9 +39,11 @@ export class SuperfoodCategoryRepoImpl implements SuperfoodCategoryRepository {
 		const persistenceData = SuperfoodCategoryMapper.toPersistence(category);
 		persistenceData.updatedAt = new Date();
 
+		// Convertir string a ObjectId
+		const objectId = MongoIdUtils.stringToObjectId(category.id);
 		const updatedDoc = await this.model
-			.findOneAndUpdate(
-				{ id: category.id },
+			.findByIdAndUpdate(
+				objectId,
 				{ $set: persistenceData },
 				{ new: true }
 			)
@@ -54,6 +57,8 @@ export class SuperfoodCategoryRepoImpl implements SuperfoodCategoryRepository {
 	}
 
 	async deleteCategory(id: string): Promise<void> {
-		await this.model.deleteOne({ id }).exec();
+		// Convertir string a ObjectId
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		await this.model.findByIdAndDelete(objectId).exec();
 	}
 }
