@@ -4,6 +4,7 @@ import { CreateCommunityDto } from '../../controllers/dto/community/CreateCommun
 import { UpdateCommunityDto } from '../../controllers/dto/community/UpdateCommunityDto';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { Types } from 'mongoose';
+import { MongoIdUtils } from '../../utils/MongoIdUtils';
 
 export class CommunityMapper {
 	/**
@@ -13,8 +14,8 @@ export class CommunityMapper {
 	static fromDocument(doc: CommunityDocument): Community {
 		const plain = doc.toObject();
 		return plainToInstance(Community, {
-			id: plain._id.toString(), // ObjectId → string
-			...plain,
+			id: MongoIdUtils.objectIdToString(plain._id), // ObjectId → string
+			name: plain.name,
 			createdAt: plain.createdAt,
 			updatedAt: plain.updatedAt,
 		});
