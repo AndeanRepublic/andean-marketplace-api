@@ -5,6 +5,7 @@ import { SuperfoodProductPresentationRepository } from '../../../app/datastore/s
 import { SuperfoodProductPresentation } from '../../../domain/entities/superfoods/SuperfoodProductPresentation';
 import { SuperfoodProductPresentationDocument } from '../../persistence/superfood/superfoodProductPresentation.schema';
 import { SuperfoodProductPresentationMapper } from '../../services/superfood/SuperfoodProductPresentationMapper';
+import { MongoIdUtils } from '../../utils/MongoIdUtils';
 
 @Injectable()
 export class SuperfoodProductPresentationRepoImpl implements SuperfoodProductPresentationRepository {
@@ -14,7 +15,9 @@ export class SuperfoodProductPresentationRepoImpl implements SuperfoodProductPre
 	) { }
 
 	async getById(id: string): Promise<SuperfoodProductPresentation | null> {
-		const doc = await this.model.findOne({ id }).exec();
+		// Convertir string a ObjectId
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		const doc = await this.model.findById(objectId).exec();
 		if (!doc) return null;
 		return SuperfoodProductPresentationMapper.fromDocument(doc);
 	}
@@ -26,10 +29,8 @@ export class SuperfoodProductPresentationRepoImpl implements SuperfoodProductPre
 
 	async save(presentation: SuperfoodProductPresentation): Promise<SuperfoodProductPresentation> {
 		const persistenceData = SuperfoodProductPresentationMapper.toPersistence(presentation);
-		const newDoc = new this.model({
-			_id: crypto.randomUUID(),
-			...persistenceData,
-		});
+		// MongoDB genera automáticamente _id como ObjectId
+		const newDoc = new this.model(persistenceData);
 		const savedDoc = await newDoc.save();
 		return SuperfoodProductPresentationMapper.fromDocument(savedDoc);
 	}
@@ -38,9 +39,11 @@ export class SuperfoodProductPresentationRepoImpl implements SuperfoodProductPre
 		const persistenceData = SuperfoodProductPresentationMapper.toPersistence(presentation);
 		persistenceData.updatedAt = new Date();
 
+		// Convertir string a ObjectId
+		const objectId = MongoIdUtils.stringToObjectId(presentation.id);
 		const updatedDoc = await this.model
-			.findOneAndUpdate(
-				{ id: presentation.id },
+			.findByIdAndUpdate(
+				objectId,
 				{ $set: persistenceData },
 				{ new: true }
 			)
@@ -54,6 +57,8 @@ export class SuperfoodProductPresentationRepoImpl implements SuperfoodProductPre
 	}
 
 	async delete(id: string): Promise<void> {
-		await this.model.deleteOne({ id }).exec();
+		// Convertir string a ObjectId
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		await this.model.findByIdAndDelete(objectId).exec();
 	}
 }

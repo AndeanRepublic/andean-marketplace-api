@@ -5,6 +5,7 @@ import { SuperfoodTypeRepository } from '../../../app/datastore/superfoods/Super
 import { SuperfoodType } from '../../../domain/entities/superfoods/SuperfoodType';
 import { SuperfoodTypeDocument } from '../../persistence/superfood/superfoodType.schema';
 import { SuperfoodTypeMapper } from '../../services/superfood/SuperfoodTypeMapper';
+import { MongoIdUtils } from '../../utils/MongoIdUtils';
 
 @Injectable()
 export class SuperfoodTypeRepoImpl implements SuperfoodTypeRepository {
@@ -14,7 +15,9 @@ export class SuperfoodTypeRepoImpl implements SuperfoodTypeRepository {
 	) { }
 
 	async getById(id: string): Promise<SuperfoodType | null> {
-		const doc = await this.model.findOne({ id }).exec();
+		// Convertir string a ObjectId
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		const doc = await this.model.findById(objectId).exec();
 		if (!doc) return null;
 		return SuperfoodTypeMapper.fromDocument(doc);
 	}
@@ -26,10 +29,8 @@ export class SuperfoodTypeRepoImpl implements SuperfoodTypeRepository {
 
 	async save(type: SuperfoodType): Promise<SuperfoodType> {
 		const persistenceData = SuperfoodTypeMapper.toPersistence(type);
-		const newDoc = new this.model({
-			_id: crypto.randomUUID(),
-			...persistenceData,
-		});
+		// MongoDB genera automáticamente _id como ObjectId
+		const newDoc = new this.model(persistenceData);
 		const savedDoc = await newDoc.save();
 		return SuperfoodTypeMapper.fromDocument(savedDoc);
 	}
@@ -38,9 +39,11 @@ export class SuperfoodTypeRepoImpl implements SuperfoodTypeRepository {
 		const persistenceData = SuperfoodTypeMapper.toPersistence(type);
 		persistenceData.updatedAt = new Date();
 
+		// Convertir string a ObjectId
+		const objectId = MongoIdUtils.stringToObjectId(type.id);
 		const updatedDoc = await this.model
-			.findOneAndUpdate(
-				{ id: type.id },
+			.findByIdAndUpdate(
+				objectId,
 				{ $set: persistenceData },
 				{ new: true }
 			)
@@ -54,6 +57,8 @@ export class SuperfoodTypeRepoImpl implements SuperfoodTypeRepository {
 	}
 
 	async delete(id: string): Promise<void> {
-		await this.model.deleteOne({ id }).exec();
+		// Convertir string a ObjectId
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		await this.model.findByIdAndDelete(objectId).exec();
 	}
 }
