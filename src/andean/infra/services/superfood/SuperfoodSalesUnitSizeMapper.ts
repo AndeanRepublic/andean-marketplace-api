@@ -2,21 +2,27 @@ import { SuperfoodSalesUnitSizeDocument } from '../../persistence/superfood/supe
 import { SuperfoodSalesUnitSize } from '../../../domain/entities/superfoods/SuperfoodSalesUnitSize';
 import { CreateSuperfoodSalesUnitSizeDto } from '../../controllers/dto/superfoods/CreateSuperfoodSalesUnitSizeDto';
 import { SuperfoodSalesUnitSizeResponse } from '../../../app/modules/SuperfoodSalesUnitSizeResponse';
-import * as crypto from 'crypto';
+import { MongoIdUtils } from '../../utils/MongoIdUtils';
+import { Types } from 'mongoose';
 
 export class SuperfoodSalesUnitSizeMapper {
+	/**
+	 * Convierte documento MongoDB a entidad de dominio
+	 * ObjectId (_id) → string (id)
+	 */
 	static fromDocument(doc: SuperfoodSalesUnitSizeDocument): SuperfoodSalesUnitSize {
+		const plain = doc.toObject();
 		return new SuperfoodSalesUnitSize(
-			doc.id,
-			doc.name,
-			doc.createdAt,
-			doc.updatedAt,
+			MongoIdUtils.objectIdToString(plain._id), // ObjectId → string
+			plain.name,
+			plain.createdAt,
+			plain.updatedAt,
 		);
 	}
 
 	static fromCreateDto(dto: CreateSuperfoodSalesUnitSizeDto): SuperfoodSalesUnitSize {
 		return new SuperfoodSalesUnitSize(
-			crypto.randomUUID(),
+			new Types.ObjectId().toString(), // Generar ObjectId temporal como string
 			dto.name,
 			new Date(),
 			new Date(),
@@ -32,12 +38,16 @@ export class SuperfoodSalesUnitSizeMapper {
 		};
 	}
 
+	/**
+	 * Convierte entidad a formato de persistencia
+	 * Excluye 'id' ya que MongoDB usará _id automáticamente
+	 */
 	static toPersistence(entity: SuperfoodSalesUnitSize): any {
 		return {
-			id: entity.id,
 			name: entity.name,
 			createdAt: entity.createdAt || new Date(),
 			updatedAt: entity.updatedAt || new Date(),
 		};
 	}
+
 }
