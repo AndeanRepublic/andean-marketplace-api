@@ -378,8 +378,14 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 				label: item._id,
 				count: item.count
 			})),
-			communities: communityAggregation,
-			categories: categoryAggregation
+			communities: communityAggregation.map((item) => ({
+				label: item.label,
+				count: item.count
+			})),
+			categories: categoryAggregation.map((item) => ({
+				label: item.label,
+				count: item.count
+			}))
 		};
 
 		return filterCount;
