@@ -17,6 +17,165 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 		super();
 	}
 
+	/**
+	 * Construye las condiciones de filtro de precio para variants y priceInventary
+	 */
+	private buildPriceFilterConditions(minPrice?: number, maxPrice?: number): any[] {
+		const priceConditions: any[] = [];
+
+		// Condición para priceInventary.basePrice
+		const basePriceCondition: any = {};
+		if (minPrice !== undefined) {
+			basePriceCondition['priceInventary.basePrice'] = { $gte: minPrice };
+		}
+		if (maxPrice !== undefined) {
+			basePriceCondition['priceInventary.basePrice'] = {
+				...basePriceCondition['priceInventary.basePrice'],
+				$lte: maxPrice
+			};
+		}
+		if (Object.keys(basePriceCondition).length > 0) {
+			priceConditions.push(basePriceCondition);
+		}
+
+		// Condición para variants.price
+		const variantPriceElemMatch: any = {};
+		if (minPrice !== undefined) {
+			variantPriceElemMatch.price = { $gte: minPrice };
+		}
+		if (maxPrice !== undefined) {
+			variantPriceElemMatch.price = {
+				...variantPriceElemMatch.price,
+				$lte: maxPrice
+			};
+		}
+		if (Object.keys(variantPriceElemMatch).length > 0) {
+			priceConditions.push({
+				variants: { $elemMatch: variantPriceElemMatch }
+			});
+		}
+
+		return priceConditions;
+	}
+
+	/**
+	 * Construye el query base con filtros comunes (categoryId, ownerId, precio)
+	 */
+	private buildBaseQuery(filters?: any): any {
+		const baseQuery: any = {};
+
+		if (filters?.categoryId) {
+			baseQuery.categoryId = filters.categoryId;
+		}
+
+		if (filters?.ownerId) {
+			baseQuery['baseInfo.ownerId'] = filters.ownerId;
+		}
+
+		if (filters?.minPrice !== undefined || filters?.maxPrice !== undefined) {
+			const priceConditions = this.buildPriceFilterConditions(filters.minPrice, filters.maxPrice);
+			if (priceConditions.length > 0) {
+				baseQuery.$or = priceConditions;
+			}
+		}
+
+		return baseQuery;
+	}
+
+	/**
+	 * Construye expresión $ifNull encadenada para múltiples campos variantes
+	 */
+	private buildVariantFieldExpression(fieldNames: string[]): any {
+		if (fieldNames.length === 0) return null;
+		if (fieldNames.length === 1) return `$variants.combination.${fieldNames[0]}`;
+
+		return fieldNames.reduceRight<any>((acc, field, index) => {
+			const fieldPath = `$variants.combination.${field}`;
+			if (index === fieldNames.length - 1) {
+				return { $ifNull: [fieldPath, null] };
+			}
+			return { $ifNull: [fieldPath, acc] };
+		}, null);
+	}
+
+	/**
+	 * Ejecuta una aggregation para contar valores únicos de un campo variante
+	 */
+	private async aggregateVariantField(
+		baseQuery: any,
+		fieldNames: string[]
+	): Promise<Array<{ _id: string; count: number }>> {
+		const fieldExpression = this.buildVariantFieldExpression(fieldNames);
+
+		return await this.textileProductModel.aggregate([
+			{ $match: baseQuery },
+			{ $unwind: '$variants' },
+			{
+				$group: {
+					_id: { $toLower: fieldExpression },
+					count: { $sum: 1 }
+				}
+			},
+			{ $match: { _id: { $ne: null } } },
+			{ $sort: { count: -1 } }
+		]);
+	}
+
+	/**
+	 * Ejecuta una aggregation para contar y hacer lookup de documentos relacionados
+	 */
+	private async aggregateWithLookup(
+		baseQuery: any,
+		sourceField: string,
+		lookupCollection: string,
+		labelField: string
+	): Promise<Array<{ label: string; count: number }>> {
+		return await this.textileProductModel.aggregate([
+			{ $match: baseQuery },
+			{
+				$match: {
+					[sourceField]: { $exists: true, $ne: null }
+				}
+			},
+			{
+				$addFields: {
+					objectId: {
+						$convert: {
+							input: `$${sourceField}`,
+							to: 'objectId',
+							onError: null,
+							onNull: null
+						}
+					}
+				}
+			},
+			{
+				$group: {
+					_id: '$objectId',
+					count: { $sum: 1 }
+				}
+			},
+			{ $match: { _id: { $ne: null } } },
+			{ $sort: { count: -1 } },
+			{
+				$lookup: {
+					from: lookupCollection,
+					localField: '_id',
+					foreignField: '_id',
+					as: 'doc'
+				}
+			},
+			{ $unwind: { path: '$doc', preserveNullAndEmptyArrays: false } },
+			{
+				$project: {
+					_id: 0,
+					label: `$doc.${labelField}`,
+					count: 1
+				}
+			}
+		]);
+	}
+
 	async getAllTextileProducts(): Promise<TextileProduct[]> {
 		const docs = await this.textileProductModel.find().exec();
 		return docs.map((doc) => TextileProductMapper.fromDocument(doc));
@@ -59,17 +218,7 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 	}
 
 	async getAllWithFilters(filters: any): Promise<{ products: TextileProduct[]; total: number }> {
-		const query: any = {};
-
-		// Filtro por categoryId
-		if (filters.categoryId) {
-			query.categoryId = filters.categoryId;
-		}
-
-		// Filtro por ownerId
-		if (filters.ownerId) {
-			query['baseInfo.ownerId'] = filters.ownerId;
-		}
+		const query = this.buildBaseQuery(filters);
 
 		// Filtro por color en variants
 		if (filters.color) {
@@ -113,47 +262,6 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 			}
 		}
 
-		// Filtro por rango de precios (variants.price o priceInventary.basePrice)
-		if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
-			const priceConditions: any[] = [];
-
-			// Condición para priceInventary.basePrice
-			const basePriceCondition: any = {};
-			if (filters.minPrice !== undefined) {
-				basePriceCondition['priceInventary.basePrice'] = { $gte: filters.minPrice };
-			}
-			if (filters.maxPrice !== undefined) {
-				basePriceCondition['priceInventary.basePrice'] = {
-					...basePriceCondition['priceInventary.basePrice'],
-					$lte: filters.maxPrice
-				};
-			}
-			if (Object.keys(basePriceCondition).length > 0) {
-				priceConditions.push(basePriceCondition);
-			}
-
-			// Condición para variants.price
-			const variantPriceElemMatch: any = {};
-			if (filters.minPrice !== undefined) {
-				variantPriceElemMatch.price = { $gte: filters.minPrice };
-			}
-			if (filters.maxPrice !== undefined) {
-				variantPriceElemMatch.price = {
-					...variantPriceElemMatch.price,
-					$lte: filters.maxPrice
-				};
-			}
-			if (Object.keys(variantPriceElemMatch).length > 0) {
-				priceConditions.push({
-					variants: { $elemMatch: variantPriceElemMatch }
-				});
-			}
-
-			if (priceConditions.length > 0) {
-				query.$or = priceConditions;
-			}
-		}
-
 		// Paginación
 		const page = filters.page || 1;
 		const perPage = filters.perPage || 10;
@@ -175,199 +283,35 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 	}
 
 	async getFilterCounts(filters?: any): Promise<FilterCount> {
-		// Construir query base sin filtros de color, size para el conteo
-		const baseQuery: any = {};
-
-		// Mantener filtros de categoryId, ownerId y precio si existen
-		if (filters?.categoryId) {
-			baseQuery.categoryId = filters.categoryId;
-		}
-
-		if (filters?.ownerId) {
-			baseQuery['baseInfo.ownerId'] = filters.ownerId;
-		}
-
-		if (filters?.minPrice !== undefined || filters?.maxPrice !== undefined) {
-			const priceConditions: any[] = [];
-
-			const basePriceCondition: any = {};
-			if (filters?.minPrice !== undefined) {
-				basePriceCondition['priceInventary.basePrice'] = { $gte: filters.minPrice };
-			}
-			if (filters?.maxPrice !== undefined) {
-				basePriceCondition['priceInventary.basePrice'] = {
-					...basePriceCondition['priceInventary.basePrice'],
-					$lte: filters.maxPrice
-				};
-			}
-			if (Object.keys(basePriceCondition).length > 0) {
-				priceConditions.push(basePriceCondition);
-			}
-
-			const variantPriceElemMatch: any = {};
-			if (filters?.minPrice !== undefined) {
-				variantPriceElemMatch.price = { $gte: filters.minPrice };
-			}
-			if (filters?.maxPrice !== undefined) {
-				variantPriceElemMatch.price = {
-					...variantPriceElemMatch.price,
-					$lte: filters.maxPrice
-				};
-			}
-			if (Object.keys(variantPriceElemMatch).length > 0) {
-				priceConditions.push({
-					variants: { $elemMatch: variantPriceElemMatch }
-				});
-			}
-
-			if (priceConditions.length > 0) {
-				baseQuery.$or = priceConditions;
-			}
-		}
+		const baseQuery = this.buildBaseQuery(filters);
 
 		// Aggregation para contar colores
-		const colorAggregation = await this.textileProductModel.aggregate([
-			{ $match: baseQuery },
-			{ $unwind: '$variants' },
-			{
-				$group: {
-					_id: {
-						$toLower: {
-							$ifNull: [
-								'$variants.combination.color',
-								{ $ifNull: ['$variants.combination.Color', null] }
-							]
-						}
-					},
-					count: { $sum: 1 }
-				}
-			},
-			{ $match: { _id: { $ne: null } } },
-			{ $sort: { count: -1 } }
-		]);
+		const colorAggregation = await this.aggregateVariantField(
+			baseQuery,
+			['color', 'Color']
+		);
 
 		// Aggregation para contar tallas/sizes
-		const sizeAggregation = await this.textileProductModel.aggregate([
-			{ $match: baseQuery },
-			{ $unwind: '$variants' },
-			{
-				$group: {
-					_id: {
-						$toLower: {
-							$ifNull: [
-								'$variants.combination.size',
-								{
-									$ifNull: [
-										'$variants.combination.Size',
-										{
-											$ifNull: [
-												'$variants.combination.talla',
-												{ $ifNull: ['$variants.combination.Talla', null] }
-											]
-										}
-									]
-								}
-							]
-						}
-					},
-					count: { $sum: 1 }
-				}
-			},
-			{ $match: { _id: { $ne: null } } },
-			{ $sort: { count: -1 } }
-		]);
+		const sizeAggregation = await this.aggregateVariantField(
+			baseQuery,
+			['size', 'Size', 'talla', 'Talla']
+		);
 
 		// Aggregation para contar comunidades
-		const communityAggregation = await this.textileProductModel.aggregate([
-			{ $match: baseQuery },
-			{
-				$match: {
-					'detailTraceability.communityId': { $exists: true, $ne: null }
-				}
-			},
-			{
-				$addFields: {
-					communityObjectId: {
-						$convert: {
-							input: '$detailTraceability.communityId',
-							to: 'objectId',
-							onError: null,
-							onNull: null
-						}
-					}
-				}
-			},
-			{
-				$group: {
-					_id: '$communityObjectId',
-					count: { $sum: 1 }
-				}
-			},
-			{ $match: { _id: { $ne: null } } },
-			{ $sort: { count: -1 } },
-			{
-				$lookup: {
-					from: 'communities',
-					localField: '_id',
-					foreignField: '_id',
-					as: 'community'
-				}
-			},
-			{ $unwind: { path: '$community', preserveNullAndEmptyArrays: false } },
-			{
-				$project: {
-					_id: 0,
-					label: '$community.name',
-					count: 1
-				}
-			}
-		]);
+		const communityAggregation = await this.aggregateWithLookup(
+			baseQuery,
+			'detailTraceability.communityId',
+			'communities',
+			'name'
+		);
 
 		// Aggregation para contar categorías
-		const categoryAggregation = await this.textileProductModel.aggregate([
-			{ $match: baseQuery },
-			{
-				$match: {
-					categoryId: { $exists: true, $ne: null }
-				}
-			},
-			{
-				$addFields: {
-					categoryObjectId: {
-						$convert: {
-							input: '$categoryId',
-							to: 'objectId',
-							onError: null,
-							onNull: null
-						}
-					}
-				}
-			},
-			{
-				$group: {
-					_id: '$categoryObjectId',
-					count: { $sum: 1 }
-				}
-			},
-			{ $match: { _id: { $ne: null } } },
-			{ $sort: { count: -1 } },
-			{
-				$lookup: {
-					from: 'textilecategories',
-					localField: '_id',
-					foreignField: '_id',
-					as: 'category'
-				}
-			},
-			{ $unwind: { path: '$category', preserveNullAndEmptyArrays: false } },
-			{
-				$project: {
-					_id: 0,
-					label: '$category.name',
-					count: 1
-				}
-			}
-		]);
+		const categoryAggregation = await this.aggregateWithLookup(
+			baseQuery,
+			'categoryId',
+			'textilecategories',
+			'name'
+		);
 
 		const filterCount: FilterCount = {
 			colors: colorAggregation.map((item) => ({
