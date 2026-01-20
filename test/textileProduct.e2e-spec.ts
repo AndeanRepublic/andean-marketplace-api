@@ -153,6 +153,26 @@ describe('TextileProductController (e2e)', () => {
 			page: 1,
 			per_page: 1,
 		},
+		filterCount: {
+			colors: [
+				{ label: 'rojo', count: 15 },
+				{ label: 'azul', count: 10 },
+				{ label: 'verde', count: 8 },
+			],
+			sizes: [
+				{ label: 'm', count: 12 },
+				{ label: 'l', count: 18 },
+				{ label: 'xl', count: 5 },
+			],
+			communities: [
+				{ label: 'Comunidad Andina Norte', count: 20 },
+				{ label: 'Comunidad Textil Sur', count: 13 },
+			],
+			categories: [
+				{ label: 'Ponchos', count: 25 },
+				{ label: 'Mantas', count: 8 },
+			],
+		},
 	};
 
 	// Helper para crear mock de use case
@@ -401,6 +421,58 @@ describe('TextileProductController (e2e)', () => {
 			expect(response.body.pagination).toHaveProperty('per_page');
 		});
 
+		it('should return filterCount with all products', async () => {
+			jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(mockPaginatedResponse);
+
+			const response = await request(app.getHttpServer())
+				.get('/textile-products')
+				.expect(HttpStatus.OK);
+
+			expect(response.body).toHaveProperty('filterCount');
+			expect(response.body.filterCount).toHaveProperty('colors');
+			expect(response.body.filterCount).toHaveProperty('sizes');
+			expect(response.body.filterCount).toHaveProperty('communities');
+			expect(response.body.filterCount).toHaveProperty('categories');
+			expect(Array.isArray(response.body.filterCount.colors)).toBe(true);
+			expect(Array.isArray(response.body.filterCount.sizes)).toBe(true);
+			expect(Array.isArray(response.body.filterCount.communities)).toBe(true);
+			expect(Array.isArray(response.body.filterCount.categories)).toBe(true);
+		});
+
+		it('should return filterCount items with label and count properties', async () => {
+			jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(mockPaginatedResponse);
+
+			const response = await request(app.getHttpServer())
+				.get('/textile-products')
+				.expect(HttpStatus.OK);
+
+			// Verificar estructura de colors
+			if (response.body.filterCount.colors.length > 0) {
+				expect(response.body.filterCount.colors[0]).toHaveProperty('label');
+				expect(response.body.filterCount.colors[0]).toHaveProperty('count');
+				expect(typeof response.body.filterCount.colors[0].label).toBe('string');
+				expect(typeof response.body.filterCount.colors[0].count).toBe('number');
+			}
+
+			// Verificar estructura de sizes
+			if (response.body.filterCount.sizes.length > 0) {
+				expect(response.body.filterCount.sizes[0]).toHaveProperty('label');
+				expect(response.body.filterCount.sizes[0]).toHaveProperty('count');
+			}
+
+			// Verificar estructura de communities
+			if (response.body.filterCount.communities.length > 0) {
+				expect(response.body.filterCount.communities[0]).toHaveProperty('label');
+				expect(response.body.filterCount.communities[0]).toHaveProperty('count');
+			}
+
+			// Verificar estructura de categories
+			if (response.body.filterCount.categories.length > 0) {
+				expect(response.body.filterCount.categories[0]).toHaveProperty('label');
+				expect(response.body.filterCount.categories[0]).toHaveProperty('count');
+			}
+		});
+
 		it('should get textile products with pagination', async () => {
 			const paginatedResponse = {
 				products: [mockTextileProduct],
@@ -409,6 +481,7 @@ describe('TextileProductController (e2e)', () => {
 					page: 2,
 					per_page: 20,
 				},
+				filterCount: mockPaginatedResponse.filterCount,
 			};
 
 			jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(paginatedResponse);
@@ -422,6 +495,7 @@ describe('TextileProductController (e2e)', () => {
 			expect(response.body.pagination).toHaveProperty('page');
 			expect(response.body.pagination).toHaveProperty('per_page');
 			expect(response.body.pagination).toHaveProperty('total');
+			expect(response.body).toHaveProperty('filterCount');
 		});
 
 		it('should call the use case with correct pagination params', async () => {
@@ -438,6 +512,12 @@ describe('TextileProductController (e2e)', () => {
 			const filteredResponse = {
 				products: [mockTextileProduct],
 				pagination: { total: 1, page: 1, per_page: 10 },
+				filterCount: {
+					colors: [{ label: 'rojo', count: 15 }],
+					sizes: [{ label: 'm', count: 5 }, { label: 'l', count: 10 }],
+					communities: [],
+					categories: [{ label: 'Ponchos', count: 15 }],
+				},
 			};
 
 			jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(filteredResponse);
@@ -448,12 +528,19 @@ describe('TextileProductController (e2e)', () => {
 
 			expect(response.body).toHaveProperty('products');
 			expect(response.body.products).toHaveLength(1);
+			expect(response.body).toHaveProperty('filterCount');
 		});
 
 		it('should filter textile products by size', async () => {
 			const filteredResponse = {
 				products: [mockTextileProduct],
 				pagination: { total: 1, page: 1, per_page: 10 },
+				filterCount: {
+					colors: [{ label: 'rojo', count: 5 }, { label: 'azul', count: 3 }],
+					sizes: [{ label: 'm', count: 8 }],
+					communities: [],
+					categories: [],
+				},
 			};
 
 			jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(filteredResponse);
@@ -463,12 +550,19 @@ describe('TextileProductController (e2e)', () => {
 				.expect(HttpStatus.OK);
 
 			expect(response.body).toHaveProperty('products');
+			expect(response.body).toHaveProperty('filterCount');
 		});
 
 		it('should filter textile products by price range', async () => {
 			const filteredResponse = {
 				products: [mockTextileProduct],
 				pagination: { total: 1, page: 1, per_page: 10 },
+				filterCount: {
+					colors: [{ label: 'rojo', count: 5 }],
+					sizes: [{ label: 'm', count: 5 }],
+					communities: [{ label: 'Comunidad Andina Norte', count: 5 }],
+					categories: [{ label: 'Ponchos', count: 5 }],
+				},
 			};
 
 			jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(filteredResponse);
@@ -479,62 +573,92 @@ describe('TextileProductController (e2e)', () => {
 
 			expect(response.body).toHaveProperty('products');
 			expect(response.body.pagination).toHaveProperty('total');
+			expect(response.body).toHaveProperty('filterCount');
+			// Los contadores no deberían estar vacíos al filtrar solo por precio
+			expect(response.body.filterCount.colors.length).toBeGreaterThan(0);
 		});
 
 		it('should filter textile products by color and size combined', async () => {
 			const filteredResponse = {
 				products: [mockTextileProduct],
 				pagination: { total: 1, page: 1, per_page: 10 },
+				filterCount: {
+					colors: [{ label: 'rojo', count: 3 }],
+					sizes: [{ label: 'l', count: 3 }],
+					communities: [],
+					categories: [],
+				},
 			};
 
 			const spy = jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(filteredResponse);
 
-			await request(app.getHttpServer())
+			const response = await request(app.getHttpServer())
 				.get('/textile-products?color=rojo&size=L')
 				.expect(HttpStatus.OK);
 
 			expect(spy).toHaveBeenCalledWith({ color: 'rojo', size: 'L' });
+			expect(response.body).toHaveProperty('filterCount');
 		});
 
 		it('should filter textile products by category_id', async () => {
 			const filteredResponse = {
 				products: [mockTextileProduct],
 				pagination: { total: 1, page: 1, per_page: 10 },
+				filterCount: {
+					colors: [{ label: 'rojo', count: 10 }],
+					sizes: [{ label: 'm', count: 10 }],
+					communities: [],
+					categories: [{ label: 'Ponchos', count: 10 }],
+				},
 			};
 
 			const spy = jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(filteredResponse);
 
-			await request(app.getHttpServer())
+			const response = await request(app.getHttpServer())
 				.get('/textile-products?category_id=category-poncho-001')
 				.expect(HttpStatus.OK);
 
 			expect(spy).toHaveBeenCalledWith({ categoryId: 'category-poncho-001' });
+			expect(response.body).toHaveProperty('filterCount');
 		});
 
 		it('should filter textile products by owner_id', async () => {
 			const filteredResponse = {
 				products: [mockTextileProduct],
 				pagination: { total: 1, page: 1, per_page: 10 },
+				filterCount: {
+					colors: [{ label: 'rojo', count: 5 }],
+					sizes: [{ label: 'l', count: 5 }],
+					communities: [{ label: 'Comunidad Textil Sur', count: 5 }],
+					categories: [],
+				},
 			};
 
 			const spy = jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(filteredResponse);
 
-			await request(app.getHttpServer())
+			const response = await request(app.getHttpServer())
 				.get('/textile-products?owner_id=shop-123')
 				.expect(HttpStatus.OK);
 
 			expect(spy).toHaveBeenCalledWith({ ownerId: 'shop-123' });
+			expect(response.body).toHaveProperty('filterCount');
 		});
 
 		it('should combine multiple filters (category, color, size, price, pagination)', async () => {
 			const filteredResponse = {
 				products: [mockTextileProduct],
 				pagination: { total: 1, page: 2, per_page: 20 },
+				filterCount: {
+					colors: [{ label: 'rojo', count: 1 }],
+					sizes: [{ label: 'l', count: 1 }],
+					communities: [],
+					categories: [{ label: 'Ponchos', count: 1 }],
+				},
 			};
 
 			const spy = jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(filteredResponse);
 
-			await request(app.getHttpServer())
+			const response = await request(app.getHttpServer())
 				.get('/textile-products?category_id=category-poncho-001&color=rojo&size=L&min_price=100&max_price=200&page=2&per_page=20')
 				.expect(HttpStatus.OK);
 
@@ -547,16 +671,61 @@ describe('TextileProductController (e2e)', () => {
 				page: 2,
 				perPage: 20,
 			});
+			expect(response.body).toHaveProperty('filterCount');
 		});
 
 		it('should work without any filters (backward compatibility)', async () => {
 			const spy = jest.spyOn(getAllTextileProductsUseCase, 'handle');
 
-			await request(app.getHttpServer())
+			const response = await request(app.getHttpServer())
 				.get('/textile-products')
 				.expect(HttpStatus.OK);
 
 			expect(spy).toHaveBeenCalledWith(undefined);
+			expect(response.body).toHaveProperty('filterCount');
+		});
+
+		it('should include filterCount when filtering by community through detailTraceability', async () => {
+			const filteredResponse = {
+				products: [mockTextileProduct],
+				pagination: { total: 1, page: 1, per_page: 10 },
+				filterCount: {
+					colors: [{ label: 'rojo', count: 5 }],
+					sizes: [{ label: 'm', count: 5 }],
+					communities: [{ label: 'Comunidad Andina Norte', count: 5 }],
+					categories: [{ label: 'Ponchos', count: 5 }],
+				},
+			};
+
+			jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(filteredResponse);
+
+			const response = await request(app.getHttpServer())
+				.get('/textile-products')
+				.expect(HttpStatus.OK);
+
+			expect(response.body.filterCount).toHaveProperty('communities');
+			expect(Array.isArray(response.body.filterCount.communities)).toBe(true);
+		});
+
+		it('should return empty arrays in filterCount when no products match filters', async () => {
+			const emptyResponse = {
+				products: [],
+				pagination: { total: 0, page: 1, per_page: 10 },
+				filterCount: {
+					colors: [],
+					sizes: [],
+					communities: [],
+					categories: [],
+				},
+			};
+
+			jest.spyOn(getAllTextileProductsUseCase, 'handle').mockImplementationOnce(() => {
+				throw { statusCode: 404, message: 'No textile products found with the specified filters' };
+			});
+
+			await request(app.getHttpServer())
+				.get('/textile-products?color=nonexistent')
+				.expect(HttpStatus.NOT_FOUND);
 		});
 	});
 
