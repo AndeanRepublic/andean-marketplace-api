@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { instanceToPlain } from 'class-transformer';
-import { CommunityRepository as CommunityRepositoryBase } from '../../app/datastore/community.repo';
-import { Community } from '../../domain/entities/community/Community';
-import { CommunityDocument } from '../persistence/community.schema';
-import { CommunityMapper } from '../services/CommunityMapper';
-import { MongoIdUtils } from '../utils/MongoIdUtils';
+import { CommunityRepository as CommunityRepositoryBase } from '../../../app/datastore/community/community.repo';
+import { Community } from '../../../domain/entities/community/Community';
+import { CommunityDocument } from '../../persistence/community/community.schema';
+import { CommunityMapper } from '../../services/community/CommunityMapper';
+import { MongoIdUtils } from '../../utils/MongoIdUtils';
 
 @Injectable()
 export class CommunityRepositoryImpl extends CommunityRepositoryBase {

@@ -18,7 +18,7 @@ import { TextileCertificationRepository } from '../../datastore/textileProducts/
 import { ShopRepository } from '../../datastore/Shop.repo';
 import { OriginProductCommunityRepository } from '../../datastore/originProductCommunity.repo';
 import { OwnerType } from 'src/andean/domain/enums/OwnerType';
-import { CommunityRepository } from '../../datastore/community.repo';
+import { CommunityRepository } from '../../datastore/community/community.repo';
 import { ColorOptionAlternativeRepository } from '../../datastore/textileProducts/ColorOptionAlternative.repo';
 import { SizeOptionAlternativeRepository } from '../../datastore/textileProducts/SizeOptionAlternative.repo';
 

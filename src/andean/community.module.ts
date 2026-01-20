@@ -2,12 +2,12 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 // Schema
-import { CommunitySchema } from './infra/persistence/community.schema';
+import { CommunitySchema } from './infra/persistence/community/community.schema';
 import { SealSchema } from './infra/persistence/community/Seal.schema';
 
 // Repository
-import { CommunityRepository } from './app/datastore/community.repo';
-import { CommunityRepositoryImpl } from './infra/datastore/community.repo.impl';
+import { CommunityRepository } from './app/datastore/community/community.repo';
+import { CommunityRepositoryImpl } from './infra/datastore/community/community.repo.impl';
 import { SealRepository } from './app/datastore/community/Seal.repo';
 import { SealRepositoryImpl } from './infra/datastore/community/Seal.repo.impl';
 

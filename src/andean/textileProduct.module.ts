@@ -87,9 +87,9 @@ import { UpdateSizeOptionAlternativeUseCase } from './app/use_cases/textileProdu
 import { DeleteSizeOptionAlternativeUseCase } from './app/use_cases/textileProducts/DeleteSizeOptionAlternativeUseCase';
 import { SizeOptionAlternativeRepository } from './app/datastore/textileProducts/SizeOptionAlternative.repo';
 import { SizeOptionAlternativeRepositoryImpl } from './infra/datastore/textileProducts/SizeOptionAlternative.repo.impl';
-import { CommunityRepositoryImpl } from './infra/datastore/community.repo.impl';
-import { CommunityRepository } from './app/datastore/community.repo';
-import { CommunitySchema } from './infra/persistence/community.schema';
+import { CommunityRepositoryImpl } from './infra/datastore/community/community.repo.impl';
+import { CommunityRepository } from './app/datastore/community/community.repo';
+import { CommunitySchema } from './infra/persistence/community/community.schema';
 import { ReviewSchema } from './infra/persistence/Review.schema';
 import { ReviewRepository } from './app/datastore/Review.repo';
 import { ReviewRepositoryImpl } from './infra/datastore/Review.repo.impl';

@@ -1,9 +1,9 @@
 import { Injectable, BadRequestException, Inject, NotFoundException } from '@nestjs/common';
-import { CommunityRepository } from '../../datastore/community.repo';
+import { CommunityRepository } from '../../datastore/community/community.repo';
 import { SealRepository } from '../../datastore/community/Seal.repo';
 import { Community } from '../../../domain/entities/community/Community';
 import { CreateCommunityDto } from '../../../infra/controllers/dto/community/CreateCommunityDto';
-import { CommunityMapper } from '../../../infra/services/CommunityMapper';
+import { CommunityMapper } from '../../../infra/services/community/CommunityMapper';
 
 @Injectable()
 export class CreateCommunityUseCase {
