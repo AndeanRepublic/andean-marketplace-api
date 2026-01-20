@@ -1,5 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { TextileProductRepository } from '../../datastore/textileProducts/TextileProduct.repo';
+import { TextileProductRepository, ProductFilters } from '../../datastore/textileProducts/TextileProduct.repo';
 import { TextileProduct } from 'src/andean/domain/entities/textileProducts/TextileProduct';
 import { PaginatedProductsResponse } from '../../modules/PaginatedProductsResponse';
 
@@ -10,9 +10,9 @@ export class GetAllTextileProductsUseCase {
 		private readonly textileProductRepository: TextileProductRepository,
 	) { }
 
-	async handle(page?: number, perPage?: number): Promise<PaginatedProductsResponse<TextileProduct>> {
-		// Si no se envían parámetros de paginación, retornar todos con formato paginado
-		if (!page || !perPage) {
+	async handle(filters?: ProductFilters): Promise<PaginatedProductsResponse<TextileProduct>> {
+		// Si no hay filtros, usar método legacy
+		if (!filters || Object.keys(filters).length === 0) {
 			const products = await this.textileProductRepository.getAllTextileProducts();
 			if (products.length === 0) {
 				throw new NotFoundException('No textile products found');
@@ -24,13 +24,20 @@ export class GetAllTextileProductsUseCase {
 				pagination: {
 					total,
 					page: 1,
-					per_page: total, // per_page igual al total
+					per_page: total,
 				},
 			};
 		}
 
-		// Con paginación
-		const { products, total } = await this.textileProductRepository.getAllWithPagination(page, perPage);
+		// Con filtros (incluye paginación, color, size, precios, categoryId, ownerId)
+		const { products, total } = await this.textileProductRepository.getAllWithFilters(filters);
+
+		if (products.length === 0) {
+			throw new NotFoundException('No textile products found with the specified filters');
+		}
+
+		const page = filters.page || 1;
+		const perPage = filters.perPage || 10;
 
 		return {
 			products,
