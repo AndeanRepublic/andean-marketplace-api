@@ -3,10 +3,13 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 // Schema
 import { CommunitySchema } from './infra/persistence/community.schema';
+import { SealSchema } from './infra/persistence/community/Seal.schema';
 
 // Repository
 import { CommunityRepository } from './app/datastore/community.repo';
 import { CommunityRepositoryImpl } from './infra/datastore/community.repo.impl';
+import { SealRepository } from './app/datastore/community/Seal.repo';
+import { SealRepositoryImpl } from './infra/datastore/community/Seal.repo.impl';
 
 // Use Cases
 import { CreateCommunityUseCase } from './app/use_cases/community/CreateCommunityUseCase';
@@ -14,6 +17,11 @@ import { UpdateCommunityUseCase } from './app/use_cases/community/UpdateCommunit
 import { GetCommunityByIdUseCase } from './app/use_cases/community/GetCommunityByIdUseCase';
 import { ListCommunityUseCase } from './app/use_cases/community/ListCommunityUseCase';
 import { DeleteCommunityUseCase } from './app/use_cases/community/DeleteCommunityUseCase';
+import { CreateSealUseCase } from './app/use_cases/community/CreateSealUseCase';
+import { GetAllSealsUseCase } from './app/use_cases/community/GetAllSealsUseCase';
+import { GetByIdSealUseCase } from './app/use_cases/community/GetByIdSealUseCase';
+import { UpdateSealUseCase } from './app/use_cases/community/UpdateSealUseCase';
+import { DeleteSealUseCase } from './app/use_cases/community/DeleteSealUseCase';
 
 // Controller
 import { CommunityController } from './infra/controllers/community.controller';
@@ -22,6 +30,7 @@ import { CommunityController } from './infra/controllers/community.controller';
 	imports: [
 		MongooseModule.forFeature([
 			{ name: 'Community', schema: CommunitySchema },
+			{ name: 'Seal', schema: SealSchema },
 		]),
 	],
 	controllers: [CommunityController],
@@ -31,6 +40,10 @@ import { CommunityController } from './infra/controllers/community.controller';
 			provide: CommunityRepository,
 			useClass: CommunityRepositoryImpl,
 		},
+		{
+			provide: SealRepository,
+			useClass: SealRepositoryImpl,
+		},
 
 		// Use Cases
 		CreateCommunityUseCase,
@@ -38,7 +51,12 @@ import { CommunityController } from './infra/controllers/community.controller';
 		GetCommunityByIdUseCase,
 		ListCommunityUseCase,
 		DeleteCommunityUseCase,
+		CreateSealUseCase,
+		GetAllSealsUseCase,
+		GetByIdSealUseCase,
+		UpdateSealUseCase,
+		DeleteSealUseCase,
 	],
-	exports: [CommunityRepository],
+	exports: [CommunityRepository, SealRepository],
 })
 export class CommunityModule { }
