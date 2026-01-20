@@ -12,7 +12,7 @@ export class CreateTextileCertificationUseCase {
   ) {}
 
   async handle(dto: CreateTextileCertificationDto): Promise<TextileCertification> {
-    const certificationFound = await this.textileCertificationRepository.getTextileCertificationById(
+    const certificationFound = await this.textileCertificationRepository.getTextileCertificationByName(
       dto.name,
     );
     if (certificationFound) {

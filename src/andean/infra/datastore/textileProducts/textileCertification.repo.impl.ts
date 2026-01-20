@@ -31,6 +31,15 @@ export class TextileCertificationRepositoryImpl extends TextileCertificationRepo
 		return doc ? TextileCertificationMapper.fromDocument(doc) : null;
 	}
 
+	async getTextileCertificationByName(
+		name: string,
+	): Promise<TextileCertification | null> {
+		const document = await this.textileCertificationModel
+			.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } })
+			.exec();
+		return document ? TextileCertificationMapper.fromDocument(document) : null;
+	}
+
 	async saveTextileCertification(
 		certification: TextileCertification,
 	): Promise<TextileCertification> {
