@@ -76,6 +76,15 @@ import { CreateManyColorOptionAlternativesUseCase } from 'src/andean/app/use_cas
 import { CreateManyColorOptionAlternativesDto } from './dto/textileProducts/CreateManyColorOptionAlternativesDto';
 import { PaginatedProductsResponse } from 'src/andean/app/modules/PaginatedProductsResponse';
 import { TextileProductListItem } from 'src/andean/app/modules/TextileProductListItemResponse';
+import { CreateSizeOptionAlternativeUseCase } from 'src/andean/app/use_cases/textileProducts/CreateSizeOptionAlternativeUseCase';
+import { SizeOptionAlternative } from 'src/andean/domain/entities/textileProducts/SizeOptionAlternative';
+import { CreateSizeOptionAlternativeDto } from './dto/textileProducts/CreateSizeOptionAlternativeDto';
+import { GetAllSizeOptionAlternativesUseCase } from 'src/andean/app/use_cases/textileProducts/GetAllSizeOptionAlternativesUseCase';
+import { GetByIdSizeOptionAlternativeUseCase } from 'src/andean/app/use_cases/textileProducts/GetByIdSizeOptionAlternativeUseCase';
+import { UpdateSizeOptionAlternativeUseCase } from 'src/andean/app/use_cases/textileProducts/UpdateSizeOptionAlternativeUseCase';
+import { DeleteSizeOptionAlternativeUseCase } from 'src/andean/app/use_cases/textileProducts/DeleteSizeOptionAlternativeUseCase';
+import { CreateManySizeOptionAlternativesUseCase } from 'src/andean/app/use_cases/textileProducts/CreateManySizeOptionAlternativesUseCase';
+import { CreateManySizeOptionAlternativesDto } from './dto/textileProducts/CreateManySizeOptionAlternativesDto';
 
 const path_textile_product_id = '/:id';
 const path_textile_categories = '/categories';
@@ -97,6 +106,11 @@ const path_textile_color_option_alternatives_id =
 	'/color-option-alternatives/:id';
 const path_textile_color_option_alternatives_bulk =
 	'/color-option-alternatives/bulk';
+const path_textile_size_option_alternatives = '/size-option-alternatives';
+const path_textile_size_option_alternatives_id =
+	'/size-option-alternatives/:id';
+const path_textile_size_option_alternatives_bulk =
+	'/size-option-alternatives/bulk';
 
 @Controller('textile-products')
 export class TextileProductController {
@@ -147,6 +161,12 @@ export class TextileProductController {
 		private readonly getByIdColorOptionAlternativeUseCase: GetByIdColorOptionAlternativeUseCase,
 		private readonly deleteColorOptionAlternativeUseCase: DeleteColorOptionAlternativeUseCase,
 		private readonly createManyColorOptionAlternativesUseCase: CreateManyColorOptionAlternativesUseCase,
+		private readonly createSizeOptionAlternativeUseCase: CreateSizeOptionAlternativeUseCase,
+		private readonly createManySizeOptionAlternativesUseCase: CreateManySizeOptionAlternativesUseCase,
+		private readonly updateSizeOptionAlternativeUseCase: UpdateSizeOptionAlternativeUseCase,
+		private readonly getAllSizeOptionAlternativesUseCase: GetAllSizeOptionAlternativesUseCase,
+		private readonly getByIdSizeOptionAlternativeUseCase: GetByIdSizeOptionAlternativeUseCase,
+		private readonly deleteSizeOptionAlternativeUseCase: DeleteSizeOptionAlternativeUseCase,
 	) { }
 
 	@Post(path_textile_categories)
@@ -458,5 +478,44 @@ export class TextileProductController {
 	@Delete(path_textile_color_option_alternatives_id)
 	async deleteColorOptionAlternative(@Param('id') id: string): Promise<void> {
 		return this.deleteColorOptionAlternativeUseCase.handle(id);
+	}
+
+	@Post(path_textile_size_option_alternatives)
+	async createSizeOptionAlternative(
+		@Body() body: CreateSizeOptionAlternativeDto,
+	): Promise<SizeOptionAlternative> {
+		return this.createSizeOptionAlternativeUseCase.handle(body);
+	}
+
+	@Post(path_textile_size_option_alternatives_bulk)
+	async createManySizeOptionAlternatives(
+		@Body() body: CreateManySizeOptionAlternativesDto,
+	): Promise<SizeOptionAlternative[]> {
+		return this.createManySizeOptionAlternativesUseCase.handle(body);
+	}
+
+	@Put(path_textile_size_option_alternatives_id)
+	async updateSizeOptionAlternative(
+		@Param('id') id: string,
+		@Body() body: CreateSizeOptionAlternativeDto,
+	): Promise<SizeOptionAlternative> {
+		return this.updateSizeOptionAlternativeUseCase.handle(id, body);
+	}
+
+	@Get(path_textile_size_option_alternatives)
+	async getAllSizeOptionAlternatives(): Promise<SizeOptionAlternative[]> {
+		return this.getAllSizeOptionAlternativesUseCase.handle();
+	}
+
+	@Get(path_textile_size_option_alternatives_id)
+	async getByIdSizeOptionAlternative(
+		@Param('id') id: string,
+	): Promise<SizeOptionAlternative> {
+		return this.getByIdSizeOptionAlternativeUseCase.handle(id);
+	}
+
+	@Delete(path_textile_size_option_alternatives_id)
+	async deleteSizeOptionAlternative(@Param('id') id: string): Promise<void> {
+		return this.deleteSizeOptionAlternativeUseCase.handle(id);
 	}
 }

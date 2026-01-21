@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TextileCategorySchema } from './infra/persistence/textileProducts/textileCategory.schema';
 import { TextileTypeSchema } from './infra/persistence/textileProducts/textileType.schema';
@@ -9,6 +9,7 @@ import { TextilePrincipalUseSchema } from './infra/persistence/textileProducts/t
 import { TextileProductSchema } from './infra/persistence/textileProducts/textileProduct.schema';
 import { TextileCertificationSchema } from './infra/persistence/textileProducts/textileCertification.schema';
 import { ColorOptionAlternativeSchema } from './infra/persistence/textileProducts/ColorOptionAlternative.schema';
+import { SizeOptionAlternativeSchema } from './infra/persistence/textileProducts/SizeOptionAlternative.schema';
 import { UsersModule } from './users.module';
 import { ShopsModule } from './shop.module';
 import { OriginProductModule } from './originProduct.module';
@@ -22,6 +23,7 @@ import { TextileStyleRepositoryImpl } from './infra/datastore/textileProducts/te
 import { TextileSubcategoryRepository } from './app/datastore/textileProducts/TextileSubcategory.repo';
 import { TextileSubcategoryRepositoryImpl } from './infra/datastore/textileProducts/textileSubcategory.repo.impl';
 import { TextileProductController } from './infra/controllers/textileProduct.controller';
+import { ReviewController } from './infra/controllers/Review.controller';
 import { UpdateTextileCategoryUseCase } from './app/use_cases/textileProducts/UpdateTextileCategoryUseCase';
 import { GetAllTextileCategoriesUseCase } from './app/use_cases/textileProducts/GetAllTextileCategoriesUseCase';
 import { GetByIdTextileCategoryUseCase } from './app/use_cases/textileProducts/GetByIdTextileCategoryUseCase';
@@ -77,9 +79,26 @@ import { UpdateColorOptionAlternativeUseCase } from './app/use_cases/textileProd
 import { DeleteColorOptionAlternativeUseCase } from './app/use_cases/textileProducts/DeleteColorOptionAlternativeUseCase';
 import { ColorOptionAlternativeRepository } from './app/datastore/textileProducts/ColorOptionAlternative.repo';
 import { ColorOptionAlternativeRepositoryImpl } from './infra/datastore/textileProducts/ColorOptionAlternative.repo.impl';
-import { CommunityRepositoryImpl } from './infra/datastore/community.repo.impl';
-import { CommunityRepository } from './app/datastore/community.repo';
-import { CommunitySchema } from './infra/persistence/community.schema';
+import { CreateSizeOptionAlternativeUseCase } from './app/use_cases/textileProducts/CreateSizeOptionAlternativeUseCase';
+import { CreateManySizeOptionAlternativesUseCase } from './app/use_cases/textileProducts/CreateManySizeOptionAlternativesUseCase';
+import { GetAllSizeOptionAlternativesUseCase } from './app/use_cases/textileProducts/GetAllSizeOptionAlternativesUseCase';
+import { GetByIdSizeOptionAlternativeUseCase } from './app/use_cases/textileProducts/GetByIdSizeOptionAlternativeUseCase';
+import { UpdateSizeOptionAlternativeUseCase } from './app/use_cases/textileProducts/UpdateSizeOptionAlternativeUseCase';
+import { DeleteSizeOptionAlternativeUseCase } from './app/use_cases/textileProducts/DeleteSizeOptionAlternativeUseCase';
+import { SizeOptionAlternativeRepository } from './app/datastore/textileProducts/SizeOptionAlternative.repo';
+import { SizeOptionAlternativeRepositoryImpl } from './infra/datastore/textileProducts/SizeOptionAlternative.repo.impl';
+import { CommunityRepositoryImpl } from './infra/datastore/community/community.repo.impl';
+import { CommunityRepository } from './app/datastore/community/community.repo';
+import { CommunitySchema } from './infra/persistence/community/community.schema';
+import { ReviewSchema } from './infra/persistence/Review.schema';
+import { ReviewRepository } from './app/datastore/Review.repo';
+import { ReviewRepositoryImpl } from './infra/datastore/Review.repo.impl';
+import { CreateReviewUseCase } from './app/use_cases/CreateReviewUseCase';
+import { GetAllReviewsUseCase } from './app/use_cases/GetAllReviewsUseCase';
+import { GetByIdReviewUseCase } from './app/use_cases/GetByIdReviewUseCase';
+import { UpdateReviewUseCase } from './app/use_cases/UpdateReviewUseCase';
+import { DeleteReviewUseCase } from './app/use_cases/DeleteReviewUseCase';
+import { SuperfoodModule } from './superfood.module';
 
 @Module({
 	imports: [
@@ -121,15 +140,24 @@ import { CommunitySchema } from './infra/persistence/community.schema';
 				schema: ColorOptionAlternativeSchema,
 			},
 			{
+				name: 'SizeOptionAlternative',
+				schema: SizeOptionAlternativeSchema,
+			},
+			{
 				name: 'Community',
 				schema: CommunitySchema,
+			},
+			{
+				name: 'Review',
+				schema: ReviewSchema,
 			},
 		]),
 		UsersModule,
 		ShopsModule,
 		OriginProductModule,
+		forwardRef(() => SuperfoodModule),
 	],
-	controllers: [TextileProductController],
+	controllers: [TextileProductController, ReviewController],
 	providers: [
 		CreateTextileCategoryUseCase,
 		UpdateTextileCategoryUseCase,
@@ -177,6 +205,17 @@ import { CommunitySchema } from './infra/persistence/community.schema';
 		GetByIdColorOptionAlternativeUseCase,
 		UpdateColorOptionAlternativeUseCase,
 		DeleteColorOptionAlternativeUseCase,
+		CreateSizeOptionAlternativeUseCase,
+		CreateManySizeOptionAlternativesUseCase,
+		GetAllSizeOptionAlternativesUseCase,
+		GetByIdSizeOptionAlternativeUseCase,
+		UpdateSizeOptionAlternativeUseCase,
+		DeleteSizeOptionAlternativeUseCase,
+		CreateReviewUseCase,
+		GetAllReviewsUseCase,
+		GetByIdReviewUseCase,
+		UpdateReviewUseCase,
+		DeleteReviewUseCase,
 		{
 			provide: TextileCategoryRepository,
 			useClass: TextileCategoryRepositoryImpl,
@@ -214,8 +253,16 @@ import { CommunitySchema } from './infra/persistence/community.schema';
 			useClass: ColorOptionAlternativeRepositoryImpl,
 		},
 		{
+			provide: SizeOptionAlternativeRepository,
+			useClass: SizeOptionAlternativeRepositoryImpl,
+		},
+		{
 			provide: CommunityRepository,
 			useClass: CommunityRepositoryImpl,
+		},
+		{
+			provide: ReviewRepository,
+			useClass: ReviewRepositoryImpl,
 		},
 	],
 	exports: [
@@ -228,6 +275,8 @@ import { CommunitySchema } from './infra/persistence/community.schema';
 		TextileProductRepository,
 		TextileCertificationRepository,
 		ColorOptionAlternativeRepository,
+		SizeOptionAlternativeRepository,
+		ReviewRepository,
 		MongooseModule,
 	],
 })

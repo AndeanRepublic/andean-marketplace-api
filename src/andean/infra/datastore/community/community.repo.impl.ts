@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CommunityRepository as CommunityRepositoryBase } from '../../app/datastore/community.repo';
-import { Community } from '../../domain/entities/community/Community';
-import { CommunityDocument } from '../persistence/community.schema';
-import { CommunityMapper } from '../services/CommunityMapper';
-import { MongoIdUtils } from '../utils/MongoIdUtils';
+import { instanceToPlain } from 'class-transformer';
+import { CommunityRepository as CommunityRepositoryBase } from '../../../app/datastore/community/community.repo';
+import { Community } from '../../../domain/entities/community/Community';
+import { CommunityDocument } from '../../persistence/community/community.schema';
+import { CommunityMapper } from '../../services/community/CommunityMapper';
+import { MongoIdUtils } from '../../utils/MongoIdUtils';
 
 @Injectable()
 export class CommunityRepositoryImpl extends CommunityRepositoryBase {
@@ -42,12 +43,14 @@ export class CommunityRepositoryImpl extends CommunityRepositoryBase {
 		return document ? CommunityMapper.fromDocument(document) : null;
 	}
 
-	async update(id: string, community: Community): Promise<Community | null> {
-		const plain = CommunityMapper.toPersistence(community);
+	async update(id: string, community: Partial<Community>): Promise<Community | null> {
+		// Convertir Partial<Community> a objeto plano, excluyendo id
+		const plain = instanceToPlain(community);
+		const { id: _, ...dataForDB } = plain;
 		// Convertir string a ObjectId para la consulta
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		const updated = await this.communityModel
-			.findByIdAndUpdate(objectId, plain, { new: true })
+			.findByIdAndUpdate(objectId, dataForDB, { new: true })
 			.exec();
 		return updated ? CommunityMapper.fromDocument(updated) : null;
 	}
