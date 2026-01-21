@@ -2,6 +2,7 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { TextileProductRepository, ProductFilters } from '../../datastore/textileProducts/TextileProduct.repo';
 import { TextileProduct } from 'src/andean/domain/entities/textileProducts/TextileProduct';
 import { PaginatedProductsResponse } from '../../modules/PaginatedProductsResponse';
+import { TextileProductListItem } from '../../modules/TextileProductListItemResponse';
 
 @Injectable()
 export class GetAllTextileProductsUseCase {
@@ -10,11 +11,12 @@ export class GetAllTextileProductsUseCase {
 		private readonly textileProductRepository: TextileProductRepository,
 	) { }
 
-	async handle(filters?: ProductFilters): Promise<PaginatedProductsResponse<TextileProduct>> {
-		// Si no hay filtros, usar método legacy
+	async handle(filters?: ProductFilters): Promise<PaginatedProductsResponse<TextileProductListItem>> {
+		// Si no hay filtros, usar método legacy con formato
 		if (!filters || Object.keys(filters).length === 0) {
-			const [products, filterCount] = await Promise.all([
-				this.textileProductRepository.getAllTextileProducts(),
+			const defaultFilters = { page: 1, perPage: 10 };
+			const [{ products, total }, filterCount] = await Promise.all([
+				this.textileProductRepository.getAllWithFilters(defaultFilters),
 				this.textileProductRepository.getFilterCounts(),
 			]);
 
@@ -22,13 +24,12 @@ export class GetAllTextileProductsUseCase {
 				throw new NotFoundException('No textile products found');
 			}
 
-			const total = products.length;
 			return {
 				products,
 				pagination: {
 					total,
 					page: 1,
-					per_page: total,
+					per_page: 10,
 				},
 				filterCount,
 			};
