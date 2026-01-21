@@ -4,6 +4,7 @@ import { OwnerType } from 'src/andean/domain/enums/OwnerType';
 import { Gender } from 'src/andean/domain/enums/Gender';
 import { Season } from 'src/andean/domain/enums/Season';
 import { ToolUsed } from 'src/andean/domain/enums/ToolUsed';
+import { TextileOptionName } from 'src/andean/domain/enums/TextileOptionName';
 
 // Nested schemas
 
@@ -55,7 +56,6 @@ const AtributeSchema = new Schema({
 
 const TextileOptionsItemSchema = new Schema(
 	{
-		id: { type: String, required: true },
 		label: { type: String, required: true },
 		mediaIds: { type: [String], default: [] },
 		idOpcionAlternative: { type: String, required: false },
@@ -65,8 +65,11 @@ const TextileOptionsItemSchema = new Schema(
 
 const TextileOptionsSchema = new Schema(
 	{
-		id: { type: String, required: true },
-		name: { type: String, required: true },
+		name: {
+			type: String,
+			enum: Object.values(TextileOptionName),
+			required: true,
+		},
 		values: { type: [TextileOptionsItemSchema], default: [] },
 	},
 	{ _id: false },
@@ -74,7 +77,6 @@ const TextileOptionsSchema = new Schema(
 
 const TextileVariantSchema = new Schema(
 	{
-		id: { type: String, required: true },
 		combination: { type: Schema.Types.Mixed, required: true },
 		price: { type: Number, required: true },
 		stock: { type: Number, required: true },

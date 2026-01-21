@@ -1,9 +1,9 @@
 import { TextileOptionsItem } from './TextileOptionsItem';
+import { TextileOptionName } from '../../enums/TextileOptionName';
 
 export class TextileOptions {
   constructor(
-    public id: string,
-    public name: string,
+    public name: TextileOptionName,
     public values: TextileOptionsItem[],
   ) {}
 }

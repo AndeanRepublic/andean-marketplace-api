@@ -15,9 +15,7 @@ export class CommunityMapper {
 		const plain = doc.toObject();
 		return plainToInstance(Community, {
 			id: MongoIdUtils.objectIdToString(plain._id), // ObjectId → string
-			name: plain.name,
-			createdAt: plain.createdAt,
-			updatedAt: plain.updatedAt,
+			...plain,
 		});
 	}
 

@@ -1,8 +1,9 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { TextileProductRepository } from '../../datastore/textileProducts/TextileProduct.repo';
 import { TextileProduct } from 'src/andean/domain/entities/textileProducts/TextileProduct';
 import { TextileProductMapper } from 'src/andean/infra/services/textileProducts/TextileProductMapper';
 import { CreateTextileProductDto } from 'src/andean/infra/controllers/dto/textileProducts/CreateTextileProductDto';
+import { TextileOptionName } from 'src/andean/domain/enums/TextileOptionName';
 import { TextileCategoryRepository } from '../../datastore/textileProducts/TextileCategory.repo';
 import { TextileTypeRepository } from '../../datastore/textileProducts/TextileType.repo';
 import { TextileSubcategoryRepository } from '../../datastore/textileProducts/TextileSubcategory.repo';
@@ -173,12 +174,28 @@ export class UpdateTextileProductUseCase {
 
 		// Validar options si existen
 		if (dto.options && dto.options.length > 0) {
+			// Validar que no haya opciones duplicadas por name
+			const optionNames = dto.options.map(opt => opt.name);
+			const uniqueOptionNames = new Set(optionNames);
+			if (optionNames.length !== uniqueOptionNames.size) {
+				throw new BadRequestException('Duplicate option names are not allowed');
+			}
+
 			for (const option of dto.options) {
 				// Validar idOpcionAlternative en cada value según el name de la opción
 				if (option.values && option.values.length > 0) {
+					// Validar que no haya labels duplicados en la misma opción
+					const labels = option.values.map(v => v.label);
+					const uniqueLabels = new Set(labels);
+					if (labels.length !== uniqueLabels.size) {
+						throw new BadRequestException(
+							`Duplicate labels in option ${option.name} are not allowed`,
+						);
+					}
+
 					for (const value of option.values) {
 						if (value.idOpcionAlternative) {
-							if (option.name === 'color') {
+							if (option.name === TextileOptionName.COLOR) {
 								const colorOptionFound =
 									await this.colorOptionAlternativeRepository.getById(
 										value.idOpcionAlternative,
@@ -188,7 +205,7 @@ export class UpdateTextileProductUseCase {
 										`ColorOptionAlternative with id ${value.idOpcionAlternative} not found`,
 									);
 								}
-							} else if (option.name === 'size') {
+							} else if (option.name === TextileOptionName.SIZE) {
 								const sizeOptionFound =
 									await this.sizeOptionAlternativeRepository.getById(
 										value.idOpcionAlternative,
@@ -198,6 +215,33 @@ export class UpdateTextileProductUseCase {
 										`SizeOptionAlternative with id ${value.idOpcionAlternative} not found`,
 									);
 								}
+							}
+						}
+					}
+				}
+			}
+
+			// Validar variants si existen
+			if (dto.variants && dto.variants.length > 0) {
+				for (const variant of dto.variants) {
+					// Validar que todas las keys en combination sean nombres de opciones válidos
+					const optionNamesSet = new Set(dto.options.map(opt => opt.name));
+					for (const combinationKey of Object.keys(variant.combination)) {
+						if (!optionNamesSet.has(combinationKey as TextileOptionName)) {
+							throw new BadRequestException(
+								`Invalid option name "${combinationKey}" in variant combination. Valid options are: ${Array.from(optionNamesSet).join(', ')}`,
+							);
+						}
+
+						// Validar que el value en combination sea un label válido de esa opción
+						const option = dto.options.find(opt => opt.name === combinationKey);
+						if (option) {
+							const validLabels = option.values.map(v => v.label);
+							const combinationValue = variant.combination[combinationKey];
+							if (!validLabels.includes(combinationValue)) {
+								throw new BadRequestException(
+									`Invalid label "${combinationValue}" for option "${combinationKey}". Valid labels are: ${validLabels.join(', ')}`,
+								);
 							}
 						}
 					}
