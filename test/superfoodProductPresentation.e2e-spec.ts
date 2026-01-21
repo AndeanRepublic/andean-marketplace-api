@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, HttpStatus, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
-import { SuperfoodProductPresentationController } from '../src/andean/infra/controllers/superfoodProductPresentation.controller';
+import { SuperfoodProductPresentationController } from '../src/andean/infra/controllers/superfoodControllers/superfoodProductPresentation.controller';
 import { CreateSuperfoodProductPresentationUseCase } from '../src/andean/app/use_cases/superfoods/productPresentation/CreateSuperfoodProductPresentationUseCase';
 import { GetSuperfoodProductPresentationByIdUseCase } from '../src/andean/app/use_cases/superfoods/productPresentation/GetSuperfoodProductPresentationByIdUseCase';
 import { ListSuperfoodProductPresentationsUseCase } from '../src/andean/app/use_cases/superfoods/productPresentation/ListSuperfoodProductPresentationsUseCase';

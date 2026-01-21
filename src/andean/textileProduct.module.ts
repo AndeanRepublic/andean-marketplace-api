@@ -22,7 +22,18 @@ import { TextileStyleRepository } from './app/datastore/textileProducts/TextileS
 import { TextileStyleRepositoryImpl } from './infra/datastore/textileProducts/textileStyle.repo.impl';
 import { TextileSubcategoryRepository } from './app/datastore/textileProducts/TextileSubcategory.repo';
 import { TextileSubcategoryRepositoryImpl } from './infra/datastore/textileProducts/textileSubcategory.repo.impl';
-import { TextileProductController } from './infra/controllers/textileProduct.controller';
+import {
+	TextileProductController,
+	TextileCategoryController,
+	TextileTypeController,
+	TextileStyleController,
+	TextileSubcategoryController,
+	TextileCraftTechniqueController,
+	TextilePrincipalUseController,
+	TextileCertificationController,
+} from './infra/controllers/textileProductControllers';
+import { ColorOptionAlternativeController } from './infra/controllers/colorOptionAlternative.controller';
+import { SizeOptionAlternativeController } from './infra/controllers/sizeOptionAlternative.controller';
 import { ReviewController } from './infra/controllers/Review.controller';
 import { UpdateTextileCategoryUseCase } from './app/use_cases/textileProducts/UpdateTextileCategoryUseCase';
 import { GetAllTextileCategoriesUseCase } from './app/use_cases/textileProducts/GetAllTextileCategoriesUseCase';
@@ -157,7 +168,19 @@ import { SuperfoodModule } from './superfood.module';
 		OriginProductModule,
 		forwardRef(() => SuperfoodModule),
 	],
-	controllers: [TextileProductController, ReviewController],
+	controllers: [
+		TextileProductController,
+		TextileCategoryController,
+		TextileTypeController,
+		TextileStyleController,
+		TextileSubcategoryController,
+		TextileCraftTechniqueController,
+		TextilePrincipalUseController,
+		TextileCertificationController,
+		ColorOptionAlternativeController,
+		SizeOptionAlternativeController,
+		ReviewController,
+	],
 	providers: [
 		CreateTextileCategoryUseCase,
 		UpdateTextileCategoryUseCase,
@@ -280,4 +303,4 @@ import { SuperfoodModule } from './superfood.module';
 		MongooseModule,
 	],
 })
-export class TextileProductModule {}
+export class TextileProductModule { }

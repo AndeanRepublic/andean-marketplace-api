@@ -14,12 +14,12 @@ import {
 	ApiResponse,
 	ApiParam,
 } from '@nestjs/swagger';
-import { CreateSuperfoodSalesUnitSizeDto } from './dto/superfoods/CreateSuperfoodSalesUnitSizeDto';
-import { SuperfoodSalesUnitSizeResponse } from '../../app/modules/SuperfoodSalesUnitSizeResponse';
-import { CreateSuperfoodSalesUnitSizeUseCase } from '../../app/use_cases/superfoods/salesUnitSize/CreateSuperfoodSalesUnitSizeUseCase';
-import { GetSuperfoodSalesUnitSizeByIdUseCase } from '../../app/use_cases/superfoods/salesUnitSize/GetSuperfoodSalesUnitSizeByIdUseCase';
-import { ListSuperfoodSalesUnitSizesUseCase } from '../../app/use_cases/superfoods/salesUnitSize/ListSuperfoodSalesUnitSizesUseCase';
-import { DeleteSuperfoodSalesUnitSizeUseCase } from '../../app/use_cases/superfoods/salesUnitSize/DeleteSuperfoodSalesUnitSizeUseCase';
+import { CreateSuperfoodSalesUnitSizeDto } from '../dto/superfoods/CreateSuperfoodSalesUnitSizeDto';
+import { SuperfoodSalesUnitSizeResponse } from '../../../app/modules/SuperfoodSalesUnitSizeResponse';
+import { CreateSuperfoodSalesUnitSizeUseCase } from '../../../app/use_cases/superfoods/salesUnitSize/CreateSuperfoodSalesUnitSizeUseCase';
+import { GetSuperfoodSalesUnitSizeByIdUseCase } from '../../../app/use_cases/superfoods/salesUnitSize/GetSuperfoodSalesUnitSizeByIdUseCase';
+import { ListSuperfoodSalesUnitSizesUseCase } from '../../../app/use_cases/superfoods/salesUnitSize/ListSuperfoodSalesUnitSizesUseCase';
+import { DeleteSuperfoodSalesUnitSizeUseCase } from '../../../app/use_cases/superfoods/salesUnitSize/DeleteSuperfoodSalesUnitSizeUseCase';
 
 @ApiTags('Superfood Sales Unit Sizes')
 @Controller('superfood-sales-unit-sizes')
