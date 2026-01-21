@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, MinLength, MaxLength, IsArray, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsString, MinLength, MaxLength, IsArray, IsOptional, IsUrl } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateCommunityDto {
@@ -13,6 +13,15 @@ export class CreateCommunityDto {
 	@MinLength(3)
 	@MaxLength(100)
 	name: string;
+
+	@ApiProperty({
+		description: 'URL de la imagen banner de la comunidad',
+		example: 'https://example.com/images/community-banner.jpg',
+	})
+	@IsString()
+	@IsNotEmpty()
+	@IsUrl()
+	bannerImageUrl: string;
 
 	@ApiPropertyOptional({
 		description: 'Array de IDs de seals asociados a la comunidad',

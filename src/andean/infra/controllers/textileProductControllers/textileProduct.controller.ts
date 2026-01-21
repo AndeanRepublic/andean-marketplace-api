@@ -27,6 +27,8 @@ import { GetByIdTextileProductUseCase } from 'src/andean/app/use_cases/textilePr
 import { DeleteTextileProductUseCase } from 'src/andean/app/use_cases/textileProducts/DeleteTextileProductUseCase';
 import { PaginatedProductsResponse, PaginatedTextileProductsResponse } from 'src/andean/app/modules/PaginatedProductsResponse';
 import { TextileProductListItem } from 'src/andean/app/modules/TextileProductListItemResponse';
+import { TextileProductDetailResponse } from 'src/andean/app/models/TextileProducts/TextileProductDetailResponse';
+import { GetByIdTextileProductDetailUseCase } from 'src/andean/app/use_cases/textileProducts/GetByIdTextileProductDetailUseCase';
 
 @ApiTags('Textile Products')
 @Controller('textile-products')
@@ -37,6 +39,7 @@ export class TextileProductController {
 		private readonly getAllTextileProductsUseCase: GetAllTextileProductsUseCase,
 		private readonly getByIdTextileProductUseCase: GetByIdTextileProductUseCase,
 		private readonly deleteTextileProductUseCase: DeleteTextileProductUseCase,
+		private readonly getByIdTextileProductDetailUseCase: GetByIdTextileProductDetailUseCase,
 	) { }
 
 	@Post()
@@ -202,6 +205,13 @@ export class TextileProductController {
 		@Param('id') id: string,
 	): Promise<TextileProduct> {
 		return this.getByIdTextileProductUseCase.handle(id);
+	}
+
+	@Get('/:id/details')
+	async getTextileProductDetail(
+		@Param('id') id: string,
+	): Promise<TextileProductDetailResponse> {
+		return this.getByIdTextileProductDetailUseCase.handle(id);
 	}
 
 	@Delete('/:id')

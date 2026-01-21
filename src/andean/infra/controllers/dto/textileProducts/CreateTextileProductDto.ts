@@ -18,6 +18,7 @@ import { OwnerType } from 'src/andean/domain/enums/OwnerType';
 import { Gender } from 'src/andean/domain/enums/Gender';
 import { Season } from 'src/andean/domain/enums/Season';
 import { ToolUsed } from 'src/andean/domain/enums/ToolUsed';
+import { TextileOptionName } from 'src/andean/domain/enums/TextileOptionName';
 import { CreateProductTraceabilityDto } from '../traceability/CreateProductTraceabilityDto';
 
 export class PreparationTimeDto {
@@ -218,13 +219,10 @@ export class TextileOptionsItemDto {
 }
 
 export class TextileOptionsDto {
-	@ApiProperty({
-		description: 'Nombre de la opción (ej: Color, Talla)',
-		example: 'Color',
-	})
-	@IsString()
+	@ApiProperty({ enum: TextileOptionName, description: 'Nombre de la opción' })
+	@IsEnum(TextileOptionName)
 	@IsNotEmpty()
-	name: string;
+	name: TextileOptionName;
 
 	@ApiProperty({
 		description: 'Valores disponibles para esta opción',
