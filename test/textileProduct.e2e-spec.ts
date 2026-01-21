@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, HttpStatus, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
-import { TextileProductController } from '../src/andean/infra/controllers/textileProduct.controller';
+import { TextileProductController } from '../src/andean/infra/controllers/textileProductControllers';
 import { CreateTextileProductUseCase } from '../src/andean/app/use_cases/textileProducts/CreateTextileProductUseCase';
 import { GetAllTextileProductsUseCase } from '../src/andean/app/use_cases/textileProducts/GetAllTextileProductsUseCase';
 import { GetByIdTextileProductUseCase } from '../src/andean/app/use_cases/textileProducts/GetByIdTextileProductUseCase';
@@ -851,7 +851,7 @@ describe('TextileProductController (e2e)', () => {
 
 			return request(app.getHttpServer())
 				.delete(`/textile-products/${productId}`)
-				.expect(HttpStatus.OK);
+				.expect(HttpStatus.NO_CONTENT);
 		});
 
 		it('should call the use case with correct productId', async () => {
@@ -859,7 +859,7 @@ describe('TextileProductController (e2e)', () => {
 
 			await request(app.getHttpServer())
 				.delete(`/textile-products/${productId}`)
-				.expect(HttpStatus.OK);
+				.expect(HttpStatus.NO_CONTENT);
 
 			expect(spy).toHaveBeenCalledWith(productId);
 		});

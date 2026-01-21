@@ -7,6 +7,11 @@ import { UpdateCommunityUseCase } from '../src/andean/app/use_cases/community/Up
 import { GetCommunityByIdUseCase } from '../src/andean/app/use_cases/community/GetCommunityByIdUseCase';
 import { ListCommunityUseCase } from '../src/andean/app/use_cases/community/ListCommunityUseCase';
 import { DeleteCommunityUseCase } from '../src/andean/app/use_cases/community/DeleteCommunityUseCase';
+import { CreateSealUseCase } from '../src/andean/app/use_cases/community/CreateSealUseCase';
+import { GetAllSealsUseCase } from '../src/andean/app/use_cases/community/GetAllSealsUseCase';
+import { GetByIdSealUseCase } from '../src/andean/app/use_cases/community/GetByIdSealUseCase';
+import { UpdateSealUseCase } from '../src/andean/app/use_cases/community/UpdateSealUseCase';
+import { DeleteSealUseCase } from '../src/andean/app/use_cases/community/DeleteSealUseCase';
 import { Community } from '../src/andean/domain/entities/community/Community';
 
 describe('CommunityController (e2e)', () => {
@@ -66,6 +71,37 @@ describe('CommunityController (e2e)', () => {
 					provide: DeleteCommunityUseCase,
 					useValue: {
 						execute: jest.fn().mockResolvedValue(undefined),
+					},
+				},
+				// Mocks para Seal use cases
+				{
+					provide: CreateSealUseCase,
+					useValue: {
+						handle: jest.fn().mockResolvedValue({ id: 'seal-1', name: 'Test Seal' }),
+					},
+				},
+				{
+					provide: GetAllSealsUseCase,
+					useValue: {
+						handle: jest.fn().mockResolvedValue([]),
+					},
+				},
+				{
+					provide: GetByIdSealUseCase,
+					useValue: {
+						handle: jest.fn().mockResolvedValue({ id: 'seal-1', name: 'Test Seal' }),
+					},
+				},
+				{
+					provide: UpdateSealUseCase,
+					useValue: {
+						handle: jest.fn().mockResolvedValue({ id: 'seal-1', name: 'Updated Seal' }),
+					},
+				},
+				{
+					provide: DeleteSealUseCase,
+					useValue: {
+						handle: jest.fn().mockResolvedValue(undefined),
 					},
 				},
 			],

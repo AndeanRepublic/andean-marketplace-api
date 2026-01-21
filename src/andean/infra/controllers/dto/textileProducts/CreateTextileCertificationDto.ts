@@ -1,7 +1,14 @@
 import { IsString, IsNotEmpty } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateTextileCertificationDto {
-  @IsString()
-  @IsNotEmpty()
-  name: string;
+	@ApiProperty({
+		description: 'Nombre de la certificación textil',
+		example: 'Fair Trade',
+		minLength: 2,
+		maxLength: 100,
+	})
+	@IsString()
+	@IsNotEmpty()
+	name: string;
 }
