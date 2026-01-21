@@ -54,6 +54,7 @@ import { GetAllColorOptionAlternativesUseCase } from '../src/andean/app/use_case
 import { GetByIdColorOptionAlternativeUseCase } from '../src/andean/app/use_cases/textileProducts/GetByIdColorOptionAlternativeUseCase';
 import { DeleteColorOptionAlternativeUseCase } from '../src/andean/app/use_cases/textileProducts/DeleteColorOptionAlternativeUseCase';
 import { CreateManyColorOptionAlternativesUseCase } from '../src/andean/app/use_cases/textileProducts/CreateManyColorOptionAlternativesUseCase';
+import { TextileProductListItem } from '../src/andean/app/modules/TextileProductListItemResponse';
 
 describe('TextileProductController (e2e)', () => {
 	let app: INestApplication;
@@ -146,8 +147,22 @@ describe('TextileProductController (e2e)', () => {
 		categoryId: 'category-poncho-001',
 	};
 
+	const mockTextileProductListItem: TextileProductListItem = {
+		id: 'textile-uuid-123',
+		titulo: 'Poncho Andino Premium',
+		categoryName: 'Ponchos',
+		productorName: 'Artesanos Andinos',
+		colors: [
+			{ name: 'Rojo', colorHexCode: '#FF0000' },
+			{ name: 'Azul', colorHexCode: '#0000FF' },
+		],
+		tallas: ['M', 'L'],
+		principalImgUrl: 'https://example.com/poncho.jpg',
+		price: 150.00,
+	};
+
 	const mockPaginatedResponse = {
-		products: [mockTextileProduct],
+		products: [mockTextileProductListItem],
 		pagination: {
 			total: 1,
 			page: 1,
@@ -475,7 +490,7 @@ describe('TextileProductController (e2e)', () => {
 
 		it('should get textile products with pagination', async () => {
 			const paginatedResponse = {
-				products: [mockTextileProduct],
+				products: [mockTextileProductListItem],
 				pagination: {
 					total: 100,
 					page: 2,
@@ -510,7 +525,7 @@ describe('TextileProductController (e2e)', () => {
 
 		it('should filter textile products by color', async () => {
 			const filteredResponse = {
-				products: [mockTextileProduct],
+				products: [mockTextileProductListItem],
 				pagination: { total: 1, page: 1, per_page: 10 },
 				filterCount: {
 					colors: [{ label: 'rojo', count: 15 }],
@@ -533,7 +548,7 @@ describe('TextileProductController (e2e)', () => {
 
 		it('should filter textile products by size', async () => {
 			const filteredResponse = {
-				products: [mockTextileProduct],
+				products: [mockTextileProductListItem],
 				pagination: { total: 1, page: 1, per_page: 10 },
 				filterCount: {
 					colors: [{ label: 'rojo', count: 5 }, { label: 'azul', count: 3 }],
@@ -555,7 +570,7 @@ describe('TextileProductController (e2e)', () => {
 
 		it('should filter textile products by price range', async () => {
 			const filteredResponse = {
-				products: [mockTextileProduct],
+				products: [mockTextileProductListItem],
 				pagination: { total: 1, page: 1, per_page: 10 },
 				filterCount: {
 					colors: [{ label: 'rojo', count: 5 }],
@@ -580,7 +595,7 @@ describe('TextileProductController (e2e)', () => {
 
 		it('should filter textile products by color and size combined', async () => {
 			const filteredResponse = {
-				products: [mockTextileProduct],
+				products: [mockTextileProductListItem],
 				pagination: { total: 1, page: 1, per_page: 10 },
 				filterCount: {
 					colors: [{ label: 'rojo', count: 3 }],
@@ -602,7 +617,7 @@ describe('TextileProductController (e2e)', () => {
 
 		it('should filter textile products by category_id', async () => {
 			const filteredResponse = {
-				products: [mockTextileProduct],
+				products: [mockTextileProductListItem],
 				pagination: { total: 1, page: 1, per_page: 10 },
 				filterCount: {
 					colors: [{ label: 'rojo', count: 10 }],
@@ -624,7 +639,7 @@ describe('TextileProductController (e2e)', () => {
 
 		it('should filter textile products by owner_id', async () => {
 			const filteredResponse = {
-				products: [mockTextileProduct],
+				products: [mockTextileProductListItem],
 				pagination: { total: 1, page: 1, per_page: 10 },
 				filterCount: {
 					colors: [{ label: 'rojo', count: 5 }],
@@ -646,7 +661,7 @@ describe('TextileProductController (e2e)', () => {
 
 		it('should combine multiple filters (category, color, size, price, pagination)', async () => {
 			const filteredResponse = {
-				products: [mockTextileProduct],
+				products: [mockTextileProductListItem],
 				pagination: { total: 1, page: 2, per_page: 20 },
 				filterCount: {
 					colors: [{ label: 'rojo', count: 1 }],
@@ -687,7 +702,7 @@ describe('TextileProductController (e2e)', () => {
 
 		it('should include filterCount when filtering by community through detailTraceability', async () => {
 			const filteredResponse = {
-				products: [mockTextileProduct],
+				products: [mockTextileProductListItem],
 				pagination: { total: 1, page: 1, per_page: 10 },
 				filterCount: {
 					colors: [{ label: 'rojo', count: 5 }],
