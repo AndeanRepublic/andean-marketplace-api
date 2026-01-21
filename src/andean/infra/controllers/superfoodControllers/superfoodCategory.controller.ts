@@ -14,12 +14,12 @@ import {
 	ApiResponse,
 	ApiParam,
 } from '@nestjs/swagger';
-import { CreateSuperfoodCategoryDto } from './dto/superfoods/CreateSuperfoodCategoryDto';
-import { SuperfoodCategoryResponse } from '../../app/modules/SuperfoodCategoryResponse';
-import { CreateSuperfoodCategoryUseCase } from '../../app/use_cases/superfoods/category/CreateSuperfoodCategoryUseCase';
-import { GetSuperfoodCategoryByIdUseCase } from '../../app/use_cases/superfoods/category/GetSuperfoodCategoryByIdUseCase';
-import { ListSuperfoodCategoriesUseCase } from '../../app/use_cases/superfoods/category/ListSuperfoodCategoriesUseCase';
-import { DeleteSuperfoodCategoryUseCase } from '../../app/use_cases/superfoods/category/DeleteSuperfoodCategoryUseCase';
+import { CreateSuperfoodCategoryDto } from '../dto/superfoods/CreateSuperfoodCategoryDto';
+import { SuperfoodCategoryResponse } from '../../../app/modules/SuperfoodCategoryResponse';
+import { CreateSuperfoodCategoryUseCase } from '../../../app/use_cases/superfoods/category/CreateSuperfoodCategoryUseCase';
+import { GetSuperfoodCategoryByIdUseCase } from '../../../app/use_cases/superfoods/category/GetSuperfoodCategoryByIdUseCase';
+import { ListSuperfoodCategoriesUseCase } from '../../../app/use_cases/superfoods/category/ListSuperfoodCategoriesUseCase';
+import { DeleteSuperfoodCategoryUseCase } from '../../../app/use_cases/superfoods/category/DeleteSuperfoodCategoryUseCase';
 
 @ApiTags('Superfood Categories')
 @Controller('superfood-categories')
