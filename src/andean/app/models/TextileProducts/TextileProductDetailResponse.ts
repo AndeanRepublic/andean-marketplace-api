@@ -14,6 +14,7 @@ export class TextileProductDetailResponse {
 	information: string;
 	description: string;
 	traceabilityInfo: {
+		blockchainLink?: string;
 		origen: {
 			title: string;
 			supplier: string;
@@ -75,7 +76,7 @@ export class TextileProductDetailResponse {
 		price: number;
 	}[];
 	communityInfo?: {
-		imgUrl: string;
+		bannerImageUrl: string;
 		name: string;
 		seals: {
 			title: string;
