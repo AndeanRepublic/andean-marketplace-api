@@ -14,12 +14,12 @@ import {
 	ApiResponse,
 	ApiParam,
 } from '@nestjs/swagger';
-import { CreateSuperfoodBenefitDto } from './dto/superfoods/CreateSuperfoodBenefitDto';
-import { SuperfoodBenefitResponse } from '../../app/modules/SuperfoodBenefitResponse';
-import { CreateSuperfoodBenefitUseCase } from '../../app/use_cases/superfoods/benefit/CreateSuperfoodBenefitUseCase';
-import { GetSuperfoodBenefitByIdUseCase } from '../../app/use_cases/superfoods/benefit/GetSuperfoodBenefitByIdUseCase';
-import { ListSuperfoodBenefitsUseCase } from '../../app/use_cases/superfoods/benefit/ListSuperfoodBenefitsUseCase';
-import { DeleteSuperfoodBenefitUseCase } from '../../app/use_cases/superfoods/benefit/DeleteSuperfoodBenefitUseCase';
+import { CreateSuperfoodBenefitDto } from '../dto/superfoods/CreateSuperfoodBenefitDto';
+import { SuperfoodBenefitResponse } from '../../../app/modules/SuperfoodBenefitResponse';
+import { CreateSuperfoodBenefitUseCase } from '../../../app/use_cases/superfoods/benefit/CreateSuperfoodBenefitUseCase';
+import { GetSuperfoodBenefitByIdUseCase } from '../../../app/use_cases/superfoods/benefit/GetSuperfoodBenefitByIdUseCase';
+import { ListSuperfoodBenefitsUseCase } from '../../../app/use_cases/superfoods/benefit/ListSuperfoodBenefitsUseCase';
+import { DeleteSuperfoodBenefitUseCase } from '../../../app/use_cases/superfoods/benefit/DeleteSuperfoodBenefitUseCase';
 
 @ApiTags('Superfood Benefits')
 @Controller('superfood-benefits')

@@ -10,15 +10,15 @@ import {
 	HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
-import { CreateSuperfoodDto } from './dto/superfoods/CreateSuperfoodDto';
-import { UpdateSuperfoodDto } from './dto/superfoods/UpdateSuperfoodDto';
-import { SuperfoodProduct } from '../../domain/entities/superfoods/SuperfoodProduct';
-import { CreateSuperfoodProductUseCase } from '../../app/use_cases/superfoods/CreateSuperfoodProductUseCase';
-import { GetSuperfoodProductByIdUseCase } from '../../app/use_cases/superfoods/GetSuperfoodProductByIdUseCase';
-import { GetSuperfoodProductsByOwnerUseCase } from '../../app/use_cases/superfoods/GetSuperfoodProductsByOwnerUseCase';
-import { GetSuperfoodProductsByCategoryUseCase } from '../../app/use_cases/superfoods/GetSuperfoodProductsByCategoryUseCase';
-import { UpdateSuperfoodProductUseCase } from '../../app/use_cases/superfoods/UpdateSuperfoodProductUseCase';
-import { DeleteSuperfoodProductUseCase } from '../../app/use_cases/superfoods/DeleteSuperfoodProductUseCase';
+import { CreateSuperfoodDto } from '../dto/superfoods/CreateSuperfoodDto';
+import { UpdateSuperfoodDto } from '../dto/superfoods/UpdateSuperfoodDto';
+import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
+import { CreateSuperfoodProductUseCase } from '../../../app/use_cases/superfoods/CreateSuperfoodProductUseCase';
+import { GetSuperfoodProductByIdUseCase } from '../../../app/use_cases/superfoods/GetSuperfoodProductByIdUseCase';
+import { GetSuperfoodProductsByOwnerUseCase } from '../../../app/use_cases/superfoods/GetSuperfoodProductsByOwnerUseCase';
+import { GetSuperfoodProductsByCategoryUseCase } from '../../../app/use_cases/superfoods/GetSuperfoodProductsByCategoryUseCase';
+import { UpdateSuperfoodProductUseCase } from '../../../app/use_cases/superfoods/UpdateSuperfoodProductUseCase';
+import { DeleteSuperfoodProductUseCase } from '../../../app/use_cases/superfoods/DeleteSuperfoodProductUseCase';
 
 @ApiTags('Superfoods')
 @Controller('superfoods')
@@ -30,7 +30,7 @@ export class SuperfoodController {
 		private readonly getSuperfoodProductsByCategoryUseCase: GetSuperfoodProductsByCategoryUseCase,
 		private readonly updateSuperfoodProductUseCase: UpdateSuperfoodProductUseCase,
 		private readonly deleteSuperfoodProductUseCase: DeleteSuperfoodProductUseCase,
-	) {}
+	) { }
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)

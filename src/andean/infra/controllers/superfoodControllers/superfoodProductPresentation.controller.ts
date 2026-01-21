@@ -14,12 +14,12 @@ import {
 	ApiResponse,
 	ApiParam,
 } from '@nestjs/swagger';
-import { CreateSuperfoodProductPresentationDto } from './dto/superfoods/CreateSuperfoodProductPresentationDto';
-import { SuperfoodProductPresentationResponse } from '../../app/modules/SuperfoodProductPresentationResponse';
-import { CreateSuperfoodProductPresentationUseCase } from '../../app/use_cases/superfoods/productPresentation/CreateSuperfoodProductPresentationUseCase';
-import { GetSuperfoodProductPresentationByIdUseCase } from '../../app/use_cases/superfoods/productPresentation/GetSuperfoodProductPresentationByIdUseCase';
-import { ListSuperfoodProductPresentationsUseCase } from '../../app/use_cases/superfoods/productPresentation/ListSuperfoodProductPresentationsUseCase';
-import { DeleteSuperfoodProductPresentationUseCase } from '../../app/use_cases/superfoods/productPresentation/DeleteSuperfoodProductPresentationUseCase';
+import { CreateSuperfoodProductPresentationDto } from '../dto/superfoods/CreateSuperfoodProductPresentationDto';
+import { SuperfoodProductPresentationResponse } from '../../../app/modules/SuperfoodProductPresentationResponse';
+import { CreateSuperfoodProductPresentationUseCase } from '../../../app/use_cases/superfoods/productPresentation/CreateSuperfoodProductPresentationUseCase';
+import { GetSuperfoodProductPresentationByIdUseCase } from '../../../app/use_cases/superfoods/productPresentation/GetSuperfoodProductPresentationByIdUseCase';
+import { ListSuperfoodProductPresentationsUseCase } from '../../../app/use_cases/superfoods/productPresentation/ListSuperfoodProductPresentationsUseCase';
+import { DeleteSuperfoodProductPresentationUseCase } from '../../../app/use_cases/superfoods/productPresentation/DeleteSuperfoodProductPresentationUseCase';
 
 @ApiTags('Superfood Product Presentations')
 @Controller('superfood-product-presentations')

@@ -14,12 +14,12 @@ import {
 	ApiResponse,
 	ApiParam,
 } from '@nestjs/swagger';
-import { CreateSuperfoodPreservationMethodDto } from './dto/superfoods/CreateSuperfoodPreservationMethodDto';
-import { SuperfoodPreservationMethodResponse } from '../../app/modules/SuperfoodPreservationMethodResponse';
-import { CreateSuperfoodPreservationMethodUseCase } from '../../app/use_cases/superfoods/preservationMethod/CreateSuperfoodPreservationMethodUseCase';
-import { GetSuperfoodPreservationMethodByIdUseCase } from '../../app/use_cases/superfoods/preservationMethod/GetSuperfoodPreservationMethodByIdUseCase';
-import { ListSuperfoodPreservationMethodsUseCase } from '../../app/use_cases/superfoods/preservationMethod/ListSuperfoodPreservationMethodsUseCase';
-import { DeleteSuperfoodPreservationMethodUseCase } from '../../app/use_cases/superfoods/preservationMethod/DeleteSuperfoodPreservationMethodUseCase';
+import { CreateSuperfoodPreservationMethodDto } from '../dto/superfoods/CreateSuperfoodPreservationMethodDto';
+import { SuperfoodPreservationMethodResponse } from '../../../app/modules/SuperfoodPreservationMethodResponse';
+import { CreateSuperfoodPreservationMethodUseCase } from '../../../app/use_cases/superfoods/preservationMethod/CreateSuperfoodPreservationMethodUseCase';
+import { GetSuperfoodPreservationMethodByIdUseCase } from '../../../app/use_cases/superfoods/preservationMethod/GetSuperfoodPreservationMethodByIdUseCase';
+import { ListSuperfoodPreservationMethodsUseCase } from '../../../app/use_cases/superfoods/preservationMethod/ListSuperfoodPreservationMethodsUseCase';
+import { DeleteSuperfoodPreservationMethodUseCase } from '../../../app/use_cases/superfoods/preservationMethod/DeleteSuperfoodPreservationMethodUseCase';
 
 @ApiTags('Superfood Preservation Methods')
 @Controller('superfood-preservation-methods')
