@@ -6,6 +6,7 @@ import { ReviewDocument } from '../persistence/Review.schema';
 import { Review } from 'src/andean/domain/entities/Review';
 import { ReviewMapper } from '../services/ReviewMapper';
 import { MongoIdUtils } from '../utils/MongoIdUtils';
+import { ProductType } from 'src/andean/domain/enums/ProductType';
 
 @Injectable()
 export class ReviewRepositoryImpl extends ReviewRepository {
@@ -47,5 +48,12 @@ export class ReviewRepositoryImpl extends ReviewRepository {
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		await this.reviewModel.findByIdAndDelete(objectId).exec();
 		return;
+	}
+
+	async getByProductIdAndType(productId: string, productType: ProductType): Promise<Review[]> {
+		const docs = await this.reviewModel
+			.find({ productId, productType })
+			.exec();
+		return docs.map((doc) => ReviewMapper.fromDocument(doc));
 	}
 }
