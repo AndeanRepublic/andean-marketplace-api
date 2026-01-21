@@ -14,12 +14,12 @@ import {
 	ApiResponse,
 	ApiParam,
 } from '@nestjs/swagger';
-import { CreateSuperfoodCertificationDto } from './dto/superfoods/CreateSuperfoodCertificationDto';
-import { SuperfoodCertificationResponse } from '../../app/modules/SuperfoodCertificationResponse';
-import { CreateSuperfoodCertificationUseCase } from '../../app/use_cases/superfoods/certification/CreateSuperfoodCertificationUseCase';
-import { GetSuperfoodCertificationByIdUseCase } from '../../app/use_cases/superfoods/certification/GetSuperfoodCertificationByIdUseCase';
-import { ListSuperfoodCertificationsUseCase } from '../../app/use_cases/superfoods/certification/ListSuperfoodCertificationsUseCase';
-import { DeleteSuperfoodCertificationUseCase } from '../../app/use_cases/superfoods/certification/DeleteSuperfoodCertificationUseCase';
+import { CreateSuperfoodCertificationDto } from '../dto/superfoods/CreateSuperfoodCertificationDto';
+import { SuperfoodCertificationResponse } from '../../../app/modules/SuperfoodCertificationResponse';
+import { CreateSuperfoodCertificationUseCase } from '../../../app/use_cases/superfoods/certification/CreateSuperfoodCertificationUseCase';
+import { GetSuperfoodCertificationByIdUseCase } from '../../../app/use_cases/superfoods/certification/GetSuperfoodCertificationByIdUseCase';
+import { ListSuperfoodCertificationsUseCase } from '../../../app/use_cases/superfoods/certification/ListSuperfoodCertificationsUseCase';
+import { DeleteSuperfoodCertificationUseCase } from '../../../app/use_cases/superfoods/certification/DeleteSuperfoodCertificationUseCase';
 
 @ApiTags('Superfood Certifications')
 @Controller('superfood-certifications')

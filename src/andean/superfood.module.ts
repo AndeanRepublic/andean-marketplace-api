@@ -14,15 +14,15 @@ import { SuperfoodProductPresentationSchema } from './infra/persistence/superfoo
 import { SuperfoodTypeSchema } from './infra/persistence/superfood/superfoodType.schema';
 
 // Controllers
-import { SuperfoodController } from './infra/controllers/superfood.controller';
-import { SuperfoodCategoryController } from './infra/controllers/superfoodCategory.controller';
-import { SuperfoodCertificationController } from './infra/controllers/superfoodCertification.controller';
-import { SuperfoodTypeController } from './infra/controllers/superfoodType.controller';
-import { SuperfoodPreservationMethodController } from './infra/controllers/superfoodPreservationMethod.controller';
-import { SuperfoodNutritionalFeatureController } from './infra/controllers/superfoodNutritionalFeature.controller';
-import { SuperfoodBenefitController } from './infra/controllers/superfoodBenefit.controller';
-import { SuperfoodProductPresentationController } from './infra/controllers/superfoodProductPresentation.controller';
-import { SuperfoodSalesUnitSizeController } from './infra/controllers/superfoodSalesUnitSize.controller';
+import { SuperfoodController } from './infra/controllers/superfoodControllers/superfood.controller';
+import { SuperfoodCategoryController } from './infra/controllers/superfoodControllers/superfoodCategory.controller';
+import { SuperfoodCertificationController } from './infra/controllers/superfoodControllers/superfoodCertification.controller';
+import { SuperfoodTypeController } from './infra/controllers/superfoodControllers/superfoodType.controller';
+import { SuperfoodPreservationMethodController } from './infra/controllers/superfoodControllers/superfoodPreservationMethod.controller';
+import { SuperfoodNutritionalFeatureController } from './infra/controllers/superfoodControllers/superfoodNutritionalFeature.controller';
+import { SuperfoodBenefitController } from './infra/controllers/superfoodControllers/superfoodBenefit.controller';
+import { SuperfoodProductPresentationController } from './infra/controllers/superfoodControllers/superfoodProductPresentation.controller';
+import { SuperfoodSalesUnitSizeController } from './infra/controllers/superfoodControllers/superfoodSalesUnitSize.controller';
 import { ReviewController } from './infra/controllers/Review.controller';
 
 // Use Cases - Product

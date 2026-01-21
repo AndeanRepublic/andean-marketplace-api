@@ -14,12 +14,12 @@ import {
 	ApiResponse,
 	ApiParam,
 } from '@nestjs/swagger';
-import { CreateSuperfoodNutritionalFeatureDto } from './dto/superfoods/CreateSuperfoodNutritionalFeatureDto';
-import { SuperfoodNutritionalFeatureResponse } from '../../app/modules/SuperfoodNutritionalFeatureResponse';
-import { CreateSuperfoodNutritionalFeatureUseCase } from '../../app/use_cases/superfoods/nutritionalFeature/CreateSuperfoodNutritionalFeatureUseCase';
-import { GetSuperfoodNutritionalFeatureByIdUseCase } from '../../app/use_cases/superfoods/nutritionalFeature/GetSuperfoodNutritionalFeatureByIdUseCase';
-import { ListSuperfoodNutritionalFeaturesUseCase } from '../../app/use_cases/superfoods/nutritionalFeature/ListSuperfoodNutritionalFeaturesUseCase';
-import { DeleteSuperfoodNutritionalFeatureUseCase } from '../../app/use_cases/superfoods/nutritionalFeature/DeleteSuperfoodNutritionalFeatureUseCase';
+import { CreateSuperfoodNutritionalFeatureDto } from '../dto/superfoods/CreateSuperfoodNutritionalFeatureDto';
+import { SuperfoodNutritionalFeatureResponse } from '../../../app/modules/SuperfoodNutritionalFeatureResponse';
+import { CreateSuperfoodNutritionalFeatureUseCase } from '../../../app/use_cases/superfoods/nutritionalFeature/CreateSuperfoodNutritionalFeatureUseCase';
+import { GetSuperfoodNutritionalFeatureByIdUseCase } from '../../../app/use_cases/superfoods/nutritionalFeature/GetSuperfoodNutritionalFeatureByIdUseCase';
+import { ListSuperfoodNutritionalFeaturesUseCase } from '../../../app/use_cases/superfoods/nutritionalFeature/ListSuperfoodNutritionalFeaturesUseCase';
+import { DeleteSuperfoodNutritionalFeatureUseCase } from '../../../app/use_cases/superfoods/nutritionalFeature/DeleteSuperfoodNutritionalFeatureUseCase';
 
 @ApiTags('Superfood Nutritional Features')
 @Controller('superfood-nutritional-features')
