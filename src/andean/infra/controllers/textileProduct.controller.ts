@@ -75,6 +75,7 @@ import { DeleteColorOptionAlternativeUseCase } from 'src/andean/app/use_cases/te
 import { CreateManyColorOptionAlternativesUseCase } from 'src/andean/app/use_cases/textileProducts/CreateManyColorOptionAlternativesUseCase';
 import { CreateManyColorOptionAlternativesDto } from './dto/textileProducts/CreateManyColorOptionAlternativesDto';
 import { PaginatedProductsResponse } from 'src/andean/app/modules/PaginatedProductsResponse';
+import { TextileProductListItem } from 'src/andean/app/modules/TextileProductListItemResponse';
 
 const path_textile_product_id = '/:id';
 const path_textile_categories = '/categories';
@@ -361,7 +362,7 @@ export class TextileProductController {
 		@Query('max_price', new ParseIntPipe({ optional: true })) maxPrice?: number,
 		@Query('category_id') categoryId?: string,
 		@Query('owner_id') ownerId?: string,
-	): Promise<PaginatedProductsResponse<TextileProduct>> {
+	): Promise<PaginatedProductsResponse<TextileProductListItem>> {
 		// Construir objeto de filtros solo con valores definidos
 		const filters: any = {};
 		if (page !== undefined) filters.page = page;
