@@ -6,7 +6,8 @@ import { TextileProductDocument } from '../../persistence/textileProducts/textil
 import { TextileProduct } from 'src/andean/domain/entities/textileProducts/TextileProduct';
 import { TextileProductMapper } from '../../services/textileProducts/TextileProductMapper';
 import { MongoIdUtils } from '../../utils/MongoIdUtils';
-import { FilterCount, FilterCountItem } from 'src/andean/app/modules/PaginatedProductsResponse';
+import { FilterCount } from 'src/andean/app/modules/PaginatedProductsResponse';
+import { TextileProductListItem } from '../../../app/modules/TextileProductListItemResponse';
 
 @Injectable()
 export class TextileProductRepositoryImpl extends TextileProductRepository {
@@ -122,6 +123,261 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 	}
 
 	/**
+	 * Aplica filtros de color y size a un query base
+	 */
+	private applyVariantFilters(query: any, filters: any): void {
+		// Filtro por color en variants
+		if (filters.color) {
+			query.variants = {
+				...query.variants,
+				$elemMatch: {
+					...((query.variants as any)?.$elemMatch || {}),
+					$or: [
+						{ 'combination.color': { $regex: new RegExp(filters.color, 'i') } },
+						{ 'combination.Color': { $regex: new RegExp(filters.color, 'i') } },
+					]
+				}
+			};
+		}
+
+		// Filtro por size en variants
+		if (filters.size) {
+			if (query.variants?.$elemMatch) {
+				query.variants.$elemMatch.$and = [
+					...(query.variants.$elemMatch.$and || []),
+					{
+						$or: [
+							{ 'combination.size': { $regex: new RegExp(filters.size, 'i') } },
+							{ 'combination.Size': { $regex: new RegExp(filters.size, 'i') } },
+							{ 'combination.talla': { $regex: new RegExp(filters.size, 'i') } },
+							{ 'combination.Talla': { $regex: new RegExp(filters.size, 'i') } },
+						]
+					}
+				];
+			} else {
+				query.variants = {
+					$elemMatch: {
+						$or: [
+							{ 'combination.size': { $regex: new RegExp(filters.size, 'i') } },
+							{ 'combination.Size': { $regex: new RegExp(filters.size, 'i') } },
+							{ 'combination.talla': { $regex: new RegExp(filters.size, 'i') } },
+							{ 'combination.Talla': { $regex: new RegExp(filters.size, 'i') } },
+						]
+					}
+				};
+			}
+		}
+	}
+
+	/**
+	 * Construye los lookups para categoría y seller
+	 */
+	private buildCategoryAndSellerLookups(): any[] {
+		return [
+			// Lookup para categoria
+			{
+				$lookup: {
+					from: 'textilecategories',
+					let: { catId: { $convert: { input: '$categoryId', to: 'objectId', onError: null, onNull: null } } },
+					pipeline: [
+						{ $match: { $expr: { $eq: ['$_id', '$$catId'] } } }
+					],
+					as: 'category'
+				}
+			},
+			// Lookup para seller/productor
+			{
+				$lookup: {
+					from: 'sellerprofiles',
+					let: { ownId: { $convert: { input: '$baseInfo.ownerId', to: 'objectId', onError: null, onNull: null } } },
+					pipeline: [
+						{ $match: { $expr: { $eq: ['$_id', '$$ownId'] } } }
+					],
+					as: 'seller'
+				}
+			}
+		];
+	}
+
+	/**
+	 * Construye el procesamiento de opciones de color y lookup de ColorOptionAlternative
+	 */
+	private buildColorProcessingStages(): any[] {
+		return [
+			// Procesar opciones de color
+			{
+				$addFields: {
+					colorOptionIds: {
+						$reduce: {
+							input: {
+								$filter: {
+									input: '$options',
+									as: 'opt',
+									cond: {
+										$or: [
+											{ $eq: [{ $toLower: '$$opt.name' }, 'color'] },
+											{ $eq: [{ $toLower: '$$opt.name' }, 'colour'] }
+										]
+									}
+								}
+							},
+							initialValue: [],
+							in: {
+								$concatArrays: [
+									'$$value',
+									{
+										$map: {
+											input: '$$this.values',
+											as: 'val',
+											in: {
+												id: '$$val.id',
+												label: '$$val.label'
+											}
+										}
+									}
+								]
+							}
+						}
+					}
+				}
+			},
+			// Lookup para ColorOptionAlternative
+			{
+				$lookup: {
+					from: 'coloroptionalternatives',
+					let: { colorIds: '$colorOptionIds' },
+					pipeline: [
+						{
+							$match: {
+								$expr: {
+									$in: [
+										{ $toString: '$_id' },
+										{
+											$map: {
+												input: '$$colorIds',
+												as: 'c',
+												in: '$$c.id'
+											}
+										}
+									]
+								}
+							}
+						}
+					],
+					as: 'colorAlternatives'
+				}
+			}
+		];
+	}
+
+	/**
+	 * Construye la proyección final del formato de respuesta
+	 */
+	private buildFinalProjection(): any {
+		return {
+			$project: {
+				_id: 0,
+				id: '$_id',
+				titulo: '$baseInfo.title',
+				categoryName: {
+					$ifNull: [
+						{ $arrayElemAt: ['$category.name', 0] },
+						'Sin categoría'
+					]
+				},
+				productorName: {
+					$ifNull: [
+						{ $arrayElemAt: ['$seller.commercialName', 0] },
+						'Productor desconocido'
+					]
+				},
+				principalImgUrl: {
+					$ifNull: [
+						{ $arrayElemAt: ['$baseInfo.media', 0] },
+						''
+					]
+				},
+				price: {
+					$ifNull: [
+						{
+							$cond: {
+								if: { $gt: [{ $size: { $ifNull: ['$variants', []] } }, 0] },
+								then: { $min: '$variants.price' },
+								else: '$priceInventary.basePrice'
+							}
+						},
+						'$priceInventary.basePrice'
+					]
+				},
+				colors: {
+					$map: {
+						input: '$colorOptionIds',
+						as: 'colorOpt',
+						in: {
+							$let: {
+								vars: {
+									matchedColor: {
+										$arrayElemAt: [
+											{
+												$filter: {
+													input: '$colorAlternatives',
+													as: 'alt',
+													cond: { $eq: [{ $toString: '$$alt._id' }, '$$colorOpt.id'] }
+												}
+											},
+											0
+										]
+									}
+								},
+								in: {
+									name: '$$colorOpt.label',
+									colorHexCode: { $ifNull: ['$$matchedColor.hexCode', '#000000'] }
+								}
+							}
+						}
+					}
+				},
+				tallas: {
+					$reduce: {
+						input: { $ifNull: ['$variants', []] },
+						initialValue: [],
+						in: {
+							$setUnion: [
+								'$$value',
+								{
+									$cond: [
+										{ $ifNull: ['$$this.combination.size', false] },
+										[{ $toLower: '$$this.combination.size' }],
+										{
+											$cond: [
+												{ $ifNull: ['$$this.combination.Size', false] },
+												[{ $toLower: '$$this.combination.Size' }],
+												{
+													$cond: [
+														{ $ifNull: ['$$this.combination.talla', false] },
+														[{ $toLower: '$$this.combination.talla' }],
+														{
+															$cond: [
+																{ $ifNull: ['$$this.combination.Talla', false] },
+																[{ $toLower: '$$this.combination.Talla' }],
+																[]
+															]
+														}
+													]
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+					}
+				}
+			}
+		};
+	}
+
+	/**
 	 * Ejecuta una aggregation para contar y hacer lookup de documentos relacionados
 	 */
 	private async aggregateWithLookup(
@@ -217,65 +473,6 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 		return TextileProductMapper.fromDocument(updated!);
 	}
 
-	async getAllWithFilters(filters: any): Promise<{ products: TextileProduct[]; total: number }> {
-		const query = this.buildBaseQuery(filters);
-
-		// Filtro por color en variants
-		if (filters.color) {
-			query.variants = {
-				...query.variants,
-				$elemMatch: {
-					...((query.variants as any)?.$elemMatch || {}),
-					$or: [
-						{ 'combination.color': { $regex: new RegExp(filters.color, 'i') } },
-						{ 'combination.Color': { $regex: new RegExp(filters.color, 'i') } },
-					]
-				}
-			};
-		}
-
-		// Filtro por size en variants
-		if (filters.size) {
-			if (query.variants?.$elemMatch) {
-				query.variants.$elemMatch.$and = [
-					...(query.variants.$elemMatch.$and || []),
-					{
-						$or: [
-							{ 'combination.size': { $regex: new RegExp(filters.size, 'i') } },
-							{ 'combination.Size': { $regex: new RegExp(filters.size, 'i') } },
-							{ 'combination.talla': { $regex: new RegExp(filters.size, 'i') } },
-							{ 'combination.Talla': { $regex: new RegExp(filters.size, 'i') } },
-						]
-					}
-				];
-			} else {
-				query.variants = {
-					$elemMatch: {
-						$or: [
-							{ 'combination.size': { $regex: new RegExp(filters.size, 'i') } },
-							{ 'combination.Size': { $regex: new RegExp(filters.size, 'i') } },
-							{ 'combination.talla': { $regex: new RegExp(filters.size, 'i') } },
-							{ 'combination.Talla': { $regex: new RegExp(filters.size, 'i') } },
-						]
-					}
-				};
-			}
-		}
-
-		// Paginación
-		const page = filters.page || 1;
-		const perPage = filters.perPage || 10;
-		const skip = (page - 1) * perPage;
-
-		const [docs, total] = await Promise.all([
-			this.textileProductModel.find(query).skip(skip).limit(perPage).exec(),
-			this.textileProductModel.countDocuments(query).exec(),
-		]);
-
-		const products = docs.map((doc) => TextileProductMapper.fromDocument(doc));
-		return { products, total };
-	}
-
 	async deleteTextileProduct(id: string): Promise<void> {
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		await this.textileProductModel.findByIdAndDelete(objectId).exec();
@@ -333,5 +530,37 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 		};
 
 		return filterCount;
+	}
+
+	async getAllWithFilters(filters: any): Promise<{ products: TextileProductListItem[]; total: number }> {
+		const query = this.buildBaseQuery(filters);
+
+		// Aplicar filtros de variantes usando método modular
+		this.applyVariantFilters(query, filters);
+
+		// Paginación
+		const page = filters.page || 1;
+		const perPage = filters.perPage || 10;
+		const skip = (page - 1) * perPage;
+
+		// Aggregation pipeline usando métodos modulares
+		const pipeline: any[] = [
+			{ $match: query },
+			...this.buildCategoryAndSellerLookups(),
+			...this.buildColorProcessingStages(),
+			this.buildFinalProjection(),
+			{ $skip: skip },
+			{ $limit: perPage }
+		];
+
+		const [products, countResult] = await Promise.all([
+			this.textileProductModel.aggregate(pipeline).exec(),
+			this.textileProductModel.countDocuments(query).exec()
+		]);
+
+		return {
+			products: products as TextileProductListItem[],
+			total: countResult
+		};
 	}
 }
