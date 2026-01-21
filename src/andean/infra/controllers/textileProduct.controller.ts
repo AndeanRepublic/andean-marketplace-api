@@ -55,6 +55,8 @@ import { CreateTextileProductDto } from './dto/textileProducts/CreateTextileProd
 import { UpdateTextileProductUseCase } from 'src/andean/app/use_cases/textileProducts/UpdateTextileProductUseCase';
 import { GetAllTextileProductsUseCase } from 'src/andean/app/use_cases/textileProducts/GetAllTextileProductsUseCase';
 import { GetByIdTextileProductUseCase } from 'src/andean/app/use_cases/textileProducts/GetByIdTextileProductUseCase';
+import { GetByIdTextileProductDetailUseCase } from 'src/andean/app/use_cases/textileProducts/GetByIdTextileProductDetailUseCase';
+import { TextileProductDetailResponse } from 'src/andean/app/models/TextileProducts/TextileProductDetailResponse';
 import { DeleteTextileProductUseCase } from 'src/andean/app/use_cases/textileProducts/DeleteTextileProductUseCase';
 import { CreateTextileCertificationUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileCertificationUseCase';
 import { TextileCertification } from 'src/andean/domain/entities/textileProducts/TextileCertification';
@@ -83,6 +85,7 @@ import { CreateManySizeOptionAlternativesUseCase } from 'src/andean/app/use_case
 import { CreateManySizeOptionAlternativesDto } from './dto/textileProducts/CreateManySizeOptionAlternativesDto';
 
 const path_textile_product_id = '/:id';
+const path_textile_product_details = '/:id/details';
 const path_textile_categories = '/categories';
 const path_textile_categories_id = '/categories/:id';
 const path_textile_types = '/types';
@@ -145,6 +148,7 @@ export class TextileProductController {
 		private readonly updateTextileProductUseCase: UpdateTextileProductUseCase,
 		private readonly getAllTextileProductsUseCase: GetAllTextileProductsUseCase,
 		private readonly getByIdTextileProductUseCase: GetByIdTextileProductUseCase,
+		private readonly getByIdTextileProductDetailUseCase: GetByIdTextileProductDetailUseCase,
 		private readonly deleteTextileProductUseCase: DeleteTextileProductUseCase,
 		private readonly createTextileCertificationUseCase: CreateTextileCertificationUseCase,
 		private readonly updateTextileCertificationUseCase: UpdateTextileCertificationUseCase,
@@ -378,6 +382,13 @@ export class TextileProductController {
 		@Param('id') id: string,
 	): Promise<TextileProduct> {
 		return this.getByIdTextileProductUseCase.handle(id);
+	}
+
+	@Get(path_textile_product_details)
+	async getTextileProductDetail(
+		@Param('id') id: string,
+	): Promise<TextileProductDetailResponse> {
+		return this.getByIdTextileProductDetailUseCase.handle(id);
 	}
 
 	@Delete(path_textile_product_id)

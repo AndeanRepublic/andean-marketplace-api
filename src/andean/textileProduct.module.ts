@@ -12,6 +12,7 @@ import { ColorOptionAlternativeSchema } from './infra/persistence/textileProduct
 import { SizeOptionAlternativeSchema } from './infra/persistence/textileProducts/SizeOptionAlternative.schema';
 import { UsersModule } from './users.module';
 import { ShopsModule } from './shop.module';
+import { CommunityModule } from './community.module';
 import { OriginProductModule } from './originProduct.module';
 import { CreateTextileCategoryUseCase } from './app/use_cases/textileProducts/CreateTextileCategoryUseCase';
 import { TextileCategoryRepository } from './app/datastore/textileProducts/TextileCategory.repo';
@@ -57,6 +58,7 @@ import { CreateTextileProductUseCase } from './app/use_cases/textileProducts/Cre
 import { UpdateTextileProductUseCase } from './app/use_cases/textileProducts/UpdateTextileProductUseCase';
 import { GetAllTextileProductsUseCase } from './app/use_cases/textileProducts/GetAllTextileProductsUseCase';
 import { GetByIdTextileProductUseCase } from './app/use_cases/textileProducts/GetByIdTextileProductUseCase';
+import { GetByIdTextileProductDetailUseCase } from './app/use_cases/textileProducts/GetByIdTextileProductDetailUseCase';
 import { DeleteTextileProductUseCase } from './app/use_cases/textileProducts/DeleteTextileProductUseCase';
 import { TextileCraftTechniqueRepository } from './app/datastore/textileProducts/TextileCraftTechnique.repo';
 import { TextileCraftTechniqueRepositoryImpl } from './infra/datastore/textileProducts/textileCraftTechnique.repo.impl';
@@ -154,6 +156,7 @@ import { SuperfoodModule } from './superfood.module';
 		]),
 		UsersModule,
 		ShopsModule,
+		CommunityModule,
 		OriginProductModule,
 		forwardRef(() => SuperfoodModule),
 	],
@@ -193,6 +196,7 @@ import { SuperfoodModule } from './superfood.module';
 		UpdateTextileProductUseCase,
 		GetAllTextileProductsUseCase,
 		GetByIdTextileProductUseCase,
+		GetByIdTextileProductDetailUseCase,
 		DeleteTextileProductUseCase,
 		CreateTextileCertificationUseCase,
 		UpdateTextileCertificationUseCase,
@@ -263,7 +267,7 @@ import { SuperfoodModule } from './superfood.module';
 		{
 			provide: ReviewRepository,
 			useClass: ReviewRepositoryImpl,
-		},
+		}
 	],
 	exports: [
 		TextileCategoryRepository,
