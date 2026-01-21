@@ -6,6 +6,7 @@ import {
 	Param,
 	Put,
 	Delete,
+	Patch,
 } from '@nestjs/common';
 import { CreateReviewUseCase } from 'src/andean/app/use_cases/CreateReviewUseCase';
 import { Review } from 'src/andean/domain/entities/Review';
@@ -14,6 +15,10 @@ import { GetAllReviewsUseCase } from 'src/andean/app/use_cases/GetAllReviewsUseC
 import { GetByIdReviewUseCase } from 'src/andean/app/use_cases/GetByIdReviewUseCase';
 import { UpdateReviewUseCase } from 'src/andean/app/use_cases/UpdateReviewUseCase';
 import { DeleteReviewUseCase } from 'src/andean/app/use_cases/DeleteReviewUseCase';
+import { IncrementLikesUseCase } from 'src/andean/app/use_cases/IncrementLikesUseCase';
+import { IncrementDislikesUseCase } from 'src/andean/app/use_cases/IncrementDislikesUseCase';
+import { DecrementLikesUseCase } from 'src/andean/app/use_cases/DecrementLikesUseCase';
+import { DecrementDislikesUseCase } from 'src/andean/app/use_cases/DecrementDislikesUseCase';
 
 const path_reviews = '/';
 const path_reviews_id = '/:id';
@@ -26,6 +31,10 @@ export class ReviewController {
 		private readonly getByIdReviewUseCase: GetByIdReviewUseCase,
 		private readonly updateReviewUseCase: UpdateReviewUseCase,
 		private readonly deleteReviewUseCase: DeleteReviewUseCase,
+		private readonly incrementLikesUseCase: IncrementLikesUseCase,
+		private readonly incrementDislikesUseCase: IncrementDislikesUseCase,
+		private readonly decrementLikesUseCase: DecrementLikesUseCase,
+		private readonly decrementDislikesUseCase: DecrementDislikesUseCase,
 	) {}
 
 	@Post(path_reviews)
@@ -54,5 +63,25 @@ export class ReviewController {
 	@Delete(path_reviews_id)
 	async deleteReview(@Param('id') id: string): Promise<void> {
 		return this.deleteReviewUseCase.handle(id);
+	}
+
+	@Patch(`${path_reviews_id}/likes`)
+	async incrementLikes(@Param('id') id: string): Promise<Review> {
+		return this.incrementLikesUseCase.handle(id);
+	}
+
+	@Patch(`${path_reviews_id}/dislikes`)
+	async incrementDislikes(@Param('id') id: string): Promise<Review> {
+		return this.incrementDislikesUseCase.handle(id);
+	}
+
+	@Delete(`${path_reviews_id}/likes`)
+	async decrementLikes(@Param('id') id: string): Promise<Review> {
+		return this.decrementLikesUseCase.handle(id);
+	}
+
+	@Delete(`${path_reviews_id}/dislikes`)
+	async decrementDislikes(@Param('id') id: string): Promise<Review> {
+		return this.decrementDislikesUseCase.handle(id);
 	}
 }
