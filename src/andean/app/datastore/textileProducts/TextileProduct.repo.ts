@@ -1,5 +1,6 @@
 import { TextileProduct } from '../../../domain/entities/textileProducts/TextileProduct';
 import { FilterCount } from '../../modules/PaginatedProductsResponse';
+import { TextileProductListItem } from '../../modules/TextileProductListItemResponse';
 
 export interface ProductFilters {
 	color?: string;
@@ -15,7 +16,7 @@ export interface ProductFilters {
 export abstract class TextileProductRepository {
 	abstract getAllTextileProducts(): Promise<TextileProduct[]>;
 	abstract getAllWithPagination(page: number, perPage: number): Promise<{ products: TextileProduct[]; total: number }>;
-	abstract getAllWithFilters(filters: ProductFilters): Promise<{ products: TextileProduct[]; total: number }>;
+	abstract getAllWithFilters(filters: ProductFilters): Promise<{ products: TextileProductListItem[]; total: number }>;
 	abstract getFilterCounts(filters?: ProductFilters): Promise<FilterCount>;
 	abstract getTextileProductById(id: string): Promise<TextileProduct | null>;
 	abstract saveTextileProduct(product: TextileProduct): Promise<TextileProduct>;
