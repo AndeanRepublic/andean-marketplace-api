@@ -3,6 +3,7 @@ import { TextileProductRepository } from "../../datastore/textileProducts/Textil
 import { TextileProductDetailResponse } from "../../models/TextileProducts/TextileProductDetailResponse";
 import { ProductType } from "../../../domain/enums/ProductType";
 import { OwnerType } from "../../../domain/enums/OwnerType";
+import { TextileOptionName } from "../../../domain/enums/TextileOptionName";
 import { ReviewRepository } from "../../datastore/Review.repo";
 import { CustomerProfileRepository } from "../../datastore/Customer.repo";
 import { CommunityRepository } from "../../datastore/community/community.repo";
@@ -68,8 +69,9 @@ export class GetByIdTextileProductDetailUseCase {
 		}));
 
 		// 6. Obtener sizes y colors de options
-		const sizeOption = product.options?.find((opt) => opt.name === 'size');
-		const colorOption = product.options?.find((opt) => opt.name === 'color');
+		const sizeOption = product.options?.find((opt) => opt.name === TextileOptionName.SIZE);
+		const colorOption = product.options?.find((opt) => opt.name === TextileOptionName.COLOR);
+		const materialOption = product.options?.find((opt) => opt.name === TextileOptionName.MATERIAL);
 
 		// 7. Obtener availableSizes
 		const availableSizes: string[] = [];
@@ -106,14 +108,21 @@ export class GetByIdTextileProductDetailUseCase {
 		}
 
 		// 9. Obtener availableMaterials
-		const availableMaterials =
-			product.detailTraceability?.secondaryMaterial || [];
+		const availableMaterials: string[] = [];
+		if (materialOption) {
+			for (const value of materialOption.values) {
+				if (value.label && !availableMaterials.includes(value.label)) {
+					availableMaterials.push(value.label);
+				}
+			}
+		}
 
 		// 10. Construir variantInfo
 		const variantInfo = await this.buildVariantInfo(
 			product,
 			sizeOption,
 			colorOption,
+			materialOption,
 		);
 
 		// 11. Agrupar traceability epochs
@@ -220,6 +229,7 @@ export class GetByIdTextileProductDetailUseCase {
 		product: any,
 		sizeOption: any,
 		colorOption: any,
+		materialOption: any,
 		): Promise<
 			{
 				size: string;
@@ -242,12 +252,12 @@ export class GetByIdTextileProductDetailUseCase {
 		}[] = [];
 
 		for (const variant of product.variants) {
-			// Obtener size del combination
+			// Obtener size del combination (ahora usa name directamente)
 			let size = '';
-			if (sizeOption && variant.combination[sizeOption.id]) {
-				const sizeValueId = variant.combination[sizeOption.id];
+			if (sizeOption && variant.combination[TextileOptionName.SIZE]) {
+				const sizeLabel = variant.combination[TextileOptionName.SIZE];
 				const sizeValue = sizeOption.values.find(
-					(v: any) => v.id === sizeValueId,
+					(v: any) => v.label === sizeLabel,
 				);
 				if (sizeValue?.idOpcionAlternative) {
 					const sizeAlt = await this.sizeOptionAlternativeRepository.getById(
@@ -255,16 +265,16 @@ export class GetByIdTextileProductDetailUseCase {
 					);
 					size = sizeAlt?.nameLabel || sizeValue.label || '';
 				} else {
-					size = sizeValue?.label || '';
+					size = sizeValue?.label || sizeLabel || '';
 				}
 			}
 
-			// Obtener color del combination
+			// Obtener color del combination (ahora usa name directamente)
 			let color = '';
-			if (colorOption && variant.combination[colorOption.id]) {
-				const colorValueId = variant.combination[colorOption.id];
+			if (colorOption && variant.combination[TextileOptionName.COLOR]) {
+				const colorLabel = variant.combination[TextileOptionName.COLOR];
 				const colorValue = colorOption.values.find(
-					(v: any) => v.id === colorValueId,
+					(v: any) => v.label === colorLabel,
 				);
 				if (colorValue?.idOpcionAlternative) {
 					const colorAlt = await this.colorOptionAlternativeRepository.getById(
@@ -272,13 +282,21 @@ export class GetByIdTextileProductDetailUseCase {
 					);
 					color = colorAlt?.nameLabel || colorValue.label || '';
 				} else {
-					color = colorValue?.label || '';
+					color = colorValue?.label || colorLabel || '';
 				}
 			}
 
-			// Material - usar secondaryMaterial si está disponible
-			const material =
-				product.detailTraceability?.secondaryMaterial?.join(', ') || '';
+			// Obtener material del combination (ahora usa name directamente)
+			let material = '';
+			if (materialOption && variant.combination[TextileOptionName.MATERIAL]) {
+				const materialLabel = variant.combination[TextileOptionName.MATERIAL];
+				const materialValue = materialOption.values.find(
+					(v: any) => v.label === materialLabel,
+				);
+				material = materialValue?.label || materialLabel || '';
+			} else {
+				material = '';
+			}
 
 			variantInfoArray.push({
 				size,
@@ -411,7 +429,7 @@ export class GetByIdTextileProductDetailUseCase {
 
 				// Obtener colors
 				const colorOption = product.options?.find(
-					(opt) => opt.name === 'color',
+					(opt) => opt.name === TextileOptionName.COLOR,
 				);
 				const colors: { colorName: string; colorHexCode: string }[] = [];
 
@@ -433,7 +451,7 @@ export class GetByIdTextileProductDetailUseCase {
 
 				// Obtener sizes
 				const sizeOption = product.options?.find(
-					(opt) => opt.name === 'size',
+					(opt) => opt.name === TextileOptionName.SIZE,
 				);
 				const sizes: string[] = [];
 

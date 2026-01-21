@@ -115,23 +115,16 @@ export class TextileProductMapper {
 
 		const options = (dto.options || []).map((opt) => {
 			const values = (opt.values || []).map((item) =>
-				plainToInstance(TextileOptionsItem, {
-					...item,
-					id: new Types.ObjectId().toString(),
-				}),
+				plainToInstance(TextileOptionsItem, item),
 			);
 			return plainToInstance(TextileOptions, {
 				...opt,
-				id: new Types.ObjectId().toString(),
 				values,
 			});
 		});
 
 		const variants = (dto.variants || []).map((variant) =>
-			plainToInstance(TextileVariant, {
-				...variant,
-				id: new Types.ObjectId().toString(),
-			}),
+			plainToInstance(TextileVariant, variant),
 		);
 
 		const plain = {
@@ -192,23 +185,16 @@ export class TextileProductMapper {
 
 		const options = dto.options?.map((opt) => {
 			const values = (opt.values || []).map((item) =>
-				plainToInstance(TextileOptionsItem, {
-					...item,
-					id: new Types.ObjectId().toString(),
-				}),
+				plainToInstance(TextileOptionsItem, item),
 			);
 			return plainToInstance(TextileOptions, {
 				...opt,
-				id: new Types.ObjectId().toString(),
 				values,
 			});
 		});
 
 		const variants = dto.variants?.map((variant) =>
-			plainToInstance(TextileVariant, {
-				...variant,
-				id: new Types.ObjectId().toString(),
-			}),
+			plainToInstance(TextileVariant, variant),
 		);
 
 		const plain = {
