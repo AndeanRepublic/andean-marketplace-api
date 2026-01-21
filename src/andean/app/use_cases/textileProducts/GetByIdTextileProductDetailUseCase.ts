@@ -125,10 +125,16 @@ export class GetByIdTextileProductDetailUseCase {
 			materialOption,
 		);
 
-		// 11. Agrupar traceability epochs
-		const traceabilityInfo = this.groupTraceabilityEpochs(
+		// 11. Agrupar traceability epochs y agregar blockchainLink
+		const groupedEpochs = this.groupTraceabilityEpochs(
 			product.productTraceability?.epochs || [],
 		);
+		const traceabilityInfo = {
+			...(product.productTraceability?.blockchainLink && {
+				blockchainLink: product.productTraceability.blockchainLink,
+			}),
+			...groupedEpochs,
+		};
 
 		// 12. Obtener productos similares
 		const similarProducts = await this.getSimilarProducts(
@@ -138,7 +144,7 @@ export class GetByIdTextileProductDetailUseCase {
 
 		// 13. Obtener communityInfo si es COMMUNITY
 		let communityInfo: {
-			imgUrl: string;
+			bannerImageUrl: string;
 			name: string;
 			seals: { title: string; description: string; logoUrl: string }[];
 		} | undefined = undefined;
@@ -156,7 +162,7 @@ export class GetByIdTextileProductDetailUseCase {
 					: [];
 
 				communityInfo = {
-					imgUrl: '', // No hay imgUrl en Community, podrías agregarlo o usar un valor por defecto
+					bannerImageUrl: community.bannerImageUrl,
 					name: community.name,
 					seals: seals
 						.filter((seal): seal is NonNullable<typeof seal> => seal !== null)
