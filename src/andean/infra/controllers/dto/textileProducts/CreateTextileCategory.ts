@@ -16,7 +16,7 @@ export class CreateTextileCategoryDto {
 	@ApiProperty({
 		description: 'Estado de la categoría textil',
 		enum: TextileCategoryStatus,
-		example: TextileCategoryStatus.ACTIVE,
+		example: TextileCategoryStatus.ENABLED,
 	})
 	@IsEnum(TextileCategoryStatus)
 	@IsNotEmpty()
