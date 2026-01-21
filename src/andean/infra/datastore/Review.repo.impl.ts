@@ -56,4 +56,64 @@ export class ReviewRepositoryImpl extends ReviewRepository {
 			.exec();
 		return docs.map((doc) => ReviewMapper.fromDocument(doc));
 	}
+
+	async incrementLikes(id: string): Promise<Review> {
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		const updated = await this.reviewModel
+			.findByIdAndUpdate(
+				objectId,
+				{ $inc: { numberLikes: 1 }, $set: { updatedAt: new Date() } },
+				{ new: true },
+			)
+			.exec();
+		if (!updated) {
+			throw new Error('Review not found');
+		}
+		return ReviewMapper.fromDocument(updated);
+	}
+
+	async incrementDislikes(id: string): Promise<Review> {
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		const updated = await this.reviewModel
+			.findByIdAndUpdate(
+				objectId,
+				{ $inc: { numberDislikes: 1 }, $set: { updatedAt: new Date() } },
+				{ new: true },
+			)
+			.exec();
+		if (!updated) {
+			throw new Error('Review not found');
+		}
+		return ReviewMapper.fromDocument(updated);
+	}
+
+	async decrementLikes(id: string): Promise<Review> {
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		const updated = await this.reviewModel
+			.findByIdAndUpdate(
+				objectId,
+				{ $inc: { numberLikes: -1 }, $set: { updatedAt: new Date() } },
+				{ new: true },
+			)
+			.exec();
+		if (!updated) {
+			throw new Error('Review not found');
+		}
+		return ReviewMapper.fromDocument(updated);
+	}
+
+	async decrementDislikes(id: string): Promise<Review> {
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		const updated = await this.reviewModel
+			.findByIdAndUpdate(
+				objectId,
+				{ $inc: { numberDislikes: -1 }, $set: { updatedAt: new Date() } },
+				{ new: true },
+			)
+			.exec();
+		if (!updated) {
+			throw new Error('Review not found');
+		}
+		return ReviewMapper.fromDocument(updated);
+	}
 }

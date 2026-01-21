@@ -111,6 +111,10 @@ import { GetAllReviewsUseCase } from './app/use_cases/GetAllReviewsUseCase';
 import { GetByIdReviewUseCase } from './app/use_cases/GetByIdReviewUseCase';
 import { UpdateReviewUseCase } from './app/use_cases/UpdateReviewUseCase';
 import { DeleteReviewUseCase } from './app/use_cases/DeleteReviewUseCase';
+import { IncrementLikesUseCase } from './app/use_cases/IncrementLikesUseCase';
+import { IncrementDislikesUseCase } from './app/use_cases/IncrementDislikesUseCase';
+import { DecrementLikesUseCase } from './app/use_cases/DecrementLikesUseCase';
+import { DecrementDislikesUseCase } from './app/use_cases/DecrementDislikesUseCase';
 import { SuperfoodModule } from './superfood.module';
 
 @Module({
@@ -243,6 +247,10 @@ import { SuperfoodModule } from './superfood.module';
 		GetByIdReviewUseCase,
 		UpdateReviewUseCase,
 		DeleteReviewUseCase,
+		IncrementLikesUseCase,
+		IncrementDislikesUseCase,
+		DecrementLikesUseCase,
+		DecrementDislikesUseCase,
 		{
 			provide: TextileCategoryRepository,
 			useClass: TextileCategoryRepositoryImpl,
