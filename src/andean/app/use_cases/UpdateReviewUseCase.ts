@@ -7,6 +7,7 @@ import { CustomerProfileRepository } from '../datastore/Customer.repo';
 import { TextileProductRepository } from '../datastore/textileProducts/TextileProduct.repo';
 import { SuperfoodProductRepository } from '../datastore/superfoods/SuperfoodProduct.repo';
 import { ProductType } from 'src/andean/domain/enums/ProductType';
+import { UpdateReviewDto } from 'src/andean/infra/controllers/dto/UpdateReviewDto';
 
 @Injectable()
 export class UpdateReviewUseCase {
@@ -21,42 +22,59 @@ export class UpdateReviewUseCase {
 		private readonly superfoodProductRepository: SuperfoodProductRepository,
 	) {}
 
-	async handle(id: string, dto: CreateReviewDto): Promise<Review> {
+	async handle(id: string, dto: UpdateReviewDto): Promise<Review> {
 		const reviewFound = await this.reviewRepository.getById(id);
 		if (!reviewFound) {
 			throw new NotFoundException('Review not found');
 		}
 
 		// Validar customerId
-		const customerFound =
-			await this.customerProfileRepository.getCustomerById(dto.customerId);
-		if (!customerFound) {
-			throw new NotFoundException('Customer not found');
+		if (dto.customerId) {
+			const customerFound =
+				await this.customerProfileRepository.getCustomerById(dto.customerId);
+			if (!customerFound) {
+				throw new NotFoundException('Customer not found');
+			}
 		}
 
 		// Validar productId según productType
-		if (dto.productType === ProductType.TEXTILE) {
-			const productFound =
-				await this.textileProductRepository.getTextileProductById(
-					dto.productId,
-				);
-			if (!productFound) {
-				throw new NotFoundException('TextileProduct not found');
+		if (dto.productId && dto.productType) {
+			if (dto.productType === ProductType.TEXTILE) {
+				const productFound =
+					await this.textileProductRepository.getTextileProductById(
+						dto.productId,
+					);
+				if (!productFound) {
+					throw new NotFoundException('TextileProduct not found');
+				}
+			} else if (dto.productType === ProductType.SUPERFOOD) {
+				const productFound =
+					await this.superfoodProductRepository.getSuperfoodProductById(
+						dto.productId,
+					);
+				if (!productFound) {
+					throw new NotFoundException('SuperfoodProduct not found');
+				}
+			} else if (dto.productType === ProductType.EXPERIENCE) {
+				// TODO: Agregar validación cuando exista ExperienceProductRepository
+				// Por ahora solo validamos que el tipo sea válido
 			}
-		} else if (dto.productType === ProductType.SUPERFOOD) {
-			const productFound =
-				await this.superfoodProductRepository.getSuperfoodProductById(
-					dto.productId,
-				);
-			if (!productFound) {
-				throw new NotFoundException('SuperfoodProduct not found');
-			}
-		} else if (dto.productType === ProductType.EXPERIENCE) {
-			// TODO: Agregar validación cuando exista ExperienceProductRepository
-			// Por ahora solo validamos que el tipo sea válido
 		}
 
-		const toUpdate = ReviewMapper.fromUpdateDto(id, dto);
-		return this.reviewRepository.update(id, toUpdate);
+		console.log("reviewFound", reviewFound);
+		console.log("dto", dto);
+
+		const updatedData: Partial<Review> = {
+			...reviewFound,
+			...dto,
+		};
+
+		const updated = await this.reviewRepository.update(id, updatedData);
+
+		if (!updated) {
+			throw new NotFoundException('Failed to update Review');
+		}
+
+		return updated;
 	}
 }

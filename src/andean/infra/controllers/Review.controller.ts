@@ -11,6 +11,7 @@ import {
 import { CreateReviewUseCase } from 'src/andean/app/use_cases/CreateReviewUseCase';
 import { Review } from 'src/andean/domain/entities/Review';
 import { CreateReviewDto } from './dto/CreateReviewDto';
+import { UpdateReviewDto } from './dto/UpdateReviewDto';
 import { GetAllReviewsUseCase } from 'src/andean/app/use_cases/GetAllReviewsUseCase';
 import { GetByIdReviewUseCase } from 'src/andean/app/use_cases/GetByIdReviewUseCase';
 import { UpdateReviewUseCase } from 'src/andean/app/use_cases/UpdateReviewUseCase';
@@ -19,6 +20,7 @@ import { IncrementLikesUseCase } from 'src/andean/app/use_cases/IncrementLikesUs
 import { IncrementDislikesUseCase } from 'src/andean/app/use_cases/IncrementDislikesUseCase';
 import { DecrementLikesUseCase } from 'src/andean/app/use_cases/DecrementLikesUseCase';
 import { DecrementDislikesUseCase } from 'src/andean/app/use_cases/DecrementDislikesUseCase';
+
 
 const path_reviews = '/';
 const path_reviews_id = '/:id';
@@ -55,7 +57,7 @@ export class ReviewController {
 	@Put(path_reviews_id)
 	async updateReview(
 		@Param('id') id: string,
-		@Body() body: CreateReviewDto,
+		@Body() body: UpdateReviewDto,
 	): Promise<Review> {
 		return this.updateReviewUseCase.handle(id, body);
 	}
