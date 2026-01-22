@@ -1,29 +1,23 @@
 import { CartShopItemDocument } from '../persistence/cartShopItem.schema';
 import { CartItem } from '../../domain/entities/CartItem';
+import { instanceToPlain, plainToInstance } from 'class-transformer';
+import { Types } from 'mongoose';
 
 export class CartItemMapper {
   static fromDocument(doc: CartShopItemDocument): CartItem {
-    return new CartItem(
-      doc.id,
-      doc.userId,
-      doc.cartId,
-      doc.productId,
-      doc.variantProductId,
-      doc.quantity,
-      doc.unitPrice,
-    );
+		const plain = doc.toObject();
+		return plainToInstance(CartItem, {
+			id: plain._id.toString(),
+			...plain,
+		})
   }
 
   static toPersistence(cartItem: CartItem) {
+
+		const plain = instanceToPlain(cartItem);
+		const { id, _id, __v, ...updateData } = plain;
     return {
-      _id: crypto.randomUUID(),
-      id: cartItem.id,
-      userId: cartItem.userId,
-      cartId: cartItem.cartId,
-      productId: cartItem.productId,
-      variantProductId: cartItem.variantProductId,
-      quantity: cartItem.quantity,
-      unitPrice: cartItem.unitPrice,
+      ...updateData,
     };
   }
 }

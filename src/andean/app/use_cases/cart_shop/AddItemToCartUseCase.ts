@@ -13,7 +13,7 @@ import { Types } from 'mongoose';
 export class AddItemToCartUseCase {
   constructor(
     @Inject(CustomerProfileRepository)
-    private readonly userRepository: CustomerProfileRepository,
+    private readonly customerRepository: CustomerProfileRepository,
     @Inject(ProductRepository)
     private readonly productRepository: ProductRepository,
     @Inject(ProductVariantRepository)
@@ -24,8 +24,8 @@ export class AddItemToCartUseCase {
     private readonly cartItemRepository: CartShopItemRepository,
   ) {}
 
-  async handle(userId: string, itemDto: AddCartItemDto): Promise<CartShop> {
-    const customerFound = await this.userRepository.getCustomerById(userId);
+  async handle(customerId: string, itemDto: AddCartItemDto): Promise<CartShop> {
+    const customerFound = await this.customerRepository.getCustomerById(customerId);
     if (!customerFound) {
       throw new NotFoundException('CustomerProfile not found');
     }
@@ -35,11 +35,11 @@ export class AddItemToCartUseCase {
     if (!productFound) {
       throw new NotFoundException('Product not found');
     }
-    let cartFound = await this.cartShopRepository.getCartByUser(userId);
+    let cartFound = await this.cartShopRepository.getCartByCustomerId(customerId);
     if (!cartFound) {
       cartFound = new CartShop(
         new Types.ObjectId().toString(),
-        userId,
+        customerId,
         0,
         0,
         0,
@@ -58,14 +58,19 @@ export class AddItemToCartUseCase {
       }
       unitPrice = variantFound.price;
     }
+    const discount = itemDto.discount || 0;
     const toCreate = new CartItem(
-      crypto.randomUUID(),
-      userId,
+      new Types.ObjectId().toString(),
       cartFound.id,
+      itemDto.productType,
       itemDto.productId,
-      itemDto.productVariantId,
       itemDto.quantity,
       unitPrice,
+      discount,
+			new Date(),
+			new Date(),
+
+			itemDto.productVariantId || undefined,
     );
     await this.cartItemRepository.createItem(toCreate);
     return cartFound;

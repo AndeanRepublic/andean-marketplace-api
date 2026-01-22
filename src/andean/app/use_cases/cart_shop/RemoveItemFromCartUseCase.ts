@@ -6,13 +6,13 @@ import { CartShopItemRepository } from '../../datastore/CartShopItem.repo';
 export class RemoveItemFromCartUseCase {
   constructor(
     @Inject(CustomerProfileRepository)
-    private readonly userRepository: CustomerProfileRepository,
+    private readonly customerRepository: CustomerProfileRepository,
     @Inject(CartShopItemRepository)
     private readonly cartItemRepository: CartShopItemRepository,
   ) {}
 
-  async handle(userId: string, itemId: string): Promise<void> {
-    const customerFound = await this.userRepository.getCustomerById(userId);
+  async handle(customerId: string, itemId: string): Promise<void> {
+    const customerFound = await this.customerRepository.getCustomerById(customerId);
     if (!customerFound) {
       throw new NotFoundException('CustomerProfile not found');
     }

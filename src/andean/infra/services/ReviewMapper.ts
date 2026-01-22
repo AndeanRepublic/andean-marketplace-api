@@ -41,8 +41,6 @@ export class ReviewMapper {
 		const plain = instanceToPlain(review);
 		const { id, _id, __v, ...updateData } = plain;
 
-		console.log(updateData);
-
 		return {
 			...updateData,
 		};
