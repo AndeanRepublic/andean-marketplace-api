@@ -9,13 +9,13 @@ import { OrderMapper } from '../../../infra/services/OrderMapper';
 export class CreateOrderUseCase {
 	constructor(
 		@Inject(CustomerProfileRepository)
-		private readonly userRepository: CustomerProfileRepository,
+		private readonly customerRepository: CustomerProfileRepository,
 		@Inject(OrderRepository)
 		private readonly orderRepository: OrderRepository,
 	) { }
 
 	async handle(orderDto: CreateOrderDto): Promise<Order> {
-		const customerFound = await this.userRepository.getCustomerById(
+		const customerFound = await this.customerRepository.getCustomerById(
 			orderDto.customerId,
 		);
 		if (!customerFound) {

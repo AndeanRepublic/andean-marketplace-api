@@ -1,22 +1,30 @@
-import { Schema } from 'mongoose';
+import { Document, Schema } from 'mongoose';
+import { ProductType } from 'src/andean/domain/enums/ProductType';
 
 export const CartItemSchema = new Schema({
-  id: { type: String, unique: true, required: true },
-  userId: { type: String, required: true },
-  cartId: { type: String, required: true },
+  cartShopId: { type: String, required: true },
+  productType: {
+    type: String,
+    enum: Object.values(ProductType),
+    required: true,
+  },
   productId: { type: String, required: true },
-  variantProductId: { type: String },
   quantity: { type: Number, required: true },
   unitPrice: { type: Number, required: true },
+  discount: { type: Number, required: true },
+  variantProductId: { type: String, required: false },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
 });
 
 export interface CartShopItemDocument extends Document {
-  _id: string;
-  id: string;
-  userId: string;
-  cartId: string;
+  cartShopId: string;
+  productType: ProductType;
   productId: string;
-  variantProductId: string;
   quantity: number;
   unitPrice: number;
+  discount: number;
+  variantProductId?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }

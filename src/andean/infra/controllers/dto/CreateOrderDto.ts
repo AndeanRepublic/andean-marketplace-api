@@ -6,6 +6,8 @@ import {
   IsNotEmpty,
   IsNumber,
   IsString,
+  IsOptional,
+  Min,
 } from 'class-validator';
 import { PaymentMethod } from '../../../domain/enums/PaymentMethod';
 
@@ -20,9 +22,26 @@ export class CreateOrderDto {
 
   @IsNumber()
   @IsNotEmpty()
+  @Min(0)
   totalAmount: number;
 
   @IsString()
   @IsEnum(PaymentMethod)
-  paymentMethod: string;
+  @IsOptional()
+  paymentMethod?: string;
+
+  @IsNumber()
+  @IsOptional()
+  @Min(0)
+  deliveryCost?: number;
+
+  @IsNumber()
+  @IsOptional()
+  @Min(0)
+  discount?: number;
+
+  @IsNumber()
+  @IsOptional()
+  @Min(0)
+  taxOrFee?: number;
 }

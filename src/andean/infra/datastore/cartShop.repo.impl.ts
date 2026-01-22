@@ -15,7 +15,7 @@ export class CartShopRepoImpl extends CartShopRepository {
     super();
   }
 
-  async getCartByUser(customerId: string): Promise<CartShop | null> {
+  async getCartByCustomerId(customerId: string): Promise<CartShop | null> {
     return this.cartShopModel.findOne({ customerId });
   }
 

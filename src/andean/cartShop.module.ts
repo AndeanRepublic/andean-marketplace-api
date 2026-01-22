@@ -4,7 +4,7 @@ import { CartShopSchema } from './infra/persistence/cartShop.schema';
 import { CartShopController } from './infra/controllers/cartShop.controller';
 import { AddItemToCartUseCase } from './app/use_cases/cart_shop/AddItemToCartUseCase';
 import { CleanCartUseCase } from './app/use_cases/cart_shop/CleanCartUseCase';
-import { GetCartByUserUseCase } from './app/use_cases/cart_shop/GetCartByUserUseCase';
+import { GetCartByCustomerUseCase } from './app/use_cases/cart_shop/GetCartByCustomerUseCase';
 import { RemoveItemFromCartUseCase } from './app/use_cases/cart_shop/RemoveItemFromCartUseCase';
 import { ProductRepository } from './app/datastore/Product.repo';
 import { ProductRepoImpl } from './infra/datastore/product.repo.impl';
@@ -37,7 +37,7 @@ import { CartShopItemRepoImpl } from './infra/datastore/cartShopItem.repo.impl';
   providers: [
     AddItemToCartUseCase,
     CleanCartUseCase,
-    GetCartByUserUseCase,
+    GetCartByCustomerUseCase,
     RemoveItemFromCartUseCase,
     {
       provide: ProductRepository,

@@ -15,15 +15,15 @@ export class CartShopItemRepoImpl extends CartShopItemRepository {
     super();
   }
 
-  async getItemsByCartId(cartId: string): Promise<CartItem[]> {
-    const docs = await this.cartShopItemModel.find({ cartId }).exec();
+  async getItemsByCartShopId(cartShopId: string): Promise<CartItem[]> {
+    const docs = await this.cartShopItemModel.find({ cartShopId }).exec();
     return docs.map((doc: CartShopItemDocument) =>
       CartItemMapper.fromDocument(doc),
     );
   }
 
-  async getItemsByUserId(userId: string): Promise<CartItem[]> {
-    const docs = await this.cartShopItemModel.find({ userId }).exec();
+	async getItemsByCustomerId(customerId: string): Promise<CartItem[]> {
+    const docs = await this.cartShopItemModel.find({ customerId }).exec();
     return docs.map((doc: CartShopItemDocument) =>
       CartItemMapper.fromDocument(doc),
     );
@@ -41,7 +41,7 @@ export class CartShopItemRepoImpl extends CartShopItemRepository {
     await this.cartShopItemModel.findByIdAndDelete(itemId).exec();
   }
 
-  async deleteItemsByUserId(userId: string): Promise<void> {
-    await this.cartShopItemModel.deleteMany({ where: { userId: userId } });
+  async deleteItemsByCartShopId(cartShopId: string): Promise<void> {
+    await this.cartShopItemModel.deleteMany({ cartShopId }).exec();
   }
 }

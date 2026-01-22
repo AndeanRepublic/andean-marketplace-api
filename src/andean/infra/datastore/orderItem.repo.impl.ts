@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { OrderItemDocument } from '../persistence/orderItem.schema';
 import { OrderItem } from 'src/andean/domain/entities/OrderItem';
 import { OrderItemMapper } from '../services/OrderItemMapper';
+import { MongoIdUtils } from '../utils/MongoIdUtils';
 
 @Injectable()
 export class OrderItemRepoImpl extends OrderItemRepo {
@@ -24,6 +25,7 @@ export class OrderItemRepoImpl extends OrderItemRepo {
   }
 
   async deleteItem(itemId: string): Promise<void> {
-    await this.orderItemModel.findByIdAndDelete(itemId);
+    const objectId = MongoIdUtils.stringToObjectId(itemId);
+    await this.orderItemModel.findByIdAndDelete(objectId).exec();
   }
 }
