@@ -7,13 +7,13 @@ import { Order } from '../../../domain/entities/Order';
 export class GetOrdersByCustomerUseCase {
   constructor(
     @Inject(CustomerProfileRepository)
-    private userRepository: CustomerProfileRepository,
+    private readonly customerRepository: CustomerProfileRepository,
     @Inject(OrderRepository)
-    private orderRepository: OrderRepository,
+    private readonly orderRepository: OrderRepository,
   ) {}
 
   async handle(customerId: string): Promise<Order[]> {
-    const customerFound = await this.userRepository.getCustomerById(customerId);
+    const customerFound = await this.customerRepository.getCustomerById(customerId);
     if (!customerFound) {
       throw new NotFoundException('CustomerProfile not found');
     }

@@ -4,9 +4,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { OrderDocument } from '../persistence/order.schema';
 import { Order } from '../../domain/entities/Order';
 import { Model } from 'mongoose';
-import { OrderStatus } from '../../domain/enums/OrderStatus';
-import { UpdateOrderDto } from '../controllers/dto/UpdateOrderDto';
 import { OrderMapper } from '../services/OrderMapper';
+import { MongoIdUtils } from '../utils/MongoIdUtils';
 
 @Injectable()
 export class OrderRepositoryImpl extends OrderRepository {
@@ -18,7 +17,8 @@ export class OrderRepositoryImpl extends OrderRepository {
 	}
 
 	async getOrderById(id: string): Promise<Order | null> {
-		const doc = await this.orderModel.findOne({ id }).exec();
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		const doc = await this.orderModel.findById(objectId).exec();
 		return doc ? OrderMapper.fromDocument(doc) : null;
 	}
 
@@ -28,29 +28,20 @@ export class OrderRepositoryImpl extends OrderRepository {
 	}
 
 	async createOrder(order: Order): Promise<Order> {
+		const plain = OrderMapper.toPersistence(order);
 		const created = new this.orderModel({
-			_id: crypto.randomUUID(),
-			id: order.id,
-			customerId: order.userId,
-			totalAmount: order.totalAmount,
-			status: order.status,
-			paymentMethod: order.paymentMethod,
+			...plain,
 		});
 		const saved = await created.save();
 		return OrderMapper.fromDocument(saved);
 	}
 
-	async updateOrder(id: string, dto: UpdateOrderDto): Promise<Order | null> {
-		const updateData: any = {};
-
-		if (dto.status !== undefined) {
-			updateData.status = OrderStatus[dto.status as keyof typeof OrderStatus];
-		}
-
+	async updateOrder(id: string, order: Partial<Order>): Promise<Order> {
+		const plain = OrderMapper.toPersistence(order);
+		const objectId = MongoIdUtils.stringToObjectId(id);
 		const updated = await this.orderModel
-			.findOneAndUpdate({ id }, updateData, { new: true })
+			.findByIdAndUpdate(objectId, plain, { new: true })
 			.exec();
-
-		return updated ? OrderMapper.fromDocument(updated) : null;
+		return OrderMapper.fromDocument(updated!);
 	}
 }

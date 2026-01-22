@@ -1,16 +1,21 @@
 import { CartShopDocument } from '../persistence/cartShop.schema';
 import { CartShop } from '../../domain/entities/CartShop';
+import { instanceToPlain, plainToInstance } from 'class-transformer';
 
 export class CartShopMapper {
   static fromDocument(doc: CartShopDocument): CartShop {
-    return new CartShop(doc.id, doc.userId);
+		const plain = doc.toObject();
+		return plainToInstance(CartShop, {
+			id: plain._id.toString(),
+			...plain,
+		})
   }
 
-  static toPersistence(cart: CartShop) {
+  static toPersistence(cart: CartShop | Partial<CartShop>) {
+		const plain = instanceToPlain(cart);
+		const { id, _id, __v, ...updateData } = plain;
     return {
-      _id: crypto.randomUUID(),
-      id: cart.id,
-      userId: cart.userId,
-    };
+			...updateData,
+		};
   }
 }

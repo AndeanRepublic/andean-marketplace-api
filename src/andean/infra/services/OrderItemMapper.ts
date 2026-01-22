@@ -1,29 +1,21 @@
 import { OrderItemDocument } from '../persistence/orderItem.schema';
 import { OrderItem } from '../../domain/entities/OrderItem';
+import { instanceToPlain, plainToInstance } from 'class-transformer';
 
 export class OrderItemMapper {
   static fromDocument(doc: OrderItemDocument): OrderItem {
-    return new OrderItem(
-      doc.id,
-      doc.userId,
-      doc.orderId,
-      doc.productId,
-      doc.variantProductId,
-      doc.quantity,
-      doc.price,
-    );
+    const plain = doc.toObject();
+    return plainToInstance(OrderItem, {
+      id: plain._id.toString(),
+      ...plain,
+    });
   }
 
   static toPersistence(item: OrderItem) {
+    const plain = instanceToPlain(item);
+    const { id, _id, __v, ...updateData } = plain;
     return {
-      _id: crypto.randomUUID(),
-      id: item.id,
-      userId: item.userId,
-      orderId: item.orderId,
-      productId: item.productId,
-      variantProductId: item.variantProductId,
-      quantity: item.quantity,
-      price: item.price,
+      ...updateData,
     };
   }
 }
