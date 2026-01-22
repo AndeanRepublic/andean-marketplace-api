@@ -7,6 +7,7 @@ import { CartShop } from '../../../domain/entities/CartShop';
 import { CartShopItemRepository } from '../../datastore/CartShopItem.repo';
 import { ProductVariantRepository } from '../../datastore/ProductVariant.repo';
 import { CartItem } from '../../../domain/entities/CartItem';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class AddItemToCartUseCase {
@@ -36,7 +37,15 @@ export class AddItemToCartUseCase {
     }
     let cartFound = await this.cartShopRepository.getCartByUser(userId);
     if (!cartFound) {
-      cartFound = new CartShop(crypto.randomUUID(), userId);
+      cartFound = new CartShop(
+        new Types.ObjectId().toString(),
+        userId,
+        0,
+        0,
+        0,
+        new Date(),
+        new Date(),
+      );
       await this.cartShopRepository.createCart(cartFound);
     }
     let unitPrice = productFound.basePrice;

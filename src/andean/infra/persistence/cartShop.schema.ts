@@ -1,13 +1,19 @@
-import { Schema } from 'mongoose';
+import { Document, Schema } from 'mongoose';
 
 export const CartShopSchema = new Schema({
-  _id: String,
-  id: String,
   customerId: String,
+	deliveryCost: Number,
+	discount: Number,
+	taxOrFee: Number,
+	createdAt: { type: Date, default: Date.now },
+	updatedAt: { type: Date, default: Date.now },
 });
 
 export interface CartShopDocument extends Document {
-  _id: string;
-  id: string;
-  userId: string;
+  customerId: string;
+	deliveryCost: number;
+	discount: number;
+	taxOrFee: number;
+	createdAt: Date;
+	updatedAt: Date;
 }

@@ -3,6 +3,7 @@ import { CartShopRepository } from '../../datastore/CartShop.repo';
 import { CartShop } from '../../../domain/entities/CartShop';
 import { CustomerProfileRepository } from '../../datastore/Customer.repo';
 import { CartShopItemRepository } from '../../datastore/CartShopItem.repo';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class GetCartByUserUseCase {
@@ -22,7 +23,7 @@ export class GetCartByUserUseCase {
     }
     let cartFound = await this.cartShopRepository.getCartByUser(userId);
     if (!cartFound) {
-      cartFound = new CartShop(crypto.randomUUID(), userId);
+      cartFound = new CartShop(new Types.ObjectId().toString(), userId, 0, 0, 0, new Date(), new Date());
       await this.cartShopRepository.createCart(cartFound);
     }
     return cartFound;
