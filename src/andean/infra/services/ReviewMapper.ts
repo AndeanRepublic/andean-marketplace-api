@@ -2,6 +2,7 @@ import { Review } from 'src/andean/domain/entities/Review';
 import { ReviewDocument } from '../persistence/Review.schema';
 import { plainToInstance, instanceToPlain } from 'class-transformer';
 import { CreateReviewDto } from '../controllers/dto/CreateReviewDto';
+import { UpdateReviewDto } from '../controllers/dto/UpdateReviewDto';
 import { Types } from 'mongoose';
 
 export class ReviewMapper {
@@ -18,30 +19,29 @@ export class ReviewMapper {
 		const plain = {
 			id: new Types.ObjectId().toString(),
 			...reviewData,
-			numberLikes: reviewData.numberLikes || 0,
-			numberDislikes: reviewData.numberDislikes || 0,
+			numberLikes: 0,
+			numberDislikes: 0,
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		};
 		return plainToInstance(Review, plain);
 	}
 
-	static fromUpdateDto(id: string, dto: CreateReviewDto): Review {
+	static fromUpdateDto(id: string, dto: UpdateReviewDto): Review {
 		const { ...reviewData } = dto;
 		const plain = {
 			id: id,
 			...reviewData,
-			numberLikes: reviewData.numberLikes || 0,
-			numberDislikes: reviewData.numberDislikes || 0,
-			createdAt: new Date(),
 			updatedAt: new Date(),
 		};
 		return plainToInstance(Review, plain);
 	}
 
-	static toPersistence(review: Review) {
+	static toPersistence(review: Review | Partial<Review>) {
 		const plain = instanceToPlain(review);
-		const { id, ...updateData } = plain;
+		const { id, _id, __v, ...updateData } = plain;
+
+		console.log(updateData);
 
 		return {
 			...updateData,

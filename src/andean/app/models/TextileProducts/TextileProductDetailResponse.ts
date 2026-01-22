@@ -55,6 +55,7 @@ export class TextileProductDetailResponse {
 			averagePunctuation: number;
 		};
 		comments: {
+			idReview: string;
 			nameUser: string;
 			content: string;
 			numberStarts: number;

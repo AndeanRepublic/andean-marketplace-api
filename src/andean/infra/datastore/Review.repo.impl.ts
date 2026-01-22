@@ -35,7 +35,7 @@ export class ReviewRepositoryImpl extends ReviewRepository {
 		return doc ? ReviewMapper.fromDocument(doc) : null;
 	}
 
-	async update(id: string, review: Review): Promise<Review> {
+	async update(id: string, review: Partial<Review>): Promise<Review> {
 		const plain = ReviewMapper.toPersistence(review);
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		const updated = await this.reviewModel

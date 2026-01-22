@@ -12,6 +12,7 @@ import { ColorOptionAlternativeRepository } from "../../datastore/textileProduct
 import { SizeOptionAlternativeRepository } from "../../datastore/textileProducts/SizeOptionAlternative.repo";
 import { TextileCategoryRepository } from "../../datastore/textileProducts/TextileCategory.repo";
 import { ShopRepository } from "../../datastore/Shop.repo";
+import { Review } from "src/andean/domain/entities/Review";
 
 @Injectable()
 export class GetByIdTextileProductDetailUseCase {
@@ -60,6 +61,7 @@ export class GetByIdTextileProductDetailUseCase {
 
 		// 5. Mapear comments de reviews
 		const comments = reviews.map((review, index) => ({
+			idReview: review.id,
 			nameUser: customers[index]?.name || 'Usuario Anónimo',
 			content: review.content,
 			numberStarts: review.numberStarts,
@@ -204,7 +206,7 @@ export class GetByIdTextileProductDetailUseCase {
 		};
 	}
 
-	private calculateRatingStats(reviews: any[]) {
+	private calculateRatingStats(reviews: Review[]) {
 		const counts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
 		let totalStars = 0;
 

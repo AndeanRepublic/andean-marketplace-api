@@ -26,11 +26,4 @@ export class CreateReviewDto {
 	@IsNotEmpty()
 	productType: ProductType;
 
-	@IsInt()
-	@IsOptional()
-	numberLikes?: number;
-
-	@IsInt()
-	@IsOptional()
-	numberDislikes?: number;
 }
