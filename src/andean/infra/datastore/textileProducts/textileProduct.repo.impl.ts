@@ -3,6 +3,7 @@ import { TextileProductRepository } from '../../../app/datastore/textileProducts
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { TextileProductDocument } from '../../persistence/textileProducts/textileProduct.schema';
+import { VariantDocument } from '../../persistence/variant.schema';
 import { TextileProduct } from 'src/andean/domain/entities/textileProducts/TextileProduct';
 import { TextileProductMapper } from '../../services/textileProducts/TextileProductMapper';
 import { MongoIdUtils } from '../../utils/MongoIdUtils';
@@ -14,12 +15,15 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 	constructor(
 		@InjectModel('TextileProduct')
 		private readonly textileProductModel: Model<TextileProductDocument>,
+		@InjectModel('Variant')
+		private readonly variantModel: Model<VariantDocument>,
 	) {
 		super();
 	}
 
 	/**
-	 * Construye las condiciones de filtro de precio para variants y priceInventary
+	 * Construye las condiciones de filtro de precio para priceInventary
+	 * Note: Variants have been removed
 	 */
 	private buildPriceFilterConditions(minPrice?: number, maxPrice?: number): any[] {
 		const priceConditions: any[] = [];
@@ -39,22 +43,8 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 			priceConditions.push(basePriceCondition);
 		}
 
-		// Condición para variants.price
-		const variantPriceElemMatch: any = {};
-		if (minPrice !== undefined) {
-			variantPriceElemMatch.price = { $gte: minPrice };
-		}
-		if (maxPrice !== undefined) {
-			variantPriceElemMatch.price = {
-				...variantPriceElemMatch.price,
-				$lte: maxPrice
-			};
-		}
-		if (Object.keys(variantPriceElemMatch).length > 0) {
-			priceConditions.push({
-				variants: { $elemMatch: variantPriceElemMatch }
-			});
-		}
+		// Variants have been removed, only use basePrice from priceInventary
+		// Price conditions are already handled above with priceInventary.basePrice
 
 		return priceConditions;
 	}
@@ -62,7 +52,7 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 	/**
 	 * Construye el query base con filtros comunes (categoryId, ownerId, precio)
 	 */
-	private buildBaseQuery(filters?: any): any {
+	private async buildBaseQuery(filters?: any): Promise<any> {
 		const baseQuery: any = {};
 
 		if (filters?.categoryId) {
@@ -74,7 +64,7 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 		}
 
 		if (filters?.minPrice !== undefined || filters?.maxPrice !== undefined) {
-			const priceConditions = this.buildPriceFilterConditions(filters.minPrice, filters.maxPrice);
+			const priceConditions = await this.buildPriceFilterConditions(filters.minPrice, filters.maxPrice);
 			if (priceConditions.length > 0) {
 				baseQuery.$or = priceConditions;
 			}
@@ -83,88 +73,118 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 		return baseQuery;
 	}
 
-	/**
-	 * Construye expresión $ifNull encadenada para múltiples campos variantes
-	 */
-	private buildVariantFieldExpression(fieldNames: string[]): any {
-		if (fieldNames.length === 0) return null;
-		if (fieldNames.length === 1) return `$variants.combination.${fieldNames[0]}`;
-
-		return fieldNames.reduceRight<any>((acc, field, index) => {
-			const fieldPath = `$variants.combination.${field}`;
-			if (index === fieldNames.length - 1) {
-				return { $ifNull: [fieldPath, null] };
-			}
-			return { $ifNull: [fieldPath, acc] };
-		}, null);
-	}
 
 	/**
-	 * Ejecuta una aggregation para contar valores únicos de un campo variante
+	 * Ejecuta una aggregation para contar valores únicos de un campo variante desde la nueva entidad Variant
 	 */
-	private async aggregateVariantField(
+	private async aggregateVariantFieldForFilter(
 		baseQuery: any,
 		fieldNames: string[]
 	): Promise<Array<{ _id: string; count: number }>> {
-		const fieldExpression = this.buildVariantFieldExpression(fieldNames);
+		// Primero obtener los productIds que cumplen el baseQuery
+		const matchingProducts = await this.textileProductModel.find(baseQuery).exec();
+		const productIds = matchingProducts.map(p => p._id.toString());
 
-		return await this.textileProductModel.aggregate([
-			{ $match: baseQuery },
-			{ $unwind: '$variants' },
-			{
-				$group: {
-					_id: { $toLower: fieldExpression },
-					count: { $sum: 1 }
+		if (productIds.length === 0) {
+			return [];
+		}
+
+		// Buscar variants de esos productos
+		const variants = await this.variantModel.find({
+			productId: { $in: productIds }
+		}).exec();
+
+		// Contar valores únicos del campo en las combinaciones
+		const counts: Record<string, number> = {};
+		for (const variant of variants) {
+			for (const fieldName of fieldNames) {
+				const value = variant.combination[fieldName] || variant.combination[fieldName.toLowerCase()];
+				if (value) {
+					const key = value.toLowerCase();
+					counts[key] = (counts[key] || 0) + 1;
 				}
-			},
-			{ $match: { _id: { $ne: null } } },
-			{ $sort: { count: -1 } }
-		]);
+			}
+		}
+
+		// Convertir a formato de respuesta
+		return Object.entries(counts).map(([key, count]) => ({
+			_id: key,
+			count
+		}));
 	}
 
 	/**
-	 * Aplica filtros de color y size a un query base
+	 * Aplica filtros de color y size a un query base usando la nueva entidad Variant
 	 */
-	private applyVariantFilters(query: any, filters: any): void {
+	private async applyVariantFilters(query: any, filters: any): Promise<void> {
+		const productIdConditions: string[] = [];
+
 		// Filtro por color en variants
 		if (filters.color) {
-			query.variants = {
-				...query.variants,
-				$elemMatch: {
-					...((query.variants as any)?.$elemMatch || {}),
-					$or: [
-						{ 'combination.color': { $regex: new RegExp(filters.color, 'i') } },
-						{ 'combination.Color': { $regex: new RegExp(filters.color, 'i') } },
-					]
-				}
-			};
+			const colorVariants = await this.variantModel.find({
+				$or: [
+					{ 'combination.color': { $regex: new RegExp(filters.color, 'i') } },
+					{ 'combination.Color': { $regex: new RegExp(filters.color, 'i') } },
+				]
+			}).exec();
+			const colorProductIds = [...new Set(colorVariants.map(v => v.productId))];
+			if (colorProductIds.length > 0) {
+				productIdConditions.push(...colorProductIds);
+			} else {
+				// Si no hay variants con ese color, no hay productos que cumplan
+				productIdConditions.push(''); // Esto hará que no se encuentre nada
+			}
 		}
 
 		// Filtro por size en variants
 		if (filters.size) {
-			if (query.variants?.$elemMatch) {
-				query.variants.$elemMatch.$and = [
-					...(query.variants.$elemMatch.$and || []),
-					{
-						$or: [
-							{ 'combination.size': { $regex: new RegExp(filters.size, 'i') } },
-							{ 'combination.Size': { $regex: new RegExp(filters.size, 'i') } },
-							{ 'combination.talla': { $regex: new RegExp(filters.size, 'i') } },
-							{ 'combination.Talla': { $regex: new RegExp(filters.size, 'i') } },
-						]
-					}
-				];
+			const sizeVariants = await this.variantModel.find({
+				$or: [
+					{ 'combination.size': { $regex: new RegExp(filters.size, 'i') } },
+					{ 'combination.Size': { $regex: new RegExp(filters.size, 'i') } },
+					{ 'combination.talla': { $regex: new RegExp(filters.size, 'i') } },
+					{ 'combination.Talla': { $regex: new RegExp(filters.size, 'i') } },
+				]
+			}).exec();
+			const sizeProductIds = [...new Set(sizeVariants.map(v => v.productId))];
+			if (sizeProductIds.length > 0) {
+				if (productIdConditions.length > 0) {
+					// Si ya hay condiciones de color, hacer intersección
+					const intersection = productIdConditions.filter(id => sizeProductIds.includes(id));
+					productIdConditions.length = 0;
+					productIdConditions.push(...intersection);
+				} else {
+					productIdConditions.push(...sizeProductIds);
+				}
 			} else {
-				query.variants = {
-					$elemMatch: {
-						$or: [
-							{ 'combination.size': { $regex: new RegExp(filters.size, 'i') } },
-							{ 'combination.Size': { $regex: new RegExp(filters.size, 'i') } },
-							{ 'combination.talla': { $regex: new RegExp(filters.size, 'i') } },
-							{ 'combination.Talla': { $regex: new RegExp(filters.size, 'i') } },
-						]
+				// Si no hay variants con ese size, no hay productos que cumplan
+				productIdConditions.length = 0;
+				productIdConditions.push(''); // Esto hará que no se encuentre nada
+			}
+		}
+
+		// Si hay condiciones de productIds, agregarlas al query
+		if (productIdConditions.length > 0) {
+			// Filtrar IDs vacíos (que indican que no hay coincidencias)
+			const validProductIds = productIdConditions.filter(id => id !== '');
+			if (validProductIds.length > 0) {
+				// Convertir a ObjectIds y agregar al query
+				const objectIds = validProductIds.map(id => MongoIdUtils.stringToObjectId(id));
+				if (query._id) {
+					// Si ya hay condición de _id, hacer intersección
+					if (Array.isArray(query._id.$in)) {
+						query._id.$in = query._id.$in.filter((id: any) => 
+							objectIds.some(oid => oid.toString() === id.toString())
+						);
+					} else {
+						query._id = { $in: objectIds };
 					}
-				};
+				} else {
+					query._id = { $in: objectIds };
+				}
+			} else {
+				// No hay productos que cumplan los filtros
+				query._id = { $in: [] }; // Esto hará que no se encuentre nada
 			}
 		}
 	}
@@ -297,18 +317,7 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 						''
 					]
 				},
-				price: {
-					$ifNull: [
-						{
-							$cond: {
-								if: { $gt: [{ $size: { $ifNull: ['$variants', []] } }, 0] },
-								then: { $min: '$variants.price' },
-								else: '$priceInventary.basePrice'
-							}
-						},
-						'$priceInventary.basePrice'
-					]
-				},
+				price: '$priceInventary.basePrice',
 				colors: {
 					$map: {
 						input: '$colorOptionIds',
@@ -339,36 +348,30 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 				},
 				tallas: {
 					$reduce: {
-						input: { $ifNull: ['$variants', []] },
+						input: {
+							$let: {
+								vars: {
+									sizeOption: {
+										$arrayElemAt: [
+											{
+												$filter: {
+													input: { $ifNull: ['$options', []] },
+													as: 'opt',
+													cond: { $eq: ['$$opt.name', 'SIZE'] }
+												}
+											},
+											0
+										]
+									}
+								},
+								in: { $ifNull: ['$$sizeOption.values', []] }
+							}
+						},
 						initialValue: [],
 						in: {
 							$setUnion: [
 								'$$value',
-								{
-									$cond: [
-										{ $ifNull: ['$$this.combination.size', false] },
-										[{ $toLower: '$$this.combination.size' }],
-										{
-											$cond: [
-												{ $ifNull: ['$$this.combination.Size', false] },
-												[{ $toLower: '$$this.combination.Size' }],
-												{
-													$cond: [
-														{ $ifNull: ['$$this.combination.talla', false] },
-														[{ $toLower: '$$this.combination.talla' }],
-														{
-															$cond: [
-																{ $ifNull: ['$$this.combination.Talla', false] },
-																[{ $toLower: '$$this.combination.Talla' }],
-																[]
-															]
-														}
-													]
-												}
-											]
-										}
-									]
-								}
+								{ $ifNull: [{ $toLower: '$$this.label' }, []] }
 							]
 						}
 					}
@@ -480,16 +483,16 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 	}
 
 	async getFilterCounts(filters?: any): Promise<FilterCount> {
-		const baseQuery = this.buildBaseQuery(filters);
+		const baseQuery = await this.buildBaseQuery(filters);
 
-		// Aggregation para contar colores
-		const colorAggregation = await this.aggregateVariantField(
+		// Aggregation para contar colores desde variants
+		const colorAggregation = await this.aggregateVariantFieldForFilter(
 			baseQuery,
 			['color', 'Color']
 		);
 
-		// Aggregation para contar tallas/sizes
-		const sizeAggregation = await this.aggregateVariantField(
+		// Aggregation para contar tallas/sizes desde variants
+		const sizeAggregation = await this.aggregateVariantFieldForFilter(
 			baseQuery,
 			['size', 'Size', 'talla', 'Talla']
 		);
@@ -533,10 +536,10 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 	}
 
 	async getAllWithFilters(filters: any): Promise<{ products: TextileProductListItem[]; total: number }> {
-		const query = this.buildBaseQuery(filters);
+		const query = await this.buildBaseQuery(filters);
 
 		// Aplicar filtros de variantes usando método modular
-		this.applyVariantFilters(query, filters);
+		await this.applyVariantFilters(query, filters);
 
 		// Paginación
 		const page = filters.page || 1;

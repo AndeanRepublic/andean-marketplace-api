@@ -220,33 +220,6 @@ export class UpdateTextileProductUseCase {
 					}
 				}
 			}
-
-			// Validar variants si existen
-			if (dto.variants && dto.variants.length > 0) {
-				for (const variant of dto.variants) {
-					// Validar que todas las keys en combination sean nombres de opciones válidos
-					const optionNamesSet = new Set(dto.options.map(opt => opt.name));
-					for (const combinationKey of Object.keys(variant.combination)) {
-						if (!optionNamesSet.has(combinationKey as TextileOptionName)) {
-							throw new BadRequestException(
-								`Invalid option name "${combinationKey}" in variant combination. Valid options are: ${Array.from(optionNamesSet).join(', ')}`,
-							);
-						}
-
-						// Validar que el value en combination sea un label válido de esa opción
-						const option = dto.options.find(opt => opt.name === combinationKey);
-						if (option) {
-							const validLabels = option.values.map(v => v.label);
-							const combinationValue = variant.combination[combinationKey];
-							if (!validLabels.includes(combinationValue)) {
-								throw new BadRequestException(
-									`Invalid label "${combinationValue}" for option "${combinationKey}". Valid labels are: ${validLabels.join(', ')}`,
-								);
-							}
-						}
-					}
-				}
-			}
 		}
 
 		const toUpdate = TextileProductMapper.fromUpdateDto(id, dto);

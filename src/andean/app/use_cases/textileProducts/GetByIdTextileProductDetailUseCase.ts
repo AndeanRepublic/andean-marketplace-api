@@ -12,7 +12,9 @@ import { ColorOptionAlternativeRepository } from "../../datastore/textileProduct
 import { SizeOptionAlternativeRepository } from "../../datastore/textileProducts/SizeOptionAlternative.repo";
 import { TextileCategoryRepository } from "../../datastore/textileProducts/TextileCategory.repo";
 import { ShopRepository } from "../../datastore/Shop.repo";
+import { VariantRepository } from "../../datastore/Variant.repo";
 import { Review } from "src/andean/domain/entities/Review";
+import { Variant } from "src/andean/domain/entities/Variant";
 
 @Injectable()
 export class GetByIdTextileProductDetailUseCase {
@@ -35,6 +37,8 @@ export class GetByIdTextileProductDetailUseCase {
 		private readonly textileCategoryRepository: TextileCategoryRepository,
 		@Inject(ShopRepository)
 		private readonly shopRepository: ShopRepository,
+		@Inject(VariantRepository)
+		private readonly variantRepository: VariantRepository,
 	) {}
 
 	async handle(id: string): Promise<TextileProductDetailResponse> {
@@ -119,15 +123,18 @@ export class GetByIdTextileProductDetailUseCase {
 			}
 		}
 
-		// 10. Construir variantInfo
+		// 10. Obtener variants del producto
+		const variants = await this.variantRepository.getByProductId(product.id);
+
+		// 11. Construir variantInfo
 		const variantInfo = await this.buildVariantInfo(
-			product,
+			variants,
 			sizeOption,
 			colorOption,
 			materialOption,
 		);
 
-		// 11. Agrupar traceability epochs y agregar blockchainLink
+		// 12. Agrupar traceability epochs y agregar blockchainLink
 		const groupedEpochs = this.groupTraceabilityEpochs(
 			product.productTraceability?.epochs || [],
 		);
@@ -138,13 +145,13 @@ export class GetByIdTextileProductDetailUseCase {
 			...groupedEpochs,
 		};
 
-		// 12. Obtener productos similares
+		// 13. Obtener productos similares
 		const similarProducts = await this.getSimilarProducts(
 			product.id,
 			product.categoryId,
 		);
 
-		// 13. Obtener communityInfo si es COMMUNITY
+		// 14. Obtener communityInfo si es COMMUNITY
 		let communityInfo: {
 			bannerImageUrl: string;
 			name: string;
@@ -177,7 +184,7 @@ export class GetByIdTextileProductDetailUseCase {
 			}
 		}
 
-		// 14. Obtener category name
+		// 15. Obtener category name
 		let categoryName = '';
 		if (product.categoryId) {
 			const category = await this.textileCategoryRepository.getCategoryById(
@@ -186,7 +193,7 @@ export class GetByIdTextileProductDetailUseCase {
 			categoryName = category?.name || '';
 		}
 
-		// 15. Construir respuesta completa
+		// 16. Construir respuesta completa
 		return {
 			name: product.baseInfo.title,
 			availableSizes,
@@ -234,7 +241,7 @@ export class GetByIdTextileProductDetailUseCase {
 	}
 
 	private async buildVariantInfo(
-		product: any,
+		variants: Variant[],
 		sizeOption: any,
 		colorOption: any,
 		materialOption: any,
@@ -247,7 +254,7 @@ export class GetByIdTextileProductDetailUseCase {
 				stock: number;
 			}[]
 		> {
-		if (!product.variants || product.variants.length === 0) {
+		if (!variants || variants.length === 0) {
 			return [];
 		}
 
@@ -259,8 +266,8 @@ export class GetByIdTextileProductDetailUseCase {
 			stock: number;
 		}[] = [];
 
-		for (const variant of product.variants) {
-			// Obtener size del combination (ahora usa name directamente)
+		for (const variant of variants) {
+			// Obtener size del combination
 			let size = '';
 			if (sizeOption && variant.combination[TextileOptionName.SIZE]) {
 				const sizeLabel = variant.combination[TextileOptionName.SIZE];
@@ -277,7 +284,7 @@ export class GetByIdTextileProductDetailUseCase {
 				}
 			}
 
-			// Obtener color del combination (ahora usa name directamente)
+			// Obtener color del combination
 			let color = '';
 			if (colorOption && variant.combination[TextileOptionName.COLOR]) {
 				const colorLabel = variant.combination[TextileOptionName.COLOR];
@@ -294,7 +301,7 @@ export class GetByIdTextileProductDetailUseCase {
 				}
 			}
 
-			// Obtener material del combination (ahora usa name directamente)
+			// Obtener material del combination
 			let material = '';
 			if (materialOption && variant.combination[TextileOptionName.MATERIAL]) {
 				const materialLabel = variant.combination[TextileOptionName.MATERIAL];
