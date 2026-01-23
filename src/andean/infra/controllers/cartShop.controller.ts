@@ -1,4 +1,11 @@
 import { Controller, Get, Param, Post, Delete, Body, Patch, ParseIntPipe } from '@nestjs/common';
+import {
+	ApiTags,
+	ApiOperation,
+	ApiResponse,
+	ApiParam,
+	ApiBody,
+} from '@nestjs/swagger';
 import { AddItemToCartUseCase } from '../../app/use_cases/cart_shop/AddItemToCartUseCase';
 import { CleanCartUseCase } from '../../app/use_cases/cart_shop/CleanCartUseCase';
 import { GetCartByCustomerUseCase } from '../../app/use_cases/cart_shop/GetCartByCustomerUseCase';
@@ -17,6 +24,7 @@ const path_remove_cart_item = path_cart_items + '/:itemId';
 const path_update_cart_item_quantity = path_cart_items + '/:itemId/quantity/:quantityDelta';
 const path_apply_discount = path_cart_items + '/:itemId/discount';
 
+@ApiTags('Shopping Cart')
 @Controller(root_path)
 export class CartShopController {
   constructor(
@@ -55,6 +63,38 @@ export class CartShopController {
   }
 
   @Patch(path_update_cart_item_quantity)
+  @ApiOperation({
+    summary: 'Actualizar cantidad de un item del carrito',
+    description:
+      'Incrementa o decrementa la cantidad de un item en el carrito de compras. El parámetro quantityDelta puede ser positivo (incrementar) o negativo (decrementar). La cantidad mínima es 0. Retorna la cantidad actualizada, el ID del item y el stock máximo disponible.',
+  })
+  @ApiParam({
+    name: 'itemId',
+    description: 'ID del item del carrito a actualizar',
+    example: '507f1f77bcf86cd799439011',
+    type: String,
+  })
+  @ApiParam({
+    name: 'quantityDelta',
+    description:
+      'Cantidad a incrementar (positivo) o decrementar (negativo). Por defecto es +1 si no se especifica.',
+    example: 1,
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Cantidad actualizada exitosamente',
+    type: CartItemQuantityResponse,
+  })
+  @ApiResponse({
+    status: 400,
+    description:
+      'Error de validación: cantidad resultante sería negativa o excede el stock disponible',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Item del carrito no encontrado',
+  })
   async updateCartItemQuantity(
     @Param('itemId') itemId: string,
     @Param('quantityDelta', ParseIntPipe) quantityDelta: number,
@@ -63,6 +103,35 @@ export class CartShopController {
   }
 
   @Post(path_apply_discount)
+  @ApiOperation({
+    summary: 'Aplicar código de descuento a un item del carrito',
+    description:
+      'Aplica un código de descuento generado por el juego a un item específico del carrito. El código se valida mediante una API externa que determina el porcentaje de descuento (3%, 7% o 11%). Solo se puede aplicar un descuento por carrito (si otro item ya tiene descuento, se retornará un error). El descuento se calcula sobre el precio unitario del item.',
+  })
+  @ApiParam({
+    name: 'itemId',
+    description: 'ID del item del carrito al que se aplicará el descuento',
+    example: '507f1f77bcf86cd799439011',
+    type: String,
+  })
+  @ApiBody({
+    type: ApplyDiscountCodeDto,
+    description: 'Código de descuento generado por el juego',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Descuento aplicado exitosamente',
+    type: ApplyDiscountResponse,
+  })
+  @ApiResponse({
+    status: 400,
+    description:
+      'Error de validación: código inválido, otro item del carrito ya tiene descuento, o el código no es válido según la API externa',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Item del carrito no encontrado',
+  })
   async applyDiscountCode(
     @Param('itemId') itemId: string,
     @Body() body: ApplyDiscountCodeDto,

@@ -442,3 +442,185 @@ static toPersistence(product: Product) {
   return data;
 }
 ```
+
+## Regla: Ubicación de Response Models
+
+### Principio General
+
+Los **Response Models** (clases que definen la estructura de las respuestas HTTP) deben ubicarse en la capa de **Application** (`src/andean/app/models/`), no en la capa de **Infrastructure** (`src/andean/infra/controllers/dto/`). Esto mantiene la separación de responsabilidades y permite que los response models sean reutilizables entre diferentes capas de presentación.
+
+### Reglas Específicas
+
+#### 1. Ubicación de Response Models
+
+**Los Response Models deben estar en `src/andean/app/models/` organizados por dominio o funcionalidad.**
+
+- Los DTOs de request van en `src/andean/infra/controllers/dto/`
+- Los Response Models van en `src/andean/app/models/`
+- Se pueden organizar en subcarpetas según el dominio (ej: `app/models/cart/`, `app/models/products/`)
+
+**Ejemplo CORRECTO:**
+```typescript
+// ✅ src/andean/app/models/cart/CartItemQuantityResponse.ts
+import { ApiProperty } from '@nestjs/swagger';
+
+export class CartItemQuantityResponse {
+  @ApiProperty({ description: 'Cantidad actual' })
+  quantity: number;
+
+  @ApiProperty({ description: 'ID del item' })
+  idShoppingCartItem: string;
+
+  @ApiProperty({ description: 'Stock máximo' })
+  maxStock: number;
+}
+```
+
+**Ejemplo INCORRECTO:**
+```typescript
+// ❌ src/andean/infra/controllers/dto/CartItemQuantityResponse.ts
+// Los responses NO deben estar en controllers/dto
+```
+
+#### 2. Organización por Dominio
+
+**Los Response Models deben organizarse en subcarpetas según el dominio o funcionalidad.**
+
+- Usa subcarpetas para agrupar responses relacionados
+- Ejemplos: `app/models/cart/`, `app/models/products/`, `app/models/orders/`
+
+**Ejemplo:**
+```
+src/andean/app/models/
+  ├── cart/
+  │   ├── CartItemQuantityResponse.ts
+  │   └── ApplyDiscountResponse.ts
+  ├── products/
+  │   └── ProductDetailResponse.ts
+  └── orders/
+      └── OrderSummaryResponse.ts
+```
+
+#### 3. Decoradores de Swagger
+
+**Los Response Models deben usar decoradores de `@nestjs/swagger` para documentación API.**
+
+- Usa `@ApiProperty()` para cada campo
+- Proporciona descripciones claras y ejemplos cuando sea útil
+
+**Ejemplo:**
+```typescript
+import { ApiProperty } from '@nestjs/swagger';
+
+export class ApplyDiscountResponse {
+  @ApiProperty({
+    description: 'Porcentaje de descuento aplicado (3, 7, o 11)',
+    example: 7,
+  })
+  percentage: number;
+
+  @ApiProperty({
+    description: 'Monto del descuento calculado',
+    example: 10.5,
+  })
+  discount: number;
+
+  @ApiProperty({
+    description: 'ID del item actualizado',
+    example: '507f1f77bcf86cd799439011',
+  })
+  cartItemId: string;
+}
+```
+
+#### 4. Uso en Controllers
+
+**Los Controllers deben importar y usar los Response Models desde `app/models/`.**
+
+**Ejemplo:**
+```typescript
+import { ApplyDiscountResponse } from '../../app/models/cart/ApplyDiscountResponse';
+
+@Controller('cart')
+export class CartController {
+  @Post('items/:itemId/discount')
+  async applyDiscount(
+    @Param('itemId') itemId: string,
+    @Body() body: ApplyDiscountCodeDto,
+  ): Promise<ApplyDiscountResponse> { // ✅ Usar Response Model
+    return this.applyDiscountCodeUseCase.handle(itemId, body.code);
+  }
+}
+```
+
+### Flujo de Datos
+
+```
+┌─────────────────┐
+│   Use Case      │
+│   (lógica)      │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│  Response Model │
+│  (app/models/)  │
+│  - percentage   │
+│  - discount     │
+│  - cartItemId   │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│   Controller    │
+│   (retorna)     │
+└─────────────────┘
+```
+
+### Beneficios
+
+1. **Separación de responsabilidades:** Los responses están en la capa de aplicación, no en la de infraestructura
+2. **Reutilización:** Los response models pueden ser usados por diferentes presentaciones (REST, GraphQL, etc.)
+3. **Organización:** Fácil encontrar y mantener los response models agrupados por dominio
+4. **Independencia:** Los response models no dependen de detalles de implementación HTTP
+
+### Resumen de Reglas de Response Models
+
+| Componente | Ubicación | Propósito |
+|------------|-----------|-----------|
+| **Request DTOs** | `infra/controllers/dto/` | Validación de datos de entrada |
+| **Response Models** | `app/models/` | Estructura de datos de salida |
+| **Organización** | Subcarpetas por dominio | Agrupación lógica |
+| **Decoradores** | `@ApiProperty` de Swagger | Documentación API |
+
+### Ejemplos de Violaciones
+
+❌ **NO hacer esto:**
+```typescript
+// ❌ Response en controllers/dto
+// src/andean/infra/controllers/dto/CartItemQuantityResponse.ts
+
+// ❌ Response sin decoradores de Swagger
+export class CartItemQuantityResponse {
+  quantity: number; // ❌ Falta @ApiProperty
+  idShoppingCartItem: string;
+}
+
+// ❌ Response sin organización por dominio
+// src/andean/app/models/CartItemQuantityResponse.ts (sin subcarpeta)
+```
+
+✅ **Hacer esto:**
+```typescript
+// ✅ Response en app/models con subcarpeta
+// src/andean/app/models/cart/CartItemQuantityResponse.ts
+import { ApiProperty } from '@nestjs/swagger';
+
+export class CartItemQuantityResponse {
+  @ApiProperty({ description: 'Cantidad actual' })
+  quantity: number; // ✅ Con decorador
+
+  @ApiProperty({ description: 'ID del item' })
+  idShoppingCartItem: string;
+}
+```
