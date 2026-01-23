@@ -7,9 +7,10 @@ import { CartShopItemRepository } from '../../datastore/CartShopItem.repo';
 import { VariantRepository } from '../../datastore/Variant.repo';
 import { CartItem } from '../../../domain/entities/CartItem';
 import { Types } from 'mongoose';
-import { AddCartItemResponse } from '../../models/AddCartItemResponse';
+import { ShoppingCartItemResponse } from '../../models/cart/ShoppingCartItemResponse';
 import { ProductInfoProviderRegistry } from '../../../infra/services/products/ProductInfoProviderRegistry';
 import { OwnerNameResolver } from '../../../infra/services/OwnerNameResolver';
+import { ShoppingCartItemMapper } from '../../../infra/services/cart/ShoppingCartItemMapper';
 
 @Injectable()
 export class AddItemToCartUseCase {
@@ -29,7 +30,7 @@ export class AddItemToCartUseCase {
 	async handle(
 		customerId: string,
 		itemDto: AddCartItemDto,
-	): Promise<AddCartItemResponse> {
+	): Promise<ShoppingCartItemResponse> {
 		// 1. Validar que el customer existe
 		const customerFound =
 			await this.customerRepository.getCustomerById(customerId);
@@ -86,17 +87,13 @@ export class AddItemToCartUseCase {
 		);
 		await this.cartItemRepository.createItem(cartItem);
 
-		// 7. Construir y retornar la respuesta
-		return {
+		// 7. Usar mapper para construir la respuesta
+		return ShoppingCartItemMapper.fromParams({
+			cartItemId,
+			variant,
+			productInfo,
 			ownerName,
-			titulo: productInfo.title,
-			combinationVariant: variant.combination,
-			thumbnailImgUrl: productInfo.thumbnailImgUrl,
-			unitPrice: variant.price,
 			quantity: itemDto.quantity,
-			idShoppingCartItem: cartItemId,
-			maxStock: variant.stock,
-			isDiscountActive: productInfo.isDiscountActive,
-		};
+		});
 	}
 }

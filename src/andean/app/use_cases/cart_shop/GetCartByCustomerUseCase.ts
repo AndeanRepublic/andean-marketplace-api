@@ -10,6 +10,7 @@ import { ShoppingCartItemResponse } from '../../models/cart/ShoppingCartItemResp
 import { ProductInfoProviderRegistry } from '../../../infra/services/products/ProductInfoProviderRegistry';
 import { OwnerNameResolver } from '../../../infra/services/OwnerNameResolver';
 import { CartItem } from '../../../domain/entities/CartItem';
+import { ShoppingCartItemMapper } from '../../../infra/services/cart/ShoppingCartItemMapper';
 
 @Injectable()
 export class GetCartByCustomerUseCase {
@@ -24,7 +25,7 @@ export class GetCartByCustomerUseCase {
 		private readonly variantRepository: VariantRepository,
 		private readonly productInfoRegistry: ProductInfoProviderRegistry,
 		private readonly ownerNameResolver: OwnerNameResolver,
-	) {}
+	) { }
 
 	async handle(customerId: string): Promise<GetCartResponse> {
 		// 1. Validar que el customer existe
@@ -99,16 +100,7 @@ export class GetCartByCustomerUseCase {
 			productInfo.ownerId,
 		);
 
-		return {
-			ownerName,
-			titulo: productInfo.title,
-			combinationVariant: variant?.combination || {},
-			thumbnailImgUrl: productInfo.thumbnailImgUrl,
-			unitPrice: item.unitPrice,
-			quantity: item.quantity,
-			idShoppingCartItem: item.id,
-			maxStock: variant?.stock || 0,
-			isDiscountActive: productInfo.isDiscountActive,
-		};
+		// Usar mapper para construir la respuesta
+		return ShoppingCartItemMapper.toResponse(item, variant, productInfo, ownerName);
 	}
 }

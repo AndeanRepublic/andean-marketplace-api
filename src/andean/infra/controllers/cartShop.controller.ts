@@ -15,7 +15,7 @@ import { RemoveItemFromCartUseCase } from '../../app/use_cases/cart_shop/RemoveI
 import { UpdateCartItemQuantityUseCase } from '../../app/use_cases/cart_shop/UpdateCartItemQuantityUseCase';
 import { AddCartItemDto } from './dto/AddCartItemDto';
 import { CartItemQuantityResponse } from '../../app/models/cart/CartItemQuantityResponse';
-import { AddCartItemResponse } from '../../app/models/AddCartItemResponse';
+import { ShoppingCartItemResponse } from '../../app/models/cart/ShoppingCartItemResponse';
 import { GetCartResponse } from '../../app/models/cart/GetCartResponse';
 
 const root_path = 'users/customers/:userId/cart';
@@ -45,7 +45,7 @@ export class CartShopController {
 	async addItemToCart(
 		@Param('userId') customerId: string,
 		@Body() body: AddCartItemDto,
-	): Promise<AddCartItemResponse> {
+	): Promise<ShoppingCartItemResponse> {
 		return this.addItemToCartUseCase.handle(customerId, body);
 	}
 
