@@ -10,6 +10,7 @@ import { DeleteTextileProductUseCase } from '../src/andean/app/use_cases/textile
 import { TextileProduct } from '../src/andean/domain/entities/textileProducts/TextileProduct';
 import { TextileProductStatus } from '../src/andean/domain/enums/TextileProductStatus';
 import { TextileOptionName } from '../src/andean/domain/enums/TextileOptionName';
+import { ProductSortBy } from '../src/andean/domain/enums/ProductSortBy';
 import { BaseInfo } from '../src/andean/domain/entities/textileProducts/BaseInfo';
 import { PriceInventary } from '../src/andean/domain/entities/textileProducts/PriceInventary';
 import { OwnerType } from '../src/andean/domain/enums/OwnerType';
@@ -742,6 +743,86 @@ describe('TextileProductController (e2e)', () => {
 			await request(app.getHttpServer())
 				.get('/textile-products?color=nonexistent')
 				.expect(HttpStatus.NOT_FOUND);
+		});
+
+		it('should sort textile products by latest (most recent first)', async () => {
+			const sortedResponse = {
+				products: [mockTextileProductListItem],
+				pagination: { total: 1, page: 1, per_page: 10 },
+				filterCount: mockPaginatedResponse.filterCount,
+			};
+
+			const spy = jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(sortedResponse);
+
+			const response = await request(app.getHttpServer())
+				.get('/textile-products?sort_by=latest')
+				.expect(HttpStatus.OK);
+
+			expect(spy).toHaveBeenCalledWith({ sortBy: ProductSortBy.LATEST });
+			expect(response.body).toHaveProperty('products');
+			expect(response.body).toHaveProperty('pagination');
+		});
+
+		it('should sort textile products by popular (most purchased first)', async () => {
+			const sortedResponse = {
+				products: [mockTextileProductListItem],
+				pagination: { total: 1, page: 1, per_page: 10 },
+				filterCount: mockPaginatedResponse.filterCount,
+			};
+
+			const spy = jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(sortedResponse);
+
+			const response = await request(app.getHttpServer())
+				.get('/textile-products?sort_by=popular')
+				.expect(HttpStatus.OK);
+
+			expect(spy).toHaveBeenCalledWith({ sortBy: ProductSortBy.POPULAR });
+			expect(response.body).toHaveProperty('products');
+			expect(response.body).toHaveProperty('pagination');
+		});
+
+		it('should combine sort_by with other filters', async () => {
+			const sortedFilteredResponse = {
+				products: [mockTextileProductListItem],
+				pagination: { total: 1, page: 1, per_page: 10 },
+				filterCount: mockPaginatedResponse.filterCount,
+			};
+
+			const spy = jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(sortedFilteredResponse);
+
+			const response = await request(app.getHttpServer())
+				.get('/textile-products?sort_by=popular&category_id=category-poncho-001&page=1&per_page=20')
+				.expect(HttpStatus.OK);
+
+			expect(spy).toHaveBeenCalledWith({
+				sortBy: ProductSortBy.POPULAR,
+				categoryId: 'category-poncho-001',
+				page: 1,
+				perPage: 20,
+			});
+			expect(response.body).toHaveProperty('products');
+		});
+
+		it('should combine sort_by=latest with color and price filters', async () => {
+			const sortedFilteredResponse = {
+				products: [mockTextileProductListItem],
+				pagination: { total: 1, page: 1, per_page: 10 },
+				filterCount: mockPaginatedResponse.filterCount,
+			};
+
+			const spy = jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(sortedFilteredResponse);
+
+			const response = await request(app.getHttpServer())
+				.get('/textile-products?sort_by=latest&color=rojo&min_price=50&max_price=200')
+				.expect(HttpStatus.OK);
+
+			expect(spy).toHaveBeenCalledWith({
+				sortBy: ProductSortBy.LATEST,
+				color: 'rojo',
+				minPrice: 50,
+				maxPrice: 200,
+			});
+			expect(response.body).toHaveProperty('products');
 		});
 	});
 
