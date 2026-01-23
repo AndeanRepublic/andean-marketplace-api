@@ -21,48 +21,60 @@ import { VariantModule } from './variant.module';
 import { TextileProductModule } from './textileProduct.module';
 import { SuperfoodModule } from './superfood.module';
 import { UpdateCartItemQuantityUseCase } from './app/use_cases/cart_shop/UpdateCartItemQuantityUseCase';
+// Product Info Providers (Strategy Pattern)
+import { TextileProductInfoProvider } from './infra/services/products/TextileProductInfoProvider';
+import { SuperfoodProductInfoProvider } from './infra/services/products/SuperfoodProductInfoProvider';
+import { ProductInfoProviderRegistry } from './infra/services/products/ProductInfoProviderRegistry';
+import { OwnerNameResolver } from './infra/services/OwnerNameResolver';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      {
-        name: 'CartShop',
-        schema: CartShopSchema,
-      },
-      {
-        name: 'CartShopItem',
-        schema: CartItemSchema,
-      },
-    ]),
-    ProductsModule,
-    UsersModule,
-    VariantModule,
-    TextileProductModule,
-    SuperfoodModule,
-  ],
-  controllers: [CartShopController],
-  providers: [
-    AddItemToCartUseCase,
-    CleanCartUseCase,
-    GetCartByCustomerUseCase,
-    RemoveItemFromCartUseCase,
-    UpdateCartItemQuantityUseCase,
-    {
-      provide: ProductRepository,
-      useClass: ProductRepoImpl,
-    },
-    {
-      provide: CartShopItemRepository,
-      useClass: CartShopItemRepoImpl,
-    },
-    {
-      provide: CustomerProfileRepository,
-      useClass: CustomerProfileRepositoryImpl,
-    },
-    {
-      provide: CartShopRepository,
-      useClass: CartShopRepoImpl,
-    },
-  ],
+	imports: [
+		MongooseModule.forFeature([
+			{
+				name: 'CartShop',
+				schema: CartShopSchema,
+			},
+			{
+				name: 'CartShopItem',
+				schema: CartItemSchema,
+			},
+		]),
+		ProductsModule,
+		UsersModule,
+		VariantModule,
+		TextileProductModule,
+		SuperfoodModule,
+	],
+	controllers: [CartShopController],
+	providers: [
+		// Use Cases
+		AddItemToCartUseCase,
+		CleanCartUseCase,
+		GetCartByCustomerUseCase,
+		RemoveItemFromCartUseCase,
+		UpdateCartItemQuantityUseCase,
+		// Repositories
+		{
+			provide: ProductRepository,
+			useClass: ProductRepoImpl,
+		},
+		{
+			provide: CartShopItemRepository,
+			useClass: CartShopItemRepoImpl,
+		},
+		{
+			provide: CustomerProfileRepository,
+			useClass: CustomerProfileRepositoryImpl,
+		},
+		{
+			provide: CartShopRepository,
+			useClass: CartShopRepoImpl,
+		},
+		// Product Info Strategy Pattern
+		TextileProductInfoProvider,
+		SuperfoodProductInfoProvider,
+		ProductInfoProviderRegistry,
+		OwnerNameResolver,
+	],
 })
-export class CartShopModule {}
+export class CartShopModule { }
