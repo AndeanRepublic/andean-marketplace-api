@@ -52,18 +52,33 @@ export class CartShopItemRepoImpl extends CartShopItemRepository {
 		return doc ? CartItemMapper.fromDocument(doc) : null;
 	}
 
-	async updateQuantity(id: string, quantityDelta: number): Promise<CartItem> {
-		const objectId = MongoIdUtils.stringToObjectId(id);
-		const updated = await this.cartShopItemModel
-			.findByIdAndUpdate(
-				objectId,
-				{ $inc: { quantity: quantityDelta }, $set: { updatedAt: new Date() } },
-				{ new: true },
-			)
-			.exec();
-		if (!updated) {
-			throw new Error('CartItem not found');
-		}
-		return CartItemMapper.fromDocument(updated);
-	}
+  async updateQuantity(id: string, quantityDelta: number): Promise<CartItem> {
+    const objectId = MongoIdUtils.stringToObjectId(id);
+    const updated = await this.cartShopItemModel
+      .findByIdAndUpdate(
+        objectId,
+        { $inc: { quantity: quantityDelta }, $set: { updatedAt: new Date() } },
+        { new: true },
+      )
+      .exec();
+    if (!updated) {
+      throw new Error('CartItem not found');
+    }
+    return CartItemMapper.fromDocument(updated);
+  }
+
+  async updateDiscount(id: string, discount: number): Promise<CartItem> {
+    const objectId = MongoIdUtils.stringToObjectId(id);
+    const updated = await this.cartShopItemModel
+      .findByIdAndUpdate(
+        objectId,
+        { $set: { discount: discount, updatedAt: new Date() } },
+        { new: true },
+      )
+      .exec();
+    if (!updated) {
+      throw new Error('CartItem not found');
+    }
+    return CartItemMapper.fromDocument(updated);
+  }
 }
