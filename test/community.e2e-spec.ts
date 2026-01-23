@@ -26,16 +26,19 @@ describe('CommunityController (e2e)', () => {
 	const mockCommunity: Community = {
 		id: '123e4567-e89b-12d3-a456-426614174000',
 		name: 'Test Community E2E',
+		bannerImageUrl: 'https://example.com/images/community-banner.jpg',
 		createdAt: new Date('2026-01-01'),
 		updatedAt: new Date('2026-01-01'),
 	} as Community;
 
 	const createDto = {
 		name: 'New Community E2E',
+		bannerImageUrl: 'https://example.com/images/new-community-banner.jpg',
 	};
 
 	const updateDto = {
 		name: 'Updated Community E2E',
+		bannerImageUrl: 'https://example.com/images/updated-community-banner.jpg',
 	};
 
 	beforeAll(async () => {
@@ -159,14 +162,15 @@ describe('CommunityController (e2e)', () => {
 		});
 
 		it('should return 400 when name already exists', async () => {
-			// Mock use case to throw error
-			const error = new Error('Community name already exists');
+			// Mock use case to throw BadRequestException (matching actual implementation)
+			const { BadRequestException } = await import('@nestjs/common');
+			const error = new BadRequestException('Community name already exists');
 			jest.spyOn(createCommunityUseCase, 'execute').mockRejectedValueOnce(error);
 
 			return request(app.getHttpServer())
 				.post('/communities')
 				.send(createDto)
-				.expect(HttpStatus.INTERNAL_SERVER_ERROR);
+				.expect(HttpStatus.BAD_REQUEST);
 		});
 	});
 
