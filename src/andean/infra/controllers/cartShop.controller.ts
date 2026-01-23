@@ -7,6 +7,8 @@ import {
 	Body,
 	Patch,
 	ParseIntPipe,
+	HttpCode,
+	HttpStatus,
 } from '@nestjs/common';
 import { AddItemToCartUseCase } from '../../app/use_cases/cart_shop/AddItemToCartUseCase';
 import { CleanCartUseCase } from '../../app/use_cases/cart_shop/CleanCartUseCase';
@@ -50,11 +52,13 @@ export class CartShopController {
 	}
 
 	@Delete('')
+	@HttpCode(HttpStatus.NO_CONTENT)
 	async cleanCart(@Param('userId') customerId: string): Promise<void> {
 		return this.cleanCartUseCase.handle(customerId);
 	}
 
 	@Delete(path_remove_cart_item)
+	@HttpCode(HttpStatus.NO_CONTENT)
 	async removeItemFromCart(
 		@Param('userId') customerId: string,
 		@Param('itemId') itemId: string,
