@@ -7,11 +7,13 @@ import { Model, FilterQuery, PipelineStage, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { TextileProductDocument } from '../../persistence/textileProducts/textileProduct.schema';
 import { VariantDocument } from '../../persistence/variant.schema';
+import { OrderItemDocument } from '../../persistence/orderItem.schema';
 import { TextileProduct } from 'src/andean/domain/entities/textileProducts/TextileProduct';
 import { TextileProductMapper } from '../../services/textileProducts/TextileProductMapper';
 import { MongoIdUtils } from '../../utils/MongoIdUtils';
 import { FilterCount } from 'src/andean/app/modules/PaginatedProductsResponse';
 import { TextileProductListItem } from '../../../app/modules/TextileProductListItemResponse';
+import { ProductSortBy } from 'src/andean/domain/enums/ProductSortBy';
 
 @Injectable()
 export class TextileProductRepositoryImpl extends TextileProductRepository {
@@ -20,6 +22,8 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 		private readonly textileProductModel: Model<TextileProductDocument>,
 		@InjectModel('Variant')
 		private readonly variantModel: Model<VariantDocument>,
+		@InjectModel('OrderItem')
+		private readonly orderItemModel: Model<OrderItemDocument>,
 	) {
 		super();
 	}
@@ -585,6 +589,56 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 		return filterCount;
 	}
 
+	/**
+	 * Construye los stages de ordenamiento según el criterio especificado
+	 * - LATEST: Ordena por fecha de creación (más reciente primero)
+	 * - POPULAR: Ordena por cantidad de veces comprado (más popular primero)
+	 */
+	private buildSortStages(sortBy?: ProductSortBy): PipelineStage[] {
+		if (!sortBy || sortBy === ProductSortBy.LATEST) {
+			// Ordenar por fecha de creación, más reciente primero
+			return [{ $sort: { createdAt: -1 } }];
+		}
+
+		if (sortBy === ProductSortBy.POPULAR) {
+			// Lookup a OrderItems para contar ventas por productId
+			return [
+				{
+					$lookup: {
+						from: 'orderitems',
+						let: { productId: { $toString: '$_id' } },
+						pipeline: [
+							{
+								$match: {
+									$expr: { $eq: ['$productId', '$$productId'] },
+								},
+							},
+							{
+								$group: {
+									_id: '$productId',
+									totalSold: { $sum: '$quantity' },
+								},
+							},
+						],
+						as: 'salesData',
+					},
+				},
+				{
+					$addFields: {
+						totalSold: {
+							$ifNull: [{ $arrayElemAt: ['$salesData.totalSold', 0] }, 0],
+						},
+					},
+				},
+				// Ordenar por cantidad vendida (más vendido primero), luego por fecha de creación
+				{ $sort: { totalSold: -1, createdAt: -1 } },
+			];
+		}
+
+		// Default: ordenar por fecha de creación
+		return [{ $sort: { createdAt: -1 } }];
+	}
+
 	async getAllWithFilters(
 		filters: ProductFilters,
 	): Promise<{ products: TextileProductListItem[]; total: number }> {
@@ -601,6 +655,7 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 		// Aggregation pipeline usando métodos modulares
 		const pipeline: PipelineStage[] = [
 			{ $match: query },
+			...this.buildSortStages(filters.sortBy),
 			...this.buildCategoryAndSellerLookups(),
 			...this.buildColorProcessingStages(),
 			this.buildFinalProjection(),
