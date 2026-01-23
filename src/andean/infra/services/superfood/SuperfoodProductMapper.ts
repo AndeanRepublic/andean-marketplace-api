@@ -10,70 +10,66 @@ import { SuperfoodDetailTraceability } from '../../../domain/entities/superfoods
 import { SuperfoodElaborationTime } from '../../../domain/entities/superfoods/SuperfoodElaborationTime';
 import { SuperfoodOptions } from '../../../domain/entities/superfoods/SuperfoodOptions';
 import { SuperfoodOptionsItem } from '../../../domain/entities/superfoods/SuperfoodOptionsItem';
-import { SuperfoodVariant } from '../../../domain/entities/superfoods/SuperfoodVariant';
 import { ProductTraceability } from '../../../domain/entities/ProductTraceability';
 import { plainToInstance, instanceToPlain } from 'class-transformer';
 import * as crypto from 'crypto';
+import { Types } from 'mongoose';
 
 export class SuperfoodProductMapper {
 	static fromDocument(doc: SuperfoodProductDocument): SuperfoodProduct {
 		const plain = doc.toObject();
-		const { _id, ...rest } = plain;
 
-		const baseInfo = plainToInstance(SuperfoodBasicInfo, rest.baseInfo);
+		const baseInfo = plainToInstance(SuperfoodBasicInfo, plain.baseInfo);
 		const priceInventory = plainToInstance(
 			SuperfoodPriceInventory,
-			rest.priceInventory,
+			plain.priceInventory,
 		);
 
 		let detailProduct: SuperfoodDetailProduct | undefined;
-		if (rest.detailProduct) {
+		if (plain.detailProduct) {
 			let elaborationTime: SuperfoodElaborationTime | undefined;
-			if (rest.detailProduct.elaborationTime) {
+			if (plain.detailProduct.elaborationTime) {
 				elaborationTime = plainToInstance(
 					SuperfoodElaborationTime,
-					rest.detailProduct.elaborationTime,
+					plain.detailProduct.elaborationTime,
 				);
 			}
 			detailProduct = plainToInstance(SuperfoodDetailProduct, {
-				...rest.detailProduct,
+				...plain.detailProduct,
 				elaborationTime,
 			});
 		}
 
-		const nutritionalContent = rest.nutritionalContent?.map((item: any) =>
+		const nutritionalContent = plain.nutritionalContent?.map((item: any) =>
 			plainToInstance(SuperfoodNutritionalItem, item),
 		);
 
 		let detailTraceability: SuperfoodDetailTraceability | undefined;
-		if (rest.detailTraceability) {
+		if (plain.detailTraceability) {
 			detailTraceability = plainToInstance(
 				SuperfoodDetailTraceability,
-				rest.detailTraceability,
+				plain.detailTraceability,
 			);
 		}
 
 		let productTraceability: ProductTraceability | undefined;
-		if (rest.productTraceability) {
+		if (plain.productTraceability) {
 			productTraceability = plainToInstance(
 				ProductTraceability,
-				rest.productTraceability,
+				plain.productTraceability,
 			);
 		}
 
-		const options = rest.options?.map((opt: any) => {
+			const options = plain.options?.map((opt: any) => {
 			const values = (opt.values || []).map((val: any) =>
 				plainToInstance(SuperfoodOptionsItem, val),
 			);
 			return plainToInstance(SuperfoodOptions, { ...opt, values });
 		});
 
-		const variants = rest.variants?.map((variant: any) =>
-			plainToInstance(SuperfoodVariant, variant),
-		);
-
 		return plainToInstance(SuperfoodProduct, {
-			...rest,
+			id: plain._id.toString(),
+			...plain,
 			baseInfo,
 			priceInventory,
 			detailProduct,
@@ -81,9 +77,9 @@ export class SuperfoodProductMapper {
 			detailTraceability,
 			productTraceability,
 			options,
-			variants,
-			createdAt: rest.createdAt || new Date(),
-			updatedAt: rest.updatedAt || new Date(),
+			isDiscountActive: plain.isDiscountActive ?? false,
+			createdAt: plain.createdAt || new Date(),
+			updatedAt: plain.updatedAt || new Date(),
 		});
 	}
 
@@ -148,15 +144,8 @@ export class SuperfoodProductMapper {
 			});
 		});
 
-		const variants = dto.variants?.map((variant) =>
-			plainToInstance(SuperfoodVariant, {
-				...variant,
-				id: crypto.randomUUID(),
-			}),
-		);
-
 		const plain = {
-			id: crypto.randomUUID(),
+			id: new Types.ObjectId().toString(),
 			...superfoodProductData,
 			baseInfo,
 			priceInventory,
@@ -165,7 +154,7 @@ export class SuperfoodProductMapper {
 			detailTraceability,
 			productTraceability,
 			options,
-			variants,
+			isDiscountActive: dto.isDiscountActive ?? false,
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		};
@@ -234,13 +223,6 @@ export class SuperfoodProductMapper {
 			});
 		});
 
-		const variants = dto.variants?.map((variant) =>
-			plainToInstance(SuperfoodVariant, {
-				...variant,
-				id: crypto.randomUUID(),
-			}),
-		);
-
 		const plain = {
 			id: id,
 			...superfoodProductData,
@@ -251,7 +233,7 @@ export class SuperfoodProductMapper {
 			detailTraceability,
 			productTraceability,
 			options,
-			variants,
+			isDiscountActive: dto.isDiscountActive ?? false,
 			updatedAt: new Date(),
 			// createdAt no se incluye aquí, se preserva del documento original
 		};
@@ -261,7 +243,7 @@ export class SuperfoodProductMapper {
 
 	static toPersistence(product: SuperfoodProduct) {
 		const plain = instanceToPlain(product);
-		const { _id, ...updateData } = plain;
+		const { _id, id, __v, ...updateData } = plain;
 
 		return {
 			...updateData,

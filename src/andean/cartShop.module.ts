@@ -17,6 +17,10 @@ import { UsersModule } from './users.module';
 import { CartItemSchema } from './infra/persistence/cartShopItem.schema';
 import { CartShopItemRepository } from './app/datastore/CartShopItem.repo';
 import { CartShopItemRepoImpl } from './infra/datastore/cartShopItem.repo.impl';
+import { VariantModule } from './variant.module';
+import { TextileProductModule } from './textileProduct.module';
+import { SuperfoodModule } from './superfood.module';
+import { UpdateCartItemQuantityUseCase } from './app/use_cases/cart_shop/UpdateCartItemQuantityUseCase';
 
 @Module({
   imports: [
@@ -32,6 +36,9 @@ import { CartShopItemRepoImpl } from './infra/datastore/cartShopItem.repo.impl';
     ]),
     ProductsModule,
     UsersModule,
+    VariantModule,
+    TextileProductModule,
+    SuperfoodModule,
   ],
   controllers: [CartShopController],
   providers: [
@@ -39,6 +46,7 @@ import { CartShopItemRepoImpl } from './infra/datastore/cartShopItem.repo.impl';
     CleanCartUseCase,
     GetCartByCustomerUseCase,
     RemoveItemFromCartUseCase,
+    UpdateCartItemQuantityUseCase,
     {
       provide: ProductRepository,
       useClass: ProductRepoImpl,
