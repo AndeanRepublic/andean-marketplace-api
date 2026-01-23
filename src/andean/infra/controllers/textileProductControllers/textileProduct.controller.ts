@@ -96,7 +96,7 @@ export class TextileProductController {
 	@Get()
 	@ApiOperation({
 		summary: 'Listar productos textiles con filtros',
-		description: 'Retorna una lista paginada de productos textiles. Soporta filtros por color, talla, rango de precio, categoría y propietario. La respuesta incluye información resumida optimizada para listados.',
+		description: 'Retorna una lista paginada de productos textiles con stock disponible (totalStock > 0). Soporta filtros por color, talla, rango de precio, categoría y propietario. La respuesta incluye información resumida optimizada para listados.',
 	})
 	@ApiQuery({
 		name: 'page',
@@ -116,15 +116,15 @@ export class TextileProductController {
 		name: 'color',
 		required: false,
 		type: String,
-		description: 'Filtrar por ID de color. Solo retorna productos que tengan variantes con este color.',
-		example: 'color-rojo-001',
+		description: 'Filtrar por nombre del color (case-insensitive). Solo retorna productos que tengan variantes con este color.',
+		example: 'rojo',
 	})
 	@ApiQuery({
 		name: 'size',
 		required: false,
 		type: String,
-		description: 'Filtrar por ID de talla. Solo retorna productos que tengan variantes con esta talla.',
-		example: 'size-m-001',
+		description: 'Filtrar por nombre de la talla (case-insensitive). Solo retorna productos que tengan variantes con esta talla.',
+		example: 'M',
 	})
 	@ApiQuery({
 		name: 'min_price',

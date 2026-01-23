@@ -1,6 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { TextileProductRepository, ProductFilters } from '../../datastore/textileProducts/TextileProduct.repo';
-import { TextileProduct } from 'src/andean/domain/entities/textileProducts/TextileProduct';
 import { PaginatedProductsResponse } from '../../modules/PaginatedProductsResponse';
 import { TextileProductListItem } from '../../modules/TextileProductListItemResponse';
 
