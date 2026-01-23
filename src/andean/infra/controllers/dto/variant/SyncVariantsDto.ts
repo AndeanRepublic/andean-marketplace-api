@@ -1,7 +1,14 @@
-import { ValidateNested, IsArray, IsString, IsNotEmpty } from 'class-validator';
+import {
+	ValidateNested,
+	IsArray,
+	IsString,
+	IsNotEmpty,
+	IsEnum,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { SyncVariantItemDto } from './SyncVariantItemDto';
+import { ProductType } from 'src/andean/domain/enums/ProductType';
 
 /**
  * DTO para sincronizar las variantes de un producto.
@@ -18,6 +25,15 @@ export class SyncVariantsDto {
 	@IsString()
 	@IsNotEmpty()
 	productId: string;
+
+	@ApiProperty({
+		description: 'Tipo de producto al que pertenecen las variantes',
+		enum: ProductType,
+		example: ProductType.TEXTILE,
+	})
+	@IsEnum(ProductType)
+	@IsNotEmpty()
+	productType: ProductType;
 
 	@ApiProperty({
 		description: 'Lista de variantes a sincronizar',

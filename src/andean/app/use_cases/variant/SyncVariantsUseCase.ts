@@ -20,13 +20,14 @@ export class SyncVariantsUseCase {
 	constructor(
 		@Inject(VariantRepository)
 		private readonly variantRepository: VariantRepository,
-	) { }
+	) {}
 
 	async execute(dto: SyncVariantsDto): Promise<Variant[]> {
-		const { productId, variants: userVariants } = dto;
+		const { productId, productType, variants: userVariants } = dto;
 
 		// 1. Recuperar variantes existentes del producto
-		const existingVariants = await this.variantRepository.getByProductId(productId);
+		const existingVariants =
+			await this.variantRepository.getByProductId(productId);
 
 		// Crear un mapa de variantes existentes por combination (serializado como key)
 		const existingMap = new Map<string, Variant>();
@@ -53,11 +54,14 @@ export class SyncVariantsUseCase {
 
 			if (existingVariant) {
 				// 3. Combination coincide: actualizar valores manteniendo el id
-				const updated = await this.variantRepository.update(existingVariant.id, {
-					price: userVariant.price,
-					stock: userVariant.stock,
-					updatedAt: new Date(),
-				});
+				const updated = await this.variantRepository.update(
+					existingVariant.id,
+					{
+						price: userVariant.price,
+						stock: userVariant.stock,
+						updatedAt: new Date(),
+					},
+				);
 				if (updated) {
 					updatedVariants.push(updated);
 				}
@@ -65,6 +69,7 @@ export class SyncVariantsUseCase {
 				// 4. No existe en BD: crear nueva variante
 				const newVariant = VariantMapper.fromCreateDto({
 					productId,
+					productType,
 					combination: userVariant.combination,
 					price: userVariant.price,
 					stock: userVariant.stock,
