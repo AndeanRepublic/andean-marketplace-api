@@ -235,36 +235,6 @@ export class TextileOptionsDto {
 	values: TextileOptionsItemDto[];
 }
 
-export class TextileVariantDto {
-	@ApiProperty({
-		description: 'Combinación de opciones que define esta variante',
-		example: { color: 'rojo', size: 'M' },
-	})
-	@IsObject()
-	@IsNotEmpty()
-	combination: Record<string, string>;
-
-	@ApiProperty({
-		description: 'Precio específico de esta variante',
-		example: 165.00,
-		minimum: 0,
-	})
-	@IsNumber()
-	@Min(0)
-	@IsNotEmpty()
-	price: number;
-
-	@ApiProperty({
-		description: 'Stock disponible de esta variante',
-		example: 10,
-		minimum: 0,
-	})
-	@IsInt()
-	@Min(0)
-	@IsNotEmpty()
-	stock: number;
-}
-
 export class DetailTraceabilityDto {
 	@ApiPropertyOptional({
 		description: 'Indica si el producto es hecho a mano',
@@ -432,12 +402,11 @@ export class CreateTextileProductDto {
 	options?: TextileOptionsDto[];
 
 	@ApiPropertyOptional({
-		description: 'Variantes del producto con combinaciones específicas de opciones',
-		type: [TextileVariantDto],
+		description: 'Indica si el descuento está activo para este producto',
+		example: false,
+		default: false,
 	})
-	@IsArray()
+	@IsBoolean()
 	@IsOptional()
-	@ValidateNested({ each: true })
-	@Type(() => TextileVariantDto)
-	variants?: TextileVariantDto[];
+	isDiscountActive?: boolean;
 }

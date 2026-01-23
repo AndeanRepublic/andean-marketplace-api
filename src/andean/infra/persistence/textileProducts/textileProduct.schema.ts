@@ -75,15 +75,6 @@ const TextileOptionsSchema = new Schema(
 	{ _id: false },
 );
 
-const TextileVariantSchema = new Schema(
-	{
-		combination: { type: Schema.Types.Mixed, required: true },
-		price: { type: Number, required: true },
-		stock: { type: Number, required: true },
-	},
-	{ _id: false },
-);
-
 const DetailTraceabilitySchema = new Schema(
 	{
 		isHandmade: { type: Boolean, required: false },
@@ -138,7 +129,7 @@ export const TextileProductSchema = new Schema({
 	detailTraceability: { type: DetailTraceabilitySchema, required: false },
 	productTraceability: { type: ProductTraceabilitySchema, required: false },
 	options: { type: [TextileOptionsSchema], default: [], required: false },
-	variants: { type: [TextileVariantSchema], default: [], required: false },
+	isDiscountActive: { type: Boolean, default: false, required: true },
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 });
@@ -186,7 +177,7 @@ export interface TextileProductDocument extends Document {
 	};
 	productTraceability?: any;
 	options?: any[];
-	variants?: any[];
+	isDiscountActive: boolean;
 	createdAt: Date;
 	updatedAt: Date;
 }

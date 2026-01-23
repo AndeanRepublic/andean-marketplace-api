@@ -9,7 +9,6 @@ import { PreparationTime } from 'src/andean/domain/entities/textileProducts/Prep
 import { DetailTraceability } from 'src/andean/domain/entities/textileProducts/DetailTraceability';
 import { TextileOptions } from 'src/andean/domain/entities/textileProducts/TextileOptions';
 import { TextileOptionsItem } from 'src/andean/domain/entities/textileProducts/TextileOptionsItem';
-import { TextileVariant } from 'src/andean/domain/entities/textileProducts/TextileVariant';
 import { ProductTraceability } from 'src/andean/domain/entities/ProductTraceability';
 import { Types } from 'mongoose';
 
@@ -61,10 +60,6 @@ export class TextileProductMapper {
 			return plainToInstance(TextileOptions, { ...opt, values });
 		});
 
-		const variants = plain.variants?.map((variant: any) =>
-			plainToInstance(TextileVariant, variant),
-		);
-
 		return plainToInstance(TextileProduct, {
 			id: plain._id.toString(),
 			...plain,
@@ -74,7 +69,7 @@ export class TextileProductMapper {
 			detailTraceability,
 			productTraceability,
 			options,
-			variants,
+			isDiscountActive: plain.isDiscountActive ?? false,
 			createdAt: plain.createdAt || new Date(),
 			updatedAt: plain.updatedAt || new Date(),
 		});
@@ -123,10 +118,6 @@ export class TextileProductMapper {
 			});
 		});
 
-		const variants = (dto.variants || []).map((variant) =>
-			plainToInstance(TextileVariant, variant),
-		);
-
 		const plain = {
 			id: new Types.ObjectId().toString(),
 			...textileProductData,
@@ -136,7 +127,7 @@ export class TextileProductMapper {
 			detailTraceability,
 			productTraceability,
 			options,
-			variants,
+			isDiscountActive: dto.isDiscountActive ?? false,
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		};
@@ -193,10 +184,6 @@ export class TextileProductMapper {
 			});
 		});
 
-		const variants = dto.variants?.map((variant) =>
-			plainToInstance(TextileVariant, variant),
-		);
-
 		const plain = {
 			id: id,
 			...textileProductData,
@@ -206,7 +193,7 @@ export class TextileProductMapper {
 			detailTraceability,
 			productTraceability,
 			options,
-			variants,
+			isDiscountActive: dto.isDiscountActive ?? false,
 			updatedAt: new Date(),
 			// createdAt no se incluye aquí, se preserva del documento original
 		};
@@ -216,7 +203,7 @@ export class TextileProductMapper {
 
 	static toPersistence(textileProduct: TextileProduct) {
 		const plain = instanceToPlain(textileProduct);
-		const { id, ...updateData } = plain;
+		const { id, _id, __v, ...updateData } = plain;
 
 		return {
 			...updateData,

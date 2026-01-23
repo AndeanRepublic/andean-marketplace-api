@@ -116,6 +116,8 @@ import { IncrementDislikesUseCase } from './app/use_cases/IncrementDislikesUseCa
 import { DecrementLikesUseCase } from './app/use_cases/DecrementLikesUseCase';
 import { DecrementDislikesUseCase } from './app/use_cases/DecrementDislikesUseCase';
 import { SuperfoodModule } from './superfood.module';
+import { VariantModule } from './variant.module';
+import { VariantSchema } from './infra/persistence/variant.schema';
 
 @Module({
 	imports: [
@@ -168,11 +170,16 @@ import { SuperfoodModule } from './superfood.module';
 				name: 'Review',
 				schema: ReviewSchema,
 			},
+			{
+				name: 'Variant',
+				schema: VariantSchema,
+			},
 		]),
 		UsersModule,
 		ShopsModule,
 		CommunityModule,
 		OriginProductModule,
+		VariantModule,
 		forwardRef(() => SuperfoodModule),
 	],
 	controllers: [
