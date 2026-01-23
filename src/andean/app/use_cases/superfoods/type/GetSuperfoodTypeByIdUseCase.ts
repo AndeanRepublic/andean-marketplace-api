@@ -6,9 +6,7 @@ import { SuperfoodTypeMapper } from '../../../../infra/services/superfood/Superf
 
 @Injectable()
 export class GetSuperfoodTypeByIdUseCase {
-	constructor(
-		private readonly typeRepository: SuperfoodTypeRepository,
-	) { }
+	constructor(private readonly typeRepository: SuperfoodTypeRepository) {}
 
 	async handle(id: string): Promise<SuperfoodTypeResponse> {
 		const type = await this.typeRepository.getById(id);

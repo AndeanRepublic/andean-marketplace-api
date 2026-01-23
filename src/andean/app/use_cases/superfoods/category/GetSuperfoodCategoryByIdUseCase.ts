@@ -8,7 +8,7 @@ import { SuperfoodCategoryMapper } from '../../../../infra/services/superfood/Su
 export class GetSuperfoodCategoryByIdUseCase {
 	constructor(
 		private readonly categoryRepository: SuperfoodCategoryRepository,
-	) { }
+	) {}
 
 	async handle(id: string): Promise<SuperfoodCategoryResponse> {
 		const category = await this.categoryRepository.getCategoryById(id);

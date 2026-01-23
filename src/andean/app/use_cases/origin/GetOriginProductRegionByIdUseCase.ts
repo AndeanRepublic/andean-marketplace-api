@@ -6,7 +6,7 @@ import { OriginProductRegion } from '../../../domain/entities/origin/OriginProdu
 export class GetOriginProductRegionByIdUseCase {
 	constructor(
 		private readonly regionRepository: OriginProductRegionRepository,
-	) { }
+	) {}
 
 	async execute(id: string): Promise<OriginProductRegion> {
 		const region = await this.regionRepository.getById(id);

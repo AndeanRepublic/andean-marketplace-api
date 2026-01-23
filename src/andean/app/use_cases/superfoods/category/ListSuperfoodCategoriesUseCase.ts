@@ -8,10 +8,12 @@ import { SuperfoodCategoryMapper } from '../../../../infra/services/superfood/Su
 export class ListSuperfoodCategoriesUseCase {
 	constructor(
 		private readonly categoryRepository: SuperfoodCategoryRepository,
-	) { }
+	) {}
 
 	async handle(): Promise<SuperfoodCategoryResponse[]> {
 		const categories = await this.categoryRepository.getAllCategories();
-		return categories.map(category => SuperfoodCategoryMapper.toResponse(category));
+		return categories.map((category) =>
+			SuperfoodCategoryMapper.toResponse(category),
+		);
 	}
 }

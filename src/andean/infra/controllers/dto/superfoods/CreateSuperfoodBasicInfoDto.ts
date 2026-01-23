@@ -1,9 +1,18 @@
-import { IsArray, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+	IsArray,
+	IsEnum,
+	IsNotEmpty,
+	IsOptional,
+	IsString,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { SuperfoodOwnerType } from '../../../../domain/enums/SuperfoodOwnerType';
 
 export class CreateSuperfoodBasicInfoDto {
-	@ApiProperty({ description: 'Título del superfood', example: 'Quinua Orgánica Premium' })
+	@ApiProperty({
+		description: 'Título del superfood',
+		example: 'Quinua Orgánica Premium',
+	})
 	@IsString()
 	@IsNotEmpty()
 	title: string;
@@ -23,7 +32,10 @@ export class CreateSuperfoodBasicInfoDto {
 	@IsOptional()
 	general_features?: string[];
 
-	@ApiProperty({ description: 'IDs de características nutricionales', type: [String] })
+	@ApiProperty({
+		description: 'IDs de características nutricionales',
+		type: [String],
+	})
 	@IsArray()
 	@IsOptional()
 	nutritional_features?: string[];

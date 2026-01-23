@@ -6,17 +6,17 @@ import { CreateTextileTypeDto } from 'src/andean/infra/controllers/dto/textilePr
 
 @Injectable()
 export class UpdateTextileTypeUseCase {
-  constructor(
-    @Inject(TextileTypeRepository)
-    private readonly textileTypeRepository: TextileTypeRepository,
-  ) {}
+	constructor(
+		@Inject(TextileTypeRepository)
+		private readonly textileTypeRepository: TextileTypeRepository,
+	) {}
 
-  async handle(id: string, dto: CreateTextileTypeDto): Promise<TextileType> {
-    const typeFound = await this.textileTypeRepository.getTextileTypeById(id);
-    if (!typeFound) {
-      throw new NotFoundException('Type not found');
-    }
-    const toUpdate = TextileTypeMapper.fromUpdateDto(id, dto);
-    return this.textileTypeRepository.updateTextileType(id, toUpdate);
-  }
+	async handle(id: string, dto: CreateTextileTypeDto): Promise<TextileType> {
+		const typeFound = await this.textileTypeRepository.getTextileTypeById(id);
+		if (!typeFound) {
+			throw new NotFoundException('Type not found');
+		}
+		const toUpdate = TextileTypeMapper.fromUpdateDto(id, dto);
+		return this.textileTypeRepository.updateTextileType(id, toUpdate);
+	}
 }

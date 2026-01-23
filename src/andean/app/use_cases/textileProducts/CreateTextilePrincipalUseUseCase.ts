@@ -6,13 +6,18 @@ import { TextilePrincipalUseMapper } from 'src/andean/infra/services/textileProd
 
 @Injectable()
 export class CreateTextilePrincipalUseUseCase {
-  constructor(
-    @Inject(TextilePrincipalUseRepository)
-    private readonly textilePrincipalUseRepository: TextilePrincipalUseRepository,
-  ) {}
+	constructor(
+		@Inject(TextilePrincipalUseRepository)
+		private readonly textilePrincipalUseRepository: TextilePrincipalUseRepository,
+	) {}
 
-  async handle(dto: CreateTextilePrincipalUseDto): Promise<TextilePrincipalUse> {
-    const textilePrincipalUseToSave = TextilePrincipalUseMapper.fromCreateDto(dto);
-    return this.textilePrincipalUseRepository.saveTextilePrincipalUse(textilePrincipalUseToSave);
-  }
+	async handle(
+		dto: CreateTextilePrincipalUseDto,
+	): Promise<TextilePrincipalUse> {
+		const textilePrincipalUseToSave =
+			TextilePrincipalUseMapper.fromCreateDto(dto);
+		return this.textilePrincipalUseRepository.saveTextilePrincipalUse(
+			textilePrincipalUseToSave,
+		);
+	}
 }

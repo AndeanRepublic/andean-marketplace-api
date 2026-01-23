@@ -5,9 +5,13 @@ export abstract class SuperfoodSalesUnitSizeRepository {
 
 	abstract getAll(): Promise<SuperfoodSalesUnitSize[]>;
 
-	abstract save(unitSize: SuperfoodSalesUnitSize): Promise<SuperfoodSalesUnitSize>;
+	abstract save(
+		unitSize: SuperfoodSalesUnitSize,
+	): Promise<SuperfoodSalesUnitSize>;
 
-	abstract update(unitSize: SuperfoodSalesUnitSize): Promise<SuperfoodSalesUnitSize>;
+	abstract update(
+		unitSize: SuperfoodSalesUnitSize,
+	): Promise<SuperfoodSalesUnitSize>;
 
 	abstract delete(id: string): Promise<void>;
 }

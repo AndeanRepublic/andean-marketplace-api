@@ -17,8 +17,13 @@ export interface ProductFilters {
 
 export abstract class TextileProductRepository {
 	abstract getAllTextileProducts(): Promise<TextileProduct[]>;
-	abstract getAllWithPagination(page: number, perPage: number): Promise<{ products: TextileProduct[]; total: number }>;
-	abstract getAllWithFilters(filters: ProductFilters): Promise<{ products: TextileProductListItem[]; total: number }>;
+	abstract getAllWithPagination(
+		page: number,
+		perPage: number,
+	): Promise<{ products: TextileProduct[]; total: number }>;
+	abstract getAllWithFilters(
+		filters: ProductFilters,
+	): Promise<{ products: TextileProductListItem[]; total: number }>;
 	abstract getFilterCounts(filters?: ProductFilters): Promise<FilterCount>;
 	abstract getTextileProductById(id: string): Promise<TextileProduct | null>;
 	abstract saveTextileProduct(product: TextileProduct): Promise<TextileProduct>;

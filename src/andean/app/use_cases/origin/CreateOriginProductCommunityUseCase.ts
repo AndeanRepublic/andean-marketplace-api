@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+	Injectable,
+	BadRequestException,
+	NotFoundException,
+} from '@nestjs/common';
 import { OriginProductCommunityRepository } from '../../datastore/originProductCommunity.repo';
 import { OriginProductRegionRepository } from '../../datastore/originProductRegion.repo';
 import { OriginProductCommunity } from '../../../domain/entities/origin/OriginProductCommunity';
@@ -10,9 +14,11 @@ export class CreateOriginProductCommunityUseCase {
 	constructor(
 		private readonly communityRepository: OriginProductCommunityRepository,
 		private readonly regionRepository: OriginProductRegionRepository,
-	) { }
+	) {}
 
-	async execute(dto: CreateOriginProductCommunityDto): Promise<OriginProductCommunity> {
+	async execute(
+		dto: CreateOriginProductCommunityDto,
+	): Promise<OriginProductCommunity> {
 		// Validar que la región exista
 		const region = await this.regionRepository.getById(dto.regionId);
 		if (!region) {
@@ -20,9 +26,13 @@ export class CreateOriginProductCommunityUseCase {
 		}
 
 		// Validar que no exista una comunidad con el mismo nombre
-		const existingCommunity = await this.communityRepository.getByName(dto.name);
+		const existingCommunity = await this.communityRepository.getByName(
+			dto.name,
+		);
 		if (existingCommunity) {
-			throw new BadRequestException(`Community with name "${dto.name}" already exists`);
+			throw new BadRequestException(
+				`Community with name "${dto.name}" already exists`,
+			);
 		}
 
 		// Crear entidad usando mapper

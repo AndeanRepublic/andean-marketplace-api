@@ -11,7 +11,7 @@ export class MediaItemRepoImpl implements MediaItemRepository {
 	constructor(
 		@InjectModel('MediaItem')
 		private readonly model: Model<MediaItemDocument>,
-	) { }
+	) {}
 
 	async getById(id: string): Promise<MediaItem | null> {
 		const doc = await this.model.findOne({ id }).exec();
@@ -21,7 +21,7 @@ export class MediaItemRepoImpl implements MediaItemRepository {
 
 	async getAll(): Promise<MediaItem[]> {
 		const docs = await this.model.find().exec();
-		return docs.map(doc => MediaItemMapper.fromDocument(doc));
+		return docs.map((doc) => MediaItemMapper.fromDocument(doc));
 	}
 
 	async save(mediaItem: MediaItem): Promise<MediaItem> {
@@ -42,7 +42,7 @@ export class MediaItemRepoImpl implements MediaItemRepository {
 			.findOneAndUpdate(
 				{ id: mediaItem.id },
 				{ $set: persistenceData },
-				{ new: true }
+				{ new: true },
 			)
 			.exec();
 

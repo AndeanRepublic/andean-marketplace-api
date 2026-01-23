@@ -5,8 +5,10 @@ import {
 	IsInt,
 	Min,
 	IsObject,
+	IsEnum,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { ProductType } from 'src/andean/domain/enums/ProductType';
 
 export class CreateVariantDto {
 	@ApiProperty({
@@ -18,6 +20,15 @@ export class CreateVariantDto {
 	productId: string;
 
 	@ApiProperty({
+		description: 'Tipo de producto al que pertenece esta variante',
+		enum: ProductType,
+		example: ProductType.TEXTILE,
+	})
+	@IsEnum(ProductType)
+	@IsNotEmpty()
+	productType: ProductType;
+
+	@ApiProperty({
 		description: 'Combinación de opciones que define esta variante',
 		example: { color: 'rojo', size: 'M' },
 	})
@@ -27,7 +38,7 @@ export class CreateVariantDto {
 
 	@ApiProperty({
 		description: 'Precio específico de esta variante',
-		example: 165.00,
+		example: 165.0,
 		minimum: 0,
 	})
 	@IsNumber()

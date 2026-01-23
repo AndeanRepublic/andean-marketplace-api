@@ -24,6 +24,10 @@ import { VariantModule } from './variant.module';
 import { TextileProductModule } from './textileProduct.module';
 import { SuperfoodModule } from './superfood.module';
 import { DiscountCodeService } from './infra/services/DiscountCodeService';
+import { TextileProductInfoProvider } from './infra/services/products/TextileProductInfoProvider';
+import { SuperfoodProductInfoProvider } from './infra/services/products/SuperfoodProductInfoProvider';
+import { ProductInfoProviderRegistry } from './infra/services/products/ProductInfoProviderRegistry';
+import { OwnerNameResolver } from './infra/services/OwnerNameResolver';
 
 @Module({
   imports: [
@@ -69,6 +73,10 @@ import { DiscountCodeService } from './infra/services/DiscountCodeService';
       provide: CartShopRepository,
       useClass: CartShopRepoImpl,
     },
+		TextileProductInfoProvider,
+		SuperfoodProductInfoProvider,
+		ProductInfoProviderRegistry,
+		OwnerNameResolver,
   ],
 })
-export class CartShopModule {}
+export class CartShopModule { }

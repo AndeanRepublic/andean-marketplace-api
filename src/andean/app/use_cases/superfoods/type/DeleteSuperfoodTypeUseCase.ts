@@ -3,9 +3,7 @@ import { SuperfoodTypeRepository } from '../../../datastore/superfoods/Superfood
 
 @Injectable()
 export class DeleteSuperfoodTypeUseCase {
-	constructor(
-		private readonly typeRepository: SuperfoodTypeRepository,
-	) { }
+	constructor(private readonly typeRepository: SuperfoodTypeRepository) {}
 
 	async handle(id: string): Promise<void> {
 		const type = await this.typeRepository.getById(id);

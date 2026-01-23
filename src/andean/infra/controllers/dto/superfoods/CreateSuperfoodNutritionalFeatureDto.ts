@@ -13,7 +13,8 @@ export class CreateSuperfoodNutritionalFeatureDto {
 	name: string;
 
 	@ApiProperty({
-		description: 'ID del MediaItem que representa el icono de la característica nutricional',
+		description:
+			'ID del MediaItem que representa el icono de la característica nutricional',
 		example: '123e4567-e89b-12d3-a456-426614174000',
 		required: false,
 	})

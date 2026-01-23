@@ -62,6 +62,8 @@ export class AccountRepoImpl extends AccountRepository {
 		userId: string,
 		roles: AccountRole[],
 	): Promise<void> {
-		await this.accountModel.findOneAndUpdate({ userId }, { type: roles }).exec();
+		await this.accountModel
+			.findOneAndUpdate({ userId }, { type: roles })
+			.exec();
 	}
 }

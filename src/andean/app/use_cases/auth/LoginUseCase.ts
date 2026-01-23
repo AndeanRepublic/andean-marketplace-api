@@ -10,38 +10,38 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class LoginUseCase {
-  constructor(
-    @Inject(AccountRepository)
-    private readonly accountRepository: AccountRepository,
-    private readonly hashService: HashService,
-    private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
-  ) {}
+	constructor(
+		@Inject(AccountRepository)
+		private readonly accountRepository: AccountRepository,
+		private readonly hashService: HashService,
+		private readonly jwtService: JwtService,
+		private readonly configService: ConfigService,
+	) {}
 
-  async handle(body: LoginDto): Promise<SessionToken> {
-    const account = await this.accountRepository.getAccountByEmail(
-      body.username,
-    );
-    if (!account || account.status != AccountStatus.ENABLED) {
-      throw new UnauthorizedException();
-    }
-    const validPassword = await this.hashService.verify(
-      account.password,
-      body.password,
-    );
-    if (!validPassword) {
-      throw new UnauthorizedException();
-    }
+	async handle(body: LoginDto): Promise<SessionToken> {
+		const account = await this.accountRepository.getAccountByEmail(
+			body.username,
+		);
+		if (!account || account.status != AccountStatus.ENABLED) {
+			throw new UnauthorizedException();
+		}
+		const validPassword = await this.hashService.verify(
+			account.password,
+			body.password,
+		);
+		if (!validPassword) {
+			throw new UnauthorizedException();
+		}
 
-    return await this.generateToken(account);
-  }
+		return await this.generateToken(account);
+	}
 
-  private async generateToken(account: Account): Promise<SessionToken> {
-    const payload = { sub: account.userId, roles: account.roles };
-    const jwtToken = await this.jwtService.signAsync(payload);
-    return new SessionToken(
-      jwtToken,
-      this.configService.get('JWT_EXPIRES_IN') ?? 3600,
-    );
-  }
+	private async generateToken(account: Account): Promise<SessionToken> {
+		const payload = { sub: account.userId, roles: account.roles };
+		const jwtToken = await this.jwtService.signAsync(payload);
+		return new SessionToken(
+			jwtToken,
+			this.configService.get('JWT_EXPIRES_IN') ?? 3600,
+		);
+	}
 }

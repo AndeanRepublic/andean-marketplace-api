@@ -27,7 +27,10 @@ export class MediaItemMapper {
 		);
 	}
 
-	static fromUpdateDto(dto: UpdateMediaItemDto, existing: MediaItem): MediaItem {
+	static fromUpdateDto(
+		dto: UpdateMediaItemDto,
+		existing: MediaItem,
+	): MediaItem {
 		return new MediaItem(
 			existing.id,
 			dto.type ?? existing.type,

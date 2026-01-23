@@ -5,9 +5,13 @@ export abstract class SuperfoodCategoryRepository {
 
 	abstract getAllCategories(): Promise<SuperfoodCategory[]>;
 
-	abstract saveCategory(category: SuperfoodCategory): Promise<SuperfoodCategory>;
+	abstract saveCategory(
+		category: SuperfoodCategory,
+	): Promise<SuperfoodCategory>;
 
-	abstract updateCategory(category: SuperfoodCategory): Promise<SuperfoodCategory>;
+	abstract updateCategory(
+		category: SuperfoodCategory,
+	): Promise<SuperfoodCategory>;
 
 	abstract deleteCategory(id: string): Promise<void>;
 }

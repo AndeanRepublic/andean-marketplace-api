@@ -7,22 +7,22 @@ import { ProductVariantMapper } from '../../../infra/services/ProductVariantMapp
 
 @Injectable()
 export class CreateVariantUseCase {
-  constructor(
-    @Inject(ProductVariantRepository)
-    private readonly productVariantRepository: ProductVariantRepository,
-    @Inject(ProductRepository)
-    private readonly productRepository: ProductRepository,
-  ) {}
+	constructor(
+		@Inject(ProductVariantRepository)
+		private readonly productVariantRepository: ProductVariantRepository,
+		@Inject(ProductRepository)
+		private readonly productRepository: ProductRepository,
+	) {}
 
-  async handle(
-    dto: CreateVariantDto,
-    productId: string,
-  ): Promise<ProductVariant> {
-    const productFound = await this.productRepository.getProductById(productId);
-    if (!productFound) {
-      throw new NotFoundException('Product not found');
-    }
-    const variant = ProductVariantMapper.fromCreateDto(dto, productId);
-    return this.productVariantRepository.saveProductVariant(variant);
-  }
+	async handle(
+		dto: CreateVariantDto,
+		productId: string,
+	): Promise<ProductVariant> {
+		const productFound = await this.productRepository.getProductById(productId);
+		if (!productFound) {
+			throw new NotFoundException('Product not found');
+		}
+		const variant = ProductVariantMapper.fromCreateDto(dto, productId);
+		return this.productVariantRepository.saveProductVariant(variant);
+	}
 }

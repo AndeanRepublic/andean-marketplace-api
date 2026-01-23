@@ -6,19 +6,25 @@ import { TextileCertificationMapper } from 'src/andean/infra/services/textilePro
 
 @Injectable()
 export class CreateTextileCertificationUseCase {
-  constructor(
-    @Inject(TextileCertificationRepository)
-    private readonly textileCertificationRepository: TextileCertificationRepository,
-  ) {}
+	constructor(
+		@Inject(TextileCertificationRepository)
+		private readonly textileCertificationRepository: TextileCertificationRepository,
+	) {}
 
-  async handle(dto: CreateTextileCertificationDto): Promise<TextileCertification> {
-    const certificationFound = await this.textileCertificationRepository.getTextileCertificationByName(
-      dto.name,
-    );
-    if (certificationFound) {
-      throw new BadRequestException('Certification already exists');
-    }
-    const textileCertificationToSave = TextileCertificationMapper.fromCreateDto(dto);
-    return this.textileCertificationRepository.saveTextileCertification(textileCertificationToSave);
-  }
+	async handle(
+		dto: CreateTextileCertificationDto,
+	): Promise<TextileCertification> {
+		const certificationFound =
+			await this.textileCertificationRepository.getTextileCertificationByName(
+				dto.name,
+			);
+		if (certificationFound) {
+			throw new BadRequestException('Certification already exists');
+		}
+		const textileCertificationToSave =
+			TextileCertificationMapper.fromCreateDto(dto);
+		return this.textileCertificationRepository.saveTextileCertification(
+			textileCertificationToSave,
+		);
+	}
 }

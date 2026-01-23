@@ -6,7 +6,7 @@ import { ProductTraceability } from '../../../domain/entities/ProductTraceabilit
 export class GetProductTraceabilityByIdUseCase {
 	constructor(
 		private readonly traceabilityRepository: ProductTraceabilityRepository,
-	) { }
+	) {}
 
 	async execute(id: string): Promise<ProductTraceability> {
 		const traceability = await this.traceabilityRepository.getById(id);

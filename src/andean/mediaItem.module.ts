@@ -20,9 +20,7 @@ import { MediaItemController } from './infra/controllers/mediaItem.controller';
 
 @Module({
 	imports: [
-		MongooseModule.forFeature([
-			{ name: 'MediaItem', schema: MediaItemSchema },
-		]),
+		MongooseModule.forFeature([{ name: 'MediaItem', schema: MediaItemSchema }]),
 	],
 	controllers: [MediaItemController],
 	providers: [
@@ -41,4 +39,4 @@ import { MediaItemController } from './infra/controllers/mediaItem.controller';
 	],
 	exports: [MediaItemRepository, MongooseModule],
 })
-export class MediaItemModule { }
+export class MediaItemModule {}

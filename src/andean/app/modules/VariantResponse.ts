@@ -21,7 +21,7 @@ export class VariantResponse {
 
 	@ApiProperty({
 		description: 'Precio específico de esta variante',
-		example: 165.00,
+		example: 165.0,
 	})
 	price: number;
 

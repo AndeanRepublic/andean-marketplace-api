@@ -1,7 +1,7 @@
 import { Document, Schema } from 'mongoose';
 
 export const CartShopSchema = new Schema({
-  customerId: String,
+	customerId: String,
 	deliveryCost: Number,
 	discount: Number,
 	taxOrFee: Number,
@@ -10,7 +10,7 @@ export const CartShopSchema = new Schema({
 });
 
 export interface CartShopDocument extends Document {
-  customerId: string;
+	customerId: string;
 	deliveryCost: number;
 	discount: number;
 	taxOrFee: number;

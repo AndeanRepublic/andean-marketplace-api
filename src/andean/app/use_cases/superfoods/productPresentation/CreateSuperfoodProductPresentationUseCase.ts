@@ -9,13 +9,17 @@ import { SuperfoodProductPresentationMapper } from '../../../../infra/services/s
 export class CreateSuperfoodProductPresentationUseCase {
 	constructor(
 		private readonly productPresentationRepository: SuperfoodProductPresentationRepository,
-	) { }
+	) {}
 
-	async handle(dto: CreateSuperfoodProductPresentationDto): Promise<SuperfoodProductPresentationResponse> {
+	async handle(
+		dto: CreateSuperfoodProductPresentationDto,
+	): Promise<SuperfoodProductPresentationResponse> {
 		// Crear entidad usando mapper
-		const productPresentation = SuperfoodProductPresentationMapper.fromCreateDto(dto);
+		const productPresentation =
+			SuperfoodProductPresentationMapper.fromCreateDto(dto);
 
-		const savedPresentation = await this.productPresentationRepository.save(productPresentation);
+		const savedPresentation =
+			await this.productPresentationRepository.save(productPresentation);
 		return SuperfoodProductPresentationMapper.toResponse(savedPresentation);
 	}
 }

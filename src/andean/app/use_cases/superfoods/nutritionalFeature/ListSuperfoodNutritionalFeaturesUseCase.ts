@@ -8,10 +8,12 @@ import { SuperfoodNutritionalFeatureMapper } from '../../../../infra/services/su
 export class ListSuperfoodNutritionalFeaturesUseCase {
 	constructor(
 		private readonly nutritionalFeatureRepository: SuperfoodNutritionalFeatureRepository,
-	) { }
+	) {}
 
 	async handle(): Promise<SuperfoodNutritionalFeatureResponse[]> {
 		const features = await this.nutritionalFeatureRepository.getAll();
-		return features.map(feature => SuperfoodNutritionalFeatureMapper.toResponse(feature));
+		return features.map((feature) =>
+			SuperfoodNutritionalFeatureMapper.toResponse(feature),
+		);
 	}
 }

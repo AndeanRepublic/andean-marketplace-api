@@ -4,18 +4,18 @@ import { TextileProduct } from 'src/andean/domain/entities/textileProducts/Texti
 
 @Injectable()
 export class DeleteTextileProductUseCase {
-  constructor(
-    @Inject(TextileProductRepository)
-    private readonly textileProductRepository: TextileProductRepository,
-  ) {}
+	constructor(
+		@Inject(TextileProductRepository)
+		private readonly textileProductRepository: TextileProductRepository,
+	) {}
 
-  async handle(id: string): Promise<void> {
-    const productFound =
-      await this.textileProductRepository.getTextileProductById(id);
-    if (!productFound) {
-      throw new NotFoundException('Textile product not found');
-    }
-    await this.textileProductRepository.deleteTextileProduct(id);
-    return;
-  }
+	async handle(id: string): Promise<void> {
+		const productFound =
+			await this.textileProductRepository.getTextileProductById(id);
+		if (!productFound) {
+			throw new NotFoundException('Textile product not found');
+		}
+		await this.textileProductRepository.deleteTextileProduct(id);
+		return;
+	}
 }

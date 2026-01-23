@@ -5,13 +5,16 @@ import { SuperfoodNutritionalFeatureRepository } from '../../../datastore/superf
 export class DeleteSuperfoodNutritionalFeatureUseCase {
 	constructor(
 		private readonly nutritionalFeatureRepository: SuperfoodNutritionalFeatureRepository,
-	) { }
+	) {}
 
 	async handle(id: string): Promise<void> {
-		const nutritionalFeature = await this.nutritionalFeatureRepository.getById(id);
+		const nutritionalFeature =
+			await this.nutritionalFeatureRepository.getById(id);
 
 		if (!nutritionalFeature) {
-			throw new NotFoundException(`SuperfoodNutritionalFeature with ID ${id} not found`);
+			throw new NotFoundException(
+				`SuperfoodNutritionalFeature with ID ${id} not found`,
+			);
 		}
 
 		await this.nutritionalFeatureRepository.delete(id);

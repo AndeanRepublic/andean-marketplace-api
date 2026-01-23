@@ -11,7 +11,7 @@ export class SuperfoodProductPresentationRepoImpl implements SuperfoodProductPre
 	constructor(
 		@InjectModel('SuperfoodProductPresentation')
 		private readonly model: Model<SuperfoodProductPresentationDocument>,
-	) { }
+	) {}
 
 	async getById(id: string): Promise<SuperfoodProductPresentation | null> {
 		const doc = await this.model.findOne({ id }).exec();
@@ -21,11 +21,16 @@ export class SuperfoodProductPresentationRepoImpl implements SuperfoodProductPre
 
 	async getAll(): Promise<SuperfoodProductPresentation[]> {
 		const docs = await this.model.find().exec();
-		return docs.map(doc => SuperfoodProductPresentationMapper.fromDocument(doc));
+		return docs.map((doc) =>
+			SuperfoodProductPresentationMapper.fromDocument(doc),
+		);
 	}
 
-	async save(presentation: SuperfoodProductPresentation): Promise<SuperfoodProductPresentation> {
-		const persistenceData = SuperfoodProductPresentationMapper.toPersistence(presentation);
+	async save(
+		presentation: SuperfoodProductPresentation,
+	): Promise<SuperfoodProductPresentation> {
+		const persistenceData =
+			SuperfoodProductPresentationMapper.toPersistence(presentation);
 		const newDoc = new this.model({
 			_id: crypto.randomUUID(),
 			...persistenceData,
@@ -34,15 +39,18 @@ export class SuperfoodProductPresentationRepoImpl implements SuperfoodProductPre
 		return SuperfoodProductPresentationMapper.fromDocument(savedDoc);
 	}
 
-	async update(presentation: SuperfoodProductPresentation): Promise<SuperfoodProductPresentation> {
-		const persistenceData = SuperfoodProductPresentationMapper.toPersistence(presentation);
+	async update(
+		presentation: SuperfoodProductPresentation,
+	): Promise<SuperfoodProductPresentation> {
+		const persistenceData =
+			SuperfoodProductPresentationMapper.toPersistence(presentation);
 		persistenceData.updatedAt = new Date();
 
 		const updatedDoc = await this.model
 			.findOneAndUpdate(
 				{ id: presentation.id },
 				{ $set: persistenceData },
-				{ new: true }
+				{ new: true },
 			)
 			.exec();
 

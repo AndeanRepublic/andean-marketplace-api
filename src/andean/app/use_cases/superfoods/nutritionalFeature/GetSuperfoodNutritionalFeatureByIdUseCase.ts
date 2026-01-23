@@ -8,13 +8,16 @@ import { SuperfoodNutritionalFeatureMapper } from '../../../../infra/services/su
 export class GetSuperfoodNutritionalFeatureByIdUseCase {
 	constructor(
 		private readonly nutritionalFeatureRepository: SuperfoodNutritionalFeatureRepository,
-	) { }
+	) {}
 
 	async handle(id: string): Promise<SuperfoodNutritionalFeatureResponse> {
-		const nutritionalFeature = await this.nutritionalFeatureRepository.getById(id);
+		const nutritionalFeature =
+			await this.nutritionalFeatureRepository.getById(id);
 
 		if (!nutritionalFeature) {
-			throw new NotFoundException(`SuperfoodNutritionalFeature with ID ${id} not found`);
+			throw new NotFoundException(
+				`SuperfoodNutritionalFeature with ID ${id} not found`,
+			);
 		}
 
 		return SuperfoodNutritionalFeatureMapper.toResponse(nutritionalFeature);

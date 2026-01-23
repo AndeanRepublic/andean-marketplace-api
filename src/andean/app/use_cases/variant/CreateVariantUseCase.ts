@@ -9,7 +9,7 @@ export class CreateVariantUseCase {
 	constructor(
 		@Inject(VariantRepository)
 		private readonly variantRepository: VariantRepository,
-	) { }
+	) {}
 
 	async execute(dto: CreateVariantDto): Promise<Variant> {
 		const variant = VariantMapper.fromCreateDto(dto);

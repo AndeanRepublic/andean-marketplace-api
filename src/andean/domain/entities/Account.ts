@@ -9,5 +9,5 @@ export class Account {
 		public password: string,
 		public status: AccountStatus,
 		public roles: AccountRole[],
-	) { }
+	) {}
 }

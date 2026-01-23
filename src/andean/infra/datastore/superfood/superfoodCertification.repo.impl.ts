@@ -12,7 +12,7 @@ export class SuperfoodCertificationRepoImpl implements SuperfoodCertificationRep
 	constructor(
 		@InjectModel('SuperfoodCertification')
 		private readonly model: Model<SuperfoodCertificationDocument>,
-	) { }
+	) {}
 
 	async getById(id: string): Promise<SuperfoodCertification | null> {
 		// Convertir string a ObjectId
@@ -24,29 +24,31 @@ export class SuperfoodCertificationRepoImpl implements SuperfoodCertificationRep
 
 	async getAll(): Promise<SuperfoodCertification[]> {
 		const docs = await this.model.find().exec();
-		return docs.map(doc => SuperfoodCertificationMapper.fromDocument(doc));
+		return docs.map((doc) => SuperfoodCertificationMapper.fromDocument(doc));
 	}
 
-	async save(certification: SuperfoodCertification): Promise<SuperfoodCertification> {
-		const persistenceData = SuperfoodCertificationMapper.toPersistence(certification);
+	async save(
+		certification: SuperfoodCertification,
+	): Promise<SuperfoodCertification> {
+		const persistenceData =
+			SuperfoodCertificationMapper.toPersistence(certification);
 		// MongoDB genera automáticamente _id como ObjectId
 		const newDoc = new this.model(persistenceData);
 		const savedDoc = await newDoc.save();
 		return SuperfoodCertificationMapper.fromDocument(savedDoc);
 	}
 
-	async update(certification: SuperfoodCertification): Promise<SuperfoodCertification> {
-		const persistenceData = SuperfoodCertificationMapper.toPersistence(certification);
+	async update(
+		certification: SuperfoodCertification,
+	): Promise<SuperfoodCertification> {
+		const persistenceData =
+			SuperfoodCertificationMapper.toPersistence(certification);
 		persistenceData.updatedAt = new Date();
 
 		// Convertir string a ObjectId
 		const objectId = MongoIdUtils.stringToObjectId(certification.id);
 		const updatedDoc = await this.model
-			.findByIdAndUpdate(
-				objectId,
-				{ $set: persistenceData },
-				{ new: true }
-			)
+			.findByIdAndUpdate(objectId, { $set: persistenceData }, { new: true })
 			.exec();
 
 		if (!updatedDoc) {

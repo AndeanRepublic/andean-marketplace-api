@@ -24,9 +24,13 @@ export class VariantRepositoryImpl extends VariantRepositoryBase {
 	}
 
 	async createMany(variants: Variant[]): Promise<Variant[]> {
-		const documents = variants.map((variant) => VariantMapper.toPersistence(variant));
+		const documents = variants.map((variant) =>
+			VariantMapper.toPersistence(variant),
+		);
 		const savedDocs = await this.variantModel.insertMany(documents);
-		return savedDocs.map((doc) => VariantMapper.fromDocument(doc as VariantDocument));
+		return savedDocs.map((doc) =>
+			VariantMapper.fromDocument(doc as VariantDocument),
+		);
 	}
 
 	async getById(id: string): Promise<Variant | null> {

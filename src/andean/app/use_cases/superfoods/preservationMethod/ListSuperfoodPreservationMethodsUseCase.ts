@@ -8,10 +8,12 @@ import { SuperfoodPreservationMethodMapper } from '../../../../infra/services/su
 export class ListSuperfoodPreservationMethodsUseCase {
 	constructor(
 		private readonly preservationMethodRepository: SuperfoodPreservationMethodRepository,
-	) { }
+	) {}
 
 	async handle(): Promise<SuperfoodPreservationMethodResponse[]> {
 		const methods = await this.preservationMethodRepository.getAll();
-		return methods.map(method => SuperfoodPreservationMethodMapper.toResponse(method));
+		return methods.map((method) =>
+			SuperfoodPreservationMethodMapper.toResponse(method),
+		);
 	}
 }

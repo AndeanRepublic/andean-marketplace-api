@@ -7,10 +7,11 @@ export class GetSuperfoodProductByIdUseCase {
 	constructor(
 		@Inject(SuperfoodProductRepository)
 		private readonly superfoodProductRepository: SuperfoodProductRepository,
-	) { }
+	) {}
 
 	async handle(productId: string): Promise<SuperfoodProduct> {
-		const productFound = await this.superfoodProductRepository.getSuperfoodProductById(productId);
+		const productFound =
+			await this.superfoodProductRepository.getSuperfoodProductById(productId);
 
 		if (!productFound) {
 			throw new NotFoundException(`Producto con ID ${productId} no encontrado`);

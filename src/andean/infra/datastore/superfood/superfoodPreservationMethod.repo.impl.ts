@@ -12,7 +12,7 @@ export class SuperfoodPreservationMethodRepoImpl implements SuperfoodPreservatio
 	constructor(
 		@InjectModel('SuperfoodPreservationMethod')
 		private readonly model: Model<SuperfoodPreservationMethodDocument>,
-	) { }
+	) {}
 
 	async getById(id: string): Promise<SuperfoodPreservationMethod | null> {
 		// Convertir string a ObjectId
@@ -24,29 +24,33 @@ export class SuperfoodPreservationMethodRepoImpl implements SuperfoodPreservatio
 
 	async getAll(): Promise<SuperfoodPreservationMethod[]> {
 		const docs = await this.model.find().exec();
-		return docs.map(doc => SuperfoodPreservationMethodMapper.fromDocument(doc));
+		return docs.map((doc) =>
+			SuperfoodPreservationMethodMapper.fromDocument(doc),
+		);
 	}
 
-	async save(method: SuperfoodPreservationMethod): Promise<SuperfoodPreservationMethod> {
-		const persistenceData = SuperfoodPreservationMethodMapper.toPersistence(method);
+	async save(
+		method: SuperfoodPreservationMethod,
+	): Promise<SuperfoodPreservationMethod> {
+		const persistenceData =
+			SuperfoodPreservationMethodMapper.toPersistence(method);
 		// MongoDB genera automáticamente _id como ObjectId
 		const newDoc = new this.model(persistenceData);
 		const savedDoc = await newDoc.save();
 		return SuperfoodPreservationMethodMapper.fromDocument(savedDoc);
 	}
 
-	async update(method: SuperfoodPreservationMethod): Promise<SuperfoodPreservationMethod> {
-		const persistenceData = SuperfoodPreservationMethodMapper.toPersistence(method);
+	async update(
+		method: SuperfoodPreservationMethod,
+	): Promise<SuperfoodPreservationMethod> {
+		const persistenceData =
+			SuperfoodPreservationMethodMapper.toPersistence(method);
 		persistenceData.updatedAt = new Date();
 
 		// Convertir string a ObjectId
 		const objectId = MongoIdUtils.stringToObjectId(method.id);
 		const updatedDoc = await this.model
-			.findByIdAndUpdate(
-				objectId,
-				{ $set: persistenceData },
-				{ new: true }
-			)
+			.findByIdAndUpdate(objectId, { $set: persistenceData }, { new: true })
 			.exec();
 
 		if (!updatedDoc) {

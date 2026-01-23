@@ -14,31 +14,31 @@ import { DeleteShopUseCase } from './app/use_cases/shops/DeleteShopUseCase';
 import { UsersModule } from './users.module';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      {
-        name: 'Shop',
-        schema: ShopSchema,
-      },
-    ]),
-    UsersModule,
-  ],
-  controllers: [ShopController],
-  providers: [
-    CreateShopUseCase,
-    GetShopByIdUseCase,
-    GetShopsByCategoryUseCase,
-    GetShopsBySellerIdUseCase,
-    DeleteShopUseCase,
-    {
-      provide: ShopRepository,
-      useClass: ShopRepoImpl,
-    },
-    {
-      provide: SellerProfileRepository,
-      useClass: SellerProfileRepositoryImpl,
-    },
-  ],
-  exports: [ShopRepository, MongooseModule],
+	imports: [
+		MongooseModule.forFeature([
+			{
+				name: 'Shop',
+				schema: ShopSchema,
+			},
+		]),
+		UsersModule,
+	],
+	controllers: [ShopController],
+	providers: [
+		CreateShopUseCase,
+		GetShopByIdUseCase,
+		GetShopsByCategoryUseCase,
+		GetShopsBySellerIdUseCase,
+		DeleteShopUseCase,
+		{
+			provide: ShopRepository,
+			useClass: ShopRepoImpl,
+		},
+		{
+			provide: SellerProfileRepository,
+			useClass: SellerProfileRepositoryImpl,
+		},
+	],
+	exports: [ShopRepository, MongooseModule],
 })
 export class ShopsModule {}

@@ -9,13 +9,16 @@ import { SuperfoodCertificationMapper } from '../../../../infra/services/superfo
 export class CreateSuperfoodCertificationUseCase {
 	constructor(
 		private readonly certificationRepository: SuperfoodCertificationRepository,
-	) { }
+	) {}
 
-	async handle(dto: CreateSuperfoodCertificationDto): Promise<SuperfoodCertificationResponse> {
+	async handle(
+		dto: CreateSuperfoodCertificationDto,
+	): Promise<SuperfoodCertificationResponse> {
 		// Crear entidad usando mapper
 		const certification = SuperfoodCertificationMapper.fromCreateDto(dto);
 
-		const savedCertification = await this.certificationRepository.save(certification);
+		const savedCertification =
+			await this.certificationRepository.save(certification);
 		return SuperfoodCertificationMapper.toResponse(savedCertification);
 	}
 }

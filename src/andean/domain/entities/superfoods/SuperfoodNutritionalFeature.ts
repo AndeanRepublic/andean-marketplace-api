@@ -5,5 +5,5 @@ export class SuperfoodNutritionalFeature {
 		public readonly iconId?: string,
 		public readonly createdAt?: Date,
 		public readonly updatedAt?: Date,
-	) { }
+	) {}
 }

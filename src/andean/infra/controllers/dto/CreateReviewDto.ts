@@ -1,4 +1,10 @@
-import { IsString, IsNotEmpty, IsInt, IsEnum, IsOptional } from 'class-validator';
+import {
+	IsString,
+	IsNotEmpty,
+	IsInt,
+	IsEnum,
+	IsOptional,
+} from 'class-validator';
 import { ProductType } from 'src/andean/domain/enums/ProductType';
 
 export class CreateReviewDto {
@@ -25,5 +31,4 @@ export class CreateReviewDto {
 	@IsEnum(ProductType)
 	@IsNotEmpty()
 	productType: ProductType;
-
 }

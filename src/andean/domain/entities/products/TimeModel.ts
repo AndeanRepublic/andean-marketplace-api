@@ -1,6 +1,6 @@
 export class TimeModel {
-  constructor(
-    public count: number,
-    public type: string,
-  ) {}
+	constructor(
+		public count: number,
+		public type: string,
+	) {}
 }

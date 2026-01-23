@@ -1,4 +1,4 @@
 export enum ToolUsed {
-  MANUAL = 'MANUAL',
-  ELECTRIC = 'ELECTRIC',
+	MANUAL = 'MANUAL',
+	ELECTRIC = 'ELECTRIC',
 }

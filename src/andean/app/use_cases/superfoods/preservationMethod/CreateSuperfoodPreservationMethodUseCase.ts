@@ -9,13 +9,17 @@ import { SuperfoodPreservationMethodMapper } from '../../../../infra/services/su
 export class CreateSuperfoodPreservationMethodUseCase {
 	constructor(
 		private readonly preservationMethodRepository: SuperfoodPreservationMethodRepository,
-	) { }
+	) {}
 
-	async handle(dto: CreateSuperfoodPreservationMethodDto): Promise<SuperfoodPreservationMethodResponse> {
+	async handle(
+		dto: CreateSuperfoodPreservationMethodDto,
+	): Promise<SuperfoodPreservationMethodResponse> {
 		// Crear entidad usando mapper
-		const preservationMethod = SuperfoodPreservationMethodMapper.fromCreateDto(dto);
+		const preservationMethod =
+			SuperfoodPreservationMethodMapper.fromCreateDto(dto);
 
-		const savedMethod = await this.preservationMethodRepository.save(preservationMethod);
+		const savedMethod =
+			await this.preservationMethodRepository.save(preservationMethod);
 		return SuperfoodPreservationMethodMapper.toResponse(savedMethod);
 	}
 }

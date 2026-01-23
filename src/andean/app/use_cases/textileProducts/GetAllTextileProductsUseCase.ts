@@ -1,5 +1,8 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { TextileProductRepository, ProductFilters } from '../../datastore/textileProducts/TextileProduct.repo';
+import {
+	TextileProductRepository,
+	ProductFilters,
+} from '../../datastore/textileProducts/TextileProduct.repo';
 import { PaginatedProductsResponse } from '../../modules/PaginatedProductsResponse';
 import { TextileProductListItem } from '../../modules/TextileProductListItemResponse';
 
@@ -8,9 +11,11 @@ export class GetAllTextileProductsUseCase {
 	constructor(
 		@Inject(TextileProductRepository)
 		private readonly textileProductRepository: TextileProductRepository,
-	) { }
+	) {}
 
-	async handle(filters?: ProductFilters): Promise<PaginatedProductsResponse<TextileProductListItem>> {
+	async handle(
+		filters?: ProductFilters,
+	): Promise<PaginatedProductsResponse<TextileProductListItem>> {
 		// Si no hay filtros, usar método legacy con formato
 		if (!filters || Object.keys(filters).length === 0) {
 			const defaultFilters = { page: 1, perPage: 10 };
@@ -41,7 +46,9 @@ export class GetAllTextileProductsUseCase {
 		]);
 
 		if (products.length === 0) {
-			throw new NotFoundException('No textile products found with the specified filters');
+			throw new NotFoundException(
+				'No textile products found with the specified filters',
+			);
 		}
 
 		const page = filters.page || 1;

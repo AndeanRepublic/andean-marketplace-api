@@ -21,51 +21,51 @@ import { GetCustomerProfileUseCase } from './app/use_cases/users/GetCustomerProf
 import { GetSellerProfileUseCase } from './app/use_cases/users/GetSellerProfileUseCase';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      {
-        name: 'CustomerProfile',
-        schema: CustomerProfileSchema,
-      },
-      {
-        name: 'SellerProfile',
-        schema: SellerProfileSchema,
-      },
-      {
-        name: 'Account',
-        schema: AccountSchema,
-      },
-    ]),
-  ],
-  controllers: [UserController],
-  providers: [
-    CreateCustomerUseCase,
-    GetAllCustomerUseCase,
-    GetAllSellersUseCase,
-    CreateSellerUseCase,
-    UpdateCustomerProfileUseCase,
-    UpdateSellerProfileUseCase,
-    GetCustomerProfileUseCase,
-    GetSellerProfileUseCase,
-    HashService,
-    {
-      provide: CustomerProfileRepository,
-      useClass: CustomerProfileRepositoryImpl,
-    },
-    {
-      provide: SellerProfileRepository,
-      useClass: SellerProfileRepositoryImpl,
-    },
-    {
-      provide: AccountRepository,
-      useClass: AccountRepoImpl,
-    },
-  ],
-  exports: [
-    CustomerProfileRepository,
-    SellerProfileRepository,
-    AccountRepository,
-    MongooseModule,
-  ],
+	imports: [
+		MongooseModule.forFeature([
+			{
+				name: 'CustomerProfile',
+				schema: CustomerProfileSchema,
+			},
+			{
+				name: 'SellerProfile',
+				schema: SellerProfileSchema,
+			},
+			{
+				name: 'Account',
+				schema: AccountSchema,
+			},
+		]),
+	],
+	controllers: [UserController],
+	providers: [
+		CreateCustomerUseCase,
+		GetAllCustomerUseCase,
+		GetAllSellersUseCase,
+		CreateSellerUseCase,
+		UpdateCustomerProfileUseCase,
+		UpdateSellerProfileUseCase,
+		GetCustomerProfileUseCase,
+		GetSellerProfileUseCase,
+		HashService,
+		{
+			provide: CustomerProfileRepository,
+			useClass: CustomerProfileRepositoryImpl,
+		},
+		{
+			provide: SellerProfileRepository,
+			useClass: SellerProfileRepositoryImpl,
+		},
+		{
+			provide: AccountRepository,
+			useClass: AccountRepoImpl,
+		},
+	],
+	exports: [
+		CustomerProfileRepository,
+		SellerProfileRepository,
+		AccountRepository,
+		MongooseModule,
+	],
 })
 export class UsersModule {}

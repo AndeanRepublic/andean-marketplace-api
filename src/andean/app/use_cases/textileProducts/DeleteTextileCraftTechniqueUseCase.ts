@@ -4,17 +4,20 @@ import { TextileCraftTechnique } from 'src/andean/domain/entities/textileProduct
 
 @Injectable()
 export class DeleteTextileCraftTechniqueUseCase {
-  constructor(
-    @Inject(TextileCraftTechniqueRepository)
-    private readonly textileCraftTechniqueRepository: TextileCraftTechniqueRepository,
-  ) {}
+	constructor(
+		@Inject(TextileCraftTechniqueRepository)
+		private readonly textileCraftTechniqueRepository: TextileCraftTechniqueRepository,
+	) {}
 
-  async handle(id: string): Promise<void> {
-    const techniqueFound = await this.textileCraftTechniqueRepository.getTextileCraftTechniqueById(id);
-    if (!techniqueFound) {
-      throw new NotFoundException('Craft technique not found');
-    }
-    await this.textileCraftTechniqueRepository.deleteTextileCraftTechnique(id);
-    return;
-  }
+	async handle(id: string): Promise<void> {
+		const techniqueFound =
+			await this.textileCraftTechniqueRepository.getTextileCraftTechniqueById(
+				id,
+			);
+		if (!techniqueFound) {
+			throw new NotFoundException('Craft technique not found');
+		}
+		await this.textileCraftTechniqueRepository.deleteTextileCraftTechnique(id);
+		return;
+	}
 }

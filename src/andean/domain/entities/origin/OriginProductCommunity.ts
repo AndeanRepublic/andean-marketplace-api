@@ -3,5 +3,5 @@ export class OriginProductCommunity {
 		public id: string,
 		public name: string,
 		public regionId: string,
-	) { }
+	) {}
 }

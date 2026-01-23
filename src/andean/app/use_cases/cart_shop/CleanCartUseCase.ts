@@ -5,23 +5,25 @@ import { CartShopRepository } from '../../datastore/CartShop.repo';
 
 @Injectable()
 export class CleanCartUseCase {
-  constructor(
-    @Inject(CartShopItemRepository)
-    private readonly cartItemRepository: CartShopItemRepository,
-    @Inject(CustomerProfileRepository)
-    private readonly customerRepository: CustomerProfileRepository,
-    @Inject(CartShopRepository)
-    private readonly cartShopRepository: CartShopRepository,
-  ) {}
+	constructor(
+		@Inject(CartShopItemRepository)
+		private readonly cartItemRepository: CartShopItemRepository,
+		@Inject(CustomerProfileRepository)
+		private readonly customerRepository: CustomerProfileRepository,
+		@Inject(CartShopRepository)
+		private readonly cartShopRepository: CartShopRepository,
+	) {}
 
-  async handle(customerId: string): Promise<void> {
-    const customerFound = await this.customerRepository.getCustomerById(customerId);
-    if (!customerFound) {
-      throw new NotFoundException('CustomerProfile not found');
-    }
-    const cartFound = await this.cartShopRepository.getCartByCustomerId(customerId);
-    if (cartFound) {
-      await this.cartItemRepository.deleteItemsByCartShopId(cartFound.id);
-    }
-  }
+	async handle(customerId: string): Promise<void> {
+		const customerFound =
+			await this.customerRepository.getCustomerById(customerId);
+		if (!customerFound) {
+			throw new NotFoundException('CustomerProfile not found');
+		}
+		const cartFound =
+			await this.cartShopRepository.getCartByCustomerId(customerId);
+		if (cartFound) {
+			await this.cartItemRepository.deleteItemsByCartShopId(cartFound.id);
+		}
+	}
 }

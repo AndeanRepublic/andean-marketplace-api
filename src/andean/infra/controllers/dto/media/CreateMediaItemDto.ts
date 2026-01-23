@@ -4,7 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class CreateMediaItemDto {
 	@ApiProperty({
 		description: 'Tipo de medio (image, video, etc.)',
-		example: 'image'
+		example: 'image',
 	})
 	@IsString()
 	@IsNotEmpty()
@@ -12,7 +12,7 @@ export class CreateMediaItemDto {
 
 	@ApiProperty({
 		description: 'Nombre del archivo',
-		example: 'product-icon.png'
+		example: 'product-icon.png',
 	})
 	@IsString()
 	@IsNotEmpty()
@@ -20,7 +20,7 @@ export class CreateMediaItemDto {
 
 	@ApiProperty({
 		description: 'URL del archivo',
-		example: 'https://example.com/uploads/product-icon.png'
+		example: 'https://example.com/uploads/product-icon.png',
 	})
 	@IsUrl()
 	@IsNotEmpty()

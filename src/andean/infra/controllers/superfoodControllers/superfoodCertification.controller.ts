@@ -8,12 +8,7 @@ import {
 	HttpCode,
 	HttpStatus,
 } from '@nestjs/common';
-import {
-	ApiTags,
-	ApiOperation,
-	ApiResponse,
-	ApiParam,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateSuperfoodCertificationDto } from '../dto/superfoods/CreateSuperfoodCertificationDto';
 import { SuperfoodCertificationResponse } from '../../../app/modules/SuperfoodCertificationResponse';
 import { CreateSuperfoodCertificationUseCase } from '../../../app/use_cases/superfoods/certification/CreateSuperfoodCertificationUseCase';
@@ -29,13 +24,14 @@ export class SuperfoodCertificationController {
 		private readonly getSuperfoodCertificationByIdUseCase: GetSuperfoodCertificationByIdUseCase,
 		private readonly listSuperfoodCertificationsUseCase: ListSuperfoodCertificationsUseCase,
 		private readonly deleteSuperfoodCertificationUseCase: DeleteSuperfoodCertificationUseCase,
-	) { }
+	) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
 		summary: 'Crear nueva certificación',
-		description: 'Crea una nueva certificación para productos superfood (ej: Orgánico, Fair Trade)',
+		description:
+			'Crea una nueva certificación para productos superfood (ej: Orgánico, Fair Trade)',
 	})
 	@ApiResponse({
 		status: 201,

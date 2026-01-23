@@ -8,12 +8,7 @@ import {
 	HttpCode,
 	HttpStatus,
 } from '@nestjs/common';
-import {
-	ApiTags,
-	ApiOperation,
-	ApiResponse,
-	ApiParam,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateSuperfoodPreservationMethodDto } from '../dto/superfoods/CreateSuperfoodPreservationMethodDto';
 import { SuperfoodPreservationMethodResponse } from '../../../app/modules/SuperfoodPreservationMethodResponse';
 import { CreateSuperfoodPreservationMethodUseCase } from '../../../app/use_cases/superfoods/preservationMethod/CreateSuperfoodPreservationMethodUseCase';
@@ -29,13 +24,14 @@ export class SuperfoodPreservationMethodController {
 		private readonly getSuperfoodPreservationMethodByIdUseCase: GetSuperfoodPreservationMethodByIdUseCase,
 		private readonly listSuperfoodPreservationMethodsUseCase: ListSuperfoodPreservationMethodsUseCase,
 		private readonly deleteSuperfoodPreservationMethodUseCase: DeleteSuperfoodPreservationMethodUseCase,
-	) { }
+	) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
 		summary: 'Crear nuevo método de preservación',
-		description: 'Crea un nuevo método de preservación (ej: Deshidratado, Liofilizado)',
+		description:
+			'Crea un nuevo método de preservación (ej: Deshidratado, Liofilizado)',
 	})
 	@ApiResponse({
 		status: 201,
@@ -62,7 +58,9 @@ export class SuperfoodPreservationMethodController {
 		description: 'Lista de métodos',
 		type: [SuperfoodPreservationMethodResponse],
 	})
-	async listPreservationMethods(): Promise<SuperfoodPreservationMethodResponse[]> {
+	async listPreservationMethods(): Promise<
+		SuperfoodPreservationMethodResponse[]
+	> {
 		return await this.listSuperfoodPreservationMethodsUseCase.handle();
 	}
 

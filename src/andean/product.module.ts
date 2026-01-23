@@ -21,45 +21,45 @@ import { ProductVariantRepoImpl } from './infra/datastore/productVariant.repo.im
 import { ProductVariantSchema } from './infra/persistence/productVariant.schema';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      {
-        name: 'Product',
-        schema: ProductSchema,
-      },
-      {
-        name: 'ProductVariant',
-        schema: ProductVariantSchema,
-      },
-    ]),
-    ShopsModule,
-    UsersModule,
-  ],
-  controllers: [ProductController],
-  providers: [
-    CreateProductUseCase,
-    GetProductsBySellerIdUseCase,
-    GetProductsByShopUseCase,
-    DeleteProductUseCase,
-    GetProductByIdUseCase,
-    CreateVariantUseCase,
-    {
-      provide: ProductRepository,
-      useClass: ProductRepoImpl,
-    },
-    {
-      provide: ShopRepository,
-      useClass: ShopRepoImpl,
-    },
-    {
-      provide: SellerProfileRepository,
-      useClass: SellerProfileRepositoryImpl,
-    },
-    {
-      provide: ProductVariantRepository,
-      useClass: ProductVariantRepoImpl,
-    },
-  ],
-  exports: [ProductRepository, ProductVariantRepository, MongooseModule],
+	imports: [
+		MongooseModule.forFeature([
+			{
+				name: 'Product',
+				schema: ProductSchema,
+			},
+			{
+				name: 'ProductVariant',
+				schema: ProductVariantSchema,
+			},
+		]),
+		ShopsModule,
+		UsersModule,
+	],
+	controllers: [ProductController],
+	providers: [
+		CreateProductUseCase,
+		GetProductsBySellerIdUseCase,
+		GetProductsByShopUseCase,
+		DeleteProductUseCase,
+		GetProductByIdUseCase,
+		CreateVariantUseCase,
+		{
+			provide: ProductRepository,
+			useClass: ProductRepoImpl,
+		},
+		{
+			provide: ShopRepository,
+			useClass: ShopRepoImpl,
+		},
+		{
+			provide: SellerProfileRepository,
+			useClass: SellerProfileRepositoryImpl,
+		},
+		{
+			provide: ProductVariantRepository,
+			useClass: ProductVariantRepoImpl,
+		},
+	],
+	exports: [ProductRepository, ProductVariantRepository, MongooseModule],
 })
 export class ProductsModule {}

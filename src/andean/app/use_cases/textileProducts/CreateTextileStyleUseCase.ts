@@ -6,13 +6,13 @@ import { TextileStyleMapper } from 'src/andean/infra/services/textileProducts/Te
 
 @Injectable()
 export class CreateTextileStyleUseCase {
-  constructor(
-    @Inject(TextileStyleRepository)
-    private readonly textileStyleRepository: TextileStyleRepository,
-  ) {}
+	constructor(
+		@Inject(TextileStyleRepository)
+		private readonly textileStyleRepository: TextileStyleRepository,
+	) {}
 
-  async handle(dto: CreateTextileStyleDto): Promise<TextileStyle> {
-    const textileStyleToSave = TextileStyleMapper.fromCreateDto(dto);
-    return this.textileStyleRepository.saveTextileStyle(textileStyleToSave);
-  }
+	async handle(dto: CreateTextileStyleDto): Promise<TextileStyle> {
+		const textileStyleToSave = TextileStyleMapper.fromCreateDto(dto);
+		return this.textileStyleRepository.saveTextileStyle(textileStyleToSave);
+	}
 }

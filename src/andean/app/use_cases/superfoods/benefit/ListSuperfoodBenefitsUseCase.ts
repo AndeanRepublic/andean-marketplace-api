@@ -6,12 +6,12 @@ import { SuperfoodBenefitMapper } from '../../../../infra/services/superfood/Sup
 
 @Injectable()
 export class ListSuperfoodBenefitsUseCase {
-	constructor(
-		private readonly benefitRepository: SuperfoodBenefitRepository,
-	) { }
+	constructor(private readonly benefitRepository: SuperfoodBenefitRepository) {}
 
 	async handle(): Promise<SuperfoodBenefitResponse[]> {
 		const benefits = await this.benefitRepository.getAll();
-		return benefits.map(benefit => SuperfoodBenefitMapper.toResponse(benefit));
+		return benefits.map((benefit) =>
+			SuperfoodBenefitMapper.toResponse(benefit),
+		);
 	}
 }

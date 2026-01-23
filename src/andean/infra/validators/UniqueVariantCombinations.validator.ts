@@ -13,7 +13,7 @@ export class UniqueVariantCombinationsConstraint implements ValidatorConstraintI
 			return true; // Si no hay variantes, es válido
 		}
 
-		const combinations = variants.map(v => JSON.stringify(v.combination));
+		const combinations = variants.map((v) => JSON.stringify(v.combination));
 		const uniqueCombinations = new Set(combinations);
 
 		return combinations.length === uniqueCombinations.size;
@@ -24,8 +24,10 @@ export class UniqueVariantCombinationsConstraint implements ValidatorConstraintI
 	}
 }
 
-export function UniqueVariantCombinations(validationOptions?: ValidationOptions) {
-	return function (object: Object, propertyName: string) {
+export function UniqueVariantCombinations(
+	validationOptions?: ValidationOptions,
+) {
+	return function (object: object, propertyName: string) {
 		registerDecorator({
 			target: object.constructor,
 			propertyName: propertyName,

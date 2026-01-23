@@ -6,7 +6,7 @@ import { OriginProductCommunity } from '../../../domain/entities/origin/OriginPr
 export class ListOriginProductCommunityUseCase {
 	constructor(
 		private readonly communityRepository: OriginProductCommunityRepository,
-	) { }
+	) {}
 
 	async execute(regionId?: string): Promise<OriginProductCommunity[]> {
 		if (regionId) {

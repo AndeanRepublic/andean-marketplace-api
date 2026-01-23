@@ -4,9 +4,7 @@ import { MediaItem } from '../../../domain/entities/MediaItem';
 
 @Injectable()
 export class GetMediaItemByIdUseCase {
-	constructor(
-		private readonly mediaItemRepository: MediaItemRepository,
-	) { }
+	constructor(private readonly mediaItemRepository: MediaItemRepository) {}
 
 	async execute(id: string): Promise<MediaItem> {
 		const mediaItem = await this.mediaItemRepository.getById(id);

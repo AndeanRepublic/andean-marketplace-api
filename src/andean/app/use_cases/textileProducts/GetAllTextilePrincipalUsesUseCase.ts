@@ -4,16 +4,17 @@ import { TextilePrincipalUse } from 'src/andean/domain/entities/textileProducts/
 
 @Injectable()
 export class GetAllTextilePrincipalUsesUseCase {
-  constructor(
-    @Inject(TextilePrincipalUseRepository)
-    private readonly textilePrincipalUseRepository: TextilePrincipalUseRepository,
-  ) {}
+	constructor(
+		@Inject(TextilePrincipalUseRepository)
+		private readonly textilePrincipalUseRepository: TextilePrincipalUseRepository,
+	) {}
 
-  async handle(): Promise<TextilePrincipalUse[]> {
-    const principalUses = await this.textilePrincipalUseRepository.getAllTextilePrincipalUses();
-    if (principalUses.length === 0) {
-      throw new NotFoundException('No principal uses found');
-    }
-    return principalUses;
-  }
+	async handle(): Promise<TextilePrincipalUse[]> {
+		const principalUses =
+			await this.textilePrincipalUseRepository.getAllTextilePrincipalUses();
+		if (principalUses.length === 0) {
+			throw new NotFoundException('No principal uses found');
+		}
+		return principalUses;
+	}
 }

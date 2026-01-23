@@ -4,16 +4,16 @@ import { Seal } from 'src/andean/domain/entities/community/Seal';
 
 @Injectable()
 export class GetAllSealsUseCase {
-  constructor(
-    @Inject(SealRepository)
-    private readonly sealRepository: SealRepository,
-  ) {}
+	constructor(
+		@Inject(SealRepository)
+		private readonly sealRepository: SealRepository,
+	) {}
 
-  async handle(): Promise<Seal[]> {
-    const seals = await this.sealRepository.getAll();
-    if (seals.length === 0) {
-      throw new NotFoundException('No seals found');
-    }
-    return seals;
-  }
+	async handle(): Promise<Seal[]> {
+		const seals = await this.sealRepository.getAll();
+		if (seals.length === 0) {
+			throw new NotFoundException('No seals found');
+		}
+		return seals;
+	}
 }

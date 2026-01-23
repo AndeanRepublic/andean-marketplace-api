@@ -8,10 +8,12 @@ import { SuperfoodCertificationMapper } from '../../../../infra/services/superfo
 export class ListSuperfoodCertificationsUseCase {
 	constructor(
 		private readonly certificationRepository: SuperfoodCertificationRepository,
-	) { }
+	) {}
 
 	async handle(): Promise<SuperfoodCertificationResponse[]> {
 		const certifications = await this.certificationRepository.getAll();
-		return certifications.map(certification => SuperfoodCertificationMapper.toResponse(certification));
+		return certifications.map((certification) =>
+			SuperfoodCertificationMapper.toResponse(certification),
+		);
 	}
 }

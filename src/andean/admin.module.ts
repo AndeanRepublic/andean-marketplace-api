@@ -35,4 +35,4 @@ import { GetAllSellersUseCase } from './app/use_cases/users/GetAllSellersUseCase
 	],
 	exports: [MongooseModule],
 })
-export class AdminModule { }
+export class AdminModule {}

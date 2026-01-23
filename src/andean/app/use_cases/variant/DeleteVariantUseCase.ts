@@ -6,7 +6,7 @@ export class DeleteVariantUseCase {
 	constructor(
 		@Inject(VariantRepository)
 		private readonly variantRepository: VariantRepository,
-	) { }
+	) {}
 
 	async execute(id: string): Promise<void> {
 		const existing = await this.variantRepository.getById(id);

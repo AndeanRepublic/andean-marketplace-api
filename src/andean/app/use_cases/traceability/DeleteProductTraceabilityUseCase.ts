@@ -5,7 +5,7 @@ import { ProductTraceabilityRepository } from '../../datastore/productTraceabili
 export class DeleteProductTraceabilityUseCase {
 	constructor(
 		private readonly traceabilityRepository: ProductTraceabilityRepository,
-	) { }
+	) {}
 
 	async execute(id: string): Promise<void> {
 		const existing = await this.traceabilityRepository.getById(id);

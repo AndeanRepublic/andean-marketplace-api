@@ -6,13 +6,18 @@ import { TextileCraftTechniqueMapper } from 'src/andean/infra/services/textilePr
 
 @Injectable()
 export class CreateTextileCraftTechniqueUseCase {
-  constructor(
-    @Inject(TextileCraftTechniqueRepository)
-    private readonly textileCraftTechniqueRepository: TextileCraftTechniqueRepository,
-  ) {}
+	constructor(
+		@Inject(TextileCraftTechniqueRepository)
+		private readonly textileCraftTechniqueRepository: TextileCraftTechniqueRepository,
+	) {}
 
-  async handle(dto: CreateTextileCraftTechniqueDto): Promise<TextileCraftTechnique> {
-    const textileCraftTechniqueToSave = TextileCraftTechniqueMapper.fromCreateDto(dto);
-    return this.textileCraftTechniqueRepository.saveTextileCraftTechnique(textileCraftTechniqueToSave);
-  }
+	async handle(
+		dto: CreateTextileCraftTechniqueDto,
+	): Promise<TextileCraftTechnique> {
+		const textileCraftTechniqueToSave =
+			TextileCraftTechniqueMapper.fromCreateDto(dto);
+		return this.textileCraftTechniqueRepository.saveTextileCraftTechnique(
+			textileCraftTechniqueToSave,
+		);
+	}
 }

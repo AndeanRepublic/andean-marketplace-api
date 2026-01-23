@@ -4,17 +4,17 @@ import { TextileProduct } from 'src/andean/domain/entities/textileProducts/Texti
 
 @Injectable()
 export class GetByIdTextileProductUseCase {
-  constructor(
-    @Inject(TextileProductRepository)
-    private readonly textileProductRepository: TextileProductRepository,
-  ) {}
+	constructor(
+		@Inject(TextileProductRepository)
+		private readonly textileProductRepository: TextileProductRepository,
+	) {}
 
-  async handle(id: string): Promise<TextileProduct> {
-    const productFound =
-      await this.textileProductRepository.getTextileProductById(id);
-    if (!productFound) {
-      throw new NotFoundException('Textile product not found');
-    }
-    return productFound;
-  }
+	async handle(id: string): Promise<TextileProduct> {
+		const productFound =
+			await this.textileProductRepository.getTextileProductById(id);
+		if (!productFound) {
+			throw new NotFoundException('Textile product not found');
+		}
+		return productFound;
+	}
 }

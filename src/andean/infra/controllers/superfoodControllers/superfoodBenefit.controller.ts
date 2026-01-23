@@ -8,12 +8,7 @@ import {
 	HttpCode,
 	HttpStatus,
 } from '@nestjs/common';
-import {
-	ApiTags,
-	ApiOperation,
-	ApiResponse,
-	ApiParam,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateSuperfoodBenefitDto } from '../dto/superfoods/CreateSuperfoodBenefitDto';
 import { SuperfoodBenefitResponse } from '../../../app/modules/SuperfoodBenefitResponse';
 import { CreateSuperfoodBenefitUseCase } from '../../../app/use_cases/superfoods/benefit/CreateSuperfoodBenefitUseCase';
@@ -29,13 +24,14 @@ export class SuperfoodBenefitController {
 		private readonly getSuperfoodBenefitByIdUseCase: GetSuperfoodBenefitByIdUseCase,
 		private readonly listSuperfoodBenefitsUseCase: ListSuperfoodBenefitsUseCase,
 		private readonly deleteSuperfoodBenefitUseCase: DeleteSuperfoodBenefitUseCase,
-	) { }
+	) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
 		summary: 'Crear nuevo beneficio',
-		description: 'Crea un nuevo beneficio de superfood (ej: Mejora la digestión, Aumenta energía)',
+		description:
+			'Crea un nuevo beneficio de superfood (ej: Mejora la digestión, Aumenta energía)',
 	})
 	@ApiResponse({
 		status: 201,

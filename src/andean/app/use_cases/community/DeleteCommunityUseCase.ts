@@ -3,9 +3,7 @@ import { CommunityRepository } from '../../datastore/community/community.repo';
 
 @Injectable()
 export class DeleteCommunityUseCase {
-	constructor(
-		private readonly communityRepository: CommunityRepository,
-	) { }
+	constructor(private readonly communityRepository: CommunityRepository) {}
 
 	async execute(id: string): Promise<void> {
 		const existing = await this.communityRepository.getById(id);

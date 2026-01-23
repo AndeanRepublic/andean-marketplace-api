@@ -24,6 +24,7 @@ export class VariantMapper {
 		const plain = {
 			id: new Types.ObjectId().toString(),
 			productId: dto.productId,
+			productType: dto.productType,
 			combination: dto.combination,
 			price: dto.price,
 			stock: dto.stock,

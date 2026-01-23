@@ -1,6 +1,6 @@
 export class TextileProductDetailResponse {
 	name: string;
-	availableSizes: string[]; 
+	availableSizes: string[];
 	availableColors: string[];
 	availableMaterials: string[];
 	variantInfo: {

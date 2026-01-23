@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+	Injectable,
+	NotFoundException,
+	BadRequestException,
+} from '@nestjs/common';
 import { OriginProductCommunityRepository } from '../../datastore/originProductCommunity.repo';
 import { OriginProductRegionRepository } from '../../datastore/originProductRegion.repo';
 import { OriginProductCommunity } from '../../../domain/entities/origin/OriginProductCommunity';
@@ -9,9 +13,12 @@ export class UpdateOriginProductCommunityUseCase {
 	constructor(
 		private readonly communityRepository: OriginProductCommunityRepository,
 		private readonly regionRepository: OriginProductRegionRepository,
-	) { }
+	) {}
 
-	async execute(id: string, dto: UpdateOriginProductCommunityDto): Promise<OriginProductCommunity> {
+	async execute(
+		id: string,
+		dto: UpdateOriginProductCommunityDto,
+	): Promise<OriginProductCommunity> {
 		// Verificar existencia
 		const existing = await this.communityRepository.getById(id);
 		if (!existing) {
@@ -28,9 +35,13 @@ export class UpdateOriginProductCommunityUseCase {
 
 		// Si se intenta cambiar el nombre, validar que no exista otra comunidad con ese nombre
 		if (dto.name && dto.name !== existing.name) {
-			const communityWithSameName = await this.communityRepository.getByName(dto.name);
+			const communityWithSameName = await this.communityRepository.getByName(
+				dto.name,
+			);
 			if (communityWithSameName) {
-				throw new BadRequestException(`Community with name "${dto.name}" already exists`);
+				throw new BadRequestException(
+					`Community with name "${dto.name}" already exists`,
+				);
 			}
 		}
 

@@ -7,9 +7,7 @@ import { SuperfoodTypeMapper } from '../../../../infra/services/superfood/Superf
 
 @Injectable()
 export class CreateSuperfoodTypeUseCase {
-	constructor(
-		private readonly typeRepository: SuperfoodTypeRepository,
-	) { }
+	constructor(private readonly typeRepository: SuperfoodTypeRepository) {}
 
 	async handle(dto: CreateSuperfoodTypeDto): Promise<SuperfoodTypeResponse> {
 		// Crear entidad usando mapper

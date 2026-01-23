@@ -24,7 +24,7 @@ export class OrderRepositoryImpl extends OrderRepository {
 
 	async getOrdersByCustomerId(customerId: string): Promise<Order[]> {
 		const docs = await this.orderModel.find({ customerId }).exec();
-		return docs.map(doc => OrderMapper.fromDocument(doc));
+		return docs.map((doc) => OrderMapper.fromDocument(doc));
 	}
 
 	async createOrder(order: Order): Promise<Order> {

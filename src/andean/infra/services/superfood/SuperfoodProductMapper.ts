@@ -60,7 +60,7 @@ export class SuperfoodProductMapper {
 			);
 		}
 
-			const options = plain.options?.map((opt: any) => {
+		const options = plain.options?.map((opt: any) => {
 			const values = (opt.values || []).map((val: any) =>
 				plainToInstance(SuperfoodOptionsItem, val),
 			);

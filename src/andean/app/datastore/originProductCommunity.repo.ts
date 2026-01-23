@@ -1,7 +1,9 @@
 import { OriginProductCommunity } from '../../domain/entities/origin/OriginProductCommunity';
 
 export abstract class OriginProductCommunityRepository {
-	abstract create(community: OriginProductCommunity): Promise<OriginProductCommunity>;
+	abstract create(
+		community: OriginProductCommunity,
+	): Promise<OriginProductCommunity>;
 	abstract getById(id: string): Promise<OriginProductCommunity | null>;
 	abstract getAll(): Promise<OriginProductCommunity[]>;
 	abstract getByName(name: string): Promise<OriginProductCommunity | null>;

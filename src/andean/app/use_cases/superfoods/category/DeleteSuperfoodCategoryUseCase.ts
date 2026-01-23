@@ -5,7 +5,7 @@ import { SuperfoodCategoryRepository } from '../../../datastore/superfoods/Super
 export class DeleteSuperfoodCategoryUseCase {
 	constructor(
 		private readonly categoryRepository: SuperfoodCategoryRepository,
-	) { }
+	) {}
 
 	async handle(id: string): Promise<void> {
 		const category = await this.categoryRepository.getCategoryById(id);

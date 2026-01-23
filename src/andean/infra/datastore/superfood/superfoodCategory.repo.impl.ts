@@ -12,7 +12,7 @@ export class SuperfoodCategoryRepoImpl implements SuperfoodCategoryRepository {
 	constructor(
 		@InjectModel('SuperfoodCategory')
 		private readonly model: Model<SuperfoodCategoryDocument>,
-	) { }
+	) {}
 
 	async getCategoryById(id: string): Promise<SuperfoodCategory | null> {
 		// Convertir string a ObjectId
@@ -24,7 +24,7 @@ export class SuperfoodCategoryRepoImpl implements SuperfoodCategoryRepository {
 
 	async getAllCategories(): Promise<SuperfoodCategory[]> {
 		const docs = await this.model.find().exec();
-		return docs.map(doc => SuperfoodCategoryMapper.fromDocument(doc));
+		return docs.map((doc) => SuperfoodCategoryMapper.fromDocument(doc));
 	}
 
 	async saveCategory(category: SuperfoodCategory): Promise<SuperfoodCategory> {
@@ -35,18 +35,16 @@ export class SuperfoodCategoryRepoImpl implements SuperfoodCategoryRepository {
 		return SuperfoodCategoryMapper.fromDocument(savedDoc);
 	}
 
-	async updateCategory(category: SuperfoodCategory): Promise<SuperfoodCategory> {
+	async updateCategory(
+		category: SuperfoodCategory,
+	): Promise<SuperfoodCategory> {
 		const persistenceData = SuperfoodCategoryMapper.toPersistence(category);
 		persistenceData.updatedAt = new Date();
 
 		// Convertir string a ObjectId
 		const objectId = MongoIdUtils.stringToObjectId(category.id);
 		const updatedDoc = await this.model
-			.findByIdAndUpdate(
-				objectId,
-				{ $set: persistenceData },
-				{ new: true }
-			)
+			.findByIdAndUpdate(objectId, { $set: persistenceData }, { new: true })
 			.exec();
 
 		if (!updatedDoc) {

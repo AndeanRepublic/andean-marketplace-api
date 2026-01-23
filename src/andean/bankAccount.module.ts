@@ -13,30 +13,30 @@ import { SellerProfileRepositoryImpl } from './infra/datastore/seller.repo.impl'
 import { UsersModule } from './users.module';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      {
-        name: 'BankAccount',
-        schema: BankAccountSchema,
-      },
-    ]),
-    UsersModule,
-  ],
-  controllers: [BankAccountController],
-  providers: [
-    CreateBankAccountUseCase,
-    GetBankAccountsBySellerUseCase,
-    GetBankAccountByIdUseCase,
-    DeleteBankAccountUseCase,
-    {
-      provide: SellerBankAccountRepository,
-      useClass: SellerBankAccountRepoImpl,
-    },
-    {
-      provide: SellerProfileRepository,
-      useClass: SellerProfileRepositoryImpl,
-    },
-  ],
-  exports: [SellerBankAccountRepository],
+	imports: [
+		MongooseModule.forFeature([
+			{
+				name: 'BankAccount',
+				schema: BankAccountSchema,
+			},
+		]),
+		UsersModule,
+	],
+	controllers: [BankAccountController],
+	providers: [
+		CreateBankAccountUseCase,
+		GetBankAccountsBySellerUseCase,
+		GetBankAccountByIdUseCase,
+		DeleteBankAccountUseCase,
+		{
+			provide: SellerBankAccountRepository,
+			useClass: SellerBankAccountRepoImpl,
+		},
+		{
+			provide: SellerProfileRepository,
+			useClass: SellerProfileRepositoryImpl,
+		},
+	],
+	exports: [SellerBankAccountRepository],
 })
 export class BankAccountsModule {}

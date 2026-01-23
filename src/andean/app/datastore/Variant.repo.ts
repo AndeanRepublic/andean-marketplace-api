@@ -6,7 +6,10 @@ export abstract class VariantRepository {
 	abstract getById(id: string): Promise<Variant | null>;
 	abstract getAll(): Promise<Variant[]>;
 	abstract getByProductId(productId: string): Promise<Variant[]>;
-	abstract update(id: string, variant: Partial<Variant>): Promise<Variant | null>;
+	abstract update(
+		id: string,
+		variant: Partial<Variant>,
+	): Promise<Variant | null>;
 	abstract delete(id: string): Promise<boolean>;
 	abstract deleteByProductId(productId: string): Promise<boolean>;
 }

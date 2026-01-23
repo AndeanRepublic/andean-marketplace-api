@@ -8,12 +8,7 @@ import {
 	HttpCode,
 	HttpStatus,
 } from '@nestjs/common';
-import {
-	ApiTags,
-	ApiOperation,
-	ApiResponse,
-	ApiParam,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateSuperfoodNutritionalFeatureDto } from '../dto/superfoods/CreateSuperfoodNutritionalFeatureDto';
 import { SuperfoodNutritionalFeatureResponse } from '../../../app/modules/SuperfoodNutritionalFeatureResponse';
 import { CreateSuperfoodNutritionalFeatureUseCase } from '../../../app/use_cases/superfoods/nutritionalFeature/CreateSuperfoodNutritionalFeatureUseCase';
@@ -29,13 +24,14 @@ export class SuperfoodNutritionalFeatureController {
 		private readonly getSuperfoodNutritionalFeatureByIdUseCase: GetSuperfoodNutritionalFeatureByIdUseCase,
 		private readonly listSuperfoodNutritionalFeaturesUseCase: ListSuperfoodNutritionalFeaturesUseCase,
 		private readonly deleteSuperfoodNutritionalFeatureUseCase: DeleteSuperfoodNutritionalFeatureUseCase,
-	) { }
+	) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
 		summary: 'Crear nueva característica nutricional',
-		description: 'Crea una nueva característica nutricional (ej: Alto en proteínas, Rico en fibra)',
+		description:
+			'Crea una nueva característica nutricional (ej: Alto en proteínas, Rico en fibra)',
 	})
 	@ApiResponse({
 		status: 201,
@@ -62,7 +58,9 @@ export class SuperfoodNutritionalFeatureController {
 		description: 'Lista de características',
 		type: [SuperfoodNutritionalFeatureResponse],
 	})
-	async listNutritionalFeatures(): Promise<SuperfoodNutritionalFeatureResponse[]> {
+	async listNutritionalFeatures(): Promise<
+		SuperfoodNutritionalFeatureResponse[]
+	> {
 		return await this.listSuperfoodNutritionalFeaturesUseCase.handle();
 	}
 

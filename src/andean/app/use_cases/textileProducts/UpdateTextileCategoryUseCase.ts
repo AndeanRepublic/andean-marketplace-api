@@ -6,21 +6,21 @@ import { CreateTextileCategoryDto } from 'src/andean/infra/controllers/dto/texti
 
 @Injectable()
 export class UpdateTextileCategoryUseCase {
-  constructor(
-    @Inject(TextileCategoryRepository)
-    private readonly textileCategoryRepository: TextileCategoryRepository,
-  ) {}
+	constructor(
+		@Inject(TextileCategoryRepository)
+		private readonly textileCategoryRepository: TextileCategoryRepository,
+	) {}
 
-  async handle(
-    id: string,
-    dto: CreateTextileCategoryDto,
-  ): Promise<TextileCategory> {
-    const categoryFound =
-      await this.textileCategoryRepository.getCategoryById(id);
-    if (!categoryFound) {
-      throw new NotFoundException('Category not found');
-    }
-    const toUpdate = TextileCategoryMapper.fromUpdateDto(categoryFound.id, dto);
-    return this.textileCategoryRepository.updateCategory(id, toUpdate);
-  }
+	async handle(
+		id: string,
+		dto: CreateTextileCategoryDto,
+	): Promise<TextileCategory> {
+		const categoryFound =
+			await this.textileCategoryRepository.getCategoryById(id);
+		if (!categoryFound) {
+			throw new NotFoundException('Category not found');
+		}
+		const toUpdate = TextileCategoryMapper.fromUpdateDto(categoryFound.id, dto);
+		return this.textileCategoryRepository.updateCategory(id, toUpdate);
+	}
 }

@@ -8,11 +8,13 @@ export const AccountSchema = new Schema({
 	name: String,
 	email: String,
 	password: String,
-	type: [{
-		type: String,
-		enum: Object.values(AccountRole),
-		required: true,
-	}],
+	type: [
+		{
+			type: String,
+			enum: Object.values(AccountRole),
+			required: true,
+		},
+	],
 	status: {
 		type: String,
 		enum: Object.values(AccountStatus),

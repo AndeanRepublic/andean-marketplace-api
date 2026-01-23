@@ -12,7 +12,7 @@ export class SuperfoodSalesUnitSizeRepoImpl implements SuperfoodSalesUnitSizeRep
 	constructor(
 		@InjectModel('SuperfoodSalesUnitSize')
 		private readonly model: Model<SuperfoodSalesUnitSizeDocument>,
-	) { }
+	) {}
 
 	async getById(id: string): Promise<SuperfoodSalesUnitSize | null> {
 		// Convertir string a ObjectId
@@ -24,29 +24,31 @@ export class SuperfoodSalesUnitSizeRepoImpl implements SuperfoodSalesUnitSizeRep
 
 	async getAll(): Promise<SuperfoodSalesUnitSize[]> {
 		const docs = await this.model.find().exec();
-		return docs.map(doc => SuperfoodSalesUnitSizeMapper.fromDocument(doc));
+		return docs.map((doc) => SuperfoodSalesUnitSizeMapper.fromDocument(doc));
 	}
 
-	async save(unitSize: SuperfoodSalesUnitSize): Promise<SuperfoodSalesUnitSize> {
-		const persistenceData = SuperfoodSalesUnitSizeMapper.toPersistence(unitSize);
+	async save(
+		unitSize: SuperfoodSalesUnitSize,
+	): Promise<SuperfoodSalesUnitSize> {
+		const persistenceData =
+			SuperfoodSalesUnitSizeMapper.toPersistence(unitSize);
 		// MongoDB genera automáticamente _id como ObjectId
 		const newDoc = new this.model(persistenceData);
 		const savedDoc = await newDoc.save();
 		return SuperfoodSalesUnitSizeMapper.fromDocument(savedDoc);
 	}
 
-	async update(unitSize: SuperfoodSalesUnitSize): Promise<SuperfoodSalesUnitSize> {
-		const persistenceData = SuperfoodSalesUnitSizeMapper.toPersistence(unitSize);
+	async update(
+		unitSize: SuperfoodSalesUnitSize,
+	): Promise<SuperfoodSalesUnitSize> {
+		const persistenceData =
+			SuperfoodSalesUnitSizeMapper.toPersistence(unitSize);
 		persistenceData.updatedAt = new Date();
 
 		// Convertir string a ObjectId
 		const objectId = MongoIdUtils.stringToObjectId(unitSize.id);
 		const updatedDoc = await this.model
-			.findByIdAndUpdate(
-				objectId,
-				{ $set: persistenceData },
-				{ new: true }
-			)
+			.findByIdAndUpdate(objectId, { $set: persistenceData }, { new: true })
 			.exec();
 
 		if (!updatedDoc) {

@@ -4,9 +4,7 @@ import { MediaItem } from '../../../domain/entities/MediaItem';
 
 @Injectable()
 export class ListMediaItemsUseCase {
-	constructor(
-		private readonly mediaItemRepository: MediaItemRepository,
-	) { }
+	constructor(private readonly mediaItemRepository: MediaItemRepository) {}
 
 	async execute(): Promise<MediaItem[]> {
 		return await this.mediaItemRepository.getAll();

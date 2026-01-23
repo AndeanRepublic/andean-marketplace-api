@@ -28,7 +28,6 @@ import { JwtAuthGuard } from './infra/core/jwtAuth.guard';
 					},
 				};
 			},
-
 		}),
 		UsersModule,
 	],
@@ -36,4 +35,4 @@ import { JwtAuthGuard } from './infra/core/jwtAuth.guard';
 	providers: [LoginUseCase, HashService, JwtAuthGuard],
 	exports: [JwtAuthGuard, JwtModule], // Export both the guard and JwtModule
 })
-export class AuthModule { }
+export class AuthModule {}

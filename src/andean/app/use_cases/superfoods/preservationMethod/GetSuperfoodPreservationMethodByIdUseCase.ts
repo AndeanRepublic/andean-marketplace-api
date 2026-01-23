@@ -8,13 +8,16 @@ import { SuperfoodPreservationMethodMapper } from '../../../../infra/services/su
 export class GetSuperfoodPreservationMethodByIdUseCase {
 	constructor(
 		private readonly preservationMethodRepository: SuperfoodPreservationMethodRepository,
-	) { }
+	) {}
 
 	async handle(id: string): Promise<SuperfoodPreservationMethodResponse> {
-		const preservationMethod = await this.preservationMethodRepository.getById(id);
+		const preservationMethod =
+			await this.preservationMethodRepository.getById(id);
 
 		if (!preservationMethod) {
-			throw new NotFoundException(`SuperfoodPreservationMethod with ID ${id} not found`);
+			throw new NotFoundException(
+				`SuperfoodPreservationMethod with ID ${id} not found`,
+			);
 		}
 
 		return SuperfoodPreservationMethodMapper.toResponse(preservationMethod);

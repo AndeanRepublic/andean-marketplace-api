@@ -8,31 +8,31 @@ import { ProductVariantMapper } from '../services/ProductVariantMapper';
 
 @Injectable()
 export class ProductVariantRepoImpl extends ProductVariantRepository {
-  constructor(
-    @InjectModel('ProductVariant')
-    private readonly variantModel: Model<ProductVariantDocument>,
-  ) {
-    super();
-  }
+	constructor(
+		@InjectModel('ProductVariant')
+		private readonly variantModel: Model<ProductVariantDocument>,
+	) {
+		super();
+	}
 
-  async getVariantById(id: string): Promise<ProductVariant | null> {
-    const doc = await this.variantModel.findById(id).exec();
-    return doc ? ProductVariantMapper.fromDocument(doc) : null;
-  }
+	async getVariantById(id: string): Promise<ProductVariant | null> {
+		const doc = await this.variantModel.findById(id).exec();
+		return doc ? ProductVariantMapper.fromDocument(doc) : null;
+	}
 
-  async saveProductVariant(variant: ProductVariant): Promise<ProductVariant> {
-    const persistence = ProductVariantMapper.toPersistence(variant);
-    const created = new this.variantModel(persistence);
-    const saved = await created.save();
-    return ProductVariantMapper.fromDocument(saved);
-  }
+	async saveProductVariant(variant: ProductVariant): Promise<ProductVariant> {
+		const persistence = ProductVariantMapper.toPersistence(variant);
+		const created = new this.variantModel(persistence);
+		const saved = await created.save();
+		return ProductVariantMapper.fromDocument(saved);
+	}
 
-  async getVariantsByProductId(productId: string): Promise<ProductVariant[]> {
-    const docs = await this.variantModel.find({ productId }).exec();
-    return docs.map((doc) => ProductVariantMapper.fromDocument(doc));
-  }
+	async getVariantsByProductId(productId: string): Promise<ProductVariant[]> {
+		const docs = await this.variantModel.find({ productId }).exec();
+		return docs.map((doc) => ProductVariantMapper.fromDocument(doc));
+	}
 
-  async deleteProductVariant(id: string): Promise<void> {
-    await this.variantModel.deleteOne({ id }).exec();
-  }
+	async deleteProductVariant(id: string): Promise<void> {
+		await this.variantModel.deleteOne({ id }).exec();
+	}
 }

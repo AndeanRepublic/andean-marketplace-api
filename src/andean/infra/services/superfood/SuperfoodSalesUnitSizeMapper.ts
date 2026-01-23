@@ -10,7 +10,9 @@ export class SuperfoodSalesUnitSizeMapper {
 	 * Convierte documento MongoDB a entidad de dominio
 	 * ObjectId (_id) → string (id)
 	 */
-	static fromDocument(doc: SuperfoodSalesUnitSizeDocument): SuperfoodSalesUnitSize {
+	static fromDocument(
+		doc: SuperfoodSalesUnitSizeDocument,
+	): SuperfoodSalesUnitSize {
 		const plain = doc.toObject();
 		return new SuperfoodSalesUnitSize(
 			MongoIdUtils.objectIdToString(plain._id), // ObjectId → string
@@ -20,7 +22,9 @@ export class SuperfoodSalesUnitSizeMapper {
 		);
 	}
 
-	static fromCreateDto(dto: CreateSuperfoodSalesUnitSizeDto): SuperfoodSalesUnitSize {
+	static fromCreateDto(
+		dto: CreateSuperfoodSalesUnitSizeDto,
+	): SuperfoodSalesUnitSize {
 		return new SuperfoodSalesUnitSize(
 			new Types.ObjectId().toString(), // Generar ObjectId temporal como string
 			dto.name,
@@ -29,7 +33,9 @@ export class SuperfoodSalesUnitSizeMapper {
 		);
 	}
 
-	static toResponse(entity: SuperfoodSalesUnitSize): SuperfoodSalesUnitSizeResponse {
+	static toResponse(
+		entity: SuperfoodSalesUnitSize,
+	): SuperfoodSalesUnitSizeResponse {
 		return {
 			id: entity.id,
 			name: entity.name,
@@ -49,5 +55,4 @@ export class SuperfoodSalesUnitSizeMapper {
 			updatedAt: entity.updatedAt || new Date(),
 		};
 	}
-
 }

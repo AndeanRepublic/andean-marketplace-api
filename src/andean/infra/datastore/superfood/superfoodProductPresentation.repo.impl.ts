@@ -12,7 +12,7 @@ export class SuperfoodProductPresentationRepoImpl implements SuperfoodProductPre
 	constructor(
 		@InjectModel('SuperfoodProductPresentation')
 		private readonly model: Model<SuperfoodProductPresentationDocument>,
-	) { }
+	) {}
 
 	async getById(id: string): Promise<SuperfoodProductPresentation | null> {
 		// Convertir string a ObjectId
@@ -24,29 +24,33 @@ export class SuperfoodProductPresentationRepoImpl implements SuperfoodProductPre
 
 	async getAll(): Promise<SuperfoodProductPresentation[]> {
 		const docs = await this.model.find().exec();
-		return docs.map(doc => SuperfoodProductPresentationMapper.fromDocument(doc));
+		return docs.map((doc) =>
+			SuperfoodProductPresentationMapper.fromDocument(doc),
+		);
 	}
 
-	async save(presentation: SuperfoodProductPresentation): Promise<SuperfoodProductPresentation> {
-		const persistenceData = SuperfoodProductPresentationMapper.toPersistence(presentation);
+	async save(
+		presentation: SuperfoodProductPresentation,
+	): Promise<SuperfoodProductPresentation> {
+		const persistenceData =
+			SuperfoodProductPresentationMapper.toPersistence(presentation);
 		// MongoDB genera automáticamente _id como ObjectId
 		const newDoc = new this.model(persistenceData);
 		const savedDoc = await newDoc.save();
 		return SuperfoodProductPresentationMapper.fromDocument(savedDoc);
 	}
 
-	async update(presentation: SuperfoodProductPresentation): Promise<SuperfoodProductPresentation> {
-		const persistenceData = SuperfoodProductPresentationMapper.toPersistence(presentation);
+	async update(
+		presentation: SuperfoodProductPresentation,
+	): Promise<SuperfoodProductPresentation> {
+		const persistenceData =
+			SuperfoodProductPresentationMapper.toPersistence(presentation);
 		persistenceData.updatedAt = new Date();
 
 		// Convertir string a ObjectId
 		const objectId = MongoIdUtils.stringToObjectId(presentation.id);
 		const updatedDoc = await this.model
-			.findByIdAndUpdate(
-				objectId,
-				{ $set: persistenceData },
-				{ new: true }
-			)
+			.findByIdAndUpdate(objectId, { $set: persistenceData }, { new: true })
 			.exec();
 
 		if (!updatedDoc) {

@@ -8,13 +8,15 @@ import { SuperfoodSalesUnitSizeMapper } from '../../../../infra/services/superfo
 export class GetSuperfoodSalesUnitSizeByIdUseCase {
 	constructor(
 		private readonly salesUnitSizeRepository: SuperfoodSalesUnitSizeRepository,
-	) { }
+	) {}
 
 	async handle(id: string): Promise<SuperfoodSalesUnitSizeResponse> {
 		const salesUnitSize = await this.salesUnitSizeRepository.getById(id);
 
 		if (!salesUnitSize) {
-			throw new NotFoundException(`SuperfoodSalesUnitSize with ID ${id} not found`);
+			throw new NotFoundException(
+				`SuperfoodSalesUnitSize with ID ${id} not found`,
+			);
 		}
 
 		return SuperfoodSalesUnitSizeMapper.toResponse(salesUnitSize);

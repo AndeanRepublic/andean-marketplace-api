@@ -53,5 +53,4 @@ export class SuperfoodBenefitMapper {
 			updatedAt: entity.updatedAt || new Date(),
 		};
 	}
-
 }

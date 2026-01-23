@@ -1,20 +1,20 @@
-import { Inject, Injectable, NotFoundException } from "@nestjs/common";
-import { TextileProductRepository } from "../../datastore/textileProducts/TextileProduct.repo";
-import { TextileProductDetailResponse } from "../../models/TextileProducts/TextileProductDetailResponse";
-import { ProductType } from "../../../domain/enums/ProductType";
-import { OwnerType } from "../../../domain/enums/OwnerType";
-import { TextileOptionName } from "../../../domain/enums/TextileOptionName";
-import { ReviewRepository } from "../../datastore/Review.repo";
-import { CustomerProfileRepository } from "../../datastore/Customer.repo";
-import { CommunityRepository } from "../../datastore/community/community.repo";
-import { SealRepository } from "../../datastore/community/Seal.repo";
-import { ColorOptionAlternativeRepository } from "../../datastore/textileProducts/ColorOptionAlternative.repo";
-import { SizeOptionAlternativeRepository } from "../../datastore/textileProducts/SizeOptionAlternative.repo";
-import { TextileCategoryRepository } from "../../datastore/textileProducts/TextileCategory.repo";
-import { ShopRepository } from "../../datastore/Shop.repo";
-import { VariantRepository } from "../../datastore/Variant.repo";
-import { Review } from "src/andean/domain/entities/Review";
-import { Variant } from "src/andean/domain/entities/Variant";
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { TextileProductRepository } from '../../datastore/textileProducts/TextileProduct.repo';
+import { TextileProductDetailResponse } from '../../models/TextileProducts/TextileProductDetailResponse';
+import { ProductType } from '../../../domain/enums/ProductType';
+import { OwnerType } from '../../../domain/enums/OwnerType';
+import { TextileOptionName } from '../../../domain/enums/TextileOptionName';
+import { ReviewRepository } from '../../datastore/Review.repo';
+import { CustomerProfileRepository } from '../../datastore/Customer.repo';
+import { CommunityRepository } from '../../datastore/community/community.repo';
+import { SealRepository } from '../../datastore/community/Seal.repo';
+import { ColorOptionAlternativeRepository } from '../../datastore/textileProducts/ColorOptionAlternative.repo';
+import { SizeOptionAlternativeRepository } from '../../datastore/textileProducts/SizeOptionAlternative.repo';
+import { TextileCategoryRepository } from '../../datastore/textileProducts/TextileCategory.repo';
+import { ShopRepository } from '../../datastore/Shop.repo';
+import { VariantRepository } from '../../datastore/Variant.repo';
+import { Review } from 'src/andean/domain/entities/Review';
+import { Variant } from 'src/andean/domain/entities/Variant';
 
 @Injectable()
 export class GetByIdTextileProductDetailUseCase {
@@ -43,7 +43,8 @@ export class GetByIdTextileProductDetailUseCase {
 
 	async handle(id: string): Promise<TextileProductDetailResponse> {
 		// 1. Obtener el producto principal
-		const product = await this.textileProductRepository.getTextileProductById(id);
+		const product =
+			await this.textileProductRepository.getTextileProductById(id);
 		if (!product) {
 			throw new NotFoundException('Textile product not found');
 		}
@@ -75,9 +76,15 @@ export class GetByIdTextileProductDetailUseCase {
 		}));
 
 		// 6. Obtener sizes y colors de options
-		const sizeOption = product.options?.find((opt) => opt.name === TextileOptionName.SIZE);
-		const colorOption = product.options?.find((opt) => opt.name === TextileOptionName.COLOR);
-		const materialOption = product.options?.find((opt) => opt.name === TextileOptionName.MATERIAL);
+		const sizeOption = product.options?.find(
+			(opt) => opt.name === TextileOptionName.SIZE,
+		);
+		const colorOption = product.options?.find(
+			(opt) => opt.name === TextileOptionName.COLOR,
+		);
+		const materialOption = product.options?.find(
+			(opt) => opt.name === TextileOptionName.MATERIAL,
+		);
 
 		// 7. Obtener availableSizes
 		const availableSizes: string[] = [];
@@ -152,11 +159,13 @@ export class GetByIdTextileProductDetailUseCase {
 		);
 
 		// 14. Obtener communityInfo si es COMMUNITY
-		let communityInfo: {
-			bannerImageUrl: string;
-			name: string;
-			seals: { title: string; description: string; logoUrl: string }[];
-		} | undefined = undefined;
+		let communityInfo:
+			| {
+					bannerImageUrl: string;
+					name: string;
+					seals: { title: string; description: string; logoUrl: string }[];
+			  }
+			| undefined = undefined;
 		if (product.baseInfo.ownerType === OwnerType.COMMUNITY) {
 			const community = await this.communityRepository.getById(
 				product.baseInfo.ownerId,
@@ -167,7 +176,7 @@ export class GetByIdTextileProductDetailUseCase {
 							community.seals.map((sealId) =>
 								this.sealRepository.getById(sealId),
 							),
-					  )
+						)
 					: [];
 
 				communityInfo = {
@@ -226,8 +235,7 @@ export class GetByIdTextileProductDetailUseCase {
 		});
 
 		const totalReviews = reviews.length;
-		const averagePunctuation =
-			totalReviews > 0 ? totalStars / totalReviews : 0;
+		const averagePunctuation = totalReviews > 0 ? totalStars / totalReviews : 0;
 
 		return {
 			count5stars: counts[5],
@@ -245,15 +253,15 @@ export class GetByIdTextileProductDetailUseCase {
 		sizeOption: any,
 		colorOption: any,
 		materialOption: any,
-		): Promise<
-			{
-				size: string;
-				color: string;
-				material: string;
-				price: number;
-				stock: number;
-			}[]
-		> {
+	): Promise<
+		{
+			size: string;
+			color: string;
+			material: string;
+			price: number;
+			stock: number;
+		}[]
+	> {
 		if (!variants || variants.length === 0) {
 			return [];
 		}
@@ -335,7 +343,7 @@ export class GetByIdTextileProductDetailUseCase {
 
 		epochs.forEach((epoch) => {
 			const processNameLower = epoch.processName?.toLowerCase() || '';
-			
+
 			// Determinar el grupo basado en processName
 			if (
 				processNameLower.includes('origen') ||
@@ -421,9 +429,8 @@ export class GetByIdTextileProductDetailUseCase {
 		const limitedProducts = similarProducts.slice(0, 5);
 
 		// Obtener category name
-		const category = await this.textileCategoryRepository.getCategoryById(
-			categoryId,
-		);
+		const category =
+			await this.textileCategoryRepository.getCategoryById(categoryId);
 
 		// Mapear productos similares
 		const mappedProducts = await Promise.all(
@@ -451,9 +458,10 @@ export class GetByIdTextileProductDetailUseCase {
 				if (colorOption) {
 					for (const value of colorOption.values) {
 						if (value.idOpcionAlternative) {
-							const colorAlt = await this.colorOptionAlternativeRepository.getById(
-								value.idOpcionAlternative,
-							);
+							const colorAlt =
+								await this.colorOptionAlternativeRepository.getById(
+									value.idOpcionAlternative,
+								);
 							if (colorAlt) {
 								colors.push({
 									colorName: colorAlt.nameLabel,
@@ -473,9 +481,10 @@ export class GetByIdTextileProductDetailUseCase {
 				if (sizeOption) {
 					for (const value of sizeOption.values) {
 						if (value.idOpcionAlternative) {
-							const sizeAlt = await this.sizeOptionAlternativeRepository.getById(
-								value.idOpcionAlternative,
-							);
+							const sizeAlt =
+								await this.sizeOptionAlternativeRepository.getById(
+									value.idOpcionAlternative,
+								);
 							if (sizeAlt && !sizes.includes(sizeAlt.nameLabel)) {
 								sizes.push(sizeAlt.nameLabel);
 							}

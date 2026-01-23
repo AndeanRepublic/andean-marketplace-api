@@ -14,7 +14,8 @@ export class CartItemQuantityResponse {
 	idShoppingCartItem: string;
 
 	@ApiProperty({
-		description: 'Stock máximo disponible (de la variante si existe, o del producto si no hay variante)',
+		description:
+			'Stock máximo disponible (de la variante si existe, o del producto si no hay variante)',
 		example: 50,
 	})
 	maxStock: number;

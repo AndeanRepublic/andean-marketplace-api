@@ -9,7 +9,8 @@ import { OriginProductRegionMapper } from '../services/OriginProductRegionMapper
 @Injectable()
 export class OriginProductRegionRepositoryImpl extends OriginProductRegionRepository {
 	constructor(
-		@InjectModel('OriginProductRegion') private regionModel: Model<OriginProductRegionDocument>,
+		@InjectModel('OriginProductRegion')
+		private regionModel: Model<OriginProductRegionDocument>,
 	) {
 		super();
 	}
@@ -40,7 +41,10 @@ export class OriginProductRegionRepositoryImpl extends OriginProductRegionReposi
 		return document ? OriginProductRegionMapper.fromDocument(document) : null;
 	}
 
-	async update(id: string, region: Partial<OriginProductRegion>): Promise<OriginProductRegion | null> {
+	async update(
+		id: string,
+		region: Partial<OriginProductRegion>,
+	): Promise<OriginProductRegion | null> {
 		const updated = await this.regionModel
 			.findOneAndUpdate({ id }, region, { new: true })
 			.exec();

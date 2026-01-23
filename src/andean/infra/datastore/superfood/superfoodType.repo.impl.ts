@@ -12,7 +12,7 @@ export class SuperfoodTypeRepoImpl implements SuperfoodTypeRepository {
 	constructor(
 		@InjectModel('SuperfoodType')
 		private readonly model: Model<SuperfoodTypeDocument>,
-	) { }
+	) {}
 
 	async getById(id: string): Promise<SuperfoodType | null> {
 		// Convertir string a ObjectId
@@ -24,7 +24,7 @@ export class SuperfoodTypeRepoImpl implements SuperfoodTypeRepository {
 
 	async getAll(): Promise<SuperfoodType[]> {
 		const docs = await this.model.find().exec();
-		return docs.map(doc => SuperfoodTypeMapper.fromDocument(doc));
+		return docs.map((doc) => SuperfoodTypeMapper.fromDocument(doc));
 	}
 
 	async save(type: SuperfoodType): Promise<SuperfoodType> {
@@ -42,11 +42,7 @@ export class SuperfoodTypeRepoImpl implements SuperfoodTypeRepository {
 		// Convertir string a ObjectId
 		const objectId = MongoIdUtils.stringToObjectId(type.id);
 		const updatedDoc = await this.model
-			.findByIdAndUpdate(
-				objectId,
-				{ $set: persistenceData },
-				{ new: true }
-			)
+			.findByIdAndUpdate(objectId, { $set: persistenceData }, { new: true })
 			.exec();
 
 		if (!updatedDoc) {

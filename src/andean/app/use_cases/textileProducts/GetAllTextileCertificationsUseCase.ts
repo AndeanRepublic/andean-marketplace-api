@@ -4,16 +4,17 @@ import { TextileCertification } from 'src/andean/domain/entities/textileProducts
 
 @Injectable()
 export class GetAllTextileCertificationsUseCase {
-  constructor(
-    @Inject(TextileCertificationRepository)
-    private readonly textileCertificationRepository: TextileCertificationRepository,
-  ) {}
+	constructor(
+		@Inject(TextileCertificationRepository)
+		private readonly textileCertificationRepository: TextileCertificationRepository,
+	) {}
 
-  async handle(): Promise<TextileCertification[]> {
-    const certifications = await this.textileCertificationRepository.getAllTextileCertifications();
-    if (certifications.length === 0) {
-      throw new NotFoundException('No certifications found');
-    }
-    return certifications;
-  }
+	async handle(): Promise<TextileCertification[]> {
+		const certifications =
+			await this.textileCertificationRepository.getAllTextileCertifications();
+		if (certifications.length === 0) {
+			throw new NotFoundException('No certifications found');
+		}
+		return certifications;
+	}
 }

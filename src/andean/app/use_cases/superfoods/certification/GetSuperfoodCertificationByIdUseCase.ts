@@ -8,13 +8,15 @@ import { SuperfoodCertificationMapper } from '../../../../infra/services/superfo
 export class GetSuperfoodCertificationByIdUseCase {
 	constructor(
 		private readonly certificationRepository: SuperfoodCertificationRepository,
-	) { }
+	) {}
 
 	async handle(id: string): Promise<SuperfoodCertificationResponse> {
 		const certification = await this.certificationRepository.getById(id);
 
 		if (!certification) {
-			throw new NotFoundException(`SuperfoodCertification with ID ${id} not found`);
+			throw new NotFoundException(
+				`SuperfoodCertification with ID ${id} not found`,
+			);
 		}
 
 		return SuperfoodCertificationMapper.toResponse(certification);

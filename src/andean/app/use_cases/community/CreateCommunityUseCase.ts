@@ -1,4 +1,9 @@
-import { Injectable, BadRequestException, Inject, NotFoundException } from '@nestjs/common';
+import {
+	Injectable,
+	BadRequestException,
+	Inject,
+	NotFoundException,
+} from '@nestjs/common';
 import { CommunityRepository } from '../../datastore/community/community.repo';
 import { SealRepository } from '../../datastore/community/Seal.repo';
 import { Community } from '../../../domain/entities/community/Community';
@@ -29,9 +34,7 @@ export class CreateCommunityUseCase {
 			for (const sealId of dto.seals) {
 				const sealFound = await this.sealRepository.getById(sealId);
 				if (!sealFound) {
-					throw new NotFoundException(
-						`Seal with id ${sealId} not found`,
-					);
+					throw new NotFoundException(`Seal with id ${sealId} not found`);
 				}
 			}
 		}

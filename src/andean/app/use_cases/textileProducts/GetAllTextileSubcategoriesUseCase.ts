@@ -4,16 +4,17 @@ import { TextileSubcategory } from 'src/andean/domain/entities/textileProducts/T
 
 @Injectable()
 export class GetAllTextileSubcategoriesUseCase {
-  constructor(
-    @Inject(TextileSubcategoryRepository)
-    private readonly textileSubcategoryRepository: TextileSubcategoryRepository,
-  ) {}
+	constructor(
+		@Inject(TextileSubcategoryRepository)
+		private readonly textileSubcategoryRepository: TextileSubcategoryRepository,
+	) {}
 
-  async handle(): Promise<TextileSubcategory[]> {
-    const subcategories = await this.textileSubcategoryRepository.getAllTextileSubcategories();
-    if (subcategories.length === 0) {
-      throw new NotFoundException('No subcategories found');
-    }
-    return subcategories;
-  }
+	async handle(): Promise<TextileSubcategory[]> {
+		const subcategories =
+			await this.textileSubcategoryRepository.getAllTextileSubcategories();
+		if (subcategories.length === 0) {
+			throw new NotFoundException('No subcategories found');
+		}
+		return subcategories;
+	}
 }

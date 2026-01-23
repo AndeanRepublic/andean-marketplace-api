@@ -8,10 +8,10 @@ import { SuperfoodSalesUnitSizeMapper } from '../../../../infra/services/superfo
 export class ListSuperfoodSalesUnitSizesUseCase {
 	constructor(
 		private readonly salesUnitSizeRepository: SuperfoodSalesUnitSizeRepository,
-	) { }
+	) {}
 
 	async handle(): Promise<SuperfoodSalesUnitSizeResponse[]> {
 		const sizes = await this.salesUnitSizeRepository.getAll();
-		return sizes.map(size => SuperfoodSalesUnitSizeMapper.toResponse(size));
+		return sizes.map((size) => SuperfoodSalesUnitSizeMapper.toResponse(size));
 	}
 }

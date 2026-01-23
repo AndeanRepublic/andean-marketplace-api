@@ -1,0 +1,109 @@
+{
+	"textileProduct": {
+		"id": "textile-uuid-123",
+		"status": "published",
+		"baseInfo": {
+			"title": "Poncho Andino Premium",
+			"media": [
+				"media-id-1",
+				"media-id-2"
+			],
+			"description": "Poncho tejido a mano por artesanos andinos",
+			"ownerType": "shop",
+			"ownerId": "shop-123"
+		},
+		"priceInventary": {
+			"basePrice": 150.0,
+			"totalStock": 50,
+			"SKU": "PONCHO-AND-001"
+		},
+		"isDiscountActive": false,
+		"categoryId": "category-poncho-001",
+		"options": [
+			{
+				"name": "color",
+				"values": [
+					{
+						"label": "Rojo",
+						"mediaIds": [
+							"media-id-1"
+						]
+					},
+					{
+						"label": "Azul",
+						"mediaIds": [
+							"media-id-2"
+						]
+					}
+				]
+			},
+			{
+				"name": "size",
+				"values": [
+					{
+						"label": "M",
+						"mediaIds": []
+					},
+					{
+						"label": "L",
+						"mediaIds": []
+					}
+				]
+			}
+		],
+		"createdAt": "2026-01-01T00:00:00.000Z",
+		"updatedAt": "2026-01-01T00:00:00.000Z"
+	},
+	"variants": [
+		{
+			"id": "variant-uuid-1",
+			"productId": "textile-uuid-123",
+			"productType": "textile",
+			"combination": {
+				"color": "Rojo",
+				"size": "M"
+			},
+			"price": 150.0,
+			"stock": 10,
+			"SKU": "PONCHO-AND-001-RED-M",
+			"isActive": true,
+			"createdAt": "2026-01-01T00:00:00.000Z",
+			"updatedAt": "2026-01-01T00:00:00.000Z"
+		},
+		{
+			"id": "variant-uuid-2",
+			"productId": "textile-uuid-123",
+			"productType": "textile",
+			"combination": {
+				"color": "Azul",
+				"size": "L"
+			},
+			"price": 150.0,
+			"stock": 15,
+			"SKU": "PONCHO-AND-001-BLUE-L",
+			"isActive": true,
+			"createdAt": "2026-01-01T00:00:00.000Z",
+			"updatedAt": "2026-01-01T00:00:00.000Z"
+		}
+	],
+	"shop": {
+		"id": "shop-123",
+		"name": "Artesanos Andinos",
+		"description": "Tienda de productos textiles tradicionales",
+		"sellerId": "seller-uuid-1"
+	},
+	"mediaItems": [
+		{
+			"id": "media-id-1",
+			"url": "https://example.com/poncho-rojo.jpg",
+			"type": "image",
+			"position": 0
+		},
+		{
+			"id": "media-id-2",
+			"url": "https://example.com/poncho-azul.jpg",
+			"type": "image",
+			"position": 1
+		}
+	]
+}

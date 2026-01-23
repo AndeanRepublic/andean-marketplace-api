@@ -11,13 +11,16 @@ export class GetSuperfoodProductsByCategoryUseCase {
 
 		@Inject(SuperfoodCategoryRepository)
 		private readonly categoryRepository: SuperfoodCategoryRepository,
-	) { }
+	) {}
 
 	async handle(categoryId: string): Promise<SuperfoodProduct[]> {
 		// Validar que la categoría existe
-		const categoryFound = await this.categoryRepository.getCategoryById(categoryId);
+		const categoryFound =
+			await this.categoryRepository.getCategoryById(categoryId);
 		if (!categoryFound) {
-			throw new NotFoundException(`Categoría con ID ${categoryId} no encontrada`);
+			throw new NotFoundException(
+				`Categoría con ID ${categoryId} no encontrada`,
+			);
 		}
 
 		return this.superfoodProductRepository.getAllByCategoryId(categoryId);

@@ -9,12 +9,7 @@ import {
 	HttpCode,
 	HttpStatus,
 } from '@nestjs/common';
-import {
-	ApiTags,
-	ApiOperation,
-	ApiResponse,
-	ApiParam,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateTextileCraftTechniqueUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileCraftTechniqueUseCase';
 import { TextileCraftTechnique } from 'src/andean/domain/entities/textileProducts/TextileCraftTechnique';
 import { CreateTextileCraftTechniqueDto } from '../dto/textileProducts/CreateTextileCraftTechniqueDto';
@@ -32,13 +27,14 @@ export class TextileCraftTechniqueController {
 		private readonly getAllTextileCraftTechniquesUseCase: GetAllTextileCraftTechniquesUseCase,
 		private readonly getByIdTextileCraftTechniqueUseCase: GetByIdTextileCraftTechniqueUseCase,
 		private readonly deleteTextileCraftTechniqueUseCase: DeleteTextileCraftTechniqueUseCase,
-	) { }
+	) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
 		summary: 'Crear nueva técnica de elaboración',
-		description: 'Crea una nueva técnica artesanal de elaboración textil (ej: Tejido a telar, Tejido a palitos, Bordado a mano, Macramé)',
+		description:
+			'Crea una nueva técnica artesanal de elaboración textil (ej: Tejido a telar, Tejido a palitos, Bordado a mano, Macramé)',
 	})
 	@ApiResponse({
 		status: 201,
@@ -84,7 +80,8 @@ export class TextileCraftTechniqueController {
 	@Get()
 	@ApiOperation({
 		summary: 'Listar todas las técnicas de elaboración',
-		description: 'Retorna todas las técnicas artesanales de elaboración textil disponibles',
+		description:
+			'Retorna todas las técnicas artesanales de elaboración textil disponibles',
 	})
 	@ApiResponse({
 		status: 200,

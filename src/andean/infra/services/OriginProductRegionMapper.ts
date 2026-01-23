@@ -6,27 +6,23 @@ import * as crypto from 'crypto';
 
 export class OriginProductRegionMapper {
 	static fromDocument(doc: OriginProductRegionDocument): OriginProductRegion {
-		return new OriginProductRegion(
-			doc.id,
-			doc.name,
-		);
+		return new OriginProductRegion(doc.id, doc.name);
 	}
 
 	static fromCreateDto(dto: CreateOriginProductRegionDto): OriginProductRegion {
-		return new OriginProductRegion(
-			crypto.randomUUID(),
-			dto.name,
-		);
+		return new OriginProductRegion(crypto.randomUUID(), dto.name);
 	}
 
-	static fromUpdateDto(dto: UpdateOriginProductRegionDto, existing: OriginProductRegion): OriginProductRegion {
-		return new OriginProductRegion(
-			existing.id,
-			dto.name ?? existing.name,
-		);
+	static fromUpdateDto(
+		dto: UpdateOriginProductRegionDto,
+		existing: OriginProductRegion,
+	): OriginProductRegion {
+		return new OriginProductRegion(existing.id, dto.name ?? existing.name);
 	}
 
-	static toDocument(dto: CreateOriginProductRegionDto): Partial<OriginProductRegionDocument> {
+	static toDocument(
+		dto: CreateOriginProductRegionDto,
+	): Partial<OriginProductRegionDocument> {
 		return {
 			id: crypto.randomUUID(),
 			name: dto.name,

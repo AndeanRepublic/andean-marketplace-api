@@ -4,7 +4,7 @@ import { AccountStatus } from '../../../domain/enums/AccountStatus';
 
 @Injectable()
 export class UpdateAccountStatusDto {
-  @IsEnum(AccountStatus)
-  @IsNotEmpty()
-  status: AccountStatus;
+	@IsEnum(AccountStatus)
+	@IsNotEmpty()
+	status: AccountStatus;
 }

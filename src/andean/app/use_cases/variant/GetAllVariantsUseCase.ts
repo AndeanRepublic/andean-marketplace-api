@@ -7,7 +7,7 @@ export class GetAllVariantsUseCase {
 	constructor(
 		@Inject(VariantRepository)
 		private readonly variantRepository: VariantRepository,
-	) { }
+	) {}
 
 	async execute(): Promise<Variant[]> {
 		return await this.variantRepository.getAll();

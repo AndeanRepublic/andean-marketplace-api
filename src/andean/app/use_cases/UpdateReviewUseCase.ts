@@ -61,8 +61,8 @@ export class UpdateReviewUseCase {
 			}
 		}
 
-		console.log("reviewFound", reviewFound);
-		console.log("dto", dto);
+		console.log('reviewFound', reviewFound);
+		console.log('dto', dto);
 
 		const updatedData: Partial<Review> = {
 			...reviewFound,

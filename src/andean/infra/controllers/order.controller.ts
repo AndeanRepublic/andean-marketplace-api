@@ -14,7 +14,7 @@ export class OrderController {
 		private readonly getOrderByIdUseCase: GetOrderByIdUseCase,
 		private readonly getOrdersByCustomerUseCase: GetOrdersByCustomerUseCase,
 		private readonly updateOrderStatusUseCase: UpdateOrderStatusUseCase,
-	) { }
+	) {}
 
 	@Post('')
 	async createOrder(@Body() body: CreateOrderDto): Promise<Order> {

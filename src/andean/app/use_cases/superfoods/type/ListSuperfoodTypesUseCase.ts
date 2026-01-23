@@ -6,12 +6,10 @@ import { SuperfoodTypeMapper } from '../../../../infra/services/superfood/Superf
 
 @Injectable()
 export class ListSuperfoodTypesUseCase {
-	constructor(
-		private readonly typeRepository: SuperfoodTypeRepository,
-	) { }
+	constructor(private readonly typeRepository: SuperfoodTypeRepository) {}
 
 	async handle(): Promise<SuperfoodTypeResponse[]> {
 		const types = await this.typeRepository.getAll();
-		return types.map(type => SuperfoodTypeMapper.toResponse(type));
+		return types.map((type) => SuperfoodTypeMapper.toResponse(type));
 	}
 }

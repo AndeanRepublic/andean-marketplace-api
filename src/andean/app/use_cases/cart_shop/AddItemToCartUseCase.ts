@@ -1,78 +1,99 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CustomerProfileRepository } from '../../datastore/Customer.repo';
-import { ProductRepository } from '../../datastore/Product.repo';
 import { CartShopRepository } from '../../datastore/CartShop.repo';
 import { AddCartItemDto } from '../../../infra/controllers/dto/AddCartItemDto';
 import { CartShop } from '../../../domain/entities/CartShop';
 import { CartShopItemRepository } from '../../datastore/CartShopItem.repo';
-import { ProductVariantRepository } from '../../datastore/ProductVariant.repo';
+import { VariantRepository } from '../../datastore/Variant.repo';
 import { CartItem } from '../../../domain/entities/CartItem';
 import { Types } from 'mongoose';
+import { ShoppingCartItemResponse } from '../../models/cart/ShoppingCartItemResponse';
+import { ProductInfoProviderRegistry } from '../../../infra/services/products/ProductInfoProviderRegistry';
+import { OwnerNameResolver } from '../../../infra/services/OwnerNameResolver';
+import { ShoppingCartItemMapper } from '../../../infra/services/cart/ShoppingCartItemMapper';
 
 @Injectable()
 export class AddItemToCartUseCase {
-  constructor(
-    @Inject(CustomerProfileRepository)
-    private readonly customerRepository: CustomerProfileRepository,
-    @Inject(ProductRepository)
-    private readonly productRepository: ProductRepository,
-    @Inject(ProductVariantRepository)
-    private readonly variantRepository: ProductVariantRepository,
-    @Inject(CartShopRepository)
-    private readonly cartShopRepository: CartShopRepository,
-    @Inject(CartShopItemRepository)
-    private readonly cartItemRepository: CartShopItemRepository,
-  ) {}
+	constructor(
+		@Inject(CustomerProfileRepository)
+		private readonly customerRepository: CustomerProfileRepository,
+		@Inject(VariantRepository)
+		private readonly variantRepository: VariantRepository,
+		@Inject(CartShopRepository)
+		private readonly cartShopRepository: CartShopRepository,
+		@Inject(CartShopItemRepository)
+		private readonly cartItemRepository: CartShopItemRepository,
+		private readonly productInfoRegistry: ProductInfoProviderRegistry,
+		private readonly ownerNameResolver: OwnerNameResolver,
+	) { }
 
-  async handle(customerId: string, itemDto: AddCartItemDto): Promise<CartShop> {
-    const customerFound = await this.customerRepository.getCustomerById(customerId);
-    if (!customerFound) {
-      throw new NotFoundException('CustomerProfile not found');
-    }
-    const productFound = await this.productRepository.getProductById(
-      itemDto.productId,
-    );
-    if (!productFound) {
-      throw new NotFoundException('Product not found');
-    }
-    let cartFound = await this.cartShopRepository.getCartByCustomerId(customerId);
-    if (!cartFound) {
-      cartFound = new CartShop(
-        new Types.ObjectId().toString(),
-        customerId,
-        0,
-        0,
-        0,
-        new Date(),
-        new Date(),
-      );
-      await this.cartShopRepository.createCart(cartFound);
-    }
-    let unitPrice = productFound.basePrice;
-    if (itemDto.productVariantId) {
-      const variantFound = await this.variantRepository.getVariantById(
-        itemDto.productVariantId,
-      );
-      if (!variantFound) {
-        throw new NotFoundException('Variant not found');
-      }
-      unitPrice = variantFound.price;
-    }
-    const discount = itemDto.discount || 0;
-    const toCreate = new CartItem(
-      new Types.ObjectId().toString(),
-      cartFound.id,
-      itemDto.productType,
-      itemDto.productId,
-      itemDto.quantity,
-      unitPrice,
-      discount,
+	async handle(
+		customerId: string,
+		itemDto: AddCartItemDto,
+	): Promise<ShoppingCartItemResponse> {
+		// 1. Validar que el customer existe
+		const customerFound =
+			await this.customerRepository.getCustomerById(customerId);
+		if (!customerFound) {
+			throw new NotFoundException('CustomerProfile not found');
+		}
+
+		// 2. Obtener la variante
+		const variant = await this.variantRepository.getById(itemDto.variantId);
+		if (!variant) {
+			throw new NotFoundException('Variant not found');
+		}
+
+		// 3. Obtener información del producto según el tipo (Strategy Pattern)
+		const productInfo = await this.productInfoRegistry.getProductInfo(
+			variant.productType,
+			variant.productId,
+		);
+
+		// 4. Obtener el nombre del owner (shop o community)
+		const ownerName = await this.ownerNameResolver.resolve(
+			productInfo.ownerType,
+			productInfo.ownerId,
+		);
+
+		// 5. Obtener o crear el carrito del customer
+		let cart = await this.cartShopRepository.getCartByCustomerId(customerId);
+		if (!cart) {
+			cart = new CartShop(
+				new Types.ObjectId().toString(),
+				customerId,
+				0, // delivery
+				0, // tax
+				0, // discount
+				new Date(),
+				new Date(),
+			);
+			await this.cartShopRepository.createCart(cart);
+		}
+
+		// 6. Crear el item del carrito
+		const cartItemId = new Types.ObjectId().toString();
+		const cartItem = new CartItem(
+			cartItemId,
+			cart.id,
+			variant.productType,
+			variant.productId,
+			itemDto.quantity,
+			variant.price,
+			0, // discount
 			new Date(),
 			new Date(),
+			variant.id,
+		);
+		await this.cartItemRepository.createItem(cartItem);
 
-			itemDto.productVariantId || undefined,
-    );
-    await this.cartItemRepository.createItem(toCreate);
-    return cartFound;
-  }
+		// 7. Usar mapper para construir la respuesta
+		return ShoppingCartItemMapper.fromParams({
+			cartItemId,
+			variant,
+			productInfo,
+			ownerName,
+			quantity: itemDto.quantity,
+		});
+	}
 }

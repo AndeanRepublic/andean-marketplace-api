@@ -9,9 +9,11 @@ import { SuperfoodSalesUnitSizeMapper } from '../../../../infra/services/superfo
 export class CreateSuperfoodSalesUnitSizeUseCase {
 	constructor(
 		private readonly salesUnitSizeRepository: SuperfoodSalesUnitSizeRepository,
-	) { }
+	) {}
 
-	async handle(dto: CreateSuperfoodSalesUnitSizeDto): Promise<SuperfoodSalesUnitSizeResponse> {
+	async handle(
+		dto: CreateSuperfoodSalesUnitSizeDto,
+	): Promise<SuperfoodSalesUnitSizeResponse> {
 		// Crear entidad usando mapper
 		const salesUnitSize = SuperfoodSalesUnitSizeMapper.fromCreateDto(dto);
 

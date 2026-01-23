@@ -2,7 +2,7 @@ import { Document, Schema } from 'mongoose';
 
 export const MediaItemSchema = new Schema({
 	id: { type: String, required: true, unique: true },
-	type: { type: String, required: true },  // e.g., "image", "video"
+	type: { type: String, required: true }, // e.g., "image", "video"
 	name: { type: String, required: true },
 	url: { type: String, required: true },
 	createdAt: { type: Date, default: Date.now },

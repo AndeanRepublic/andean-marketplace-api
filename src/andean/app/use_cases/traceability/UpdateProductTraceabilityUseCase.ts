@@ -12,7 +12,7 @@ import { UpdateProductTraceabilityDto } from '../../../infra/controllers/dto/tra
 export class UpdateProductTraceabilityUseCase {
 	constructor(
 		private readonly traceabilityRepository: ProductTraceabilityRepository,
-	) { }
+	) {}
 
 	async execute(
 		id: string,

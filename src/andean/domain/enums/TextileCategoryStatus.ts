@@ -1,4 +1,4 @@
 export enum TextileCategoryStatus {
-  ENABLED = 'ENABLED',
-  DISABLED = 'DISABLED',
+	ENABLED = 'ENABLED',
+	DISABLED = 'DISABLED',
 }

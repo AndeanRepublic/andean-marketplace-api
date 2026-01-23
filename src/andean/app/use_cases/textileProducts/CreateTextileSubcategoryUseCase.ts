@@ -6,13 +6,16 @@ import { TextileSubcategoryMapper } from 'src/andean/infra/services/textileProdu
 
 @Injectable()
 export class CreateTextileSubcategoryUseCase {
-  constructor(
-    @Inject(TextileSubcategoryRepository)
-    private readonly textileSubcategoryRepository: TextileSubcategoryRepository,
-  ) {}
+	constructor(
+		@Inject(TextileSubcategoryRepository)
+		private readonly textileSubcategoryRepository: TextileSubcategoryRepository,
+	) {}
 
-  async handle(dto: CreateTextileSubcategoryDto): Promise<TextileSubcategory> {
-    const textileSubcategoryToSave = TextileSubcategoryMapper.fromCreateDto(dto);
-    return this.textileSubcategoryRepository.saveTextileSubcategory(textileSubcategoryToSave);
-  }
+	async handle(dto: CreateTextileSubcategoryDto): Promise<TextileSubcategory> {
+		const textileSubcategoryToSave =
+			TextileSubcategoryMapper.fromCreateDto(dto);
+		return this.textileSubcategoryRepository.saveTextileSubcategory(
+			textileSubcategoryToSave,
+		);
+	}
 }
