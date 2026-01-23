@@ -310,7 +310,7 @@ import { OrderItemSchema } from './infra/persistence/orderItem.schema';
 		{
 			provide: ReviewRepository,
 			useClass: ReviewRepositoryImpl,
-		}
+		},
 	],
 	exports: [
 		TextileCategoryRepository,
@@ -327,4 +327,4 @@ import { OrderItemSchema } from './infra/persistence/orderItem.schema';
 		MongooseModule,
 	],
 })
-export class TextileProductModule { }
+export class TextileProductModule {}
