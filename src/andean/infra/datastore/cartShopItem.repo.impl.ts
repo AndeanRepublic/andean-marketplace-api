@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { CartShopItemDocument } from '../persistence/cartShopItem.schema';
 import { CartItem } from 'src/andean/domain/entities/CartItem';
 import { CartItemMapper } from '../services/CartItemMapper';
+import { MongoIdUtils } from '../utils/MongoIdUtils';
 
 @Injectable()
 export class CartShopItemRepoImpl extends CartShopItemRepository {
@@ -43,5 +44,26 @@ export class CartShopItemRepoImpl extends CartShopItemRepository {
 
   async deleteItemsByCartShopId(cartShopId: string): Promise<void> {
     await this.cartShopItemModel.deleteMany({ cartShopId }).exec();
+  }
+
+  async getById(id: string): Promise<CartItem | null> {
+    const objectId = MongoIdUtils.stringToObjectId(id);
+    const doc = await this.cartShopItemModel.findById(objectId).exec();
+    return doc ? CartItemMapper.fromDocument(doc) : null;
+  }
+
+  async updateQuantity(id: string, quantityDelta: number): Promise<CartItem> {
+    const objectId = MongoIdUtils.stringToObjectId(id);
+    const updated = await this.cartShopItemModel
+      .findByIdAndUpdate(
+        objectId,
+        { $inc: { quantity: quantityDelta }, $set: { updatedAt: new Date() } },
+        { new: true },
+      )
+      .exec();
+    if (!updated) {
+      throw new Error('CartItem not found');
+    }
+    return CartItemMapper.fromDocument(updated);
   }
 }

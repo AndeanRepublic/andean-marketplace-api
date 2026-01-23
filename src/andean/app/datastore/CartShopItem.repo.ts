@@ -6,4 +6,6 @@ export abstract class CartShopItemRepository {
 	abstract createItem(item: CartItem): Promise<CartItem>;
   abstract deleteItem(itemId: string): Promise<void>;
   abstract deleteItemsByCartShopId(cartShopId: string): Promise<void>;
+  abstract getById(id: string): Promise<CartItem | null>;
+  abstract updateQuantity(id: string, quantityDelta: number): Promise<CartItem>;
 }
