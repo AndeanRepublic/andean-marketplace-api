@@ -13,10 +13,10 @@ import { CleanCartUseCase } from '../../app/use_cases/cart_shop/CleanCartUseCase
 import { GetCartByCustomerUseCase } from '../../app/use_cases/cart_shop/GetCartByCustomerUseCase';
 import { RemoveItemFromCartUseCase } from '../../app/use_cases/cart_shop/RemoveItemFromCartUseCase';
 import { UpdateCartItemQuantityUseCase } from '../../app/use_cases/cart_shop/UpdateCartItemQuantityUseCase';
-import { CartShop } from '../../domain/entities/CartShop';
 import { AddCartItemDto } from './dto/AddCartItemDto';
 import { CartItemQuantityResponse } from '../../app/models/cart/CartItemQuantityResponse';
 import { AddCartItemResponse } from '../../app/models/AddCartItemResponse';
+import { GetCartResponse } from '../../app/models/cart/GetCartResponse';
 
 const root_path = 'users/customers/:userId/cart';
 const path_cart_items = '/items';
@@ -32,31 +32,31 @@ export class CartShopController {
 		private readonly getCartByCustomerUseCase: GetCartByCustomerUseCase,
 		private readonly removeItemFromCartUseCase: RemoveItemFromCartUseCase,
 		private readonly updateCartItemQuantityUseCase: UpdateCartItemQuantityUseCase,
-	) {}
+	) { }
 
 	@Get('')
 	async getCustomerCart(
-		@Param('customerId') customerId: string,
-	): Promise<CartShop> {
+		@Param('userId') customerId: string,
+	): Promise<GetCartResponse> {
 		return this.getCartByCustomerUseCase.handle(customerId);
 	}
 
 	@Post(path_cart_items)
 	async addItemToCart(
-		@Param('customerId') customerId: string,
+		@Param('userId') customerId: string,
 		@Body() body: AddCartItemDto,
 	): Promise<AddCartItemResponse> {
 		return this.addItemToCartUseCase.handle(customerId, body);
 	}
 
 	@Delete('')
-	async cleanCart(@Param('customerId') customerId: string): Promise<void> {
+	async cleanCart(@Param('userId') customerId: string): Promise<void> {
 		return this.cleanCartUseCase.handle(customerId);
 	}
 
 	@Delete(path_remove_cart_item)
 	async removeItemFromCart(
-		@Param('customerId') customerId: string,
+		@Param('userId') customerId: string,
 		@Param('itemId') itemId: string,
 	): Promise<void> {
 		return this.removeItemFromCartUseCase.handle(customerId, itemId);
