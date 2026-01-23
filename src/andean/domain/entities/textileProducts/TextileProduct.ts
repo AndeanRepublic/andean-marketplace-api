@@ -5,7 +5,6 @@ import { Atribute } from './Atribute';
 import { DetailTraceability } from './DetailTraceability';
 import { ProductTraceability } from '../ProductTraceability';
 import { TextileOptions } from './TextileOptions';
-import { TextileVariant } from './TextileVariant';
 
 export class TextileProduct {
 	constructor(
@@ -16,12 +15,12 @@ export class TextileProduct {
 		public priceInventary: PriceInventary,
 		public createdAt: Date,
 		public updatedAt: Date,
+		public isDiscountActive: boolean,
 
 		public categoryId?: string,
 		public atribute?: Atribute,
 		public detailTraceability?: DetailTraceability,
 		public productTraceability?: ProductTraceability,
 		public options?: TextileOptions[],
-		public variants?: TextileVariant[],
 	) {}
 }
