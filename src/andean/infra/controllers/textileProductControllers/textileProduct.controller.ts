@@ -29,6 +29,7 @@ import { PaginatedProductsResponse, PaginatedTextileProductsResponse } from 'src
 import { TextileProductListItem } from 'src/andean/app/modules/TextileProductListItemResponse';
 import { TextileProductDetailResponse } from 'src/andean/app/models/TextileProducts/TextileProductDetailResponse';
 import { GetByIdTextileProductDetailUseCase } from 'src/andean/app/use_cases/textileProducts/GetByIdTextileProductDetailUseCase';
+import { ProductSortBy } from 'src/andean/domain/enums/ProductSortBy';
 
 @ApiTags('Textile Products')
 @Controller('textile-products')
@@ -96,7 +97,7 @@ export class TextileProductController {
 	@Get()
 	@ApiOperation({
 		summary: 'Listar productos textiles con filtros',
-		description: 'Retorna una lista paginada de productos textiles. Soporta filtros por color, talla, rango de precio, categoría y propietario. La respuesta incluye información resumida optimizada para listados.',
+		description: 'Retorna una lista paginada de productos textiles con stock disponible (totalStock > 0). Soporta filtros por color, talla, rango de precio, categoría y propietario. La respuesta incluye información resumida optimizada para listados.',
 	})
 	@ApiQuery({
 		name: 'page',
@@ -116,15 +117,15 @@ export class TextileProductController {
 		name: 'color',
 		required: false,
 		type: String,
-		description: 'Filtrar por ID de color. Solo retorna productos que tengan variantes con este color.',
-		example: 'color-rojo-001',
+		description: 'Filtrar por nombre del color (case-insensitive). Solo retorna productos que tengan variantes con este color.',
+		example: 'rojo',
 	})
 	@ApiQuery({
 		name: 'size',
 		required: false,
 		type: String,
-		description: 'Filtrar por ID de talla. Solo retorna productos que tengan variantes con esta talla.',
-		example: 'size-m-001',
+		description: 'Filtrar por nombre de la talla (case-insensitive). Solo retorna productos que tengan variantes con esta talla.',
+		example: 'M',
 	})
 	@ApiQuery({
 		name: 'min_price',
@@ -154,6 +155,13 @@ export class TextileProductController {
 		description: 'Filtrar por ID del propietario/vendedor (shop o comunidad)',
 		example: 'shop-uuid-1234',
 	})
+	@ApiQuery({
+		name: 'sort_by',
+		required: false,
+		enum: ProductSortBy,
+		description: 'Criterio de ordenamiento: "latest" (más recientes primero) o "popular" (más comprados primero)',
+		example: 'latest',
+	})
 	@ApiResponse({
 		status: 200,
 		description: 'Lista paginada de productos textiles con información resumida',
@@ -168,6 +176,7 @@ export class TextileProductController {
 		@Query('max_price', new ParseIntPipe({ optional: true })) maxPrice?: number,
 		@Query('category_id') categoryId?: string,
 		@Query('owner_id') ownerId?: string,
+		@Query('sort_by') sortBy?: ProductSortBy,
 	): Promise<PaginatedProductsResponse<TextileProductListItem>> {
 		const filters: any = {};
 		if (page !== undefined) filters.page = page;
@@ -178,6 +187,7 @@ export class TextileProductController {
 		if (maxPrice !== undefined) filters.maxPrice = maxPrice;
 		if (categoryId) filters.categoryId = categoryId;
 		if (ownerId) filters.ownerId = ownerId;
+		if (sortBy) filters.sortBy = sortBy;
 
 		return this.getAllTextileProductsUseCase.handle(Object.keys(filters).length > 0 ? filters : undefined);
 	}
