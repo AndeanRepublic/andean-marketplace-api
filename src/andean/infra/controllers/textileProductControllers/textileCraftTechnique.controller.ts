@@ -55,91 +55,91 @@ export class TextileCraftTechniqueController {
 		return this.createTextileCraftTechniqueUseCase.handle(body);
 	}
 
-	@Put('/:id')
-	@ApiOperation({
-		summary: 'Actualizar técnica de elaboración',
-		description: 'Actualiza los datos de una técnica de elaboración existente',
-	})
-	@ApiParam({
-		name: 'id',
-		description: 'ID de la técnica',
-		example: 'uuid-1234-5678',
-	})
-	@ApiResponse({
-		status: 200,
-		description: 'Técnica actualizada exitosamente',
-		type: TextileCraftTechnique,
-	})
-	@ApiResponse({
-		status: 404,
-		description: 'Técnica no encontrada',
-	})
-	async updateTextileCraftTechnique(
-		@Param('id') id: string,
-		@Body() body: CreateTextileCraftTechniqueDto,
-	): Promise<TextileCraftTechnique> {
-		return this.updateTextileCraftTechniqueUseCase.handle(id, body);
-	}
+	// @Put('/:id')
+	// @ApiOperation({
+	// 	summary: 'Actualizar técnica de elaboración',
+	// 	description: 'Actualiza los datos de una técnica de elaboración existente',
+	// })
+	// @ApiParam({
+	// 	name: 'id',
+	// 	description: 'ID de la técnica',
+	// 	example: 'uuid-1234-5678',
+	// })
+	// @ApiResponse({
+	// 	status: 200,
+	// 	description: 'Técnica actualizada exitosamente',
+	// 	type: TextileCraftTechnique,
+	// })
+	// @ApiResponse({
+	// 	status: 404,
+	// 	description: 'Técnica no encontrada',
+	// })
+	// async updateTextileCraftTechnique(
+	// 	@Param('id') id: string,
+	// 	@Body() body: CreateTextileCraftTechniqueDto,
+	// ): Promise<TextileCraftTechnique> {
+	// 	return this.updateTextileCraftTechniqueUseCase.handle(id, body);
+	// }
 
-	@Get()
-	@ApiOperation({
-		summary: 'Listar todas las técnicas de elaboración',
-		description: 'Retorna todas las técnicas artesanales de elaboración textil disponibles',
-	})
-	@ApiResponse({
-		status: 200,
-		description: 'Lista de técnicas',
-		type: [TextileCraftTechnique],
-	})
-	async getAllTextileCraftTechniques(): Promise<TextileCraftTechnique[]> {
-		return this.getAllTextileCraftTechniquesUseCase.handle();
-	}
+	// @Get()
+	// @ApiOperation({
+	// 	summary: 'Listar todas las técnicas de elaboración',
+	// 	description: 'Retorna todas las técnicas artesanales de elaboración textil disponibles',
+	// })
+	// @ApiResponse({
+	// 	status: 200,
+	// 	description: 'Lista de técnicas',
+	// 	type: [TextileCraftTechnique],
+	// })
+	// async getAllTextileCraftTechniques(): Promise<TextileCraftTechnique[]> {
+	// 	return this.getAllTextileCraftTechniquesUseCase.handle();
+	// }
 
-	@Get('/:id')
-	@ApiOperation({
-		summary: 'Obtener técnica por ID',
-		description: 'Retorna una técnica de elaboración específica por su ID',
-	})
-	@ApiParam({
-		name: 'id',
-		description: 'ID de la técnica',
-		example: 'uuid-1234-5678',
-	})
-	@ApiResponse({
-		status: 200,
-		description: 'Técnica encontrada',
-		type: TextileCraftTechnique,
-	})
-	@ApiResponse({
-		status: 404,
-		description: 'Técnica no encontrada',
-	})
-	async getByIdTextileCraftTechnique(
-		@Param('id') id: string,
-	): Promise<TextileCraftTechnique> {
-		return this.getByIdTextileCraftTechniqueUseCase.handle(id);
-	}
+	// @Get('/:id')
+	// @ApiOperation({
+	// 	summary: 'Obtener técnica por ID',
+	// 	description: 'Retorna una técnica de elaboración específica por su ID',
+	// })
+	// @ApiParam({
+	// 	name: 'id',
+	// 	description: 'ID de la técnica',
+	// 	example: 'uuid-1234-5678',
+	// })
+	// @ApiResponse({
+	// 	status: 200,
+	// 	description: 'Técnica encontrada',
+	// 	type: TextileCraftTechnique,
+	// })
+	// @ApiResponse({
+	// 	status: 404,
+	// 	description: 'Técnica no encontrada',
+	// })
+	// async getByIdTextileCraftTechnique(
+	// 	@Param('id') id: string,
+	// ): Promise<TextileCraftTechnique> {
+	// 	return this.getByIdTextileCraftTechniqueUseCase.handle(id);
+	// }
 
-	@Delete('/:id')
-	@HttpCode(HttpStatus.NO_CONTENT)
-	@ApiOperation({
-		summary: 'Eliminar técnica de elaboración',
-		description: 'Elimina una técnica de elaboración por su ID',
-	})
-	@ApiParam({
-		name: 'id',
-		description: 'ID de la técnica a eliminar',
-		example: 'uuid-1234-5678',
-	})
-	@ApiResponse({
-		status: 204,
-		description: 'Técnica eliminada exitosamente',
-	})
-	@ApiResponse({
-		status: 404,
-		description: 'Técnica no encontrada',
-	})
-	async deleteTextileCraftTechnique(@Param('id') id: string): Promise<void> {
-		return this.deleteTextileCraftTechniqueUseCase.handle(id);
-	}
+	// @Delete('/:id')
+	// @HttpCode(HttpStatus.NO_CONTENT)
+	// @ApiOperation({
+	// 	summary: 'Eliminar técnica de elaboración',
+	// 	description: 'Elimina una técnica de elaboración por su ID',
+	// })
+	// @ApiParam({
+	// 	name: 'id',
+	// 	description: 'ID de la técnica a eliminar',
+	// 	example: 'uuid-1234-5678',
+	// })
+	// @ApiResponse({
+	// 	status: 204,
+	// 	description: 'Técnica eliminada exitosamente',
+	// })
+	// @ApiResponse({
+	// 	status: 404,
+	// 	description: 'Técnica no encontrada',
+	// })
+	// async deleteTextileCraftTechnique(@Param('id') id: string): Promise<void> {
+	// 	return this.deleteTextileCraftTechniqueUseCase.handle(id);
+	// }
 }

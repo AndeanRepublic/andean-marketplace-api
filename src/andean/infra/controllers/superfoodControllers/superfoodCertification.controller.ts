@@ -52,65 +52,65 @@ export class SuperfoodCertificationController {
 		return await this.createSuperfoodCertificationUseCase.handle(dto);
 	}
 
-	@Get()
-	@ApiOperation({
-		summary: 'Listar todas las certificaciones',
-		description: 'Retorna todas las certificaciones disponibles',
-	})
-	@ApiResponse({
-		status: 200,
-		description: 'Lista de certificaciones',
-		type: [SuperfoodCertificationResponse],
-	})
-	async listCertifications(): Promise<SuperfoodCertificationResponse[]> {
-		return await this.listSuperfoodCertificationsUseCase.handle();
-	}
+	// @Get()
+	// @ApiOperation({
+	// 	summary: 'Listar todas las certificaciones',
+	// 	description: 'Retorna todas las certificaciones disponibles',
+	// })
+	// @ApiResponse({
+	// 	status: 200,
+	// 	description: 'Lista de certificaciones',
+	// 	type: [SuperfoodCertificationResponse],
+	// })
+	// async listCertifications(): Promise<SuperfoodCertificationResponse[]> {
+	// 	return await this.listSuperfoodCertificationsUseCase.handle();
+	// }
 
-	@Get('/:id')
-	@ApiOperation({
-		summary: 'Obtener certificación por ID',
-		description: 'Retorna una certificación específica por su ID',
-	})
-	@ApiParam({
-		name: 'id',
-		description: 'ID de la certificación',
-		example: 'uuid-1234-5678',
-	})
-	@ApiResponse({
-		status: 200,
-		description: 'Certificación encontrada',
-		type: SuperfoodCertificationResponse,
-	})
-	@ApiResponse({
-		status: 404,
-		description: 'Certificación no encontrada',
-	})
-	async getCertificationById(
-		@Param('id') id: string,
-	): Promise<SuperfoodCertificationResponse> {
-		return await this.getSuperfoodCertificationByIdUseCase.handle(id);
-	}
+	// @Get('/:id')
+	// @ApiOperation({
+	// 	summary: 'Obtener certificación por ID',
+	// 	description: 'Retorna una certificación específica por su ID',
+	// })
+	// @ApiParam({
+	// 	name: 'id',
+	// 	description: 'ID de la certificación',
+	// 	example: 'uuid-1234-5678',
+	// })
+	// @ApiResponse({
+	// 	status: 200,
+	// 	description: 'Certificación encontrada',
+	// 	type: SuperfoodCertificationResponse,
+	// })
+	// @ApiResponse({
+	// 	status: 404,
+	// 	description: 'Certificación no encontrada',
+	// })
+	// async getCertificationById(
+	// 	@Param('id') id: string,
+	// ): Promise<SuperfoodCertificationResponse> {
+	// 	return await this.getSuperfoodCertificationByIdUseCase.handle(id);
+	// }
 
-	@Delete('/:id')
-	@HttpCode(HttpStatus.NO_CONTENT)
-	@ApiOperation({
-		summary: 'Eliminar certificación',
-		description: 'Elimina una certificación por su ID',
-	})
-	@ApiParam({
-		name: 'id',
-		description: 'ID de la certificación a eliminar',
-		example: 'uuid-1234-5678',
-	})
-	@ApiResponse({
-		status: 204,
-		description: 'Certificación eliminada exitosamente',
-	})
-	@ApiResponse({
-		status: 404,
-		description: 'Certificación no encontrada',
-	})
-	async deleteCertification(@Param('id') id: string): Promise<void> {
-		await this.deleteSuperfoodCertificationUseCase.handle(id);
-	}
+	// @Delete('/:id')
+	// @HttpCode(HttpStatus.NO_CONTENT)
+	// @ApiOperation({
+	// 	summary: 'Eliminar certificación',
+	// 	description: 'Elimina una certificación por su ID',
+	// })
+	// @ApiParam({
+	// 	name: 'id',
+	// 	description: 'ID de la certificación a eliminar',
+	// 	example: 'uuid-1234-5678',
+	// })
+	// @ApiResponse({
+	// 	status: 204,
+	// 	description: 'Certificación eliminada exitosamente',
+	// })
+	// @ApiResponse({
+	// 	status: 404,
+	// 	description: 'Certificación no encontrada',
+	// })
+	// async deleteCertification(@Param('id') id: string): Promise<void> {
+	// 	await this.deleteSuperfoodCertificationUseCase.handle(id);
+	// }
 }

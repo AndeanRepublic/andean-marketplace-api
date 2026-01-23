@@ -42,17 +42,17 @@ export class ProductController {
 		return this.createVariantUseCase.handle(body, productId);
 	}
 
-	@Get('/by-seller/:sellerId')
-	async getBySellerId(
-		@Param('sellerId') sellerId: string,
-	): Promise<Product[]> {
-		return this.getProductsBySellerIdUseCase.handle(sellerId);
-	}
+	// @Get('/by-seller/:sellerId')
+	// async getBySellerId(
+	// 	@Param('sellerId') sellerId: string,
+	// ): Promise<Product[]> {
+	// 	return this.getProductsBySellerIdUseCase.handle(sellerId);
+	// }
 
-	@Get('/by-shop/:shopId')
-	async getByShop(@Param('shopId') shopId: string): Promise<Product[]> {
-		return this.getProductsByShopUseCase.handle(shopId);
-	}
+	// @Get('/by-shop/:shopId')
+	// async getByShop(@Param('shopId') shopId: string): Promise<Product[]> {
+	// 	return this.getProductsByShopUseCase.handle(shopId);
+	// }
 
 	@Get('/:productId')
 	@ApiOperation({ summary: 'Obtener producto por ID' })

@@ -36,47 +36,47 @@ export class UserController {
 		private readonly updateSellerProfileUseCase: UpdateSellerProfileUseCase,
 	) { }
 
-	@Get(path_customers)
-	@ApiOperation({ summary: 'Obtener todos los clientes' })
-	@ApiResponse({
-		status: 200,
-		description: 'Lista de todos los clientes registrados',
-		type: [CustomerProfileResponse],
-	})
-	async getAllCustomers(): Promise<CustomerProfile[]> {
-		return this.getAllCustomerUseCase.handle();
-	}
+	// @Get(path_customers)
+	// @ApiOperation({ summary: 'Obtener todos los clientes' })
+	// @ApiResponse({
+	// 	status: 200,
+	// 	description: 'Lista de todos los clientes registrados',
+	// 	type: [CustomerProfileResponse],
+	// })
+	// async getAllCustomers(): Promise<CustomerProfile[]> {
+	// 	return this.getAllCustomerUseCase.handle();
+	// }
 
-	@Get(path_customer_profile)
-	@ApiOperation({ summary: 'Obtener perfil de un cliente' })
-	@ApiResponse({
-		status: 200,
-		description: 'Perfil del cliente obtenido exitosamente',
-		type: CustomerProfileResponse,
-	})
-	@ApiResponse({ status: 404, description: 'Cliente no encontrado' })
-	@ApiParam({ name: 'userId', description: 'ID del usuario' })
-	async getCustomerProfile(
-		@Param('userId') userId: string,
-	): Promise<CustomerProfile | null> {
-		return this.getCustomerProfileUseCase.handle(userId);
-	}
+	// @Get(path_customer_profile)
+	// @ApiOperation({ summary: 'Obtener perfil de un cliente' })
+	// @ApiResponse({
+	// 	status: 200,
+	// 	description: 'Perfil del cliente obtenido exitosamente',
+	// 	type: CustomerProfileResponse,
+	// })
+	// @ApiResponse({ status: 404, description: 'Cliente no encontrado' })
+	// @ApiParam({ name: 'userId', description: 'ID del usuario' })
+	// async getCustomerProfile(
+	// 	@Param('userId') userId: string,
+	// ): Promise<CustomerProfile | null> {
+	// 	return this.getCustomerProfileUseCase.handle(userId);
+	// }
 
 
-	@Get(path_seller_profile)
-	@ApiOperation({ summary: 'Obtener perfil de un vendedor' })
-	@ApiResponse({
-		status: 200,
-		description: 'Perfil del vendedor obtenido exitosamente',
-		type: SellerProfileResponse,
-	})
-	@ApiResponse({ status: 404, description: 'Vendedor no encontrado' })
-	@ApiParam({ name: 'userId', description: 'ID del usuario' })
-	async getSellerProfile(
-		@Param('userId') userId: string,
-	): Promise<SellerProfile | null> {
-		return this.getSellerProfileUseCase.handle(userId);
-	}
+	// @Get(path_seller_profile)
+	// @ApiOperation({ summary: 'Obtener perfil de un vendedor' })
+	// @ApiResponse({
+	// 	status: 200,
+	// 	description: 'Perfil del vendedor obtenido exitosamente',
+	// 	type: SellerProfileResponse,
+	// })
+	// @ApiResponse({ status: 404, description: 'Vendedor no encontrado' })
+	// @ApiParam({ name: 'userId', description: 'ID del usuario' })
+	// async getSellerProfile(
+	// 	@Param('userId') userId: string,
+	// ): Promise<SellerProfile | null> {
+	// 	return this.getSellerProfileUseCase.handle(userId);
+	// }
 
 
 	@Put(path_customer_profile)
@@ -123,16 +123,16 @@ export class UserController {
 	}
 
 
-	@Get(path_sellers)
-	@ApiOperation({ summary: 'Obtener todos los vendedores' })
-	@ApiResponse({
-		status: 200,
-		description: 'Lista de todos los vendedores registrados',
-		type: [SellerProfileResponse],
-	})
-	async getAllSellers(): Promise<SellerProfile[]> {
-		return this.getAllSellersUseCase.handle();
-	}
+	// @Get(path_sellers)
+	// @ApiOperation({ summary: 'Obtener todos los vendedores' })
+	// @ApiResponse({
+	// 	status: 200,
+	// 	description: 'Lista de todos los vendedores registrados',
+	// 	type: [SellerProfileResponse],
+	// })
+	// async getAllSellers(): Promise<SellerProfile[]> {
+	// 	return this.getAllSellersUseCase.handle();
+	// }
 
 
 	@Post(path_sellers)

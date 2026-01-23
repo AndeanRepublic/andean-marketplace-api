@@ -52,65 +52,65 @@ export class SuperfoodSalesUnitSizeController {
 		return await this.createSuperfoodSalesUnitSizeUseCase.handle(dto);
 	}
 
-	@Get()
-	@ApiOperation({
-		summary: 'Listar todos los tamaños de unidad',
-		description: 'Retorna todos los tamaños de unidad de venta disponibles',
-	})
-	@ApiResponse({
-		status: 200,
-		description: 'Lista de tamaños',
-		type: [SuperfoodSalesUnitSizeResponse],
-	})
-	async listSalesUnitSizes(): Promise<SuperfoodSalesUnitSizeResponse[]> {
-		return await this.listSuperfoodSalesUnitSizesUseCase.handle();
-	}
+	// @Get()
+	// @ApiOperation({
+	// 	summary: 'Listar todos los tamaños de unidad',
+	// 	description: 'Retorna todos los tamaños de unidad de venta disponibles',
+	// })
+	// @ApiResponse({
+	// 	status: 200,
+	// 	description: 'Lista de tamaños',
+	// 	type: [SuperfoodSalesUnitSizeResponse],
+	// })
+	// async listSalesUnitSizes(): Promise<SuperfoodSalesUnitSizeResponse[]> {
+	// 	return await this.listSuperfoodSalesUnitSizesUseCase.handle();
+	// }
 
-	@Get('/:id')
-	@ApiOperation({
-		summary: 'Obtener tamaño por ID',
-		description: 'Retorna un tamaño de unidad específico por su ID',
-	})
-	@ApiParam({
-		name: 'id',
-		description: 'ID del tamaño',
-		example: 'uuid-1234-5678',
-	})
-	@ApiResponse({
-		status: 200,
-		description: 'Tamaño encontrado',
-		type: SuperfoodSalesUnitSizeResponse,
-	})
-	@ApiResponse({
-		status: 404,
-		description: 'Tamaño no encontrado',
-	})
-	async getSalesUnitSizeById(
-		@Param('id') id: string,
-	): Promise<SuperfoodSalesUnitSizeResponse> {
-		return await this.getSuperfoodSalesUnitSizeByIdUseCase.handle(id);
-	}
+	// @Get('/:id')
+	// @ApiOperation({
+	// 	summary: 'Obtener tamaño por ID',
+	// 	description: 'Retorna un tamaño de unidad específico por su ID',
+	// })
+	// @ApiParam({
+	// 	name: 'id',
+	// 	description: 'ID del tamaño',
+	// 	example: 'uuid-1234-5678',
+	// })
+	// @ApiResponse({
+	// 	status: 200,
+	// 	description: 'Tamaño encontrado',
+	// 	type: SuperfoodSalesUnitSizeResponse,
+	// })
+	// @ApiResponse({
+	// 	status: 404,
+	// 	description: 'Tamaño no encontrado',
+	// })
+	// async getSalesUnitSizeById(
+	// 	@Param('id') id: string,
+	// ): Promise<SuperfoodSalesUnitSizeResponse> {
+	// 	return await this.getSuperfoodSalesUnitSizeByIdUseCase.handle(id);
+	// }
 
-	@Delete('/:id')
-	@HttpCode(HttpStatus.NO_CONTENT)
-	@ApiOperation({
-		summary: 'Eliminar tamaño de unidad',
-		description: 'Elimina un tamaño de unidad de venta por su ID',
-	})
-	@ApiParam({
-		name: 'id',
-		description: 'ID del tamaño a eliminar',
-		example: 'uuid-1234-5678',
-	})
-	@ApiResponse({
-		status: 204,
-		description: 'Tamaño eliminado exitosamente',
-	})
-	@ApiResponse({
-		status: 404,
-		description: 'Tamaño no encontrado',
-	})
-	async deleteSalesUnitSize(@Param('id') id: string): Promise<void> {
-		await this.deleteSuperfoodSalesUnitSizeUseCase.handle(id);
-	}
+	// @Delete('/:id')
+	// @HttpCode(HttpStatus.NO_CONTENT)
+	// @ApiOperation({
+	// 	summary: 'Eliminar tamaño de unidad',
+	// 	description: 'Elimina un tamaño de unidad de venta por su ID',
+	// })
+	// @ApiParam({
+	// 	name: 'id',
+	// 	description: 'ID del tamaño a eliminar',
+	// 	example: 'uuid-1234-5678',
+	// })
+	// @ApiResponse({
+	// 	status: 204,
+	// 	description: 'Tamaño eliminado exitosamente',
+	// })
+	// @ApiResponse({
+	// 	status: 404,
+	// 	description: 'Tamaño no encontrado',
+	// })
+	// async deleteSalesUnitSize(@Param('id') id: string): Promise<void> {
+	// 	await this.deleteSuperfoodSalesUnitSizeUseCase.handle(id);
+	// }
 }
