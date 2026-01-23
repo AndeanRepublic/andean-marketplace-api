@@ -9,12 +9,7 @@ import {
 	HttpCode,
 	HttpStatus,
 } from '@nestjs/common';
-import {
-	ApiTags,
-	ApiOperation,
-	ApiResponse,
-	ApiParam,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateTextileSubcategoryUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileSubcategoryUseCase';
 import { TextileSubcategory } from 'src/andean/domain/entities/textileProducts/TextileSubcategory';
 import { CreateTextileSubcategoryDto } from '../dto/textileProducts/CreateTextileSubcategoryDto';
@@ -32,13 +27,14 @@ export class TextileSubcategoryController {
 		private readonly getAllTextileSubcategoriesUseCase: GetAllTextileSubcategoriesUseCase,
 		private readonly getByIdTextileSubcategoryUseCase: GetByIdTextileSubcategoryUseCase,
 		private readonly deleteTextileSubcategoryUseCase: DeleteTextileSubcategoryUseCase,
-	) { }
+	) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
 		summary: 'Crear nueva subcategoría textil',
-		description: 'Crea una nueva subcategoría para clasificar productos textiles de manera más específica (ej: Ponchos de Alpaca, Mantas de Lana)',
+		description:
+			'Crea una nueva subcategoría para clasificar productos textiles de manera más específica (ej: Ponchos de Alpaca, Mantas de Lana)',
 	})
 	@ApiResponse({
 		status: 201,
@@ -84,7 +80,8 @@ export class TextileSubcategoryController {
 	@Get()
 	@ApiOperation({
 		summary: 'Listar todas las subcategorías textiles',
-		description: 'Retorna todas las subcategorías de productos textiles disponibles',
+		description:
+			'Retorna todas las subcategorías de productos textiles disponibles',
 	})
 	@ApiResponse({
 		status: 200,

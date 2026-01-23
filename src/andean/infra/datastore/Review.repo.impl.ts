@@ -50,10 +50,11 @@ export class ReviewRepositoryImpl extends ReviewRepository {
 		return;
 	}
 
-	async getByProductIdAndType(productId: string, productType: ProductType): Promise<Review[]> {
-		const docs = await this.reviewModel
-			.find({ productId, productType })
-			.exec();
+	async getByProductIdAndType(
+		productId: string,
+		productType: ProductType,
+	): Promise<Review[]> {
+		const docs = await this.reviewModel.find({ productId, productType }).exec();
 		return docs.map((doc) => ReviewMapper.fromDocument(doc));
 	}
 

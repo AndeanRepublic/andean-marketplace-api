@@ -8,10 +8,12 @@ import { SuperfoodProductPresentationMapper } from '../../../../infra/services/s
 export class ListSuperfoodProductPresentationsUseCase {
 	constructor(
 		private readonly productPresentationRepository: SuperfoodProductPresentationRepository,
-	) { }
+	) {}
 
 	async handle(): Promise<SuperfoodProductPresentationResponse[]> {
 		const presentations = await this.productPresentationRepository.getAll();
-		return presentations.map(presentation => SuperfoodProductPresentationMapper.toResponse(presentation));
+		return presentations.map((presentation) =>
+			SuperfoodProductPresentationMapper.toResponse(presentation),
+		);
 	}
 }

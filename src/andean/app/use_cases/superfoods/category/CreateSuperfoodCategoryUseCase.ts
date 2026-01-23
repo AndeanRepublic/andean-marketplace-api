@@ -9,9 +9,11 @@ import { SuperfoodCategoryMapper } from '../../../../infra/services/superfood/Su
 export class CreateSuperfoodCategoryUseCase {
 	constructor(
 		private readonly categoryRepository: SuperfoodCategoryRepository,
-	) { }
+	) {}
 
-	async handle(dto: CreateSuperfoodCategoryDto): Promise<SuperfoodCategoryResponse> {
+	async handle(
+		dto: CreateSuperfoodCategoryDto,
+	): Promise<SuperfoodCategoryResponse> {
 		// Crear entidad usando mapper
 		const category = SuperfoodCategoryMapper.fromCreateDto(dto);
 

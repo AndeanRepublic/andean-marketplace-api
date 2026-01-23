@@ -9,12 +9,7 @@ import {
 	HttpCode,
 	HttpStatus,
 } from '@nestjs/common';
-import {
-	ApiTags,
-	ApiOperation,
-	ApiResponse,
-	ApiParam,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateColorOptionAlternativeUseCase } from 'src/andean/app/use_cases/textileProducts/CreateColorOptionAlternativeUseCase';
 import { ColorOptionAlternative } from 'src/andean/domain/entities/textileProducts/ColorOptionAlternative';
 import { CreateColorOptionAlternativeDto } from './dto/textileProducts/CreateColorOptionAlternativeDto';
@@ -35,13 +30,14 @@ export class ColorOptionAlternativeController {
 		private readonly getByIdColorOptionAlternativeUseCase: GetByIdColorOptionAlternativeUseCase,
 		private readonly deleteColorOptionAlternativeUseCase: DeleteColorOptionAlternativeUseCase,
 		private readonly createManyColorOptionAlternativesUseCase: CreateManyColorOptionAlternativesUseCase,
-	) { }
+	) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
 		summary: 'Crear nueva opción de color',
-		description: 'Crea una nueva opción de color para variantes de productos textiles (ej: Rojo Andino, Azul Inca, Verde Selva)',
+		description:
+			'Crea una nueva opción de color para variantes de productos textiles (ej: Rojo Andino, Azul Inca, Verde Selva)',
 	})
 	@ApiResponse({
 		status: 201,
@@ -62,7 +58,8 @@ export class ColorOptionAlternativeController {
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
 		summary: 'Crear múltiples opciones de color',
-		description: 'Crea múltiples opciones de color en una sola operación. Útil para carga inicial de datos.',
+		description:
+			'Crea múltiples opciones de color en una sola operación. Útil para carga inicial de datos.',
 	})
 	@ApiResponse({
 		status: 201,
@@ -82,7 +79,8 @@ export class ColorOptionAlternativeController {
 	@Put('/:id')
 	@ApiOperation({
 		summary: 'Actualizar opción de color',
-		description: 'Actualiza los datos de una opción de color existente (nombre, código hexadecimal, etc.)',
+		description:
+			'Actualiza los datos de una opción de color existente (nombre, código hexadecimal, etc.)',
 	})
 	@ApiParam({
 		name: 'id',
@@ -108,7 +106,8 @@ export class ColorOptionAlternativeController {
 	@Get()
 	@ApiOperation({
 		summary: 'Listar todas las opciones de color',
-		description: 'Retorna todas las opciones de color disponibles para productos textiles',
+		description:
+			'Retorna todas las opciones de color disponibles para productos textiles',
 	})
 	@ApiResponse({
 		status: 200,

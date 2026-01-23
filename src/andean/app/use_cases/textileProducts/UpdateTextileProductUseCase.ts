@@ -1,4 +1,9 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+	BadRequestException,
+	Inject,
+	Injectable,
+	NotFoundException,
+} from '@nestjs/common';
 import { TextileProductRepository } from '../../datastore/textileProducts/TextileProduct.repo';
 import { TextileProduct } from 'src/andean/domain/entities/textileProducts/TextileProduct';
 import { TextileProductMapper } from 'src/andean/infra/services/textileProducts/TextileProductMapper';
@@ -175,7 +180,7 @@ export class UpdateTextileProductUseCase {
 		// Validar options si existen
 		if (dto.options && dto.options.length > 0) {
 			// Validar que no haya opciones duplicadas por name
-			const optionNames = dto.options.map(opt => opt.name);
+			const optionNames = dto.options.map((opt) => opt.name);
 			const uniqueOptionNames = new Set(optionNames);
 			if (optionNames.length !== uniqueOptionNames.size) {
 				throw new BadRequestException('Duplicate option names are not allowed');
@@ -185,7 +190,7 @@ export class UpdateTextileProductUseCase {
 				// Validar idOpcionAlternative en cada value según el name de la opción
 				if (option.values && option.values.length > 0) {
 					// Validar que no haya labels duplicados en la misma opción
-					const labels = option.values.map(v => v.label);
+					const labels = option.values.map((v) => v.label);
 					const uniqueLabels = new Set(labels);
 					if (labels.length !== uniqueLabels.size) {
 						throw new BadRequestException(

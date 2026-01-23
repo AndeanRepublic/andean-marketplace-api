@@ -5,9 +5,13 @@ export abstract class SuperfoodCertificationRepository {
 
 	abstract getAll(): Promise<SuperfoodCertification[]>;
 
-	abstract save(certification: SuperfoodCertification): Promise<SuperfoodCertification>;
+	abstract save(
+		certification: SuperfoodCertification,
+	): Promise<SuperfoodCertification>;
 
-	abstract update(certification: SuperfoodCertification): Promise<SuperfoodCertification>;
+	abstract update(
+		certification: SuperfoodCertification,
+	): Promise<SuperfoodCertification>;
 
 	abstract delete(id: string): Promise<void>;
 }

@@ -5,15 +5,15 @@ import { UpdateOriginProductCommunityDto } from '../controllers/dto/origin/Updat
 import * as crypto from 'crypto';
 
 export class OriginProductCommunityMapper {
-	static fromDocument(doc: OriginProductCommunityDocument): OriginProductCommunity {
-		return new OriginProductCommunity(
-			doc.id,
-			doc.name,
-			doc.regionId,
-		);
+	static fromDocument(
+		doc: OriginProductCommunityDocument,
+	): OriginProductCommunity {
+		return new OriginProductCommunity(doc.id, doc.name, doc.regionId);
 	}
 
-	static fromCreateDto(dto: CreateOriginProductCommunityDto): OriginProductCommunity {
+	static fromCreateDto(
+		dto: CreateOriginProductCommunityDto,
+	): OriginProductCommunity {
 		return new OriginProductCommunity(
 			crypto.randomUUID(),
 			dto.name,
@@ -21,7 +21,10 @@ export class OriginProductCommunityMapper {
 		);
 	}
 
-	static fromUpdateDto(dto: UpdateOriginProductCommunityDto, existing: OriginProductCommunity): OriginProductCommunity {
+	static fromUpdateDto(
+		dto: UpdateOriginProductCommunityDto,
+		existing: OriginProductCommunity,
+	): OriginProductCommunity {
 		return new OriginProductCommunity(
 			existing.id,
 			dto.name ?? existing.name,
@@ -29,7 +32,9 @@ export class OriginProductCommunityMapper {
 		);
 	}
 
-	static toDocument(dto: CreateOriginProductCommunityDto): Partial<OriginProductCommunityDocument> {
+	static toDocument(
+		dto: CreateOriginProductCommunityDto,
+	): Partial<OriginProductCommunityDocument> {
 		return {
 			id: crypto.randomUUID(),
 			name: dto.name,

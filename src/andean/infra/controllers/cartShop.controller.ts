@@ -1,14 +1,26 @@
-import { Controller, Get, Param, Post, Delete, Body, Patch, ParseIntPipe } from '@nestjs/common';
+import {
+	Controller,
+	Get,
+	Param,
+	Post,
+	Delete,
+	Body,
+	Patch,
+	ParseIntPipe,
+	HttpCode,
+	HttpStatus,
+} from '@nestjs/common';
 import { AddItemToCartUseCase } from '../../app/use_cases/cart_shop/AddItemToCartUseCase';
 import { CleanCartUseCase } from '../../app/use_cases/cart_shop/CleanCartUseCase';
 import { GetCartByCustomerUseCase } from '../../app/use_cases/cart_shop/GetCartByCustomerUseCase';
 import { RemoveItemFromCartUseCase } from '../../app/use_cases/cart_shop/RemoveItemFromCartUseCase';
 import { UpdateCartItemQuantityUseCase } from '../../app/use_cases/cart_shop/UpdateCartItemQuantityUseCase';
 import { ApplyDiscountCodeUseCase } from '../../app/use_cases/cart_shop/ApplyDiscountCodeUseCase';
-import { CartShop } from '../../domain/entities/CartShop';
 import { AddCartItemDto } from './dto/AddCartItemDto';
 import { ApplyDiscountCodeDto } from './dto/ApplyDiscountCodeDto';
 import { CartItemQuantityResponse } from '../../app/models/cart/CartItemQuantityResponse';
+import { ShoppingCartItemResponse } from '../../app/models/cart/ShoppingCartItemResponse';
+import { GetCartResponse } from '../../app/models/cart/GetCartResponse';
 import { ApplyDiscountResponse } from '../../app/models/cart/ApplyDiscountResponse';
 
 const root_path = 'users/customers/:userId/cart';
@@ -28,31 +40,35 @@ export class CartShopController {
     private readonly applyDiscountCodeUseCase: ApplyDiscountCodeUseCase,
   ) {}
 
-  @Get('')
-  async getCustomerCart(@Param('customerId') customerId: string): Promise<CartShop> {
-    return this.getCartByCustomerUseCase.handle(customerId);
-  }
+	@Get('')
+	async getCustomerCart(
+		@Param('userId') customerId: string,
+	): Promise<GetCartResponse> {
+		return this.getCartByCustomerUseCase.handle(customerId);
+	}
 
-  @Post(path_cart_items)
-  async addItemToCart(
-    @Param('customerId') customerId: string,
-    @Body() body: AddCartItemDto,
-  ): Promise<CartShop> {
-    return this.addItemToCartUseCase.handle(customerId, body);
-  }
+	@Post(path_cart_items)
+	async addItemToCart(
+		@Param('userId') customerId: string,
+		@Body() body: AddCartItemDto,
+	): Promise<ShoppingCartItemResponse> {
+		return this.addItemToCartUseCase.handle(customerId, body);
+	}
 
-  @Delete('')
-  async cleanCart(@Param('customerId') customerId: string): Promise<void> {
-    return this.cleanCartUseCase.handle(customerId);
-  }
+	@Delete('')
+	@HttpCode(HttpStatus.NO_CONTENT)
+	async cleanCart(@Param('userId') customerId: string): Promise<void> {
+		return this.cleanCartUseCase.handle(customerId);
+	}
 
-  @Delete(path_remove_cart_item)
-  async removeItemFromCart(
-    @Param('customerId') customerId: string,
-    @Param('itemId') itemId: string,
-  ): Promise<void> {
-    return this.removeItemFromCartUseCase.handle(customerId, itemId);
-  }
+	@Delete(path_remove_cart_item)
+	@HttpCode(HttpStatus.NO_CONTENT)
+	async removeItemFromCart(
+		@Param('userId') customerId: string,
+		@Param('itemId') itemId: string,
+	): Promise<void> {
+		return this.removeItemFromCartUseCase.handle(customerId, itemId);
+	}
 
   @Patch(path_update_cart_item_quantity)
   async updateCartItemQuantity(

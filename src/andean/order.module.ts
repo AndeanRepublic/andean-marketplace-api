@@ -13,29 +13,29 @@ import { CustomerProfileRepositoryImpl } from './infra/datastore/customer.repo.i
 import { UsersModule } from './users.module';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      {
-        name: `Order`,
-        schema: OrderSchema,
-      },
-    ]),
-    UsersModule,
-  ],
-  controllers: [OrderController],
-  providers: [
-    CreateOrderUseCase,
-    GetOrderByIdUseCase,
-    GetOrdersByCustomerUseCase,
-    UpdateOrderStatusUseCase,
-    {
-      provide: OrderRepository,
-      useClass: OrderRepositoryImpl,
-    },
-    {
-      provide: CustomerProfileRepository,
-      useClass: CustomerProfileRepositoryImpl,
-    },
-  ],
+	imports: [
+		MongooseModule.forFeature([
+			{
+				name: `Order`,
+				schema: OrderSchema,
+			},
+		]),
+		UsersModule,
+	],
+	controllers: [OrderController],
+	providers: [
+		CreateOrderUseCase,
+		GetOrderByIdUseCase,
+		GetOrdersByCustomerUseCase,
+		UpdateOrderStatusUseCase,
+		{
+			provide: OrderRepository,
+			useClass: OrderRepositoryImpl,
+		},
+		{
+			provide: CustomerProfileRepository,
+			useClass: CustomerProfileRepositoryImpl,
+		},
+	],
 })
 export class OrdersModule {}

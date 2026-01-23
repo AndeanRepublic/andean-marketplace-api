@@ -49,9 +49,10 @@ export class UpdateCartItemQuantityUseCase {
 		} else {
 			// Si no tiene variante, obtener stock del producto según productType
 			if (cartItem.productType === ProductType.TEXTILE) {
-				const product = await this.textileProductRepository.getTextileProductById(
-					cartItem.productId,
-				);
+				const product =
+					await this.textileProductRepository.getTextileProductById(
+						cartItem.productId,
+					);
 				if (!product) {
 					throw new NotFoundException('TextileProduct not found');
 				}

@@ -6,7 +6,7 @@ import { OriginProductCommunity } from '../../../domain/entities/origin/OriginPr
 export class GetOriginProductCommunityByIdUseCase {
 	constructor(
 		private readonly communityRepository: OriginProductCommunityRepository,
-	) { }
+	) {}
 
 	async execute(id: string): Promise<OriginProductCommunity> {
 		const community = await this.communityRepository.getById(id);

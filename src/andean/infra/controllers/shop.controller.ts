@@ -9,38 +9,38 @@ import { CreateShopDto } from './dto/CreateShopDto';
 
 @Controller('shops')
 export class ShopController {
-  constructor(
-    private readonly getShopsByIdUseCase: GetShopByIdUseCase,
-    private readonly getShopsByCategoryUseCase: GetShopsByCategoryUseCase,
-    private readonly getShopsBySellerIdUseCase: GetShopsBySellerIdUseCase,
-    private readonly createShopUseCase: CreateShopUseCase,
-    private readonly deleteShopUseCase: DeleteShopUseCase,
-  ) {}
+	constructor(
+		private readonly getShopsByIdUseCase: GetShopByIdUseCase,
+		private readonly getShopsByCategoryUseCase: GetShopsByCategoryUseCase,
+		private readonly getShopsBySellerIdUseCase: GetShopsBySellerIdUseCase,
+		private readonly createShopUseCase: CreateShopUseCase,
+		private readonly deleteShopUseCase: DeleteShopUseCase,
+	) {}
 
-  @Get('/:shopId')
-  async findById(@Param('shopId') shopId: string): Promise<Shop> {
-    return this.getShopsByIdUseCase.handle(shopId);
-  }
+	@Get('/:shopId')
+	async findById(@Param('shopId') shopId: string): Promise<Shop> {
+		return this.getShopsByIdUseCase.handle(shopId);
+	}
 
-  @Get('/by-seller/:sellerId')
-  async finBySeller(@Param('sellerId') sellerId: string): Promise<Shop[]> {
-    return this.getShopsBySellerIdUseCase.handle(sellerId);
-  }
+	@Get('/by-seller/:sellerId')
+	async finBySeller(@Param('sellerId') sellerId: string): Promise<Shop[]> {
+		return this.getShopsBySellerIdUseCase.handle(sellerId);
+	}
 
-  @Get('/by-category/:categoryName')
-  async getByCategory(
-    @Param('categoryName') categoryName: string,
-  ): Promise<Shop[]> {
-    return this.getShopsByCategoryUseCase.handle(categoryName);
-  }
+	@Get('/by-category/:categoryName')
+	async getByCategory(
+		@Param('categoryName') categoryName: string,
+	): Promise<Shop[]> {
+		return this.getShopsByCategoryUseCase.handle(categoryName);
+	}
 
-  @Post('')
-  async createShop(@Body() createShopDto: CreateShopDto): Promise<Shop> {
-    return this.createShopUseCase.handle(createShopDto);
-  }
+	@Post('')
+	async createShop(@Body() createShopDto: CreateShopDto): Promise<Shop> {
+		return this.createShopUseCase.handle(createShopDto);
+	}
 
-  @Delete('/:shopId')
-  async deleteShop(@Param('shopId') shopId: string): Promise<void> {
-    return this.deleteShopUseCase.handle(shopId);
-  }
+	@Delete('/:shopId')
+	async deleteShop(@Param('shopId') shopId: string): Promise<void> {
+		return this.deleteShopUseCase.handle(shopId);
+	}
 }

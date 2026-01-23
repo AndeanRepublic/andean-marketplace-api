@@ -9,12 +9,7 @@ import {
 	HttpCode,
 	HttpStatus,
 } from '@nestjs/common';
-import {
-	ApiTags,
-	ApiOperation,
-	ApiResponse,
-	ApiParam,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateOriginProductRegionUseCase } from '../../app/use_cases/origin/CreateOriginProductRegionUseCase';
 import { UpdateOriginProductRegionUseCase } from '../../app/use_cases/origin/UpdateOriginProductRegionUseCase';
 import { GetOriginProductRegionByIdUseCase } from '../../app/use_cases/origin/GetOriginProductRegionByIdUseCase';
@@ -34,7 +29,7 @@ export class OriginProductRegionController {
 		private readonly getRegionByIdUseCase: GetOriginProductRegionByIdUseCase,
 		private readonly listRegionUseCase: ListOriginProductRegionUseCase,
 		private readonly deleteRegionUseCase: DeleteOriginProductRegionUseCase,
-	) { }
+	) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
@@ -44,8 +39,13 @@ export class OriginProductRegionController {
 		description: 'The region has been successfully created.',
 		type: OriginProductRegionResponse,
 	})
-	@ApiResponse({ status: 400, description: 'Bad Request - Region name already exists.' })
-	async create(@Body() dto: CreateOriginProductRegionDto): Promise<OriginProductRegionResponse> {
+	@ApiResponse({
+		status: 400,
+		description: 'Bad Request - Region name already exists.',
+	})
+	async create(
+		@Body() dto: CreateOriginProductRegionDto,
+	): Promise<OriginProductRegionResponse> {
 		const region = await this.createRegionUseCase.execute(dto);
 		return this.toResponse(region);
 	}
@@ -85,7 +85,10 @@ export class OriginProductRegionController {
 		type: OriginProductRegionResponse,
 	})
 	@ApiResponse({ status: 404, description: 'Region not found.' })
-	@ApiResponse({ status: 400, description: 'Bad Request - Region name already exists.' })
+	@ApiResponse({
+		status: 400,
+		description: 'Bad Request - Region name already exists.',
+	})
 	async update(
 		@Param('id') id: string,
 		@Body() dto: UpdateOriginProductRegionDto,

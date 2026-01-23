@@ -8,13 +8,16 @@ import { SuperfoodProductPresentationMapper } from '../../../../infra/services/s
 export class GetSuperfoodProductPresentationByIdUseCase {
 	constructor(
 		private readonly productPresentationRepository: SuperfoodProductPresentationRepository,
-	) { }
+	) {}
 
 	async handle(id: string): Promise<SuperfoodProductPresentationResponse> {
-		const productPresentation = await this.productPresentationRepository.getById(id);
+		const productPresentation =
+			await this.productPresentationRepository.getById(id);
 
 		if (!productPresentation) {
-			throw new NotFoundException(`SuperfoodProductPresentation with ID ${id} not found`);
+			throw new NotFoundException(
+				`SuperfoodProductPresentation with ID ${id} not found`,
+			);
 		}
 
 		return SuperfoodProductPresentationMapper.toResponse(productPresentation);

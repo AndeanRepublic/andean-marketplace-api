@@ -65,7 +65,8 @@ export class BaseInfoDto {
 
 	@ApiProperty({
 		description: 'Descripción detallada del producto',
-		example: 'Poncho tejido a mano con lana de alpaca, diseño tradicional de la región de Cusco',
+		example:
+			'Poncho tejido a mano con lana de alpaca, diseño tradicional de la región de Cusco',
 	})
 	@IsString()
 	@IsNotEmpty()
@@ -100,7 +101,7 @@ export class BaseInfoDto {
 export class PriceInventaryDto {
 	@ApiProperty({
 		description: 'Precio base del producto en la moneda configurada',
-		example: 150.00,
+		example: 150.0,
 		minimum: 0,
 	})
 	@IsNumber()
@@ -210,7 +211,8 @@ export class TextileOptionsItemDto {
 	mediaIds?: string[];
 
 	@ApiPropertyOptional({
-		description: 'ID de la opción alternativa relacionada (color o talla alternativa)',
+		description:
+			'ID de la opción alternativa relacionada (color o talla alternativa)',
 		example: 'alt-color-001',
 	})
 	@IsString()
@@ -341,7 +343,8 @@ export class CreateTextileProductDto {
 	status: TextileProductStatus;
 
 	@ApiProperty({
-		description: 'Información básica del producto (título, descripción, media, propietario)',
+		description:
+			'Información básica del producto (título, descripción, media, propietario)',
 		type: BaseInfoDto,
 	})
 	@ValidateNested()
@@ -367,7 +370,8 @@ export class CreateTextileProductDto {
 	categoryId?: string;
 
 	@ApiPropertyOptional({
-		description: 'Atributos adicionales del producto (tipo, género, estilo, temporada)',
+		description:
+			'Atributos adicionales del producto (tipo, género, estilo, temporada)',
 		type: AtributeDto,
 	})
 	@ValidateNested()
@@ -376,7 +380,8 @@ export class CreateTextileProductDto {
 	atribute?: AtributeDto;
 
 	@ApiPropertyOptional({
-		description: 'Detalles de trazabilidad del producto (artesanal, materiales, técnicas)',
+		description:
+			'Detalles de trazabilidad del producto (artesanal, materiales, técnicas)',
 		type: DetailTraceabilityDto,
 	})
 	@ValidateNested()

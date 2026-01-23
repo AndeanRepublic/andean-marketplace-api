@@ -23,8 +23,9 @@ export class CreateReviewUseCase {
 
 	async handle(dto: CreateReviewDto): Promise<Review> {
 		// Validar customerId
-		const customerFound =
-			await this.customerProfileRepository.getCustomerById(dto.customerId);
+		const customerFound = await this.customerProfileRepository.getCustomerById(
+			dto.customerId,
+		);
 		if (!customerFound) {
 			throw new NotFoundException('Customer not found');
 		}

@@ -1,5 +1,10 @@
 import { Body, Controller, Get, Param, Put, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+	ApiTags,
+	ApiOperation,
+	ApiResponse,
+	ApiBearerAuth,
+} from '@nestjs/swagger';
 import { CustomerProfile } from '../../domain/entities/CustomerProfile';
 import { SellerProfile } from '../../domain/entities/SellerProfile';
 import { GetAllCustomerUseCase } from '../../app/use_cases/users/GetAllCustomerUseCase';
@@ -19,7 +24,7 @@ export class AdminController {
 		private readonly getAllCustomerUseCase: GetAllCustomerUseCase,
 		private readonly getAllSellersUseCase: GetAllSellersUseCase,
 		private readonly updateAccountStatusUseCase: UpdateAccountStatusUseCase,
-	) { }
+	) {}
 
 	@Get('/customers')
 	async getAllCustomers(): Promise<CustomerProfile[]> {
@@ -36,7 +41,8 @@ export class AdminController {
 	@Put('/account/:userId')
 	@ApiOperation({
 		summary: 'Actualizar estado de cuenta de usuario',
-		description: 'Solo accesible por administradores. Permite habilitar/deshabilitar cuentas de usuarios.'
+		description:
+			'Solo accesible por administradores. Permite habilitar/deshabilitar cuentas de usuarios.',
 	})
 	@ApiResponse({ status: 200, description: 'Estado de cuenta actualizado' })
 	@ApiResponse({ status: 401, description: 'No autorizado' })

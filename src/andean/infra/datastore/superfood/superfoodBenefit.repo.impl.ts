@@ -12,7 +12,7 @@ export class SuperfoodBenefitRepoImpl implements SuperfoodBenefitRepository {
 	constructor(
 		@InjectModel('SuperfoodBenefit')
 		private readonly model: Model<SuperfoodBenefitDocument>,
-	) { }
+	) {}
 
 	async getById(id: string): Promise<SuperfoodBenefit | null> {
 		// Convertir string a ObjectId
@@ -24,7 +24,7 @@ export class SuperfoodBenefitRepoImpl implements SuperfoodBenefitRepository {
 
 	async getAll(): Promise<SuperfoodBenefit[]> {
 		const docs = await this.model.find().exec();
-		return docs.map(doc => SuperfoodBenefitMapper.fromDocument(doc));
+		return docs.map((doc) => SuperfoodBenefitMapper.fromDocument(doc));
 	}
 
 	async save(benefit: SuperfoodBenefit): Promise<SuperfoodBenefit> {
@@ -42,11 +42,7 @@ export class SuperfoodBenefitRepoImpl implements SuperfoodBenefitRepository {
 		// Convertir string a ObjectId
 		const objectId = MongoIdUtils.stringToObjectId(benefit.id);
 		const updatedDoc = await this.model
-			.findByIdAndUpdate(
-				objectId,
-				{ $set: persistenceData },
-				{ new: true }
-			)
+			.findByIdAndUpdate(objectId, { $set: persistenceData }, { new: true })
 			.exec();
 
 		if (!updatedDoc) {

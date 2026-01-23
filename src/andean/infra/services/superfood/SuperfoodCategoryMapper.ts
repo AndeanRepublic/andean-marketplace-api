@@ -53,5 +53,4 @@ export class SuperfoodCategoryMapper {
 			updatedAt: entity.updatedAt || new Date(),
 		};
 	}
-
 }

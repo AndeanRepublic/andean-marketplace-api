@@ -8,44 +8,44 @@ import { BankAccountMapper } from '../services/BankAccountMapper';
 
 @Injectable()
 export class SellerBankAccountRepoImpl extends SellerBankAccountRepository {
-  constructor(
-    @InjectModel('BankAccount')
-    private readonly bankAccountModel: Model<BankAccountDocument>,
-  ) {
-    super();
-  }
+	constructor(
+		@InjectModel('BankAccount')
+		private readonly bankAccountModel: Model<BankAccountDocument>,
+	) {
+		super();
+	}
 
-  async saveBankAccount(
-    bankAccount: SellerBankAccount,
-  ): Promise<SellerBankAccount> {
-    const created = new this.bankAccountModel({
-      _id: crypto.randomUUID(),
-      id: bankAccount.id,
-      sellerId: bankAccount.sellerId,
-      status: bankAccount.status,
-      type: bankAccount.type,
-      cci: bankAccount.cci,
-      bank: bankAccount.bank,
-    });
-    const savedBankAccount = await created.save();
-    return BankAccountMapper.fromDocument(savedBankAccount);
-  }
+	async saveBankAccount(
+		bankAccount: SellerBankAccount,
+	): Promise<SellerBankAccount> {
+		const created = new this.bankAccountModel({
+			_id: crypto.randomUUID(),
+			id: bankAccount.id,
+			sellerId: bankAccount.sellerId,
+			status: bankAccount.status,
+			type: bankAccount.type,
+			cci: bankAccount.cci,
+			bank: bankAccount.bank,
+		});
+		const savedBankAccount = await created.save();
+		return BankAccountMapper.fromDocument(savedBankAccount);
+	}
 
-  async getBankAccountById(id: string): Promise<SellerBankAccount | null> {
-    const doc = await this.bankAccountModel.findById(id).exec();
-    return doc ? BankAccountMapper.fromDocument(doc) : null;
-  }
+	async getBankAccountById(id: string): Promise<SellerBankAccount | null> {
+		const doc = await this.bankAccountModel.findById(id).exec();
+		return doc ? BankAccountMapper.fromDocument(doc) : null;
+	}
 
-  async getBankAccountsBySellerId(
-    sellerId: string,
-  ): Promise<SellerBankAccount[]> {
-    const docs = await this.bankAccountModel.find({ sellerId }).exec();
-    return docs.map((doc: BankAccountDocument) =>
-      BankAccountMapper.fromDocument(doc),
-    );
-  }
+	async getBankAccountsBySellerId(
+		sellerId: string,
+	): Promise<SellerBankAccount[]> {
+		const docs = await this.bankAccountModel.find({ sellerId }).exec();
+		return docs.map((doc: BankAccountDocument) =>
+			BankAccountMapper.fromDocument(doc),
+		);
+	}
 
-  async deleteBankAccount(id: string): Promise<void> {
-    await this.bankAccountModel.findByIdAndDelete({ id }).exec();
-  }
+	async deleteBankAccount(id: string): Promise<void> {
+		await this.bankAccountModel.findByIdAndDelete({ id }).exec();
+	}
 }

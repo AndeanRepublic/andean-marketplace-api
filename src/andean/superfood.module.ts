@@ -129,12 +129,21 @@ import { TextileProductModule } from './textileProduct.module';
 			{ name: 'SuperfoodProduct', schema: SuperfoodProductSchema },
 			{ name: 'SuperfoodCategory', schema: SuperfoodCategorySchema },
 			{ name: 'MediaItem', schema: MediaItemSchema },
-			{ name: 'SuperfoodNutritionalFeature', schema: SuperfoodNutritionalFeatureSchema },
+			{
+				name: 'SuperfoodNutritionalFeature',
+				schema: SuperfoodNutritionalFeatureSchema,
+			},
 			{ name: 'SuperfoodBenefit', schema: SuperfoodBenefitSchema },
-			{ name: 'SuperfoodPreservationMethod', schema: SuperfoodPreservationMethodSchema },
+			{
+				name: 'SuperfoodPreservationMethod',
+				schema: SuperfoodPreservationMethodSchema,
+			},
 			{ name: 'SuperfoodCertification', schema: SuperfoodCertificationSchema },
 			{ name: 'SuperfoodSalesUnitSize', schema: SuperfoodSalesUnitSizeSchema },
-			{ name: 'SuperfoodProductPresentation', schema: SuperfoodProductPresentationSchema },
+			{
+				name: 'SuperfoodProductPresentation',
+				schema: SuperfoodProductPresentationSchema,
+			},
 			{ name: 'SuperfoodType', schema: SuperfoodTypeSchema },
 			{ name: 'Review', schema: ReviewSchema },
 		]),
@@ -284,4 +293,4 @@ import { TextileProductModule } from './textileProduct.module';
 		MongooseModule,
 	],
 })
-export class SuperfoodModule { }
+export class SuperfoodModule {}

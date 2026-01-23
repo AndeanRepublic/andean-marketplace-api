@@ -21,9 +21,7 @@ import { SyncVariantsUseCase } from './app/use_cases/variant/SyncVariantsUseCase
 
 @Module({
 	imports: [
-		MongooseModule.forFeature([
-			{ name: 'Variant', schema: VariantSchema },
-		]),
+		MongooseModule.forFeature([{ name: 'Variant', schema: VariantSchema }]),
 	],
 	controllers: [],
 	providers: [
@@ -57,4 +55,4 @@ import { SyncVariantsUseCase } from './app/use_cases/variant/SyncVariantsUseCase
 		SyncVariantsUseCase,
 	],
 })
-export class VariantModule { }
+export class VariantModule {}

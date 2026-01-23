@@ -5,7 +5,7 @@ import { OriginProductCommunityRepository } from '../../datastore/originProductC
 export class DeleteOriginProductCommunityUseCase {
 	constructor(
 		private readonly communityRepository: OriginProductCommunityRepository,
-	) { }
+	) {}
 
 	async execute(id: string): Promise<void> {
 		const existing = await this.communityRepository.getById(id);

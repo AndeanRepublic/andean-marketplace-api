@@ -5,13 +5,15 @@ import { SuperfoodCertificationRepository } from '../../../datastore/superfoods/
 export class DeleteSuperfoodCertificationUseCase {
 	constructor(
 		private readonly certificationRepository: SuperfoodCertificationRepository,
-	) { }
+	) {}
 
 	async handle(id: string): Promise<void> {
 		const certification = await this.certificationRepository.getById(id);
 
 		if (!certification) {
-			throw new NotFoundException(`SuperfoodCertification with ID ${id} not found`);
+			throw new NotFoundException(
+				`SuperfoodCertification with ID ${id} not found`,
+			);
 		}
 
 		await this.certificationRepository.delete(id);

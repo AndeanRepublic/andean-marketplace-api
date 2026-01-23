@@ -8,35 +8,35 @@ import { ProductMapper } from '../services/ProductMapper';
 
 @Injectable()
 export class ProductRepoImpl extends ProductRepository {
-  constructor(
-    @InjectModel('Product')
-    private readonly productModel: Model<ProductDocument>,
-  ) {
-    super();
-  }
+	constructor(
+		@InjectModel('Product')
+		private readonly productModel: Model<ProductDocument>,
+	) {
+		super();
+	}
 
-  async getAllBySellerId(sellerId: string): Promise<Product[]> {
-    const docs = await this.productModel.find({ sellerId }).exec();
-    return docs.map((doc: ProductDocument) => ProductMapper.fromDocument(doc));
-  }
+	async getAllBySellerId(sellerId: string): Promise<Product[]> {
+		const docs = await this.productModel.find({ sellerId }).exec();
+		return docs.map((doc: ProductDocument) => ProductMapper.fromDocument(doc));
+	}
 
-  async getAllByShopId(shopId: string): Promise<Product[]> {
-    const docs = await this.productModel.find({ shopId }).exec();
-    return docs.map((doc: ProductDocument) => ProductMapper.fromDocument(doc));
-  }
+	async getAllByShopId(shopId: string): Promise<Product[]> {
+		const docs = await this.productModel.find({ shopId }).exec();
+		return docs.map((doc: ProductDocument) => ProductMapper.fromDocument(doc));
+	}
 
-  async getProductById(id: string): Promise<Product | null> {
-    const doc = await this.productModel.findById(id).exec();
-    return doc ? ProductMapper.fromDocument(doc) : null;
-  }
+	async getProductById(id: string): Promise<Product | null> {
+		const doc = await this.productModel.findById(id).exec();
+		return doc ? ProductMapper.fromDocument(doc) : null;
+	}
 
-  async saveProduct(product: Product): Promise<Product> {
-    const created = new this.productModel(ProductMapper.toPersistence(product));
-    const savedProduct = await created.save();
-    return ProductMapper.fromDocument(savedProduct);
-  }
+	async saveProduct(product: Product): Promise<Product> {
+		const created = new this.productModel(ProductMapper.toPersistence(product));
+		const savedProduct = await created.save();
+		return ProductMapper.fromDocument(savedProduct);
+	}
 
-  async deleteProduct(id: string): Promise<void> {
-    await this.productModel.findByIdAndDelete(id).exec();
-  }
+	async deleteProduct(id: string): Promise<void> {
+		await this.productModel.findByIdAndDelete(id).exec();
+	}
 }

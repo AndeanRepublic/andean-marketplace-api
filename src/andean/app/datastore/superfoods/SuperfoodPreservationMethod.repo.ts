@@ -5,9 +5,13 @@ export abstract class SuperfoodPreservationMethodRepository {
 
 	abstract getAll(): Promise<SuperfoodPreservationMethod[]>;
 
-	abstract save(method: SuperfoodPreservationMethod): Promise<SuperfoodPreservationMethod>;
+	abstract save(
+		method: SuperfoodPreservationMethod,
+	): Promise<SuperfoodPreservationMethod>;
 
-	abstract update(method: SuperfoodPreservationMethod): Promise<SuperfoodPreservationMethod>;
+	abstract update(
+		method: SuperfoodPreservationMethod,
+	): Promise<SuperfoodPreservationMethod>;
 
 	abstract delete(id: string): Promise<void>;
 }

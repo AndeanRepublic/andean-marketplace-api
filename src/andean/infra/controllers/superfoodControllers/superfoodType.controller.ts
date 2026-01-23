@@ -8,12 +8,7 @@ import {
 	HttpCode,
 	HttpStatus,
 } from '@nestjs/common';
-import {
-	ApiTags,
-	ApiOperation,
-	ApiResponse,
-	ApiParam,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateSuperfoodTypeDto } from '../dto/superfoods/CreateSuperfoodTypeDto';
 import { SuperfoodTypeResponse } from '../../../app/modules/SuperfoodTypeResponse';
 import { CreateSuperfoodTypeUseCase } from '../../../app/use_cases/superfoods/type/CreateSuperfoodTypeUseCase';
@@ -29,7 +24,7 @@ export class SuperfoodTypeController {
 		private readonly getSuperfoodTypeByIdUseCase: GetSuperfoodTypeByIdUseCase,
 		private readonly listSuperfoodTypesUseCase: ListSuperfoodTypesUseCase,
 		private readonly deleteSuperfoodTypeUseCase: DeleteSuperfoodTypeUseCase,
-	) { }
+	) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
@@ -85,9 +80,7 @@ export class SuperfoodTypeController {
 		status: 404,
 		description: 'Tipo no encontrado',
 	})
-	async getTypeById(
-		@Param('id') id: string,
-	): Promise<SuperfoodTypeResponse> {
+	async getTypeById(@Param('id') id: string): Promise<SuperfoodTypeResponse> {
 		return await this.getSuperfoodTypeByIdUseCase.handle(id);
 	}
 

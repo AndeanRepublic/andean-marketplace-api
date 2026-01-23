@@ -4,16 +4,16 @@ import { TextileCategory } from 'src/andean/domain/entities/textileProducts/Text
 
 @Injectable()
 export class GetAllTextileCategoriesUseCase {
-  constructor(
-    @Inject(TextileCategoryRepository)
-    private readonly textileCategoryRepository: TextileCategoryRepository,
-  ) {}
+	constructor(
+		@Inject(TextileCategoryRepository)
+		private readonly textileCategoryRepository: TextileCategoryRepository,
+	) {}
 
-  async handle(): Promise<TextileCategory[]> {
-    const categories = await this.textileCategoryRepository.getAllCategories();
-    if (categories.length === 0) {
-      throw new NotFoundException('No categories found');
-    }
-    return categories;
-  }
+	async handle(): Promise<TextileCategory[]> {
+		const categories = await this.textileCategoryRepository.getAllCategories();
+		if (categories.length === 0) {
+			throw new NotFoundException('No categories found');
+		}
+		return categories;
+	}
 }
