@@ -66,4 +66,19 @@ export class CartShopItemRepoImpl extends CartShopItemRepository {
     }
     return CartItemMapper.fromDocument(updated);
   }
+
+  async updateDiscount(id: string, discount: number): Promise<CartItem> {
+    const objectId = MongoIdUtils.stringToObjectId(id);
+    const updated = await this.cartShopItemModel
+      .findByIdAndUpdate(
+        objectId,
+        { $set: { discount: discount, updatedAt: new Date() } },
+        { new: true },
+      )
+      .exec();
+    if (!updated) {
+      throw new Error('CartItem not found');
+    }
+    return CartItemMapper.fromDocument(updated);
+  }
 }

@@ -1,11 +1,14 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { HttpModule } from '@nestjs/axios';
 import { CartShopSchema } from './infra/persistence/cartShop.schema';
 import { CartShopController } from './infra/controllers/cartShop.controller';
 import { AddItemToCartUseCase } from './app/use_cases/cart_shop/AddItemToCartUseCase';
 import { CleanCartUseCase } from './app/use_cases/cart_shop/CleanCartUseCase';
 import { GetCartByCustomerUseCase } from './app/use_cases/cart_shop/GetCartByCustomerUseCase';
 import { RemoveItemFromCartUseCase } from './app/use_cases/cart_shop/RemoveItemFromCartUseCase';
+import { UpdateCartItemQuantityUseCase } from './app/use_cases/cart_shop/UpdateCartItemQuantityUseCase';
+import { ApplyDiscountCodeUseCase } from './app/use_cases/cart_shop/ApplyDiscountCodeUseCase';
 import { ProductRepository } from './app/datastore/Product.repo';
 import { ProductRepoImpl } from './infra/datastore/product.repo.impl';
 import { CustomerProfileRepository } from './app/datastore/Customer.repo';
@@ -20,7 +23,7 @@ import { CartShopItemRepoImpl } from './infra/datastore/cartShopItem.repo.impl';
 import { VariantModule } from './variant.module';
 import { TextileProductModule } from './textileProduct.module';
 import { SuperfoodModule } from './superfood.module';
-import { UpdateCartItemQuantityUseCase } from './app/use_cases/cart_shop/UpdateCartItemQuantityUseCase';
+import { DiscountCodeService } from './infra/services/DiscountCodeService';
 
 @Module({
   imports: [
@@ -34,6 +37,7 @@ import { UpdateCartItemQuantityUseCase } from './app/use_cases/cart_shop/UpdateC
         schema: CartItemSchema,
       },
     ]),
+    HttpModule,
     ProductsModule,
     UsersModule,
     VariantModule,
@@ -47,6 +51,8 @@ import { UpdateCartItemQuantityUseCase } from './app/use_cases/cart_shop/UpdateC
     GetCartByCustomerUseCase,
     RemoveItemFromCartUseCase,
     UpdateCartItemQuantityUseCase,
+    ApplyDiscountCodeUseCase,
+    DiscountCodeService,
     {
       provide: ProductRepository,
       useClass: ProductRepoImpl,

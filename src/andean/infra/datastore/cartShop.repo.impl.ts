@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { CartShopDocument } from '../persistence/cartShop.schema';
 import { CartShop } from '../../domain/entities/CartShop';
 import { CartShopMapper } from '../services/CartShopMapper';
+import { MongoIdUtils } from '../utils/MongoIdUtils';
 
 @Injectable()
 export class CartShopRepoImpl extends CartShopRepository {
@@ -16,7 +17,14 @@ export class CartShopRepoImpl extends CartShopRepository {
   }
 
   async getCartByCustomerId(customerId: string): Promise<CartShop | null> {
-    return this.cartShopModel.findOne({ customerId });
+    const doc = await this.cartShopModel.findOne({ customerId }).exec();
+    return doc ? CartShopMapper.fromDocument(doc) : null;
+  }
+
+  async getCartById(cartShopId: string): Promise<CartShop | null> {
+    const objectId = MongoIdUtils.stringToObjectId(cartShopId);
+    const doc = await this.cartShopModel.findById(objectId).exec();
+    return doc ? CartShopMapper.fromDocument(doc) : null;
   }
 
   async createCart(cart: CartShop): Promise<CartShop> {
