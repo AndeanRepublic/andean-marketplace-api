@@ -5,7 +5,7 @@ import { OriginProductRegionRepository } from '../../datastore/originProductRegi
 export class DeleteOriginProductRegionUseCase {
 	constructor(
 		private readonly regionRepository: OriginProductRegionRepository,
-	) { }
+	) {}
 
 	async execute(id: string): Promise<void> {
 		const existing = await this.regionRepository.getById(id);

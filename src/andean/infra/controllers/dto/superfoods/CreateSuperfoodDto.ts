@@ -20,13 +20,21 @@ import { CreateSuperfoodDetailTraceabilityDto } from './CreateSuperfoodDetailTra
 import { CreateProductTraceabilityDto } from '../traceability/CreateProductTraceabilityDto';
 
 export class CreateSuperfoodPriceInventoryDto {
-	@ApiProperty({ description: 'Precio base del producto', example: 25.50, minimum: 0.01 })
+	@ApiProperty({
+		description: 'Precio base del producto',
+		example: 25.5,
+		minimum: 0.01,
+	})
 	@IsNumber()
 	@IsNotEmpty()
 	@Min(0.01, { message: 'Base price must be greater than 0' })
 	basePrice: number;
 
-	@ApiProperty({ description: 'Stock total disponible', example: 100, minimum: 0 })
+	@ApiProperty({
+		description: 'Stock total disponible',
+		example: 100,
+		minimum: 0,
+	})
 	@IsNumber()
 	@IsNotEmpty()
 	@Min(0, { message: 'Total stock cannot be negative' })

@@ -6,13 +6,13 @@ import { SealMapper } from 'src/andean/infra/services/community/SealMapper';
 
 @Injectable()
 export class CreateSealUseCase {
-  constructor(
-    @Inject(SealRepository)
-    private readonly sealRepository: SealRepository,
-  ) {}
+	constructor(
+		@Inject(SealRepository)
+		private readonly sealRepository: SealRepository,
+	) {}
 
-  async handle(dto: CreateSealDto): Promise<Seal> {
-    const sealToSave = SealMapper.fromCreateDto(dto);
-    return this.sealRepository.create(sealToSave);
-  }
+	async handle(dto: CreateSealDto): Promise<Seal> {
+		const sealToSave = SealMapper.fromCreateDto(dto);
+		return this.sealRepository.create(sealToSave);
+	}
 }

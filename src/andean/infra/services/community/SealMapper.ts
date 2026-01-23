@@ -22,10 +22,7 @@ export class SealMapper {
 		return plainToInstance(Seal, plain);
 	}
 
-	static fromUpdateDto(
-		id: string,
-		dto: CreateSealDto,
-	): Seal {
+	static fromUpdateDto(id: string, dto: CreateSealDto): Seal {
 		const { ...sealData } = dto;
 		const plain = {
 			id: id,

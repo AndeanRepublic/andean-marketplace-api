@@ -6,17 +6,17 @@ import { CreateSealDto } from 'src/andean/infra/controllers/dto/community/Create
 
 @Injectable()
 export class UpdateSealUseCase {
-  constructor(
-    @Inject(SealRepository)
-    private readonly sealRepository: SealRepository,
-  ) {}
+	constructor(
+		@Inject(SealRepository)
+		private readonly sealRepository: SealRepository,
+	) {}
 
-  async handle(id: string, dto: CreateSealDto): Promise<Seal> {
-    const sealFound = await this.sealRepository.getById(id);
-    if (!sealFound) {
-      throw new NotFoundException('Seal not found');
-    }
-    const toUpdate = SealMapper.fromUpdateDto(id, dto);
-    return this.sealRepository.update(id, toUpdate);
-  }
+	async handle(id: string, dto: CreateSealDto): Promise<Seal> {
+		const sealFound = await this.sealRepository.getById(id);
+		if (!sealFound) {
+			throw new NotFoundException('Seal not found');
+		}
+		const toUpdate = SealMapper.fromUpdateDto(id, dto);
+		return this.sealRepository.update(id, toUpdate);
+	}
 }

@@ -2,40 +2,40 @@ import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { TimeModel } from '../../../../domain/entities/products/TimeModel';
 
 export class CreateProductDto {
-  @IsString()
-  @IsNotEmpty()
-  shopId: string;
+	@IsString()
+	@IsNotEmpty()
+	shopId: string;
 
-  @IsString()
-  @IsNotEmpty()
-  title: string;
+	@IsString()
+	@IsNotEmpty()
+	title: string;
 
-  @IsString()
-  @IsOptional()
-  description: string;
+	@IsString()
+	@IsOptional()
+	description: string;
 
-  @IsString()
-  @IsNotEmpty()
-  category: string;
+	@IsString()
+	@IsNotEmpty()
+	category: string;
 
-  @IsNumber()
-  @IsNotEmpty()
-  basePrice: number;
+	@IsNumber()
+	@IsNotEmpty()
+	basePrice: number;
 
-  @IsString()
-  @IsNotEmpty()
-  origin: string;
+	@IsString()
+	@IsNotEmpty()
+	origin: string;
 
-  @IsNotEmpty()
-  attributes: any;
+	@IsNotEmpty()
+	attributes: any;
 
-  @IsOptional()
-  guarantee: TimeModel;
+	@IsOptional()
+	guarantee: TimeModel;
 
-  @IsOptional()
-  shippingTime: TimeModel;
+	@IsOptional()
+	shippingTime: TimeModel;
 
-  @IsNumber()
-  @IsNotEmpty()
-  stock: number;
+	@IsNumber()
+	@IsNotEmpty()
+	stock: number;
 }

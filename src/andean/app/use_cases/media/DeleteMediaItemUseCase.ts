@@ -3,9 +3,7 @@ import { MediaItemRepository } from '../../datastore/MediaItem.repo';
 
 @Injectable()
 export class DeleteMediaItemUseCase {
-	constructor(
-		private readonly mediaItemRepository: MediaItemRepository,
-	) { }
+	constructor(private readonly mediaItemRepository: MediaItemRepository) {}
 
 	async execute(id: string): Promise<void> {
 		const existing = await this.mediaItemRepository.getById(id);

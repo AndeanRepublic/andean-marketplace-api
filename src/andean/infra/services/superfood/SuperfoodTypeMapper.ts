@@ -16,7 +16,7 @@ export class SuperfoodTypeMapper {
 			MongoIdUtils.objectIdToString(plain._id), // ObjectId → string
 			plain.name,
 			plain.createdAt,
-			plain.updatedAt
+			plain.updatedAt,
 		);
 	}
 
@@ -49,5 +49,4 @@ export class SuperfoodTypeMapper {
 			updatedAt: entity.updatedAt || new Date(),
 		};
 	}
-
 }

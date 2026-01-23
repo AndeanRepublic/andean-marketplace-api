@@ -9,12 +9,15 @@ import { OriginProductCommunityMapper } from '../services/OriginProductCommunity
 @Injectable()
 export class OriginProductCommunityRepositoryImpl extends OriginProductCommunityRepository {
 	constructor(
-		@InjectModel('OriginProductCommunity') private communityModel: Model<OriginProductCommunityDocument>,
+		@InjectModel('OriginProductCommunity')
+		private communityModel: Model<OriginProductCommunityDocument>,
 	) {
 		super();
 	}
 
-	async create(community: OriginProductCommunity): Promise<OriginProductCommunity> {
+	async create(
+		community: OriginProductCommunity,
+	): Promise<OriginProductCommunity> {
 		const document = {
 			id: community.id,
 			name: community.name,
@@ -26,27 +29,38 @@ export class OriginProductCommunityRepositoryImpl extends OriginProductCommunity
 
 	async getById(id: string): Promise<OriginProductCommunity | null> {
 		const document = await this.communityModel.findOne({ id }).exec();
-		return document ? OriginProductCommunityMapper.fromDocument(document) : null;
+		return document
+			? OriginProductCommunityMapper.fromDocument(document)
+			: null;
 	}
 
 	async getAll(): Promise<OriginProductCommunity[]> {
 		const documents = await this.communityModel.find().exec();
-		return documents.map((doc) => OriginProductCommunityMapper.fromDocument(doc));
+		return documents.map((doc) =>
+			OriginProductCommunityMapper.fromDocument(doc),
+		);
 	}
 
 	async getByName(name: string): Promise<OriginProductCommunity | null> {
 		const document = await this.communityModel
 			.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } })
 			.exec();
-		return document ? OriginProductCommunityMapper.fromDocument(document) : null;
+		return document
+			? OriginProductCommunityMapper.fromDocument(document)
+			: null;
 	}
 
 	async getByRegionId(regionId: string): Promise<OriginProductCommunity[]> {
 		const documents = await this.communityModel.find({ regionId }).exec();
-		return documents.map((doc) => OriginProductCommunityMapper.fromDocument(doc));
+		return documents.map((doc) =>
+			OriginProductCommunityMapper.fromDocument(doc),
+		);
 	}
 
-	async update(id: string, community: Partial<OriginProductCommunity>): Promise<OriginProductCommunity | null> {
+	async update(
+		id: string,
+		community: Partial<OriginProductCommunity>,
+	): Promise<OriginProductCommunity | null> {
 		const updated = await this.communityModel
 			.findOneAndUpdate({ id }, community, { new: true })
 			.exec();

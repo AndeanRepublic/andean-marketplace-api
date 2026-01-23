@@ -4,17 +4,17 @@ import { TextileType } from 'src/andean/domain/entities/textileProducts/TextileT
 
 @Injectable()
 export class DeleteTextileTypeUseCase {
-  constructor(
-    @Inject(TextileTypeRepository)
-    private readonly textileTypeRepository: TextileTypeRepository,
-  ) {}
+	constructor(
+		@Inject(TextileTypeRepository)
+		private readonly textileTypeRepository: TextileTypeRepository,
+	) {}
 
-  async handle(id: string): Promise<void> {
-    const typeFound = await this.textileTypeRepository.getTextileTypeById(id);
-    if (!typeFound) {
-      throw new NotFoundException('Type not found');
-    }
-    await this.textileTypeRepository.deleteTextileType(id);
-    return;
-  }
+	async handle(id: string): Promise<void> {
+		const typeFound = await this.textileTypeRepository.getTextileTypeById(id);
+		if (!typeFound) {
+			throw new NotFoundException('Type not found');
+		}
+		await this.textileTypeRepository.deleteTextileType(id);
+		return;
+	}
 }

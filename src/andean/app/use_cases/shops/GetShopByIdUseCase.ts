@@ -4,13 +4,13 @@ import { Shop } from '../../../domain/entities/Shop';
 
 @Injectable()
 export class GetShopByIdUseCase {
-  constructor(private readonly shopRepository: ShopRepository) {}
+	constructor(private readonly shopRepository: ShopRepository) {}
 
-  async handle(shopId: string): Promise<Shop> {
-    const shopFound = await this.shopRepository.getById(shopId);
-    if (!shopFound) {
-      throw new NotFoundException('Shop not found');
-    }
-    return shopFound;
-  }
+	async handle(shopId: string): Promise<Shop> {
+		const shopFound = await this.shopRepository.getById(shopId);
+		if (!shopFound) {
+			throw new NotFoundException('Shop not found');
+		}
+		return shopFound;
+	}
 }

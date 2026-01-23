@@ -43,7 +43,10 @@ export class CommunityRepositoryImpl extends CommunityRepositoryBase {
 		return document ? CommunityMapper.fromDocument(document) : null;
 	}
 
-	async update(id: string, community: Partial<Community>): Promise<Community | null> {
+	async update(
+		id: string,
+		community: Partial<Community>,
+	): Promise<Community | null> {
 		// Convertir Partial<Community> a objeto plano, excluyendo id
 		const plain = instanceToPlain(community);
 		const { id: _, ...dataForDB } = plain;

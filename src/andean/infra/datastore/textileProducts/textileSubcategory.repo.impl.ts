@@ -9,43 +9,50 @@ import { MongoIdUtils } from '../../utils/MongoIdUtils';
 
 @Injectable()
 export class TextileSubcategoryRepositoryImpl extends TextileSubcategoryRepository {
-  constructor(
-    @InjectModel('TextileSubcategory')
-    private readonly textileSubcategoryModel: Model<TextileSubcategoryDocument>,
-  ) {
-    super();
-  }
+	constructor(
+		@InjectModel('TextileSubcategory')
+		private readonly textileSubcategoryModel: Model<TextileSubcategoryDocument>,
+	) {
+		super();
+	}
 
-  async getAllTextileSubcategories(): Promise<TextileSubcategory[]> {
-    const docs = await this.textileSubcategoryModel.find().exec();
-    return docs.map((doc) => TextileSubcategoryMapper.fromDocument(doc));
-  }
+	async getAllTextileSubcategories(): Promise<TextileSubcategory[]> {
+		const docs = await this.textileSubcategoryModel.find().exec();
+		return docs.map((doc) => TextileSubcategoryMapper.fromDocument(doc));
+	}
 
-  async getTextileSubcategoryById(id: string): Promise<TextileSubcategory | null> {
-    const objectId = MongoIdUtils.stringToObjectId(id);
-    const doc = await this.textileSubcategoryModel.findById(objectId).exec();
-    return doc ? TextileSubcategoryMapper.fromDocument(doc) : null;
-  }
+	async getTextileSubcategoryById(
+		id: string,
+	): Promise<TextileSubcategory | null> {
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		const doc = await this.textileSubcategoryModel.findById(objectId).exec();
+		return doc ? TextileSubcategoryMapper.fromDocument(doc) : null;
+	}
 
-  async saveTextileSubcategory(subcategory: TextileSubcategory): Promise<TextileSubcategory> {
-    const plain = TextileSubcategoryMapper.toPersistence(subcategory);
-    const created = new this.textileSubcategoryModel(plain);
-    const savedSubcategory = await created.save();
-    return TextileSubcategoryMapper.fromDocument(savedSubcategory);
-  }
+	async saveTextileSubcategory(
+		subcategory: TextileSubcategory,
+	): Promise<TextileSubcategory> {
+		const plain = TextileSubcategoryMapper.toPersistence(subcategory);
+		const created = new this.textileSubcategoryModel(plain);
+		const savedSubcategory = await created.save();
+		return TextileSubcategoryMapper.fromDocument(savedSubcategory);
+	}
 
-  async updateTextileSubcategory(id: string, subcategory: TextileSubcategory): Promise<TextileSubcategory> {
-    const plain = TextileSubcategoryMapper.toPersistence(subcategory);
-    const objectId = MongoIdUtils.stringToObjectId(id);
-    const updated = await this.textileSubcategoryModel
-      .findByIdAndUpdate(objectId, plain, { new: true })
-      .exec();
-    return TextileSubcategoryMapper.fromDocument(updated!);
-  }
+	async updateTextileSubcategory(
+		id: string,
+		subcategory: TextileSubcategory,
+	): Promise<TextileSubcategory> {
+		const plain = TextileSubcategoryMapper.toPersistence(subcategory);
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		const updated = await this.textileSubcategoryModel
+			.findByIdAndUpdate(objectId, plain, { new: true })
+			.exec();
+		return TextileSubcategoryMapper.fromDocument(updated!);
+	}
 
-  async deleteTextileSubcategory(id: string): Promise<void> {
-    const objectId = MongoIdUtils.stringToObjectId(id);
-    await this.textileSubcategoryModel.findByIdAndDelete(objectId).exec();
-    return;
-  }
+	async deleteTextileSubcategory(id: string): Promise<void> {
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		await this.textileSubcategoryModel.findByIdAndDelete(objectId).exec();
+		return;
+	}
 }

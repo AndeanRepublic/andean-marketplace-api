@@ -5,14 +5,14 @@ import { Account } from '../../../domain/entities/Account';
 
 @Injectable()
 export class UpdateAccountStatusUseCase {
-  constructor(private readonly accountRepository: AccountRepository) {}
+	constructor(private readonly accountRepository: AccountRepository) {}
 
-  async handle(userId: string, dto: UpdateAccountStatusDto): Promise<void> {
-    const accountFound: Account | null =
-      await this.accountRepository.getAccountByUserId(userId);
-    if (!accountFound) {
-      throw new NotFoundException();
-    }
-    return this.accountRepository.updateAccountStatus(userId, dto.status);
-  }
+	async handle(userId: string, dto: UpdateAccountStatusDto): Promise<void> {
+		const accountFound: Account | null =
+			await this.accountRepository.getAccountByUserId(userId);
+		if (!accountFound) {
+			throw new NotFoundException();
+		}
+		return this.accountRepository.updateAccountStatus(userId, dto.status);
+	}
 }

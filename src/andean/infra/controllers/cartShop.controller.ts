@@ -32,7 +32,7 @@ export class CartShopController {
 		private readonly getCartByCustomerUseCase: GetCartByCustomerUseCase,
 		private readonly removeItemFromCartUseCase: RemoveItemFromCartUseCase,
 		private readonly updateCartItemQuantityUseCase: UpdateCartItemQuantityUseCase,
-	) {}
+	) { }
 
 	@Get('')
 	async getCustomerCart(

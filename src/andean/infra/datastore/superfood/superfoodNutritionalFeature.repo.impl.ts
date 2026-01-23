@@ -12,7 +12,7 @@ export class SuperfoodNutritionalFeatureRepoImpl implements SuperfoodNutritional
 	constructor(
 		@InjectModel('SuperfoodNutritionalFeature')
 		private readonly model: Model<SuperfoodNutritionalFeatureDocument>,
-	) { }
+	) {}
 
 	async getById(id: string): Promise<SuperfoodNutritionalFeature | null> {
 		// Convertir string a ObjectId
@@ -24,29 +24,33 @@ export class SuperfoodNutritionalFeatureRepoImpl implements SuperfoodNutritional
 
 	async getAll(): Promise<SuperfoodNutritionalFeature[]> {
 		const docs = await this.model.find().exec();
-		return docs.map(doc => SuperfoodNutritionalFeatureMapper.fromDocument(doc));
+		return docs.map((doc) =>
+			SuperfoodNutritionalFeatureMapper.fromDocument(doc),
+		);
 	}
 
-	async save(feature: SuperfoodNutritionalFeature): Promise<SuperfoodNutritionalFeature> {
-		const persistenceData = SuperfoodNutritionalFeatureMapper.toPersistence(feature);
+	async save(
+		feature: SuperfoodNutritionalFeature,
+	): Promise<SuperfoodNutritionalFeature> {
+		const persistenceData =
+			SuperfoodNutritionalFeatureMapper.toPersistence(feature);
 		// MongoDB genera automáticamente _id como ObjectId
 		const newDoc = new this.model(persistenceData);
 		const savedDoc = await newDoc.save();
 		return SuperfoodNutritionalFeatureMapper.fromDocument(savedDoc);
 	}
 
-	async update(feature: SuperfoodNutritionalFeature): Promise<SuperfoodNutritionalFeature> {
-		const persistenceData = SuperfoodNutritionalFeatureMapper.toPersistence(feature);
+	async update(
+		feature: SuperfoodNutritionalFeature,
+	): Promise<SuperfoodNutritionalFeature> {
+		const persistenceData =
+			SuperfoodNutritionalFeatureMapper.toPersistence(feature);
 		persistenceData.updatedAt = new Date();
 
 		// Convertir string a ObjectId
 		const objectId = MongoIdUtils.stringToObjectId(feature.id);
 		const updatedDoc = await this.model
-			.findByIdAndUpdate(
-				objectId,
-				{ $set: persistenceData },
-				{ new: true }
-			)
+			.findByIdAndUpdate(objectId, { $set: persistenceData }, { new: true })
 			.exec();
 
 		if (!updatedDoc) {

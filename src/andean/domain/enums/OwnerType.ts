@@ -1,4 +1,4 @@
 export enum OwnerType {
-  SHOP = 'SHOP',
-  COMMUNITY = 'COMMUNITY',
+	SHOP = 'SHOP',
+	COMMUNITY = 'COMMUNITY',
 }

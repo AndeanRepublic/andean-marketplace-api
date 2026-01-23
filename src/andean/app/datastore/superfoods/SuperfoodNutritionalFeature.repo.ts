@@ -5,9 +5,13 @@ export abstract class SuperfoodNutritionalFeatureRepository {
 
 	abstract getAll(): Promise<SuperfoodNutritionalFeature[]>;
 
-	abstract save(feature: SuperfoodNutritionalFeature): Promise<SuperfoodNutritionalFeature>;
+	abstract save(
+		feature: SuperfoodNutritionalFeature,
+	): Promise<SuperfoodNutritionalFeature>;
 
-	abstract update(feature: SuperfoodNutritionalFeature): Promise<SuperfoodNutritionalFeature>;
+	abstract update(
+		feature: SuperfoodNutritionalFeature,
+	): Promise<SuperfoodNutritionalFeature>;
 
 	abstract delete(id: string): Promise<void>;
 }

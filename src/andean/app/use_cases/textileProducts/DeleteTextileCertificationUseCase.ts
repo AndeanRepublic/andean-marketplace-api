@@ -4,17 +4,18 @@ import { TextileCertification } from 'src/andean/domain/entities/textileProducts
 
 @Injectable()
 export class DeleteTextileCertificationUseCase {
-  constructor(
-    @Inject(TextileCertificationRepository)
-    private readonly textileCertificationRepository: TextileCertificationRepository,
-  ) {}
+	constructor(
+		@Inject(TextileCertificationRepository)
+		private readonly textileCertificationRepository: TextileCertificationRepository,
+	) {}
 
-  async handle(id: string): Promise<void> {
-    const certificationFound = await this.textileCertificationRepository.getTextileCertificationById(id);
-    if (!certificationFound) {
-      throw new NotFoundException('Certification not found');
-    }
-    await this.textileCertificationRepository.deleteTextileCertification(id);
-    return;
-  }
+	async handle(id: string): Promise<void> {
+		const certificationFound =
+			await this.textileCertificationRepository.getTextileCertificationById(id);
+		if (!certificationFound) {
+			throw new NotFoundException('Certification not found');
+		}
+		await this.textileCertificationRepository.deleteTextileCertification(id);
+		return;
+	}
 }

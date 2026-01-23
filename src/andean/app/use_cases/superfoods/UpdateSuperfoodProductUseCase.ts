@@ -26,7 +26,7 @@ export class UpdateSuperfoodProductUseCase {
 		private readonly shopRepository: ShopRepository,
 		@Inject(CommunityRepository)
 		private readonly communityRepository: CommunityRepository,
-	) { }
+	) {}
 
 	async handle(
 		productId: string,
@@ -63,12 +63,15 @@ export class UpdateSuperfoodProductUseCase {
 					);
 				}
 			}
-		}
-		else if (dto.baseInfo?.ownerType === SuperfoodOwnerType.COMMUNITY) {
+		} else if (dto.baseInfo?.ownerType === SuperfoodOwnerType.COMMUNITY) {
 			if (dto.baseInfo?.ownerId) {
-				const communityFound = await this.communityRepository.getById(dto.baseInfo.ownerId);
+				const communityFound = await this.communityRepository.getById(
+					dto.baseInfo.ownerId,
+				);
 				if (!communityFound) {
-					throw new NotFoundException(`Community with ID ${dto.baseInfo.ownerId} not found`);
+					throw new NotFoundException(
+						`Community with ID ${dto.baseInfo.ownerId} not found`,
+					);
 				}
 			}
 		}

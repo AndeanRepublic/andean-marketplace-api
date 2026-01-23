@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, BadRequestException, Inject } from '@nestjs/common';
+import {
+	Injectable,
+	NotFoundException,
+	BadRequestException,
+	Inject,
+} from '@nestjs/common';
 import { CommunityRepository } from '../../datastore/community/community.repo';
 import { SealRepository } from '../../datastore/community/Seal.repo';
 import { Community } from '../../../domain/entities/community/Community';
@@ -11,7 +16,7 @@ export class UpdateCommunityUseCase {
 		private readonly communityRepository: CommunityRepository,
 		@Inject(SealRepository)
 		private readonly sealRepository: SealRepository,
-	) { }
+	) {}
 
 	async execute(id: string, dto: UpdateCommunityDto): Promise<Community> {
 		// Verificar existencia
@@ -22,9 +27,13 @@ export class UpdateCommunityUseCase {
 
 		// Si se intenta cambiar el nombre, validar que no exista otra comunidad con ese nombre
 		if (dto.name && dto.name !== existing.name) {
-			const communityWithSameName = await this.communityRepository.getByName(dto.name);
+			const communityWithSameName = await this.communityRepository.getByName(
+				dto.name,
+			);
 			if (communityWithSameName) {
-				throw new BadRequestException(`Community with name "${dto.name}" already exists`);
+				throw new BadRequestException(
+					`Community with name "${dto.name}" already exists`,
+				);
 			}
 		}
 
@@ -33,9 +42,7 @@ export class UpdateCommunityUseCase {
 			for (const sealId of dto.seals) {
 				const sealFound = await this.sealRepository.getById(sealId);
 				if (!sealFound) {
-					throw new NotFoundException(
-						`Seal with id ${sealId} not found`,
-					);
+					throw new NotFoundException(`Seal with id ${sealId} not found`);
 				}
 			}
 		}

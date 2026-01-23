@@ -5,5 +5,5 @@ export class SuperfoodCategory {
 		public readonly status: 'ENABLED' | 'DISABLED',
 		public readonly createdAt?: Date,
 		public readonly updatedAt?: Date,
-	) { }
+	) {}
 }

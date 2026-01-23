@@ -10,7 +10,9 @@ export class SuperfoodProductPresentationMapper {
 	 * Convierte documento MongoDB a entidad de dominio
 	 * ObjectId (_id) → string (id)
 	 */
-	static fromDocument(doc: SuperfoodProductPresentationDocument): SuperfoodProductPresentation {
+	static fromDocument(
+		doc: SuperfoodProductPresentationDocument,
+	): SuperfoodProductPresentation {
 		const plain = doc.toObject();
 		return new SuperfoodProductPresentation(
 			MongoIdUtils.objectIdToString(plain._id), // ObjectId → string
@@ -20,7 +22,9 @@ export class SuperfoodProductPresentationMapper {
 		);
 	}
 
-	static fromCreateDto(dto: CreateSuperfoodProductPresentationDto): SuperfoodProductPresentation {
+	static fromCreateDto(
+		dto: CreateSuperfoodProductPresentationDto,
+	): SuperfoodProductPresentation {
 		return new SuperfoodProductPresentation(
 			new Types.ObjectId().toString(), // Generar ObjectId temporal como string
 			dto.name,
@@ -29,7 +33,9 @@ export class SuperfoodProductPresentationMapper {
 		);
 	}
 
-	static toResponse(entity: SuperfoodProductPresentation): SuperfoodProductPresentationResponse {
+	static toResponse(
+		entity: SuperfoodProductPresentation,
+	): SuperfoodProductPresentationResponse {
 		return {
 			id: entity.id,
 			name: entity.name,
@@ -49,5 +55,4 @@ export class SuperfoodProductPresentationMapper {
 			updatedAt: entity.updatedAt || new Date(),
 		};
 	}
-
 }

@@ -14,7 +14,7 @@ export class JwtAuthGuard implements CanActivate {
 	constructor(
 		private jwtService: JwtService,
 		private reflector: Reflector,
-	) { }
+	) {}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		// Check if the route is marked as public
@@ -33,7 +33,7 @@ export class JwtAuthGuard implements CanActivate {
 			throw new UnauthorizedException('Token not found');
 		}
 		try {
-			// 💡 Here the JWT secret key that's used for verifying the payload 
+			// 💡 Here the JWT secret key that's used for verifying the payload
 			// is the key that was passed in the JwtModule
 			const payload = await this.jwtService.verifyAsync(token);
 			// 💡 We're assigning the payload to the request object here

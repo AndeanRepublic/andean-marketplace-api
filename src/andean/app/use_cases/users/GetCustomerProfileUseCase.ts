@@ -4,9 +4,9 @@ import { CustomerProfileRepository } from '../../datastore/Customer.repo';
 
 @Injectable()
 export class GetCustomerProfileUseCase {
-  constructor(private readonly userRepository: CustomerProfileRepository) {}
+	constructor(private readonly userRepository: CustomerProfileRepository) {}
 
-  async handle(userId: string): Promise<CustomerProfile | null> {
-    return this.userRepository.getCustomerByUserId(userId);
-  }
+	async handle(userId: string): Promise<CustomerProfile | null> {
+		return this.userRepository.getCustomerByUserId(userId);
+	}
 }

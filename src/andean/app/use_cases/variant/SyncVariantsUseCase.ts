@@ -20,7 +20,7 @@ export class SyncVariantsUseCase {
 	constructor(
 		@Inject(VariantRepository)
 		private readonly variantRepository: VariantRepository,
-	) {}
+	) { }
 
 	async execute(dto: SyncVariantsDto): Promise<Variant[]> {
 		const { productId, productType, variants: userVariants } = dto;

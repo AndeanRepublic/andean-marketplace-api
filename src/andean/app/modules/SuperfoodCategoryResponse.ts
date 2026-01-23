@@ -7,7 +7,10 @@ export class SuperfoodCategoryResponse {
 	@ApiProperty({ description: 'Nombre de la categoría', example: 'Quinua' })
 	name: string;
 
-	@ApiProperty({ description: 'Estado de la categoría', enum: ['ENABLED', 'DISABLED'] })
+	@ApiProperty({
+		description: 'Estado de la categoría',
+		enum: ['ENABLED', 'DISABLED'],
+	})
 	status: 'ENABLED' | 'DISABLED';
 
 	@ApiProperty({ description: 'Fecha de creación' })

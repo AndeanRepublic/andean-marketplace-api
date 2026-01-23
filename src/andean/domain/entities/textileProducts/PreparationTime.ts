@@ -1,6 +1,6 @@
 export class PreparationTime {
-  constructor(
-    public days: number,
-    public hours: number,
-  ) {}
+	constructor(
+		public days: number,
+		public hours: number,
+	) {}
 }

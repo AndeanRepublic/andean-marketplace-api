@@ -8,13 +8,17 @@ import { OriginProductRegionMapper } from '../../../infra/services/OriginProduct
 export class CreateOriginProductRegionUseCase {
 	constructor(
 		private readonly regionRepository: OriginProductRegionRepository,
-	) { }
+	) {}
 
-	async execute(dto: CreateOriginProductRegionDto): Promise<OriginProductRegion> {
+	async execute(
+		dto: CreateOriginProductRegionDto,
+	): Promise<OriginProductRegion> {
 		// Validar que no exista una región con el mismo nombre
 		const existingRegion = await this.regionRepository.getByName(dto.name);
 		if (existingRegion) {
-			throw new BadRequestException(`Region with name "${dto.name}" already exists`);
+			throw new BadRequestException(
+				`Region with name "${dto.name}" already exists`,
+			);
 		}
 
 		// Crear entidad usando mapper

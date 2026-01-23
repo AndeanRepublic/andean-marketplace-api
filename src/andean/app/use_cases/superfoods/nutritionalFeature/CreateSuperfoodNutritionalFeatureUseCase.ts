@@ -11,21 +11,27 @@ export class CreateSuperfoodNutritionalFeatureUseCase {
 	constructor(
 		private readonly nutritionalFeatureRepository: SuperfoodNutritionalFeatureRepository,
 		private readonly mediaItemRepository: MediaItemRepository,
-	) { }
+	) {}
 
-	async handle(dto: CreateSuperfoodNutritionalFeatureDto): Promise<SuperfoodNutritionalFeatureResponse> {
+	async handle(
+		dto: CreateSuperfoodNutritionalFeatureDto,
+	): Promise<SuperfoodNutritionalFeatureResponse> {
 		// Validar que el iconId existe si se proporciona
 		if (dto.iconId) {
 			const iconExists = await this.mediaItemRepository.getById(dto.iconId);
 			if (!iconExists) {
-				throw new BadRequestException(`MediaItem with id ${dto.iconId} not found`);
+				throw new BadRequestException(
+					`MediaItem with id ${dto.iconId} not found`,
+				);
 			}
 		}
 
 		// Crear entidad usando mapper
-		const nutritionalFeature = SuperfoodNutritionalFeatureMapper.fromCreateDto(dto);
+		const nutritionalFeature =
+			SuperfoodNutritionalFeatureMapper.fromCreateDto(dto);
 
-		const savedFeature = await this.nutritionalFeatureRepository.save(nutritionalFeature);
+		const savedFeature =
+			await this.nutritionalFeatureRepository.save(nutritionalFeature);
 		return SuperfoodNutritionalFeatureMapper.toResponse(savedFeature);
 	}
 }

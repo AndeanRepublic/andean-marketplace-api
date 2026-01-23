@@ -19,7 +19,7 @@ export class UpdateVariantDto {
 
 	@ApiPropertyOptional({
 		description: 'Precio específico de esta variante',
-		example: 165.00,
+		example: 165.0,
 		minimum: 0,
 	})
 	@IsNumber()

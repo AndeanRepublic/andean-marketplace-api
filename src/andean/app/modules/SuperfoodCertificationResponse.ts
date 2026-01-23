@@ -4,7 +4,10 @@ export class SuperfoodCertificationResponse {
 	@ApiProperty({ description: 'ID único de la certificación' })
 	id: string;
 
-	@ApiProperty({ description: 'Nombre de la certificación', example: 'Orgánico' })
+	@ApiProperty({
+		description: 'Nombre de la certificación',
+		example: 'Orgánico',
+	})
 	name: string;
 
 	@ApiProperty({ description: 'URL del icono', required: false })

@@ -30,7 +30,7 @@ export class SuperfoodController {
 		private readonly getSuperfoodProductsByCategoryUseCase: GetSuperfoodProductsByCategoryUseCase,
 		private readonly updateSuperfoodProductUseCase: UpdateSuperfoodProductUseCase,
 		private readonly deleteSuperfoodProductUseCase: DeleteSuperfoodProductUseCase,
-	) { }
+	) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)

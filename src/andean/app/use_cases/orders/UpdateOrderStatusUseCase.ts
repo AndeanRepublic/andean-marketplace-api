@@ -6,7 +6,7 @@ import { OrderStatus } from '../../../domain/enums/OrderStatus';
 
 @Injectable()
 export class UpdateOrderStatusUseCase {
-	constructor(private orderRepository: OrderRepository) { }
+	constructor(private orderRepository: OrderRepository) {}
 
 	async handle(orderId: string, dto: UpdateOrderDto): Promise<Order> {
 		const orderFound = await this.orderRepository.getOrderById(orderId);
@@ -20,7 +20,10 @@ export class UpdateOrderStatusUseCase {
 			updatedAt: new Date(),
 		};
 
-		const updated = await this.orderRepository.updateOrder(orderId, partialOrder);
+		const updated = await this.orderRepository.updateOrder(
+			orderId,
+			partialOrder,
+		);
 
 		if (!updated) {
 			throw new NotFoundException('Failed to update Order');

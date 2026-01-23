@@ -3,9 +3,7 @@ import { SuperfoodBenefitRepository } from '../../../datastore/superfoods/Superf
 
 @Injectable()
 export class DeleteSuperfoodBenefitUseCase {
-	constructor(
-		private readonly benefitRepository: SuperfoodBenefitRepository,
-	) { }
+	constructor(private readonly benefitRepository: SuperfoodBenefitRepository) {}
 
 	async handle(id: string): Promise<void> {
 		const benefit = await this.benefitRepository.getById(id);

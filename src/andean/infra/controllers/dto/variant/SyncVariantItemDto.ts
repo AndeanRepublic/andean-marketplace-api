@@ -14,7 +14,8 @@ import { ApiProperty } from '@nestjs/swagger';
  */
 export class SyncVariantItemDto {
 	@ApiProperty({
-		description: 'Combinación de opciones que define esta variante (clave de comparación)',
+		description:
+			'Combinación de opciones que define esta variante (clave de comparación)',
 		example: { color: 'rojo', size: 'M' },
 	})
 	@IsObject()

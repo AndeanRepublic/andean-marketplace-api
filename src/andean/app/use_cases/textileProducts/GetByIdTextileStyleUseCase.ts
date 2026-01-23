@@ -4,16 +4,17 @@ import { TextileStyle } from 'src/andean/domain/entities/textileProducts/Textile
 
 @Injectable()
 export class GetByIdTextileStyleUseCase {
-  constructor(
-    @Inject(TextileStyleRepository)
-    private readonly textileStyleRepository: TextileStyleRepository,
-  ) {}
+	constructor(
+		@Inject(TextileStyleRepository)
+		private readonly textileStyleRepository: TextileStyleRepository,
+	) {}
 
-  async handle(id: string): Promise<TextileStyle> {
-    const styleFound = await this.textileStyleRepository.getTextileStyleById(id);
-    if (!styleFound) {
-      throw new NotFoundException('Style not found');
-    }
-    return styleFound;
-  }
+	async handle(id: string): Promise<TextileStyle> {
+		const styleFound =
+			await this.textileStyleRepository.getTextileStyleById(id);
+		if (!styleFound) {
+			throw new NotFoundException('Style not found');
+		}
+		return styleFound;
+	}
 }

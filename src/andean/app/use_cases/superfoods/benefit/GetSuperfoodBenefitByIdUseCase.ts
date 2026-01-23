@@ -6,9 +6,7 @@ import { SuperfoodBenefitMapper } from '../../../../infra/services/superfood/Sup
 
 @Injectable()
 export class GetSuperfoodBenefitByIdUseCase {
-	constructor(
-		private readonly benefitRepository: SuperfoodBenefitRepository,
-	) { }
+	constructor(private readonly benefitRepository: SuperfoodBenefitRepository) {}
 
 	async handle(id: string): Promise<SuperfoodBenefitResponse> {
 		const benefit = await this.benefitRepository.getById(id);

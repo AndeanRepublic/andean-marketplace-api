@@ -8,12 +8,7 @@ import {
 	HttpCode,
 	HttpStatus,
 } from '@nestjs/common';
-import {
-	ApiTags,
-	ApiOperation,
-	ApiResponse,
-	ApiParam,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateSuperfoodProductPresentationDto } from '../dto/superfoods/CreateSuperfoodProductPresentationDto';
 import { SuperfoodProductPresentationResponse } from '../../../app/modules/SuperfoodProductPresentationResponse';
 import { CreateSuperfoodProductPresentationUseCase } from '../../../app/use_cases/superfoods/productPresentation/CreateSuperfoodProductPresentationUseCase';
@@ -29,13 +24,14 @@ export class SuperfoodProductPresentationController {
 		private readonly getSuperfoodProductPresentationByIdUseCase: GetSuperfoodProductPresentationByIdUseCase,
 		private readonly listSuperfoodProductPresentationsUseCase: ListSuperfoodProductPresentationsUseCase,
 		private readonly deleteSuperfoodProductPresentationUseCase: DeleteSuperfoodProductPresentationUseCase,
-	) { }
+	) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
 		summary: 'Crear nueva presentación de producto',
-		description: 'Crea una nueva presentación (ej: En polvo, En grano, Cápsulas)',
+		description:
+			'Crea una nueva presentación (ej: En polvo, En grano, Cápsulas)',
 	})
 	@ApiResponse({
 		status: 201,
@@ -62,7 +58,9 @@ export class SuperfoodProductPresentationController {
 		description: 'Lista de presentaciones',
 		type: [SuperfoodProductPresentationResponse],
 	})
-	async listProductPresentations(): Promise<SuperfoodProductPresentationResponse[]> {
+	async listProductPresentations(): Promise<
+		SuperfoodProductPresentationResponse[]
+	> {
 		return await this.listSuperfoodProductPresentationsUseCase.handle();
 	}
 

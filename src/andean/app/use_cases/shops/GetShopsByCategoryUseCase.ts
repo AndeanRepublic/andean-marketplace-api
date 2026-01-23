@@ -5,10 +5,10 @@ import { ShopCategory } from '../../../domain/enums/ShopCategory';
 
 @Injectable()
 export class GetShopsByCategoryUseCase {
-  constructor(private readonly shopRepository: ShopRepository) {}
+	constructor(private readonly shopRepository: ShopRepository) {}
 
-  async handle(category: string): Promise<Shop[]> {
-    const shopCategory = ShopCategory[category as keyof typeof ShopCategory];
-    return this.shopRepository.getAllByCategory(shopCategory);
-  }
+	async handle(category: string): Promise<Shop[]> {
+		const shopCategory = ShopCategory[category as keyof typeof ShopCategory];
+		return this.shopRepository.getAllByCategory(shopCategory);
+	}
 }

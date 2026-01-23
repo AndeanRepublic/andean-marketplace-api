@@ -6,17 +6,24 @@ import { CreateTextileCertificationDto } from 'src/andean/infra/controllers/dto/
 
 @Injectable()
 export class UpdateTextileCertificationUseCase {
-  constructor(
-    @Inject(TextileCertificationRepository)
-    private readonly textileCertificationRepository: TextileCertificationRepository,
-  ) {}
+	constructor(
+		@Inject(TextileCertificationRepository)
+		private readonly textileCertificationRepository: TextileCertificationRepository,
+	) {}
 
-  async handle(id: string, dto: CreateTextileCertificationDto): Promise<TextileCertification> {
-    const certificationFound = await this.textileCertificationRepository.getTextileCertificationById(id);
-    if (!certificationFound) {
-      throw new NotFoundException('Certification not found');
-    }
-    const toUpdate = TextileCertificationMapper.fromUpdateDto(id, dto);
-    return this.textileCertificationRepository.updateTextileCertification(id, toUpdate);
-  }
+	async handle(
+		id: string,
+		dto: CreateTextileCertificationDto,
+	): Promise<TextileCertification> {
+		const certificationFound =
+			await this.textileCertificationRepository.getTextileCertificationById(id);
+		if (!certificationFound) {
+			throw new NotFoundException('Certification not found');
+		}
+		const toUpdate = TextileCertificationMapper.fromUpdateDto(id, dto);
+		return this.textileCertificationRepository.updateTextileCertification(
+			id,
+			toUpdate,
+		);
+	}
 }

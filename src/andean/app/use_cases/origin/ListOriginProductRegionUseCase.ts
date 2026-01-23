@@ -6,7 +6,7 @@ import { OriginProductRegion } from '../../../domain/entities/origin/OriginProdu
 export class ListOriginProductRegionUseCase {
 	constructor(
 		private readonly regionRepository: OriginProductRegionRepository,
-	) { }
+	) {}
 
 	async execute(): Promise<OriginProductRegion[]> {
 		return await this.regionRepository.getAll();

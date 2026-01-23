@@ -43,7 +43,7 @@ export class AddItemToCartUseCase {
 		private readonly sellerRepository: SellerProfileRepository,
 		@Inject(CommunityRepository)
 		private readonly communityRepository: CommunityRepository,
-	) {}
+	) { }
 
 	async handle(
 		customerId: string,

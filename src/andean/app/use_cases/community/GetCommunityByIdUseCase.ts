@@ -4,9 +4,7 @@ import { Community } from '../../../domain/entities/community/Community';
 
 @Injectable()
 export class GetCommunityByIdUseCase {
-	constructor(
-		private readonly communityRepository: CommunityRepository,
-	) { }
+	constructor(private readonly communityRepository: CommunityRepository) {}
 
 	async execute(id: string): Promise<Community> {
 		const community = await this.communityRepository.getById(id);
