@@ -146,23 +146,6 @@ export class SuperfoodOptionsResponse {
 	values: SuperfoodOptionsItemResponse[];
 }
 
-export class SuperfoodVariantResponse {
-	@ApiProperty({ description: 'ID de la variante' })
-	id: string;
-
-	@ApiProperty({
-		description: 'Combinación de opciones',
-		example: { "opt_color": "id_option", "opt_size": "id_size" }
-	})
-	combination: Record<string, string>;
-
-	@ApiProperty({ description: 'Precio de la variante' })
-	price: number;
-
-	@ApiProperty({ description: 'Stock de la variante' })
-	stock: number;
-}
-
 export class SuperfoodProductResponse {
 	@ApiProperty({ description: 'ID único del producto' })
 	id: string;
@@ -194,8 +177,8 @@ export class SuperfoodProductResponse {
 	@ApiProperty({ type: [SuperfoodOptionsResponse], description: 'Opciones del producto' })
 	options: SuperfoodOptionsResponse[];
 
-	@ApiProperty({ type: [SuperfoodVariantResponse], description: 'Variantes del producto' })
-	variants: SuperfoodVariantResponse[];
+	@ApiProperty({ description: 'Indica si el descuento está activo para este producto' })
+	isDiscountActive: boolean;
 
 	@ApiProperty({ description: 'Fecha de creación' })
 	createdAt: Date;

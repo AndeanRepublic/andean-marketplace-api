@@ -5,7 +5,6 @@ import { SuperfoodPriceInventory } from './SuperfoodPriceInventory';
 import { SuperfoodNutritionalItem } from './SuperfoodNutritionalItem';
 import { SuperfoodDetailTraceability } from './SuperfoodDetailTraceability';
 import { SuperfoodOptions } from './SuperfoodOptions';
-import { SuperfoodVariant } from './SuperfoodVariant';
 import { ProductTraceability } from '../ProductTraceability';
 
 export class SuperfoodProduct {
@@ -16,6 +15,7 @@ export class SuperfoodProduct {
 		public priceInventory: SuperfoodPriceInventory,
 		public createdAt: Date,
 		public updatedAt: Date,
+		public isDiscountActive: boolean,
 
 		public categoryId?: string, // Reference to SuperfoodCategories
 		public detailProduct?: SuperfoodDetailProduct,
@@ -23,6 +23,5 @@ export class SuperfoodProduct {
 		public detailTraceability?: SuperfoodDetailTraceability,
 		public productTraceability?: ProductTraceability,
 		public options?: SuperfoodOptions[], // Product options (e.g., color, size)
-		public variants?: SuperfoodVariant[], // Product variants with specific combinations
 	) {}
 }

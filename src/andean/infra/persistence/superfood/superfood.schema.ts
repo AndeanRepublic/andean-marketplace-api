@@ -17,13 +17,6 @@ const SuperfoodOptionsSchema = new Schema({
 	values: { type: [SuperfoodOptionsItemSchema], default: [] },
 });
 
-const SuperfoodVariantSchema = new Schema({
-	id: { type: String, required: true },
-	combination: { type: Schema.Types.Mixed, required: true }, // Object with optionId -> value
-	price: { type: Number, required: true },
-	stock: { type: Number, required: true },
-});
-
 const SuperfoodBasicInfoSchema = new Schema(
 	{
 		title: { type: String, required: true },
@@ -141,7 +134,6 @@ const SuperfoodDetailProductSchema = new Schema(
 
 // Main schema
 export const SuperfoodProductSchema = new Schema({
-	id: { type: String, required: true, unique: true },
 	categoryId: { type: String, required: false },
 	status: {
 		type: String,
@@ -165,13 +157,12 @@ export const SuperfoodProductSchema = new Schema({
 		required: false,
 	},
 	options: { type: [SuperfoodOptionsSchema], default: [], required: false },
-	variants: { type: [SuperfoodVariantSchema], default: [], required: false },
+	isDiscountActive: { type: Boolean, default: false, required: true },
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 });
 
 export interface SuperfoodProductDocument extends Document {
-	id: string;
 	categoryId?: string;
 	status: SuperfoodProductStatus;
 	baseInfo: any;
@@ -181,7 +172,7 @@ export interface SuperfoodProductDocument extends Document {
 	detailTraceability?: any;
 	productTraceability?: any;
 	options?: any[];
-	variants?: any[];
+	isDiscountActive: boolean;
 	createdAt: Date;
 	updatedAt: Date;
 }
