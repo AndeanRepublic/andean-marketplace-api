@@ -7,6 +7,7 @@ import { GetCartByCustomerUseCase } from '../src/andean/app/use_cases/cart_shop/
 import { UpdateCartItemQuantityUseCase } from '../src/andean/app/use_cases/cart_shop/UpdateCartItemQuantityUseCase';
 import { RemoveItemFromCartUseCase } from '../src/andean/app/use_cases/cart_shop/RemoveItemFromCartUseCase';
 import { CleanCartUseCase } from '../src/andean/app/use_cases/cart_shop/CleanCartUseCase';
+import { ApplyDiscountCodeUseCase } from '../src/andean/app/use_cases/cart_shop/ApplyDiscountCodeUseCase';
 import { FixtureLoader } from './helpers/fixture-loader';
 
 describe('CartShopController (e2e)', () => {
@@ -104,6 +105,15 @@ describe('CartShopController (e2e)', () => {
 					provide: RemoveItemFromCartUseCase,
 					useValue: {
 						handle: jest.fn().mockResolvedValue(undefined),
+					},
+				},
+				{
+					provide: ApplyDiscountCodeUseCase,
+					useValue: {
+						handle: jest.fn().mockResolvedValue({
+							success: true,
+							discountApplied: 10,
+						}),
 					},
 				},
 			],
