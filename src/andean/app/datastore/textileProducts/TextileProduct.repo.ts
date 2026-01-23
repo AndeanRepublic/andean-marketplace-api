@@ -1,4 +1,5 @@
 import { TextileProduct } from '../../../domain/entities/textileProducts/TextileProduct';
+import { ProductSortBy } from '../../../domain/enums/ProductSortBy';
 import { FilterCount } from '../../modules/PaginatedProductsResponse';
 import { TextileProductListItem } from '../../modules/TextileProductListItemResponse';
 
@@ -11,6 +12,7 @@ export interface ProductFilters {
 	perPage?: number;
 	categoryId?: string;
 	ownerId?: string;
+	sortBy?: ProductSortBy;
 }
 
 export abstract class TextileProductRepository {
