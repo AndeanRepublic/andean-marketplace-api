@@ -118,6 +118,7 @@ import { DecrementDislikesUseCase } from './app/use_cases/DecrementDislikesUseCa
 import { SuperfoodModule } from './superfood.module';
 import { VariantModule } from './variant.module';
 import { VariantSchema } from './infra/persistence/variant.schema';
+import { OrderItemSchema } from './infra/persistence/orderItem.schema';
 
 @Module({
 	imports: [
@@ -173,6 +174,10 @@ import { VariantSchema } from './infra/persistence/variant.schema';
 			{
 				name: 'Variant',
 				schema: VariantSchema,
+			},
+			{
+				name: 'OrderItem',
+				schema: OrderItemSchema,
 			},
 		]),
 		UsersModule,

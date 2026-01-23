@@ -29,6 +29,7 @@ import { PaginatedProductsResponse, PaginatedTextileProductsResponse } from 'src
 import { TextileProductListItem } from 'src/andean/app/modules/TextileProductListItemResponse';
 import { TextileProductDetailResponse } from 'src/andean/app/models/TextileProducts/TextileProductDetailResponse';
 import { GetByIdTextileProductDetailUseCase } from 'src/andean/app/use_cases/textileProducts/GetByIdTextileProductDetailUseCase';
+import { ProductSortBy } from 'src/andean/domain/enums/ProductSortBy';
 
 @ApiTags('Textile Products')
 @Controller('textile-products')
@@ -154,6 +155,13 @@ export class TextileProductController {
 		description: 'Filtrar por ID del propietario/vendedor (shop o comunidad)',
 		example: 'shop-uuid-1234',
 	})
+	@ApiQuery({
+		name: 'sort_by',
+		required: false,
+		enum: ProductSortBy,
+		description: 'Criterio de ordenamiento: "latest" (más recientes primero) o "popular" (más comprados primero)',
+		example: 'latest',
+	})
 	@ApiResponse({
 		status: 200,
 		description: 'Lista paginada de productos textiles con información resumida',
@@ -168,6 +176,7 @@ export class TextileProductController {
 		@Query('max_price', new ParseIntPipe({ optional: true })) maxPrice?: number,
 		@Query('category_id') categoryId?: string,
 		@Query('owner_id') ownerId?: string,
+		@Query('sort_by') sortBy?: ProductSortBy,
 	): Promise<PaginatedProductsResponse<TextileProductListItem>> {
 		const filters: any = {};
 		if (page !== undefined) filters.page = page;
@@ -178,6 +187,7 @@ export class TextileProductController {
 		if (maxPrice !== undefined) filters.maxPrice = maxPrice;
 		if (categoryId) filters.categoryId = categoryId;
 		if (ownerId) filters.ownerId = ownerId;
+		if (sortBy) filters.sortBy = sortBy;
 
 		return this.getAllTextileProductsUseCase.handle(Object.keys(filters).length > 0 ? filters : undefined);
 	}
