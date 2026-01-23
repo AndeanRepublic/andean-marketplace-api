@@ -88,37 +88,10 @@ export class UpdateSuperfoodProductUseCase {
 			throw new BadRequestException('The total stock cannot be negative');
 		}
 
-		// 5. Validar variantes duplicadas si se actualizan
-		if (dto.variants && dto.variants.length > 0) {
-			const combinations = dto.variants.map((v) =>
-				JSON.stringify(v.combination),
-			);
-			const uniqueCombinations = new Set(combinations);
-			if (combinations.length !== uniqueCombinations.size) {
-				throw new BadRequestException(
-					'Hay variantes con combinaciones duplicadas',
-				);
-			}
-
-			// Validar precios y stocks de variantes
-			for (const variant of dto.variants) {
-				if (variant.price < 0) {
-					throw new BadRequestException(
-						'The price of each variant must be greater than or equal to 0',
-					);
-				}
-				if (variant.stock < 0) {
-					throw new BadRequestException(
-						'The stock of each variant must be greater than or equal to 0',
-					);
-				}
-			}
-		}
-
-		// 7. Usar el mapper para crear la entidad actualizada
+		// 5. Usar el mapper para crear la entidad actualizada
 		const toUpdate = SuperfoodProductMapper.fromUpdateDto(productId, dto);
 
-		// 8. Guardar cambios
+		// 6. Guardar cambios
 		return this.superfoodProductRepository.updateSuperfoodProduct(toUpdate);
 	}
 }
