@@ -18,12 +18,14 @@ import { UpdateVariantUseCase } from './app/use_cases/variant/UpdateVariantUseCa
 import { DeleteVariantUseCase } from './app/use_cases/variant/DeleteVariantUseCase';
 import { DeleteVariantsByProductIdUseCase } from './app/use_cases/variant/DeleteVariantsByProductIdUseCase';
 import { SyncVariantsUseCase } from './app/use_cases/variant/SyncVariantsUseCase';
+// Controller
+import { VariantController } from './infra/controllers/variantControllers/variant.controller';
 
 @Module({
 	imports: [
 		MongooseModule.forFeature([{ name: 'Variant', schema: VariantSchema }]),
 	],
-	controllers: [],
+	controllers: [VariantController],
 	providers: [
 		// Repository
 		{
@@ -55,4 +57,4 @@ import { SyncVariantsUseCase } from './app/use_cases/variant/SyncVariantsUseCase
 		SyncVariantsUseCase,
 	],
 })
-export class VariantModule {}
+export class VariantModule { }
