@@ -36,7 +36,7 @@ export class OriginProductCommunityController {
 		private readonly getCommunityByIdUseCase: GetOriginProductCommunityByIdUseCase,
 		private readonly listCommunityUseCase: ListOriginProductCommunityUseCase,
 		private readonly deleteCommunityUseCase: DeleteOriginProductCommunityUseCase,
-	) { }
+	) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
@@ -46,9 +46,14 @@ export class OriginProductCommunityController {
 		description: 'The community has been successfully created.',
 		type: OriginProductCommunityResponse,
 	})
-	@ApiResponse({ status: 400, description: 'Bad Request - Community name already exists.' })
+	@ApiResponse({
+		status: 400,
+		description: 'Bad Request - Community name already exists.',
+	})
 	@ApiResponse({ status: 404, description: 'Region not found.' })
-	async create(@Body() dto: CreateOriginProductCommunityDto): Promise<OriginProductCommunityResponse> {
+	async create(
+		@Body() dto: CreateOriginProductCommunityDto,
+	): Promise<OriginProductCommunityResponse> {
 		const community = await this.createCommunityUseCase.execute(dto);
 		return this.toResponse(community);
 	}
@@ -62,20 +67,28 @@ export class OriginProductCommunityController {
 	// 	type: OriginProductCommunityResponse,
 	// })
 	// @ApiResponse({ status: 404, description: 'Community not found.' })
-	// async getById(@Param('id') id: string): Promise<OriginProductCommunityResponse> {
+	// async getById(
+	// 	@Param('id') id: string,
+	// ): Promise<OriginProductCommunityResponse> {
 	// 	const community = await this.getCommunityByIdUseCase.execute(id);
 	// 	return this.toResponse(community);
 	// }
 
 	// @Get()
 	// @ApiOperation({ summary: 'List all origin product communities' })
-	// @ApiQuery({ name: 'regionId', required: false, description: 'Filter by region ID' })
+	// @ApiQuery({
+	// 	name: 'regionId',
+	// 	required: false,
+	// 	description: 'Filter by region ID',
+	// })
 	// @ApiResponse({
 	// 	status: 200,
 	// 	description: 'List of communities.',
 	// 	type: [OriginProductCommunityResponse],
 	// })
-	// async list(@Query('regionId') regionId?: string): Promise<OriginProductCommunityResponse[]> {
+	// async list(
+	// 	@Query('regionId') regionId?: string,
+	// ): Promise<OriginProductCommunityResponse[]> {
 	// 	const communities = await this.listCommunityUseCase.execute(regionId);
 	// 	return communities.map((c) => this.toResponse(c));
 	// }
@@ -89,7 +102,10 @@ export class OriginProductCommunityController {
 	// 	type: OriginProductCommunityResponse,
 	// })
 	// @ApiResponse({ status: 404, description: 'Community or Region not found.' })
-	// @ApiResponse({ status: 400, description: 'Bad Request - Community name already exists.' })
+	// @ApiResponse({
+	// 	status: 400,
+	// 	description: 'Bad Request - Community name already exists.',
+	// })
 	// async update(
 	// 	@Param('id') id: string,
 	// 	@Body() dto: UpdateOriginProductCommunityDto,
@@ -108,7 +124,9 @@ export class OriginProductCommunityController {
 	// 	await this.deleteCommunityUseCase.execute(id);
 	// }
 
-	private toResponse(community: OriginProductCommunity): OriginProductCommunityResponse {
+	private toResponse(
+		community: OriginProductCommunity,
+	): OriginProductCommunityResponse {
 		return {
 			id: community.id,
 			name: community.name,

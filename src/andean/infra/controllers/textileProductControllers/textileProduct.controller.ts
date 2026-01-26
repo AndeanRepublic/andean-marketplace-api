@@ -25,7 +25,10 @@ import { UpdateTextileProductUseCase } from 'src/andean/app/use_cases/textilePro
 import { GetAllTextileProductsUseCase } from 'src/andean/app/use_cases/textileProducts/GetAllTextileProductsUseCase';
 import { GetByIdTextileProductUseCase } from 'src/andean/app/use_cases/textileProducts/GetByIdTextileProductUseCase';
 import { DeleteTextileProductUseCase } from 'src/andean/app/use_cases/textileProducts/DeleteTextileProductUseCase';
-import { PaginatedProductsResponse, PaginatedTextileProductsResponse } from 'src/andean/app/modules/PaginatedProductsResponse';
+import {
+	PaginatedProductsResponse,
+	PaginatedTextileProductsResponse,
+} from 'src/andean/app/modules/PaginatedProductsResponse';
 import { TextileProductListItem } from 'src/andean/app/modules/TextileProductListItemResponse';
 import { TextileProductDetailResponse } from 'src/andean/app/models/TextileProducts/TextileProductDetailResponse';
 import { GetByIdTextileProductDetailUseCase } from 'src/andean/app/use_cases/textileProducts/GetByIdTextileProductDetailUseCase';
@@ -41,13 +44,14 @@ export class TextileProductController {
 		private readonly getByIdTextileProductUseCase: GetByIdTextileProductUseCase,
 		private readonly deleteTextileProductUseCase: DeleteTextileProductUseCase,
 		private readonly getByIdTextileProductDetailUseCase: GetByIdTextileProductDetailUseCase,
-	) { }
+	) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
 		summary: 'Crear nuevo producto textil',
-		description: 'Crea un nuevo producto textil con toda su información incluyendo variantes, colores, tallas, técnicas de elaboración y certificaciones',
+		description:
+			'Crea un nuevo producto textil con toda su información incluyendo variantes, colores, tallas, técnicas de elaboración y certificaciones',
 	})
 	@ApiResponse({
 		status: 201,
@@ -56,7 +60,8 @@ export class TextileProductController {
 	})
 	@ApiResponse({
 		status: 400,
-		description: 'Datos de entrada inválidos (precio <= 0, stock negativo, variantes duplicadas)',
+		description:
+			'Datos de entrada inválidos (precio <= 0, stock negativo, variantes duplicadas)',
 	})
 	@ApiResponse({
 		status: 404,
@@ -71,7 +76,8 @@ export class TextileProductController {
 	@Put('/:id')
 	@ApiOperation({
 		summary: 'Actualizar producto textil',
-		description: 'Actualiza los datos de un producto textil existente. Solo se actualizan los campos enviados en el body.',
+		description:
+			'Actualiza los datos de un producto textil existente. Solo se actualizan los campos enviados en el body.',
 	})
 	@ApiParam({
 		name: 'id',
@@ -97,7 +103,8 @@ export class TextileProductController {
 	@Get()
 	@ApiOperation({
 		summary: 'Listar productos textiles con filtros',
-		description: 'Retorna una lista paginada de productos textiles con stock disponible (totalStock > 0). Soporta filtros por color, talla, rango de precio, categoría y propietario. La respuesta incluye información resumida optimizada para listados.',
+		description:
+			'Retorna una lista paginada de productos textiles con stock disponible (totalStock > 0). Soporta filtros por color, talla, rango de precio, categoría y propietario. La respuesta incluye información resumida optimizada para listados.',
 	})
 	@ApiQuery({
 		name: 'page',
@@ -117,14 +124,16 @@ export class TextileProductController {
 		name: 'color',
 		required: false,
 		type: String,
-		description: 'Filtrar por nombre del color (case-insensitive). Solo retorna productos que tengan variantes con este color.',
+		description:
+			'Filtrar por nombre del color (case-insensitive). Solo retorna productos que tengan variantes con este color.',
 		example: 'rojo',
 	})
 	@ApiQuery({
 		name: 'size',
 		required: false,
 		type: String,
-		description: 'Filtrar por nombre de la talla (case-insensitive). Solo retorna productos que tengan variantes con esta talla.',
+		description:
+			'Filtrar por nombre de la talla (case-insensitive). Solo retorna productos que tengan variantes con esta talla.',
 		example: 'M',
 	})
 	@ApiQuery({
@@ -159,12 +168,14 @@ export class TextileProductController {
 		name: 'sort_by',
 		required: false,
 		enum: ProductSortBy,
-		description: 'Criterio de ordenamiento: "latest" (más recientes primero) o "popular" (más comprados primero)',
+		description:
+			'Criterio de ordenamiento: "latest" (más recientes primero) o "popular" (más comprados primero)',
 		example: 'latest',
 	})
 	@ApiResponse({
 		status: 200,
-		description: 'Lista paginada de productos textiles con información resumida',
+		description:
+			'Lista paginada de productos textiles con información resumida',
 		type: PaginatedTextileProductsResponse,
 	})
 	async getAllTextileProducts(
@@ -189,7 +200,9 @@ export class TextileProductController {
 		if (ownerId) filters.ownerId = ownerId;
 		if (sortBy) filters.sortBy = sortBy;
 
-		return this.getAllTextileProductsUseCase.handle(Object.keys(filters).length > 0 ? filters : undefined);
+		return this.getAllTextileProductsUseCase.handle(
+			Object.keys(filters).length > 0 ? filters : undefined,
+		);
 	}
 
 	// @Get('/:id')
@@ -202,7 +215,8 @@ export class TextileProductController {
 	@Get('/:id/details')
 	@ApiOperation({
 		summary: 'Obtener producto textil por ID',
-		description: 'Retorna toda la información detallada de un producto textil específico incluyendo variantes, colores, tallas, técnicas de elaboración y certificaciones',
+		description:
+			'Retorna toda la información completa de un producto textil específico incluyendo variantes, colores, tallas, técnicas de elaboración y certificaciones',
 	})
 	@ApiParam({
 		name: 'id',

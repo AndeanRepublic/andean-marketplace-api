@@ -9,12 +9,7 @@ import {
 	HttpCode,
 	HttpStatus,
 } from '@nestjs/common';
-import {
-	ApiTags,
-	ApiOperation,
-	ApiResponse,
-	ApiParam,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateTextileCategoryUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileCategoryUseCase';
 import { TextileCategory } from 'src/andean/domain/entities/textileProducts/TextileCategory';
 import { CreateTextileCategoryDto } from '../dto/textileProducts/CreateTextileCategory';
@@ -32,13 +27,14 @@ export class TextileCategoryController {
 		private readonly getAllTextileCategoriesUseCase: GetAllTextileCategoriesUseCase,
 		private readonly getByIdTextileCategoryUseCase: GetByIdTextileCategoryUseCase,
 		private readonly deleteTextileCategoryUseCase: DeleteTextileCategoryUseCase,
-	) { }
+	) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
 		summary: 'Crear nueva categoría textil',
-		description: 'Crea una nueva categoría para clasificar productos textiles (ej: Ponchos, Mantas, Bolsos, Chullos)',
+		description:
+			'Crea una nueva categoría para clasificar productos textiles (ej: Ponchos, Mantas, Bolsos, Chullos)',
 	})
 	@ApiResponse({
 		status: 201,
@@ -84,7 +80,8 @@ export class TextileCategoryController {
 	// @Get()
 	// @ApiOperation({
 	// 	summary: 'Listar todas las categorías textiles',
-	// 	description: 'Retorna todas las categorías de productos textiles disponibles',
+	// 	description:
+	// 		'Retorna todas las categorías de productos textiles disponibles',
 	// })
 	// @ApiResponse({
 	// 	status: 200,

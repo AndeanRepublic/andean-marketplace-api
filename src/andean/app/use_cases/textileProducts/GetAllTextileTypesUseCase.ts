@@ -4,16 +4,16 @@ import { TextileType } from 'src/andean/domain/entities/textileProducts/TextileT
 
 @Injectable()
 export class GetAllTextileTypesUseCase {
-  constructor(
-    @Inject(TextileTypeRepository)
-    private readonly textileTypeRepository: TextileTypeRepository,
-  ) {}
+	constructor(
+		@Inject(TextileTypeRepository)
+		private readonly textileTypeRepository: TextileTypeRepository,
+	) {}
 
-  async handle(): Promise<TextileType[]> {
-    const types = await this.textileTypeRepository.getAllTextileTypes();
-    if (types.length === 0) {
-      throw new NotFoundException('No types found');
-    }
-    return types;
-  }
+	async handle(): Promise<TextileType[]> {
+		const types = await this.textileTypeRepository.getAllTextileTypes();
+		if (types.length === 0) {
+			throw new NotFoundException('No types found');
+		}
+		return types;
+	}
 }

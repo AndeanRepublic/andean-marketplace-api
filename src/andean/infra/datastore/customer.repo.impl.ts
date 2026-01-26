@@ -8,48 +8,48 @@ import { CustomerProfileMapper } from '../services/CustomerProfileMapper';
 
 @Injectable()
 export class CustomerProfileRepositoryImpl extends CustomerProfileRepository {
-  constructor(
-    @InjectModel('CustomerProfile')
-    private readonly userModel: Model<CustomerProfileDocument>,
-  ) {
-    super();
-  }
+	constructor(
+		@InjectModel('CustomerProfile')
+		private readonly userModel: Model<CustomerProfileDocument>,
+	) {
+		super();
+	}
 
-  async saveCustomer(user: CustomerProfile): Promise<CustomerProfile> {
-    const created = new this.userModel(
-      CustomerProfileMapper.toPersistence(user),
-    );
-    const savedCustomer = await created.save();
-    return CustomerProfileMapper.fromDocument(savedCustomer);
-  }
+	async saveCustomer(user: CustomerProfile): Promise<CustomerProfile> {
+		const created = new this.userModel(
+			CustomerProfileMapper.toPersistence(user),
+		);
+		const savedCustomer = await created.save();
+		return CustomerProfileMapper.fromDocument(savedCustomer);
+	}
 
-  async getCustomerById(id: string): Promise<CustomerProfile | null> {
-    return this.userModel.findOne({ id }).exec();
-  }
+	async getCustomerById(id: string): Promise<CustomerProfile | null> {
+		return this.userModel.findOne({ id }).exec();
+	}
 
-  async getAllCustomers(): Promise<CustomerProfile[]> {
-    const docs = await this.userModel.find().exec();
-    return docs.map((doc) => CustomerProfileMapper.fromDocument(doc));
-  }
+	async getAllCustomers(): Promise<CustomerProfile[]> {
+		const docs = await this.userModel.find().exec();
+		return docs.map((doc) => CustomerProfileMapper.fromDocument(doc));
+	}
 
-  async getCustomerByUserId(userId: string): Promise<CustomerProfile | null> {
-    return this.userModel.findOne({ userId: userId }).exec();
-  }
+	async getCustomerByUserId(userId: string): Promise<CustomerProfile | null> {
+		return this.userModel.findOne({ userId: userId }).exec();
+	}
 
-  async getCustomerByPhoneNumber(
-    phoneNumber: string,
-  ): Promise<CustomerProfile | null> {
-    return this.userModel.findOne({ phoneNumber }).exec();
-  }
+	async getCustomerByPhoneNumber(
+		phoneNumber: string,
+	): Promise<CustomerProfile | null> {
+		return this.userModel.findOne({ phoneNumber }).exec();
+	}
 
-  async updateCustomerById(
-    userId: string,
-    profile: CustomerProfile,
-  ): Promise<void> {
-    await this.userModel.findOneAndUpdate(
-      { userId },
-      CustomerProfileMapper.toPersistence(profile),
-      { new: true },
-    );
-  }
+	async updateCustomerById(
+		userId: string,
+		profile: CustomerProfile,
+	): Promise<void> {
+		await this.userModel.findOneAndUpdate(
+			{ userId },
+			CustomerProfileMapper.toPersistence(profile),
+			{ new: true },
+		);
+	}
 }

@@ -6,19 +6,19 @@ import { TextileTypeMapper } from 'src/andean/infra/services/textileProducts/Tex
 
 @Injectable()
 export class CreateTextileTypeUseCase {
-  constructor(
-    @Inject(TextileTypeRepository)
-    private readonly textileTypeRepository: TextileTypeRepository,
-  ) {}
+	constructor(
+		@Inject(TextileTypeRepository)
+		private readonly textileTypeRepository: TextileTypeRepository,
+	) {}
 
-  async handle(dto: CreateTextileTypeDto): Promise<TextileType> {
-    const typeFound = await this.textileTypeRepository.getTextileTypeByName(
-      dto.name,
-    );
-    if (typeFound) {
-      throw new BadRequestException('Type already exists');
-    }
-    const textileTypeToSave = TextileTypeMapper.fromCreateDto(dto);
-    return this.textileTypeRepository.saveTextileType(textileTypeToSave);
-  }
+	async handle(dto: CreateTextileTypeDto): Promise<TextileType> {
+		const typeFound = await this.textileTypeRepository.getTextileTypeByName(
+			dto.name,
+		);
+		if (typeFound) {
+			throw new BadRequestException('Type already exists');
+		}
+		const textileTypeToSave = TextileTypeMapper.fromCreateDto(dto);
+		return this.textileTypeRepository.saveTextileType(textileTypeToSave);
+	}
 }

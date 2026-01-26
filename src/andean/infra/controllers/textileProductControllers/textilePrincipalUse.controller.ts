@@ -9,12 +9,7 @@ import {
 	HttpCode,
 	HttpStatus,
 } from '@nestjs/common';
-import {
-	ApiTags,
-	ApiOperation,
-	ApiResponse,
-	ApiParam,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateTextilePrincipalUseUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextilePrincipalUseUseCase';
 import { TextilePrincipalUse } from 'src/andean/domain/entities/textileProducts/TextilePrincipalUse';
 import { CreateTextilePrincipalUseDto } from '../dto/textileProducts/CreateTextilePrincipalUseDto';
@@ -32,13 +27,14 @@ export class TextilePrincipalUseController {
 		private readonly getAllTextilePrincipalUsesUseCase: GetAllTextilePrincipalUsesUseCase,
 		private readonly getByIdTextilePrincipalUseUseCase: GetByIdTextilePrincipalUseUseCase,
 		private readonly deleteTextilePrincipalUseUseCase: DeleteTextilePrincipalUseUseCase,
-	) { }
+	) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
 		summary: 'Crear nuevo uso principal',
-		description: 'Crea un nuevo uso principal para productos textiles (ej: Vestimenta ceremonial, Uso diario, Decoración, Uso ritual)',
+		description:
+			'Crea un nuevo uso principal para productos textiles (ej: Vestimenta ceremonial, Uso diario, Decoración, Uso ritual)',
 	})
 	@ApiResponse({
 		status: 201,
@@ -84,7 +80,8 @@ export class TextilePrincipalUseController {
 	// @Get()
 	// @ApiOperation({
 	// 	summary: 'Listar todos los usos principales',
-	// 	description: 'Retorna todos los usos principales disponibles para productos textiles',
+	// 	description:
+	// 		'Retorna todos los usos principales disponibles para productos textiles',
 	// })
 	// @ApiResponse({
 	// 	status: 200,

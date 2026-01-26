@@ -1,3 +1,3 @@
 export enum ShopCategory {
-  UNKNOWN = 'UNKNOWN',
+	UNKNOWN = 'UNKNOWN',
 }

@@ -5,13 +5,16 @@ import { SuperfoodPreservationMethodRepository } from '../../../datastore/superf
 export class DeleteSuperfoodPreservationMethodUseCase {
 	constructor(
 		private readonly preservationMethodRepository: SuperfoodPreservationMethodRepository,
-	) { }
+	) {}
 
 	async handle(id: string): Promise<void> {
-		const preservationMethod = await this.preservationMethodRepository.getById(id);
+		const preservationMethod =
+			await this.preservationMethodRepository.getById(id);
 
 		if (!preservationMethod) {
-			throw new NotFoundException(`SuperfoodPreservationMethod with ID ${id} not found`);
+			throw new NotFoundException(
+				`SuperfoodPreservationMethod with ID ${id} not found`,
+			);
 		}
 
 		await this.preservationMethodRepository.delete(id);

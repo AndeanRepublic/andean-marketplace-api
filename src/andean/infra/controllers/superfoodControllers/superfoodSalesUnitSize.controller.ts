@@ -8,12 +8,7 @@ import {
 	HttpCode,
 	HttpStatus,
 } from '@nestjs/common';
-import {
-	ApiTags,
-	ApiOperation,
-	ApiResponse,
-	ApiParam,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateSuperfoodSalesUnitSizeDto } from '../dto/superfoods/CreateSuperfoodSalesUnitSizeDto';
 import { SuperfoodSalesUnitSizeResponse } from '../../../app/modules/SuperfoodSalesUnitSizeResponse';
 import { CreateSuperfoodSalesUnitSizeUseCase } from '../../../app/use_cases/superfoods/salesUnitSize/CreateSuperfoodSalesUnitSizeUseCase';
@@ -29,7 +24,7 @@ export class SuperfoodSalesUnitSizeController {
 		private readonly getSuperfoodSalesUnitSizeByIdUseCase: GetSuperfoodSalesUnitSizeByIdUseCase,
 		private readonly listSuperfoodSalesUnitSizesUseCase: ListSuperfoodSalesUnitSizesUseCase,
 		private readonly deleteSuperfoodSalesUnitSizeUseCase: DeleteSuperfoodSalesUnitSizeUseCase,
-	) { }
+	) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)

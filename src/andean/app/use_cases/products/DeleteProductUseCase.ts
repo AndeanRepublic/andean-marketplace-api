@@ -3,9 +3,9 @@ import { ProductRepository } from '../../datastore/Product.repo';
 
 @Injectable()
 export class DeleteProductUseCase {
-  constructor(private readonly productRepository: ProductRepository) {}
+	constructor(private readonly productRepository: ProductRepository) {}
 
-  async handle(productId: string): Promise<void> {
-    return this.productRepository.deleteProduct(productId);
-  }
+	async handle(productId: string): Promise<void> {
+		return this.productRepository.deleteProduct(productId);
+	}
 }

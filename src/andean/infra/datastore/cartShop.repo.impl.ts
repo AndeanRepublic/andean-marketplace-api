@@ -9,12 +9,12 @@ import { MongoIdUtils } from '../utils/MongoIdUtils';
 
 @Injectable()
 export class CartShopRepoImpl extends CartShopRepository {
-  constructor(
-    @InjectModel('CartShop')
-    private readonly cartShopModel: Model<CartShopDocument>,
-  ) {
-    super();
-  }
+	constructor(
+		@InjectModel('CartShop')
+		private readonly cartShopModel: Model<CartShopDocument>,
+	) {
+		super();
+	}
 
   async getCartByCustomerId(customerId: string): Promise<CartShop | null> {
     const doc = await this.cartShopModel.findOne({ customerId }).exec();
@@ -27,15 +27,15 @@ export class CartShopRepoImpl extends CartShopRepository {
     return doc ? CartShopMapper.fromDocument(doc) : null;
   }
 
-  async createCart(cart: CartShop): Promise<CartShop> {
-    const created = new this.cartShopModel(CartShopMapper.toPersistence(cart));
-    const cartSaved = await created.save();
-    return CartShopMapper.fromDocument(cartSaved);
-  }
+	async createCart(cart: CartShop): Promise<CartShop> {
+		const created = new this.cartShopModel(CartShopMapper.toPersistence(cart));
+		const cartSaved = await created.save();
+		return CartShopMapper.fromDocument(cartSaved);
+	}
 
-  async clearCart(customerId: string): Promise<void> {
-    const cart = await this.cartShopModel.findOne({ customerId });
-    if (!cart) return;
-    await cart.save();
-  }
+	async clearCart(customerId: string): Promise<void> {
+		const cart = await this.cartShopModel.findOne({ customerId });
+		if (!cart) return;
+		await cart.save();
+	}
 }

@@ -66,9 +66,6 @@ import { OriginProductCommunityController } from './infra/controllers/originProd
 		ListOriginProductCommunityUseCase,
 		DeleteOriginProductCommunityUseCase,
 	],
-	exports: [
-		OriginProductRegionRepository,
-		OriginProductCommunityRepository,
-	],
+	exports: [OriginProductRegionRepository, OriginProductCommunityRepository],
 })
-export class OriginProductModule { }
+export class OriginProductModule {}

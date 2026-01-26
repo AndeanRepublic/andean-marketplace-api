@@ -12,7 +12,7 @@ export class CreateOrderUseCase {
 		private readonly customerRepository: CustomerProfileRepository,
 		@Inject(OrderRepository)
 		private readonly orderRepository: OrderRepository,
-	) { }
+	) {}
 
 	async handle(orderDto: CreateOrderDto): Promise<Order> {
 		const customerFound = await this.customerRepository.getCustomerById(

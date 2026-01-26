@@ -9,12 +9,7 @@ import {
 	HttpCode,
 	HttpStatus,
 } from '@nestjs/common';
-import {
-	ApiTags,
-	ApiOperation,
-	ApiResponse,
-	ApiParam,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateTextileTypeUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileTypeUseCase';
 import { TextileType } from 'src/andean/domain/entities/textileProducts/TextileType';
 import { CreateTextileTypeDto } from '../dto/textileProducts/CreateTextileTypeDto';
@@ -32,13 +27,14 @@ export class TextileTypeController {
 		private readonly getAllTextileTypesUseCase: GetAllTextileTypesUseCase,
 		private readonly getByIdTextileTypeUseCase: GetByIdTextileTypeUseCase,
 		private readonly deleteTextileTypeUseCase: DeleteTextileTypeUseCase,
-	) { }
+	) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
 		summary: 'Crear nuevo tipo de textil',
-		description: 'Crea un nuevo tipo de textil para clasificar productos (ej: Lana de Alpaca, Algodón Orgánico, Lana de Oveja)',
+		description:
+			'Crea un nuevo tipo de textil para clasificar productos (ej: Lana de Alpaca, Algodón Orgánico, Lana de Oveja)',
 	})
 	@ApiResponse({
 		status: 201,

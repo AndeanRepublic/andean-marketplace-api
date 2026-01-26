@@ -6,5 +6,5 @@ export class TraceabilityEpoch {
 		public description: string,
 		public processName: string,
 		public supplier: string,
-	) { }
+	) {}
 }

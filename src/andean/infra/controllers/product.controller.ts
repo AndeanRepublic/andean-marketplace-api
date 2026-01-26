@@ -1,5 +1,11 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
+import {
+	ApiTags,
+	ApiOperation,
+	ApiResponse,
+	ApiParam,
+	ApiBearerAuth,
+} from '@nestjs/swagger';
 import { CreateProductDto } from './dto/products/CreateProductDto';
 import { Product } from '../../domain/entities/products/Product';
 import { CreateProductUseCase } from '../../app/use_cases/products/CreateProductUseCase';
@@ -21,12 +27,13 @@ export class ProductController {
 		private readonly getProductByIdUseCase: GetProductByIdUseCase,
 		private readonly deleteProductByIdUseCase: DeleteProductUseCase,
 		private readonly createVariantUseCase: CreateVariantUseCase,
-	) { }
+	) {}
 
 	@Post('')
 	@ApiOperation({
 		summary: 'Crear un nuevo producto',
-		description: 'Crea un producto en el marketplace. Nota: Esta entidad migrará a 3 entidades separadas en el futuro.'
+		description:
+			'Crea un producto en el marketplace. Nota: Esta entidad migrará a 3 entidades separadas en el futuro.',
 	})
 	@ApiResponse({ status: 201, description: 'Producto creado exitosamente' })
 	@ApiResponse({ status: 400, description: 'Datos de entrada inválidos' })
@@ -42,17 +49,17 @@ export class ProductController {
 		return this.createVariantUseCase.handle(body, productId);
 	}
 
-	// @Get('/by-seller/:sellerId')
-	// async getBySellerId(
-	// 	@Param('sellerId') sellerId: string,
-	// ): Promise<Product[]> {
-	// 	return this.getProductsBySellerIdUseCase.handle(sellerId);
-	// }
+	@Get('/by-seller/:sellerId')
+	async getBySellerId(
+		@Param('sellerId') sellerId: string,
+	): Promise<Product[]> {
+		return this.getProductsBySellerIdUseCase.handle(sellerId);
+	}
 
-	// @Get('/by-shop/:shopId')
-	// async getByShop(@Param('shopId') shopId: string): Promise<Product[]> {
-	// 	return this.getProductsByShopUseCase.handle(shopId);
-	// }
+	@Get('/by-shop/:shopId')
+	async getByShop(@Param('shopId') shopId: string): Promise<Product[]> {
+		return this.getProductsByShopUseCase.handle(shopId);
+	}
 
 	@Get('/:productId')
 	@ApiOperation({ summary: 'Obtener producto por ID' })

@@ -1,4 +1,4 @@
 export enum BankAccountStatus {
-  ENABLED = 'ENABLED',
-  DISABLED = 'DISABLED',
+	ENABLED = 'ENABLED',
+	DISABLED = 'DISABLED',
 }

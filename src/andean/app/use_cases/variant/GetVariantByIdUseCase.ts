@@ -7,7 +7,7 @@ export class GetVariantByIdUseCase {
 	constructor(
 		@Inject(VariantRepository)
 		private readonly variantRepository: VariantRepository,
-	) { }
+	) {}
 
 	async execute(id: string): Promise<Variant> {
 		const variant = await this.variantRepository.getById(id);

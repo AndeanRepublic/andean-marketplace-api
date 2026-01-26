@@ -8,12 +8,7 @@ import {
 	HttpCode,
 	HttpStatus,
 } from '@nestjs/common';
-import {
-	ApiTags,
-	ApiOperation,
-	ApiResponse,
-	ApiParam,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateSuperfoodCategoryDto } from '../dto/superfoods/CreateSuperfoodCategoryDto';
 import { SuperfoodCategoryResponse } from '../../../app/modules/SuperfoodCategoryResponse';
 import { CreateSuperfoodCategoryUseCase } from '../../../app/use_cases/superfoods/category/CreateSuperfoodCategoryUseCase';
@@ -29,13 +24,14 @@ export class SuperfoodCategoryController {
 		private readonly getSuperfoodCategoryByIdUseCase: GetSuperfoodCategoryByIdUseCase,
 		private readonly listSuperfoodCategoriesUseCase: ListSuperfoodCategoriesUseCase,
 		private readonly deleteSuperfoodCategoryUseCase: DeleteSuperfoodCategoryUseCase,
-	) { }
+	) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
 		summary: 'Crear nueva categoría de superfood',
-		description: 'Crea una nueva categoría para clasificar productos superfood (ej: Quinua, Maca, Cacao)',
+		description:
+			'Crea una nueva categoría para clasificar productos superfood (ej: Quinua, Maca, Cacao)',
 	})
 	@ApiResponse({
 		status: 201,

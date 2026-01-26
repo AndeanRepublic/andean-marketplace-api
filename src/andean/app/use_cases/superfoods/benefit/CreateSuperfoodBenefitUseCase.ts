@@ -10,14 +10,18 @@ export class CreateSuperfoodBenefitUseCase {
 	constructor(
 		private readonly benefitRepository: SuperfoodBenefitRepository,
 		private readonly mediaItemRepository: MediaItemRepository,
-	) { }
+	) {}
 
-	async handle(dto: CreateSuperfoodBenefitDto): Promise<SuperfoodBenefitResponse> {
+	async handle(
+		dto: CreateSuperfoodBenefitDto,
+	): Promise<SuperfoodBenefitResponse> {
 		// Validar que el iconId existe si se proporciona
 		if (dto.iconId) {
 			const iconExists = await this.mediaItemRepository.getById(dto.iconId);
 			if (!iconExists) {
-				throw new BadRequestException(`MediaItem with id ${dto.iconId} not found`);
+				throw new BadRequestException(
+					`MediaItem with id ${dto.iconId} not found`,
+				);
 			}
 		}
 

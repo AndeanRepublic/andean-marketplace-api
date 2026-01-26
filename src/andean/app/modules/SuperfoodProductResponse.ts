@@ -17,7 +17,10 @@ export class SuperfoodBasicInfoResponse {
 	@ApiProperty({ description: 'Características generales', type: [String] })
 	general_features: string[];
 
-	@ApiProperty({ description: 'IDs de características nutricionales', type: [String] })
+	@ApiProperty({
+		description: 'IDs de características nutricionales',
+		type: [String],
+	})
 	nutritional_features: string[];
 
 	@ApiProperty({ description: 'IDs de beneficios', type: [String] })
@@ -56,7 +59,10 @@ export class SuperfoodDetailProductResponse {
 	@ApiProperty({ description: 'ID de presentación del producto' })
 	productPresentation: string;
 
-	@ApiProperty({ enum: SuperfoodConsumptionWay, description: 'Forma de consumo' })
+	@ApiProperty({
+		enum: SuperfoodConsumptionWay,
+		description: 'Forma de consumo',
+	})
 	consumptionWay: SuperfoodConsumptionWay;
 
 	@ApiProperty({ description: 'Sugerencias de consumo', required: false })
@@ -71,7 +77,10 @@ export class SuperfoodDetailProductResponse {
 	@ApiProperty({ description: 'Advertencias de salud', required: false })
 	healthWarnings?: string;
 
-	@ApiProperty({ type: SuperfoodElaborationTimeResponse, description: 'Tiempo de elaboración' })
+	@ApiProperty({
+		type: SuperfoodElaborationTimeResponse,
+		description: 'Tiempo de elaboración',
+	})
 	elaborationTime: SuperfoodElaborationTimeResponse;
 }
 
@@ -102,7 +111,10 @@ export class SuperfoodDetailTraceabilityResponse {
 	@ApiProperty({ description: 'ID de la comunidad de origen del producto' })
 	originProductCommunityId: string;
 
-	@ApiProperty({ enum: SuperfoodProductionMethod, description: 'Método de producción' })
+	@ApiProperty({
+		enum: SuperfoodProductionMethod,
+		description: 'Método de producción',
+	})
 	productionMethod: SuperfoodProductionMethod;
 
 	@ApiProperty({ description: 'ID de método de preservación' })
@@ -131,7 +143,11 @@ export class SuperfoodOptionsItemResponse {
 	@ApiProperty({ description: 'Etiqueta del item', example: 'Rojo' })
 	label: string;
 
-	@ApiProperty({ description: 'URLs de imágenes del item', type: [String], required: false })
+	@ApiProperty({
+		description: 'URLs de imágenes del item',
+		type: [String],
+		required: false,
+	})
 	images?: string[];
 }
 
@@ -142,7 +158,10 @@ export class SuperfoodOptionsResponse {
 	@ApiProperty({ description: 'Nombre de la opción', example: 'Color' })
 	name: string;
 
-	@ApiProperty({ description: 'Valores de la opción', type: [SuperfoodOptionsItemResponse] })
+	@ApiProperty({
+		description: 'Valores de la opción',
+		type: [SuperfoodOptionsItemResponse],
+	})
 	values: SuperfoodOptionsItemResponse[];
 }
 
@@ -153,31 +172,57 @@ export class SuperfoodProductResponse {
 	@ApiProperty({ description: 'ID de categoría de superfood' })
 	categoryId: string;
 
-	@ApiProperty({ enum: SuperfoodProductStatus, description: 'Estado del producto' })
+	@ApiProperty({
+		enum: SuperfoodProductStatus,
+		description: 'Estado del producto',
+	})
 	status: SuperfoodProductStatus;
 
-	@ApiProperty({ type: SuperfoodBasicInfoResponse, description: 'Información básica del producto' })
+	@ApiProperty({
+		type: SuperfoodBasicInfoResponse,
+		description: 'Información básica del producto',
+	})
 	baseInfo: SuperfoodBasicInfoResponse;
 
-	@ApiProperty({ type: SuperfoodPriceInventoryResponse, description: 'Precio e inventario' })
+	@ApiProperty({
+		type: SuperfoodPriceInventoryResponse,
+		description: 'Precio e inventario',
+	})
 	priceInventory: SuperfoodPriceInventoryResponse;
 
-	@ApiProperty({ type: SuperfoodDetailProductResponse, description: 'Detalles del producto' })
+	@ApiProperty({
+		type: SuperfoodDetailProductResponse,
+		description: 'Detalles del producto',
+	})
 	detailProduct: SuperfoodDetailProductResponse;
 
-	@ApiProperty({ type: [SuperfoodNutritionalItemResponse], description: 'Contenido nutricional' })
+	@ApiProperty({
+		type: [SuperfoodNutritionalItemResponse],
+		description: 'Contenido nutricional',
+	})
 	nutritionalContent: SuperfoodNutritionalItemResponse[];
 
-	@ApiProperty({ type: SuperfoodDetailTraceabilityResponse, description: 'Detalles de trazabilidad' })
+	@ApiProperty({
+		type: SuperfoodDetailTraceabilityResponse,
+		description: 'Detalles de trazabilidad',
+	})
 	detailTraceability: SuperfoodDetailTraceabilityResponse;
 
-	@ApiProperty({ description: 'Trazabilidad general del producto', required: false })
+	@ApiProperty({
+		description: 'Trazabilidad general del producto',
+		required: false,
+	})
 	productTraceability?: any;
 
-	@ApiProperty({ type: [SuperfoodOptionsResponse], description: 'Opciones del producto' })
+	@ApiProperty({
+		type: [SuperfoodOptionsResponse],
+		description: 'Opciones del producto',
+	})
 	options: SuperfoodOptionsResponse[];
 
-	@ApiProperty({ description: 'Indica si el descuento está activo para este producto' })
+	@ApiProperty({
+		description: 'Indica si el descuento está activo para este producto',
+	})
 	isDiscountActive: boolean;
 
 	@ApiProperty({ description: 'Fecha de creación' })

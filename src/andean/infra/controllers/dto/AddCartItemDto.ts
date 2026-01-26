@@ -1,36 +1,22 @@
-import { IsNotEmpty, IsNumber, IsString, IsEnum, IsOptional, Min } from 'class-validator';
-import { ProductType } from 'src/andean/domain/enums/ProductType';
+import { IsNotEmpty, IsNumber, IsString, Min } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class AddCartItemDto {
-
+	@ApiProperty({
+		description: 'ID de la variante del producto a agregar',
+		example: 'variant-uuid-1234',
+	})
 	@IsString()
 	@IsNotEmpty()
-	cartShopId: string;
+	variantId: string;
 
-  @IsString()
-  @IsNotEmpty()
-  productId: string;
-
-  @IsEnum(ProductType)
-  @IsNotEmpty()
-  productType: ProductType;
-
-  @IsString()
-  @IsOptional()
-  productVariantId?: string;
-
-  @IsNumber()
-  @IsNotEmpty()
-  @Min(1)
-  quantity: number;
-
+	@ApiProperty({
+		description: 'Cantidad a agregar al carrito',
+		example: 2,
+		minimum: 1,
+	})
 	@IsNumber()
 	@IsNotEmpty()
-	@Min(0)
-	unitPrice: number;
-
-  @IsNumber()
-  @IsOptional()
-  @Min(0)
-  discount?: number;
+	@Min(1)
+	quantity: number;
 }

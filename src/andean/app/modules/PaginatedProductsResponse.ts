@@ -5,21 +5,40 @@ export class FilterCountItem {
 	@ApiProperty({ description: 'Etiqueta del filtro', example: 'Rojo' })
 	label: string;
 
-	@ApiProperty({ description: 'Cantidad de productos con este filtro', example: 15 })
+	@ApiProperty({
+		description: 'Cantidad de productos con este filtro',
+		example: 15,
+	})
 	count: number;
 }
 
 export class FilterCount {
-	@ApiProperty({ description: 'Conteo por colores', type: [FilterCountItem], required: false })
+	@ApiProperty({
+		description: 'Conteo por colores',
+		type: [FilterCountItem],
+		required: false,
+	})
 	colors?: FilterCountItem[];
 
-	@ApiProperty({ description: 'Conteo por tallas', type: [FilterCountItem], required: false })
+	@ApiProperty({
+		description: 'Conteo por tallas',
+		type: [FilterCountItem],
+		required: false,
+	})
 	sizes?: FilterCountItem[];
 
-	@ApiProperty({ description: 'Conteo por comunidades', type: [FilterCountItem], required: false })
+	@ApiProperty({
+		description: 'Conteo por comunidades',
+		type: [FilterCountItem],
+		required: false,
+	})
 	communities?: FilterCountItem[];
 
-	@ApiProperty({ description: 'Conteo por categorías', type: [FilterCountItem], required: false })
+	@ApiProperty({
+		description: 'Conteo por categorías',
+		type: [FilterCountItem],
+		required: false,
+	})
 	categories?: FilterCountItem[];
 }
 
@@ -35,13 +54,23 @@ export class PaginationInfo {
 }
 
 export class PaginatedTextileProductsResponse {
-	@ApiProperty({ description: 'Lista de productos textiles', type: [TextileProductListItem] })
+	@ApiProperty({
+		description: 'Lista de productos textiles',
+		type: [TextileProductListItem],
+	})
 	products: TextileProductListItem[];
 
-	@ApiProperty({ description: 'Información de paginación', type: PaginationInfo })
+	@ApiProperty({
+		description: 'Información de paginación',
+		type: PaginationInfo,
+	})
 	pagination: PaginationInfo;
 
-	@ApiProperty({ description: 'Conteo de filtros disponibles', type: FilterCount, required: false })
+	@ApiProperty({
+		description: 'Conteo de filtros disponibles',
+		type: FilterCount,
+		required: false,
+	})
 	filterCount?: FilterCount;
 }
 
@@ -55,4 +84,3 @@ export interface PaginatedProductsResponse<T> {
 	};
 	filterCount?: FilterCount;
 }
-

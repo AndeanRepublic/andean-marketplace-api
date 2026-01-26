@@ -9,7 +9,7 @@ export class UpdateVariantUseCase {
 	constructor(
 		@Inject(VariantRepository)
 		private readonly variantRepository: VariantRepository,
-	) { }
+	) {}
 
 	async execute(id: string, dto: UpdateVariantDto): Promise<Variant> {
 		// Verificar existencia

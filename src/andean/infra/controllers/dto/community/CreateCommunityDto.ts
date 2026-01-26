@@ -1,4 +1,12 @@
-import { IsNotEmpty, IsString, MinLength, MaxLength, IsArray, IsOptional, IsUrl } from 'class-validator';
+import {
+	IsNotEmpty,
+	IsString,
+	MinLength,
+	MaxLength,
+	IsArray,
+	IsOptional,
+	IsUrl,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateCommunityDto {

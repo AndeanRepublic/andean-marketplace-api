@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+	Injectable,
+	NotFoundException,
+	BadRequestException,
+} from '@nestjs/common';
 import { OriginProductRegionRepository } from '../../datastore/originProductRegion.repo';
 import { OriginProductRegion } from '../../../domain/entities/origin/OriginProductRegion';
 import { UpdateOriginProductRegionDto } from '../../../infra/controllers/dto/origin/UpdateOriginProductRegionDto';
@@ -7,9 +11,12 @@ import { UpdateOriginProductRegionDto } from '../../../infra/controllers/dto/ori
 export class UpdateOriginProductRegionUseCase {
 	constructor(
 		private readonly regionRepository: OriginProductRegionRepository,
-	) { }
+	) {}
 
-	async execute(id: string, dto: UpdateOriginProductRegionDto): Promise<OriginProductRegion> {
+	async execute(
+		id: string,
+		dto: UpdateOriginProductRegionDto,
+	): Promise<OriginProductRegion> {
 		// Verificar existencia
 		const existing = await this.regionRepository.getById(id);
 		if (!existing) {
@@ -18,9 +25,13 @@ export class UpdateOriginProductRegionUseCase {
 
 		// Si se intenta cambiar el nombre, validar que no exista otra región con ese nombre
 		if (dto.name && dto.name !== existing.name) {
-			const regionWithSameName = await this.regionRepository.getByName(dto.name);
+			const regionWithSameName = await this.regionRepository.getByName(
+				dto.name,
+			);
 			if (regionWithSameName) {
-				throw new BadRequestException(`Region with name "${dto.name}" already exists`);
+				throw new BadRequestException(
+					`Region with name "${dto.name}" already exists`,
+				);
 			}
 		}
 

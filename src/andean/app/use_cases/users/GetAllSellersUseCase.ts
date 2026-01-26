@@ -4,9 +4,9 @@ import { SellerProfileRepository } from '../../datastore/Seller.repo';
 
 @Injectable()
 export class GetAllSellersUseCase {
-  constructor(private readonly sellerRepository: SellerProfileRepository) {}
+	constructor(private readonly sellerRepository: SellerProfileRepository) {}
 
-  async handle(): Promise<SellerProfile[]> {
-    return this.sellerRepository.getAllSellers();
-  }
+	async handle(): Promise<SellerProfile[]> {
+		return this.sellerRepository.getAllSellers();
+	}
 }

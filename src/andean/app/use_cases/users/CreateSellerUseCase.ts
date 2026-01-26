@@ -15,7 +15,7 @@ export class CreateSellerUseCase {
 		private readonly sellerRepository: SellerProfileRepository,
 		@Inject(AccountRepository)
 		private readonly accountRepository: AccountRepository,
-	) { }
+	) {}
 
 	async handle(sellerDto: CreateSellerDto): Promise<SellerProfile> {
 		let accountFound: Account | null = null;
@@ -23,7 +23,9 @@ export class CreateSellerUseCase {
 
 		// Si se proporciona userId, buscar por userId
 		if (sellerDto.userId) {
-			accountFound = await this.accountRepository.getAccountByUserId(sellerDto.userId);
+			accountFound = await this.accountRepository.getAccountByUserId(
+				sellerDto.userId,
+			);
 			if (!accountFound) {
 				throw new ConflictException('Usuario no encontrado');
 			}
@@ -37,10 +39,14 @@ export class CreateSellerUseCase {
 		} else {
 			// Si no se proporciona userId, buscar por email o crear nueva cuenta
 			if (!sellerDto.email || !sellerDto.password) {
-				throw new ConflictException('Email y contraseña son requeridos si no se proporciona userId');
+				throw new ConflictException(
+					'Email y contraseña son requeridos si no se proporciona userId',
+				);
 			}
 
-			accountFound = await this.accountRepository.getAccountByEmail(sellerDto.email);
+			accountFound = await this.accountRepository.getAccountByEmail(
+				sellerDto.email,
+			);
 
 			if (accountFound) {
 				// Si la cuenta ya existe, agregar el rol SELLER si no lo tiene

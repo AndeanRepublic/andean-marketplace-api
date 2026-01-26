@@ -11,7 +11,7 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 	constructor(
 		@InjectModel('SuperfoodProduct')
 		private readonly model: Model<SuperfoodProductDocument>,
-	) { }
+	) {}
 
 	async getSuperfoodProductById(id: string): Promise<SuperfoodProduct | null> {
 		const doc = await this.model.findOne({ id }).exec();
@@ -21,20 +21,22 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 
 	async getAllByOwnerId(ownerId: string): Promise<SuperfoodProduct[]> {
 		const docs = await this.model.find({ 'baseInfo.ownerId': ownerId }).exec();
-		return docs.map(doc => SuperfoodProductMapper.fromDocument(doc));
+		return docs.map((doc) => SuperfoodProductMapper.fromDocument(doc));
 	}
 
 	async getAllByCategoryId(categoryId: string): Promise<SuperfoodProduct[]> {
 		const docs = await this.model.find({ categoryId }).exec();
-		return docs.map(doc => SuperfoodProductMapper.fromDocument(doc));
+		return docs.map((doc) => SuperfoodProductMapper.fromDocument(doc));
 	}
 
 	async getAllByStatus(status: string): Promise<SuperfoodProduct[]> {
 		const docs = await this.model.find({ status }).exec();
-		return docs.map(doc => SuperfoodProductMapper.fromDocument(doc));
+		return docs.map((doc) => SuperfoodProductMapper.fromDocument(doc));
 	}
 
-	async saveSuperfoodProduct(product: SuperfoodProduct): Promise<SuperfoodProduct> {
+	async saveSuperfoodProduct(
+		product: SuperfoodProduct,
+	): Promise<SuperfoodProduct> {
 		const persistenceData = SuperfoodProductMapper.toPersistence(product);
 		const newDoc = new this.model({
 			_id: crypto.randomUUID(),
@@ -44,7 +46,9 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 		return SuperfoodProductMapper.fromDocument(savedDoc);
 	}
 
-	async updateSuperfoodProduct(product: SuperfoodProduct): Promise<SuperfoodProduct> {
+	async updateSuperfoodProduct(
+		product: SuperfoodProduct,
+	): Promise<SuperfoodProduct> {
 		const persistenceData = SuperfoodProductMapper.toPersistence(product);
 		persistenceData.updatedAt = new Date();
 
@@ -52,7 +56,7 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 			.findOneAndUpdate(
 				{ id: product.id },
 				{ $set: persistenceData },
-				{ new: true }
+				{ new: true },
 			)
 			.exec();
 

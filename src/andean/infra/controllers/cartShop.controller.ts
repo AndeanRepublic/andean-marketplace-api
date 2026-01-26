@@ -1,30 +1,36 @@
-import { Controller, Get, Param, Post, Delete, Body, Patch, ParseIntPipe } from '@nestjs/common';
 import {
-	ApiTags,
-	ApiOperation,
-	ApiResponse,
-	ApiParam,
-	ApiBody,
-} from '@nestjs/swagger';
+  Controller,
+  Get,
+  Param,
+  Post,
+  Delete,
+  Body,
+  Patch,
+  ParseIntPipe,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
 import { AddItemToCartUseCase } from '../../app/use_cases/cart_shop/AddItemToCartUseCase';
 import { CleanCartUseCase } from '../../app/use_cases/cart_shop/CleanCartUseCase';
 import { GetCartByCustomerUseCase } from '../../app/use_cases/cart_shop/GetCartByCustomerUseCase';
 import { RemoveItemFromCartUseCase } from '../../app/use_cases/cart_shop/RemoveItemFromCartUseCase';
 import { UpdateCartItemQuantityUseCase } from '../../app/use_cases/cart_shop/UpdateCartItemQuantityUseCase';
 import { ApplyDiscountCodeUseCase } from '../../app/use_cases/cart_shop/ApplyDiscountCodeUseCase';
-import { CartShop } from '../../domain/entities/CartShop';
 import { AddCartItemDto } from './dto/AddCartItemDto';
 import { ApplyDiscountCodeDto } from './dto/ApplyDiscountCodeDto';
 import { CartItemQuantityResponse } from '../../app/models/cart/CartItemQuantityResponse';
+import { ShoppingCartItemResponse } from '../../app/models/cart/ShoppingCartItemResponse';
+import { GetCartResponse } from '../../app/models/cart/GetCartResponse';
 import { ApplyDiscountResponse } from '../../app/models/cart/ApplyDiscountResponse';
 
-const root_path = 'users/customers/:userId/cart';
+const root_path = 'users/customers/:customerId/cart';
 const path_cart_items = '/items';
 const path_remove_cart_item = path_cart_items + '/:itemId';
 const path_update_cart_item_quantity = path_cart_items + '/:itemId/quantity/:quantityDelta';
 const path_apply_discount = path_cart_items + '/:itemId/discount';
 
-@ApiTags('Shopping Cart')
+@ApiTags('cart')
 @Controller(root_path)
 export class CartShopController {
   constructor(
@@ -34,27 +40,119 @@ export class CartShopController {
     private readonly removeItemFromCartUseCase: RemoveItemFromCartUseCase,
     private readonly updateCartItemQuantityUseCase: UpdateCartItemQuantityUseCase,
     private readonly applyDiscountCodeUseCase: ApplyDiscountCodeUseCase,
-  ) {}
+  ) { }
 
   @Get('')
-  async getCustomerCart(@Param('customerId') customerId: string): Promise<CartShop> {
+  @ApiOperation({
+    summary: 'Obtener carrito de compras',
+    description: 'Recupera el carrito de compras completo del cliente con todos los items, precios y totales calculados'
+  })
+  @ApiParam({
+    name: 'customerId',
+    description: 'ID del cliente',
+    type: String,
+    example: '507f1f77bcf86cd799439011'
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Carrito obtenido exitosamente',
+    type: GetCartResponse
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Cliente no encontrado'
+  })
+  async getCustomerCart(
+    @Param('customerId') customerId: string,
+  ): Promise<GetCartResponse> {
     return this.getCartByCustomerUseCase.handle(customerId);
   }
 
   @Post(path_cart_items)
+  @ApiOperation({
+    summary: 'Agregar item al carrito',
+    description: 'Agrega un producto con una variante específica al carrito de compras del cliente'
+  })
+  @ApiParam({
+    name: 'customerId',
+    description: 'ID del cliente',
+    type: String,
+    example: '507f1f77bcf86cd799439011'
+  })
+  @ApiBody({
+    type: AddCartItemDto,
+    description: 'Datos del item a agregar al carrito'
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Item agregado exitosamente al carrito',
+    type: ShoppingCartItemResponse
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Datos inválidos o stock insuficiente'
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Cliente o variante no encontrada'
+  })
   async addItemToCart(
     @Param('customerId') customerId: string,
     @Body() body: AddCartItemDto,
-  ): Promise<CartShop> {
+  ): Promise<ShoppingCartItemResponse> {
     return this.addItemToCartUseCase.handle(customerId, body);
   }
 
   @Delete('')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({
+    summary: 'Limpiar carrito',
+    description: 'Elimina todos los items del carrito de compras del cliente'
+  })
+  @ApiParam({
+    name: 'customerId',
+    description: 'ID del cliente',
+    type: String,
+    example: '507f1f77bcf86cd799439011'
+  })
+  @ApiResponse({
+    status: 204,
+    description: 'Carrito limpiado exitosamente'
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Cliente no encontrado'
+  })
   async cleanCart(@Param('customerId') customerId: string): Promise<void> {
     return this.cleanCartUseCase.handle(customerId);
   }
 
   @Delete(path_remove_cart_item)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({
+    summary: 'Eliminar item del carrito',
+    description: 'Elimina un item específico del carrito de compras'
+  })
+  @ApiParam({
+    name: 'customerId',
+    description: 'ID del cliente',
+    type: String,
+    example: '507f1f77bcf86cd799439011'
+  })
+  @ApiParam({
+    name: 'itemId',
+    description: 'ID del item en el carrito',
+    type: String,
+    example: '507f1f77bcf86cd799439012'
+  })
+  @ApiResponse({
+    status: 204,
+    description: 'Item eliminado exitosamente'
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Cliente o item no encontrado'
+  })
   async removeItemFromCart(
     @Param('customerId') customerId: string,
     @Param('itemId') itemId: string,
@@ -64,36 +162,39 @@ export class CartShopController {
 
   @Patch(path_update_cart_item_quantity)
   @ApiOperation({
-    summary: 'Actualizar cantidad de un item del carrito',
-    description:
-      'Incrementa o decrementa la cantidad de un item en el carrito de compras. El parámetro quantityDelta puede ser positivo (incrementar) o negativo (decrementar). La cantidad mínima es 0. Retorna la cantidad actualizada, el ID del item y el stock máximo disponible.',
+    summary: 'Actualizar cantidad del item',
+    description: 'Incrementa o decrementa la cantidad de un item en el carrito'
+  })
+  @ApiParam({
+    name: 'customerId',
+    description: 'ID del cliente',
+    type: String,
+    example: '507f1f77bcf86cd799439011'
   })
   @ApiParam({
     name: 'itemId',
-    description: 'ID del item del carrito a actualizar',
-    example: '507f1f77bcf86cd799439011',
+    description: 'ID del item en el carrito',
     type: String,
+    example: '507f1f77bcf86cd799439012'
   })
   @ApiParam({
     name: 'quantityDelta',
-    description:
-      'Cantidad a incrementar (positivo) o decrementar (negativo). Por defecto es +1 si no se especifica.',
-    example: 1,
+    description: 'Cambio en la cantidad (positivo para incrementar, negativo para decrementar)',
     type: Number,
+    example: 1
   })
   @ApiResponse({
     status: 200,
     description: 'Cantidad actualizada exitosamente',
-    type: CartItemQuantityResponse,
+    type: CartItemQuantityResponse
   })
   @ApiResponse({
     status: 400,
-    description:
-      'Error de validación: cantidad resultante sería negativa o excede el stock disponible',
+    description: 'Cantidad inválida o excede el stock disponible'
   })
   @ApiResponse({
     status: 404,
-    description: 'Item del carrito no encontrado',
+    description: 'Item no encontrado'
   })
   async updateCartItemQuantity(
     @Param('itemId') itemId: string,
@@ -104,33 +205,37 @@ export class CartShopController {
 
   @Post(path_apply_discount)
   @ApiOperation({
-    summary: 'Aplicar código de descuento a un item del carrito',
-    description:
-      'Aplica un código de descuento generado por el juego a un item específico del carrito. El código se valida mediante una API externa que determina el porcentaje de descuento (3%, 7% o 11%). Solo se puede aplicar un descuento por carrito (si otro item ya tiene descuento, se retornará un error). El descuento se calcula sobre el precio unitario del item.',
+    summary: 'Aplicar código de descuento',
+    description: 'Aplica un código de descuento a un item específico del carrito'
+  })
+  @ApiParam({
+    name: 'customerId',
+    description: 'ID del cliente',
+    type: String,
+    example: '507f1f77bcf86cd799439011'
   })
   @ApiParam({
     name: 'itemId',
-    description: 'ID del item del carrito al que se aplicará el descuento',
-    example: '507f1f77bcf86cd799439011',
+    description: 'ID del item en el carrito',
     type: String,
+    example: '507f1f77bcf86cd799439012'
   })
   @ApiBody({
     type: ApplyDiscountCodeDto,
-    description: 'Código de descuento generado por el juego',
+    description: 'Código de descuento a aplicar'
   })
   @ApiResponse({
     status: 200,
     description: 'Descuento aplicado exitosamente',
-    type: ApplyDiscountResponse,
+    type: ApplyDiscountResponse
   })
   @ApiResponse({
     status: 400,
-    description:
-      'Error de validación: código inválido, otro item del carrito ya tiene descuento, o el código no es válido según la API externa',
+    description: 'Código de descuento inválido o expirado'
   })
   @ApiResponse({
     status: 404,
-    description: 'Item del carrito no encontrado',
+    description: 'Item no encontrado'
   })
   async applyDiscountCode(
     @Param('itemId') itemId: string,

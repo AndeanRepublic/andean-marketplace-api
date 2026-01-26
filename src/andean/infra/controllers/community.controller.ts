@@ -10,12 +10,7 @@ import {
 	HttpStatus,
 	Inject,
 } from '@nestjs/common';
-import {
-	ApiTags,
-	ApiOperation,
-	ApiResponse,
-	ApiParam,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateCommunityUseCase } from '../../app/use_cases/community/CreateCommunityUseCase';
 import { UpdateCommunityUseCase } from '../../app/use_cases/community/UpdateCommunityUseCase';
 import { GetCommunityByIdUseCase } from '../../app/use_cases/community/GetCommunityByIdUseCase';
@@ -50,7 +45,7 @@ export class CommunityController {
 		private readonly getByIdSealUseCase: GetByIdSealUseCase,
 		private readonly updateSealUseCase: UpdateSealUseCase,
 		private readonly deleteSealUseCase: DeleteSealUseCase,
-	) { }
+	) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
@@ -60,7 +55,10 @@ export class CommunityController {
 		description: 'The community has been successfully created.',
 		type: CommunityResponse,
 	})
-	@ApiResponse({ status: 400, description: 'Bad Request - Community name already exists.' })
+	@ApiResponse({
+		status: 400,
+		description: 'Bad Request - Community name already exists.',
+	})
 	async create(@Body() dto: CreateCommunityDto): Promise<CommunityResponse> {
 		const community = await this.createCommunityUseCase.execute(dto);
 		return this.toResponse(community);
@@ -101,7 +99,10 @@ export class CommunityController {
 	// 	type: CommunityResponse,
 	// })
 	// @ApiResponse({ status: 404, description: 'Community not found.' })
-	// @ApiResponse({ status: 400, description: 'Bad Request - Community name already exists.' })
+	// @ApiResponse({
+	// 	status: 400,
+	// 	description: 'Bad Request - Community name already exists.',
+	// })
 	// async update(
 	// 	@Param('id') id: string,
 	// 	@Body() dto: UpdateCommunityDto,
@@ -121,9 +122,7 @@ export class CommunityController {
 	// }
 
 	@Post(path_seals)
-	async createSeal(
-		@Body() body: CreateSealDto,
-	): Promise<Seal> {
+	async createSeal(@Body() body: CreateSealDto): Promise<Seal> {
 		return this.createSealUseCase.handle(body);
 	}
 
@@ -133,9 +132,7 @@ export class CommunityController {
 	// }
 
 	// @Get(path_seals_id)
-	// async getByIdSeal(
-	// 	@Param('id') id: string,
-	// ): Promise<Seal> {
+	// async getByIdSeal(@Param('id') id: string): Promise<Seal> {
 	// 	return this.getByIdSealUseCase.handle(id);
 	// }
 

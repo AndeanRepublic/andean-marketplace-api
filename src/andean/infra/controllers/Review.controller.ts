@@ -21,7 +21,6 @@ import { IncrementDislikesUseCase } from 'src/andean/app/use_cases/IncrementDisl
 import { DecrementLikesUseCase } from 'src/andean/app/use_cases/DecrementLikesUseCase';
 import { DecrementDislikesUseCase } from 'src/andean/app/use_cases/DecrementDislikesUseCase';
 
-
 const path_reviews = '/';
 const path_reviews_id = '/:id';
 

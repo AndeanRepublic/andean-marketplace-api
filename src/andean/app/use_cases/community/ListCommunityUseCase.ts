@@ -4,9 +4,7 @@ import { Community } from '../../../domain/entities/community/Community';
 
 @Injectable()
 export class ListCommunityUseCase {
-	constructor(
-		private readonly communityRepository: CommunityRepository,
-	) { }
+	constructor(private readonly communityRepository: CommunityRepository) {}
 
 	async execute(): Promise<Community[]> {
 		return await this.communityRepository.getAll();

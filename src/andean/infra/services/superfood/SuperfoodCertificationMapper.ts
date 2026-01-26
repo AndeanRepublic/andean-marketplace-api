@@ -10,7 +10,9 @@ export class SuperfoodCertificationMapper {
 	 * Convierte documento MongoDB a entidad de dominio
 	 * ObjectId (_id) → string (id)
 	 */
-	static fromDocument(doc: SuperfoodCertificationDocument): SuperfoodCertification {
+	static fromDocument(
+		doc: SuperfoodCertificationDocument,
+	): SuperfoodCertification {
 		const plain = doc.toObject();
 		return new SuperfoodCertification(
 			MongoIdUtils.objectIdToString(plain._id), // ObjectId → string
@@ -20,7 +22,9 @@ export class SuperfoodCertificationMapper {
 		);
 	}
 
-	static fromCreateDto(dto: CreateSuperfoodCertificationDto): SuperfoodCertification {
+	static fromCreateDto(
+		dto: CreateSuperfoodCertificationDto,
+	): SuperfoodCertification {
 		return new SuperfoodCertification(
 			new Types.ObjectId().toString(), // Generar ObjectId temporal como string
 			dto.name,
@@ -29,7 +33,9 @@ export class SuperfoodCertificationMapper {
 		);
 	}
 
-	static toResponse(entity: SuperfoodCertification): SuperfoodCertificationResponse {
+	static toResponse(
+		entity: SuperfoodCertification,
+	): SuperfoodCertificationResponse {
 		return {
 			id: entity.id,
 			name: entity.name,
@@ -49,5 +55,4 @@ export class SuperfoodCertificationMapper {
 			updatedAt: entity.updatedAt || new Date(),
 		};
 	}
-
 }

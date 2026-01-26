@@ -9,12 +9,7 @@ import {
 	HttpCode,
 	HttpStatus,
 } from '@nestjs/common';
-import {
-	ApiTags,
-	ApiOperation,
-	ApiResponse,
-	ApiParam,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateSizeOptionAlternativeUseCase } from 'src/andean/app/use_cases/textileProducts/CreateSizeOptionAlternativeUseCase';
 import { SizeOptionAlternative } from 'src/andean/domain/entities/textileProducts/SizeOptionAlternative';
 import { CreateSizeOptionAlternativeDto } from './dto/textileProducts/CreateSizeOptionAlternativeDto';
@@ -35,13 +30,14 @@ export class SizeOptionAlternativeController {
 		private readonly getAllSizeOptionAlternativesUseCase: GetAllSizeOptionAlternativesUseCase,
 		private readonly getByIdSizeOptionAlternativeUseCase: GetByIdSizeOptionAlternativeUseCase,
 		private readonly deleteSizeOptionAlternativeUseCase: DeleteSizeOptionAlternativeUseCase,
-	) { }
+	) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
 		summary: 'Crear nueva opción de talla',
-		description: 'Crea una nueva opción de talla para variantes de productos textiles (ej: XS, S, M, L, XL, XXL, Único)',
+		description:
+			'Crea una nueva opción de talla para variantes de productos textiles (ej: XS, S, M, L, XL, XXL, Único)',
 	})
 	@ApiResponse({
 		status: 201,
@@ -62,7 +58,8 @@ export class SizeOptionAlternativeController {
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
 		summary: 'Crear múltiples opciones de talla',
-		description: 'Crea múltiples opciones de talla en una sola operación. Útil para carga inicial de datos.',
+		description:
+			'Crea múltiples opciones de talla en una sola operación. Útil para carga inicial de datos.',
 	})
 	@ApiResponse({
 		status: 201,
@@ -108,7 +105,8 @@ export class SizeOptionAlternativeController {
 	// @Get()
 	// @ApiOperation({
 	// 	summary: 'Listar todas las opciones de talla',
-	// 	description: 'Retorna todas las opciones de talla disponibles para productos textiles',
+	// 	description:
+	// 		'Retorna todas las opciones de talla disponibles para productos textiles',
 	// })
 	// @ApiResponse({
 	// 	status: 200,

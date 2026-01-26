@@ -22,14 +22,6 @@ async function bootstrap() {
 		.setDescription('API para el marketplace de productos andinos que conecta comunidades con compradores')
 		.setVersion('1.0')
 		.addTag('auth', 'Autenticación y gestión de sesiones')
-		.addTag('users', 'Gestión de usuarios y perfiles')
-		.addTag('admin', 'Administración de usuarios y contenido')
-		.addTag('products', 'Gestión de productos del marketplace')
-		.addTag('shops', 'Gestión de tiendas de vendedores')
-		.addTag('cart', 'Carrito de compras')
-		.addTag('orders', 'Gestión de órdenes y pedidos')
-		.addTag('bank-accounts', 'Cuentas bancarias de vendedores')
-		.addTag('uploads', 'Carga de archivos e imágenes')
 		.addBearerAuth(
 			{
 				type: 'http',
