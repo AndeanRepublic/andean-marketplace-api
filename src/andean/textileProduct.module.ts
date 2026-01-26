@@ -188,7 +188,6 @@ import { OrderItemSchema } from './infra/persistence/orderItem.schema';
 		forwardRef(() => SuperfoodModule),
 	],
 	controllers: [
-		TextileProductController,
 		TextileCategoryController,
 		TextileTypeController,
 		TextileStyleController,
@@ -199,6 +198,7 @@ import { OrderItemSchema } from './infra/persistence/orderItem.schema';
 		ColorOptionAlternativeController,
 		SizeOptionAlternativeController,
 		ReviewController,
+		TextileProductController, // Al final porque tiene rutas dinámicas /:id
 	],
 	providers: [
 		CreateTextileCategoryUseCase,
@@ -327,4 +327,4 @@ import { OrderItemSchema } from './infra/persistence/orderItem.schema';
 		MongooseModule,
 	],
 })
-export class TextileProductModule {}
+export class TextileProductModule { }

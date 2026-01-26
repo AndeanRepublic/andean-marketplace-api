@@ -147,7 +147,7 @@ describe('CartShopController (e2e)', () => {
 		jest.clearAllMocks();
 	});
 
-	describe('POST /users/customers/:userId/cart/items', () => {
+	describe('POST /users/customers/:customerId/cart/items', () => {
 		const customerId = customerFixtures.customer.id;
 		const addItemDto = {
 			variantId: textileFixtures.variants[0].id,
@@ -249,7 +249,7 @@ describe('CartShopController (e2e)', () => {
 		});
 	});
 
-	describe('GET /users/customers/:userId/cart', () => {
+	describe('GET /users/customers/:customerId/cart', () => {
 		const customerId = customerFixtures.customer.id;
 
 		it('should get cart with enriched items list', () => {
@@ -360,7 +360,7 @@ describe('CartShopController (e2e)', () => {
 		});
 	});
 
-	describe('PATCH /users/customers/:userId/cart/items/:itemId/quantity/:quantityDelta', () => {
+	describe('PATCH /users/customers/:customerId/cart/items/:itemId/quantity/:quantityDelta', () => {
 		const customerId = customerFixtures.customer.id;
 		const cartItemId = cartFixtures.cartItems[0].id;
 		const updateDto = {
@@ -405,7 +405,7 @@ describe('CartShopController (e2e)', () => {
 
 	});
 
-	describe('DELETE /users/customers/:userId/cart/items/:itemId', () => {
+	describe('DELETE /users/customers/:customerId/cart/items/:itemId', () => {
 		const customerId = customerFixtures.customer.id;
 		const cartItemId = cartFixtures.cartItems[0].id;
 

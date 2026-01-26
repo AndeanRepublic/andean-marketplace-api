@@ -421,7 +421,7 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 						in: {
 							$setUnion: [
 								'$$value',
-								{ $ifNull: [{ $toLower: '$$this.label' }, []] },
+								[{ $ifNull: [{ $toLower: '$$this.label' }, ''] }],
 							],
 						},
 					},
