@@ -23,6 +23,7 @@ import { CartShopItemRepoImpl } from './infra/datastore/cartShopItem.repo.impl';
 import { VariantModule } from './variant.module';
 import { TextileProductModule } from './textileProduct.module';
 import { SuperfoodModule } from './superfood.module';
+import { CommunityModule } from './community.module';
 import { DiscountCodeService } from './infra/services/DiscountCodeService';
 import { TextileProductInfoProvider } from './infra/services/products/TextileProductInfoProvider';
 import { SuperfoodProductInfoProvider } from './infra/services/products/SuperfoodProductInfoProvider';
@@ -30,53 +31,54 @@ import { ProductInfoProviderRegistry } from './infra/services/products/ProductIn
 import { OwnerNameResolver } from './infra/services/OwnerNameResolver';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      {
-        name: 'CartShop',
-        schema: CartShopSchema,
-      },
-      {
-        name: 'CartShopItem',
-        schema: CartItemSchema,
-      },
-    ]),
-    HttpModule,
-    ProductsModule,
-    UsersModule,
-    VariantModule,
-    TextileProductModule,
-    SuperfoodModule,
-  ],
-  controllers: [CartShopController],
-  providers: [
-    AddItemToCartUseCase,
-    CleanCartUseCase,
-    GetCartByCustomerUseCase,
-    RemoveItemFromCartUseCase,
-    UpdateCartItemQuantityUseCase,
-    ApplyDiscountCodeUseCase,
-    DiscountCodeService,
-    {
-      provide: ProductRepository,
-      useClass: ProductRepoImpl,
-    },
-    {
-      provide: CartShopItemRepository,
-      useClass: CartShopItemRepoImpl,
-    },
-    {
-      provide: CustomerProfileRepository,
-      useClass: CustomerProfileRepositoryImpl,
-    },
-    {
-      provide: CartShopRepository,
-      useClass: CartShopRepoImpl,
-    },
+	imports: [
+		MongooseModule.forFeature([
+			{
+				name: 'CartShop',
+				schema: CartShopSchema,
+			},
+			{
+				name: 'CartShopItem',
+				schema: CartItemSchema,
+			},
+		]),
+		HttpModule,
+		ProductsModule,
+		UsersModule,
+		VariantModule,
+		TextileProductModule,
+		SuperfoodModule,
+		CommunityModule,
+	],
+	controllers: [CartShopController],
+	providers: [
+		AddItemToCartUseCase,
+		CleanCartUseCase,
+		GetCartByCustomerUseCase,
+		RemoveItemFromCartUseCase,
+		UpdateCartItemQuantityUseCase,
+		ApplyDiscountCodeUseCase,
+		DiscountCodeService,
+		{
+			provide: ProductRepository,
+			useClass: ProductRepoImpl,
+		},
+		{
+			provide: CartShopItemRepository,
+			useClass: CartShopItemRepoImpl,
+		},
+		{
+			provide: CustomerProfileRepository,
+			useClass: CustomerProfileRepositoryImpl,
+		},
+		{
+			provide: CartShopRepository,
+			useClass: CartShopRepoImpl,
+		},
 		TextileProductInfoProvider,
 		SuperfoodProductInfoProvider,
 		ProductInfoProviderRegistry,
 		OwnerNameResolver,
-  ],
+	],
 })
 export class CartShopModule { }
