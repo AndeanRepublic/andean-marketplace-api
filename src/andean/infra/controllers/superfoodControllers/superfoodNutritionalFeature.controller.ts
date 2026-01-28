@@ -48,67 +48,67 @@ export class SuperfoodNutritionalFeatureController {
 		return await this.createSuperfoodNutritionalFeatureUseCase.handle(dto);
 	}
 
-	@Get()
-	@ApiOperation({
-		summary: 'Listar todas las características nutricionales',
-		description: 'Retorna todas las características nutricionales disponibles',
-	})
-	@ApiResponse({
-		status: 200,
-		description: 'Lista de características',
-		type: [SuperfoodNutritionalFeatureResponse],
-	})
-	async listNutritionalFeatures(): Promise<
-		SuperfoodNutritionalFeatureResponse[]
-	> {
-		return await this.listSuperfoodNutritionalFeaturesUseCase.handle();
-	}
+	// @Get()
+	// @ApiOperation({
+	// 	summary: 'Listar todas las características nutricionales',
+	// 	description: 'Retorna todas las características nutricionales disponibles',
+	// })
+	// @ApiResponse({
+	// 	status: 200,
+	// 	description: 'Lista de características',
+	// 	type: [SuperfoodNutritionalFeatureResponse],
+	// })
+	// async listNutritionalFeatures(): Promise<
+	// 	SuperfoodNutritionalFeatureResponse[]
+	// > {
+	// 	return await this.listSuperfoodNutritionalFeaturesUseCase.handle();
+	// }
 
-	@Get('/:id')
-	@ApiOperation({
-		summary: 'Obtener característica por ID',
-		description: 'Retorna una característica nutricional específica por su ID',
-	})
-	@ApiParam({
-		name: 'id',
-		description: 'ID de la característica',
-		example: 'uuid-1234-5678',
-	})
-	@ApiResponse({
-		status: 200,
-		description: 'Característica encontrada',
-		type: SuperfoodNutritionalFeatureResponse,
-	})
-	@ApiResponse({
-		status: 404,
-		description: 'Característica no encontrada',
-	})
-	async getNutritionalFeatureById(
-		@Param('id') id: string,
-	): Promise<SuperfoodNutritionalFeatureResponse> {
-		return await this.getSuperfoodNutritionalFeatureByIdUseCase.handle(id);
-	}
+	// @Get('/:id')
+	// @ApiOperation({
+	// 	summary: 'Obtener característica por ID',
+	// 	description: 'Retorna una característica nutricional específica por su ID',
+	// })
+	// @ApiParam({
+	// 	name: 'id',
+	// 	description: 'ID de la característica',
+	// 	example: 'uuid-1234-5678',
+	// })
+	// @ApiResponse({
+	// 	status: 200,
+	// 	description: 'Característica encontrada',
+	// 	type: SuperfoodNutritionalFeatureResponse,
+	// })
+	// @ApiResponse({
+	// 	status: 404,
+	// 	description: 'Característica no encontrada',
+	// })
+	// async getNutritionalFeatureById(
+	// 	@Param('id') id: string,
+	// ): Promise<SuperfoodNutritionalFeatureResponse> {
+	// 	return await this.getSuperfoodNutritionalFeatureByIdUseCase.handle(id);
+	// }
 
-	@Delete('/:id')
-	@HttpCode(HttpStatus.NO_CONTENT)
-	@ApiOperation({
-		summary: 'Eliminar característica nutricional',
-		description: 'Elimina una característica nutricional por su ID',
-	})
-	@ApiParam({
-		name: 'id',
-		description: 'ID de la característica a eliminar',
-		example: 'uuid-1234-5678',
-	})
-	@ApiResponse({
-		status: 204,
-		description: 'Característica eliminada exitosamente',
-	})
-	@ApiResponse({
-		status: 404,
-		description: 'Característica no encontrada',
-	})
-	async deleteNutritionalFeature(@Param('id') id: string): Promise<void> {
-		await this.deleteSuperfoodNutritionalFeatureUseCase.handle(id);
-	}
+	// @Delete('/:id')
+	// @HttpCode(HttpStatus.NO_CONTENT)
+	// @ApiOperation({
+	// 	summary: 'Eliminar característica nutricional',
+	// 	description: 'Elimina una característica nutricional por su ID',
+	// })
+	// @ApiParam({
+	// 	name: 'id',
+	// 	description: 'ID de la característica a eliminar',
+	// 	example: 'uuid-1234-5678',
+	// })
+	// @ApiResponse({
+	// 	status: 204,
+	// 	description: 'Característica eliminada exitosamente',
+	// })
+	// @ApiResponse({
+	// 	status: 404,
+	// 	description: 'Característica no encontrada',
+	// })
+	// async deleteNutritionalFeature(@Param('id') id: string): Promise<void> {
+	// 	await this.deleteSuperfoodNutritionalFeatureUseCase.handle(id);
+	// }
 }

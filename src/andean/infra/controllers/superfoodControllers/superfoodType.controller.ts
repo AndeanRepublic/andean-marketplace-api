@@ -47,63 +47,63 @@ export class SuperfoodTypeController {
 		return await this.createSuperfoodTypeUseCase.handle(dto);
 	}
 
-	@Get()
-	@ApiOperation({
-		summary: 'Listar todos los tipos',
-		description: 'Retorna todos los tipos de superfood disponibles',
-	})
-	@ApiResponse({
-		status: 200,
-		description: 'Lista de tipos',
-		type: [SuperfoodTypeResponse],
-	})
-	async listTypes(): Promise<SuperfoodTypeResponse[]> {
-		return await this.listSuperfoodTypesUseCase.handle();
-	}
+	// @Get()
+	// @ApiOperation({
+	// 	summary: 'Listar todos los tipos',
+	// 	description: 'Retorna todos los tipos de superfood disponibles',
+	// })
+	// @ApiResponse({
+	// 	status: 200,
+	// 	description: 'Lista de tipos',
+	// 	type: [SuperfoodTypeResponse],
+	// })
+	// async listTypes(): Promise<SuperfoodTypeResponse[]> {
+	// 	return await this.listSuperfoodTypesUseCase.handle();
+	// }
 
-	@Get('/:id')
-	@ApiOperation({
-		summary: 'Obtener tipo por ID',
-		description: 'Retorna un tipo específico por su ID',
-	})
-	@ApiParam({
-		name: 'id',
-		description: 'ID del tipo',
-		example: 'uuid-1234-5678',
-	})
-	@ApiResponse({
-		status: 200,
-		description: 'Tipo encontrado',
-		type: SuperfoodTypeResponse,
-	})
-	@ApiResponse({
-		status: 404,
-		description: 'Tipo no encontrado',
-	})
-	async getTypeById(@Param('id') id: string): Promise<SuperfoodTypeResponse> {
-		return await this.getSuperfoodTypeByIdUseCase.handle(id);
-	}
+	// @Get('/:id')
+	// @ApiOperation({
+	// 	summary: 'Obtener tipo por ID',
+	// 	description: 'Retorna un tipo específico por su ID',
+	// })
+	// @ApiParam({
+	// 	name: 'id',
+	// 	description: 'ID del tipo',
+	// 	example: 'uuid-1234-5678',
+	// })
+	// @ApiResponse({
+	// 	status: 200,
+	// 	description: 'Tipo encontrado',
+	// 	type: SuperfoodTypeResponse,
+	// })
+	// @ApiResponse({
+	// 	status: 404,
+	// 	description: 'Tipo no encontrado',
+	// })
+	// async getTypeById(@Param('id') id: string): Promise<SuperfoodTypeResponse> {
+	// 	return await this.getSuperfoodTypeByIdUseCase.handle(id);
+	// }
 
-	@Delete('/:id')
-	@HttpCode(HttpStatus.NO_CONTENT)
-	@ApiOperation({
-		summary: 'Eliminar tipo',
-		description: 'Elimina un tipo de superfood por su ID',
-	})
-	@ApiParam({
-		name: 'id',
-		description: 'ID del tipo a eliminar',
-		example: 'uuid-1234-5678',
-	})
-	@ApiResponse({
-		status: 204,
-		description: 'Tipo eliminado exitosamente',
-	})
-	@ApiResponse({
-		status: 404,
-		description: 'Tipo no encontrado',
-	})
-	async deleteType(@Param('id') id: string): Promise<void> {
-		await this.deleteSuperfoodTypeUseCase.handle(id);
-	}
+	// @Delete('/:id')
+	// @HttpCode(HttpStatus.NO_CONTENT)
+	// @ApiOperation({
+	// 	summary: 'Eliminar tipo',
+	// 	description: 'Elimina un tipo de superfood por su ID',
+	// })
+	// @ApiParam({
+	// 	name: 'id',
+	// 	description: 'ID del tipo a eliminar',
+	// 	example: 'uuid-1234-5678',
+	// })
+	// @ApiResponse({
+	// 	status: 204,
+	// 	description: 'Tipo eliminado exitosamente',
+	// })
+	// @ApiResponse({
+	// 	status: 404,
+	// 	description: 'Tipo no encontrado',
+	// })
+	// async deleteType(@Param('id') id: string): Promise<void> {
+	// 	await this.deleteSuperfoodTypeUseCase.handle(id);
+	// }
 }
