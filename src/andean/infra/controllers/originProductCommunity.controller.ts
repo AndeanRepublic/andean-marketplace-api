@@ -58,71 +58,71 @@ export class OriginProductCommunityController {
 		return this.toResponse(community);
 	}
 
-	@Get(':id')
-	@ApiOperation({ summary: 'Get origin product community by ID' })
-	@ApiParam({ name: 'id', description: 'Community ID' })
-	@ApiResponse({
-		status: 200,
-		description: 'The community has been found.',
-		type: OriginProductCommunityResponse,
-	})
-	@ApiResponse({ status: 404, description: 'Community not found.' })
-	async getById(
-		@Param('id') id: string,
-	): Promise<OriginProductCommunityResponse> {
-		const community = await this.getCommunityByIdUseCase.execute(id);
-		return this.toResponse(community);
-	}
+	// @Get(':id')
+	// @ApiOperation({ summary: 'Get origin product community by ID' })
+	// @ApiParam({ name: 'id', description: 'Community ID' })
+	// @ApiResponse({
+	// 	status: 200,
+	// 	description: 'The community has been found.',
+	// 	type: OriginProductCommunityResponse,
+	// })
+	// @ApiResponse({ status: 404, description: 'Community not found.' })
+	// async getById(
+	// 	@Param('id') id: string,
+	// ): Promise<OriginProductCommunityResponse> {
+	// 	const community = await this.getCommunityByIdUseCase.execute(id);
+	// 	return this.toResponse(community);
+	// }
 
-	@Get()
-	@ApiOperation({ summary: 'List all origin product communities' })
-	@ApiQuery({
-		name: 'regionId',
-		required: false,
-		description: 'Filter by region ID',
-	})
-	@ApiResponse({
-		status: 200,
-		description: 'List of communities.',
-		type: [OriginProductCommunityResponse],
-	})
-	async list(
-		@Query('regionId') regionId?: string,
-	): Promise<OriginProductCommunityResponse[]> {
-		const communities = await this.listCommunityUseCase.execute(regionId);
-		return communities.map((c) => this.toResponse(c));
-	}
+	// @Get()
+	// @ApiOperation({ summary: 'List all origin product communities' })
+	// @ApiQuery({
+	// 	name: 'regionId',
+	// 	required: false,
+	// 	description: 'Filter by region ID',
+	// })
+	// @ApiResponse({
+	// 	status: 200,
+	// 	description: 'List of communities.',
+	// 	type: [OriginProductCommunityResponse],
+	// })
+	// async list(
+	// 	@Query('regionId') regionId?: string,
+	// ): Promise<OriginProductCommunityResponse[]> {
+	// 	const communities = await this.listCommunityUseCase.execute(regionId);
+	// 	return communities.map((c) => this.toResponse(c));
+	// }
 
-	@Put(':id')
-	@ApiOperation({ summary: 'Update origin product community' })
-	@ApiParam({ name: 'id', description: 'Community ID' })
-	@ApiResponse({
-		status: 200,
-		description: 'The community has been successfully updated.',
-		type: OriginProductCommunityResponse,
-	})
-	@ApiResponse({ status: 404, description: 'Community or Region not found.' })
-	@ApiResponse({
-		status: 400,
-		description: 'Bad Request - Community name already exists.',
-	})
-	async update(
-		@Param('id') id: string,
-		@Body() dto: UpdateOriginProductCommunityDto,
-	): Promise<OriginProductCommunityResponse> {
-		const community = await this.updateCommunityUseCase.execute(id, dto);
-		return this.toResponse(community);
-	}
+	// @Put(':id')
+	// @ApiOperation({ summary: 'Update origin product community' })
+	// @ApiParam({ name: 'id', description: 'Community ID' })
+	// @ApiResponse({
+	// 	status: 200,
+	// 	description: 'The community has been successfully updated.',
+	// 	type: OriginProductCommunityResponse,
+	// })
+	// @ApiResponse({ status: 404, description: 'Community or Region not found.' })
+	// @ApiResponse({
+	// 	status: 400,
+	// 	description: 'Bad Request - Community name already exists.',
+	// })
+	// async update(
+	// 	@Param('id') id: string,
+	// 	@Body() dto: UpdateOriginProductCommunityDto,
+	// ): Promise<OriginProductCommunityResponse> {
+	// 	const community = await this.updateCommunityUseCase.execute(id, dto);
+	// 	return this.toResponse(community);
+	// }
 
-	@Delete(':id')
-	@HttpCode(HttpStatus.NO_CONTENT)
-	@ApiOperation({ summary: 'Delete origin product community' })
-	@ApiParam({ name: 'id', description: 'Community ID' })
-	@ApiResponse({ status: 204, description: 'The community has been deleted.' })
-	@ApiResponse({ status: 404, description: 'Community not found.' })
-	async delete(@Param('id') id: string): Promise<void> {
-		await this.deleteCommunityUseCase.execute(id);
-	}
+	// @Delete(':id')
+	// @HttpCode(HttpStatus.NO_CONTENT)
+	// @ApiOperation({ summary: 'Delete origin product community' })
+	// @ApiParam({ name: 'id', description: 'Community ID' })
+	// @ApiResponse({ status: 204, description: 'The community has been deleted.' })
+	// @ApiResponse({ status: 404, description: 'Community not found.' })
+	// async delete(@Param('id') id: string): Promise<void> {
+	// 	await this.deleteCommunityUseCase.execute(id);
+	// }
 
 	private toResponse(
 		community: OriginProductCommunity,

@@ -90,7 +90,7 @@ export class CartShopController {
   })
   @ApiResponse({
     status: 400,
-    description: 'Datos inválidos o stock insuficiente'
+    description: 'Datos inválidos, stock insuficiente o cantidad solicitada excede el stock disponible de la variante'
   })
   @ApiResponse({
     status: 404,

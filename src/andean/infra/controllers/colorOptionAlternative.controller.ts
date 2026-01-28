@@ -76,93 +76,93 @@ export class ColorOptionAlternativeController {
 		return this.createManyColorOptionAlternativesUseCase.handle(body);
 	}
 
-	@Put('/:id')
-	@ApiOperation({
-		summary: 'Actualizar opción de color',
-		description:
-			'Actualiza los datos de una opción de color existente (nombre, código hexadecimal, etc.)',
-	})
-	@ApiParam({
-		name: 'id',
-		description: 'ID de la opción de color',
-		example: 'uuid-1234-5678',
-	})
-	@ApiResponse({
-		status: 200,
-		description: 'Opción de color actualizada exitosamente',
-		type: ColorOptionAlternative,
-	})
-	@ApiResponse({
-		status: 404,
-		description: 'Opción de color no encontrada',
-	})
-	async updateColorOptionAlternative(
-		@Param('id') id: string,
-		@Body() body: CreateColorOptionAlternativeDto,
-	): Promise<ColorOptionAlternative> {
-		return this.updateColorOptionAlternativeUseCase.handle(id, body);
-	}
+	// @Put('/:id')
+	// @ApiOperation({
+	// 	summary: 'Actualizar opción de color',
+	// 	description:
+	// 		'Actualiza los datos de una opción de color existente (nombre, código hexadecimal, etc.)',
+	// })
+	// @ApiParam({
+	// 	name: 'id',
+	// 	description: 'ID de la opción de color',
+	// 	example: 'uuid-1234-5678',
+	// })
+	// @ApiResponse({
+	// 	status: 200,
+	// 	description: 'Opción de color actualizada exitosamente',
+	// 	type: ColorOptionAlternative,
+	// })
+	// @ApiResponse({
+	// 	status: 404,
+	// 	description: 'Opción de color no encontrada',
+	// })
+	// async updateColorOptionAlternative(
+	// 	@Param('id') id: string,
+	// 	@Body() body: CreateColorOptionAlternativeDto,
+	// ): Promise<ColorOptionAlternative> {
+	// 	return this.updateColorOptionAlternativeUseCase.handle(id, body);
+	// }
 
-	@Get()
-	@ApiOperation({
-		summary: 'Listar todas las opciones de color',
-		description:
-			'Retorna todas las opciones de color disponibles para productos textiles',
-	})
-	@ApiResponse({
-		status: 200,
-		description: 'Lista de opciones de color',
-		type: [ColorOptionAlternative],
-	})
-	async getAllColorOptionAlternatives(): Promise<ColorOptionAlternative[]> {
-		return this.getAllColorOptionAlternativesUseCase.handle();
-	}
+	// @Get()
+	// @ApiOperation({
+	// 	summary: 'Listar todas las opciones de color',
+	// 	description:
+	// 		'Retorna todas las opciones de color disponibles para productos textiles',
+	// })
+	// @ApiResponse({
+	// 	status: 200,
+	// 	description: 'Lista de opciones de color',
+	// 	type: [ColorOptionAlternative],
+	// })
+	// async getAllColorOptionAlternatives(): Promise<ColorOptionAlternative[]> {
+	// 	return this.getAllColorOptionAlternativesUseCase.handle();
+	// }
 
-	@Get('/:id')
-	@ApiOperation({
-		summary: 'Obtener opción de color por ID',
-		description: 'Retorna una opción de color específica por su ID',
-	})
-	@ApiParam({
-		name: 'id',
-		description: 'ID de la opción de color',
-		example: 'uuid-1234-5678',
-	})
-	@ApiResponse({
-		status: 200,
-		description: 'Opción de color encontrada',
-		type: ColorOptionAlternative,
-	})
-	@ApiResponse({
-		status: 404,
-		description: 'Opción de color no encontrada',
-	})
-	async getByIdColorOptionAlternative(
-		@Param('id') id: string,
-	): Promise<ColorOptionAlternative> {
-		return this.getByIdColorOptionAlternativeUseCase.handle(id);
-	}
+	// @Get('/:id')
+	// @ApiOperation({
+	// 	summary: 'Obtener opción de color por ID',
+	// 	description: 'Retorna una opción de color específica por su ID',
+	// })
+	// @ApiParam({
+	// 	name: 'id',
+	// 	description: 'ID de la opción de color',
+	// 	example: 'uuid-1234-5678',
+	// })
+	// @ApiResponse({
+	// 	status: 200,
+	// 	description: 'Opción de color encontrada',
+	// 	type: ColorOptionAlternative,
+	// })
+	// @ApiResponse({
+	// 	status: 404,
+	// 	description: 'Opción de color no encontrada',
+	// })
+	// async getByIdColorOptionAlternative(
+	// 	@Param('id') id: string,
+	// ): Promise<ColorOptionAlternative> {
+	// 	return this.getByIdColorOptionAlternativeUseCase.handle(id);
+	// }
 
-	@Delete('/:id')
-	@HttpCode(HttpStatus.NO_CONTENT)
-	@ApiOperation({
-		summary: 'Eliminar opción de color',
-		description: 'Elimina una opción de color por su ID',
-	})
-	@ApiParam({
-		name: 'id',
-		description: 'ID de la opción de color a eliminar',
-		example: 'uuid-1234-5678',
-	})
-	@ApiResponse({
-		status: 204,
-		description: 'Opción de color eliminada exitosamente',
-	})
-	@ApiResponse({
-		status: 404,
-		description: 'Opción de color no encontrada',
-	})
-	async deleteColorOptionAlternative(@Param('id') id: string): Promise<void> {
-		return this.deleteColorOptionAlternativeUseCase.handle(id);
-	}
+	// @Delete('/:id')
+	// @HttpCode(HttpStatus.NO_CONTENT)
+	// @ApiOperation({
+	// 	summary: 'Eliminar opción de color',
+	// 	description: 'Elimina una opción de color por su ID',
+	// })
+	// @ApiParam({
+	// 	name: 'id',
+	// 	description: 'ID de la opción de color a eliminar',
+	// 	example: 'uuid-1234-5678',
+	// })
+	// @ApiResponse({
+	// 	status: 204,
+	// 	description: 'Opción de color eliminada exitosamente',
+	// })
+	// @ApiResponse({
+	// 	status: 404,
+	// 	description: 'Opción de color no encontrada',
+	// })
+	// async deleteColorOptionAlternative(@Param('id') id: string): Promise<void> {
+	// 	return this.deleteColorOptionAlternativeUseCase.handle(id);
+	// }
 }

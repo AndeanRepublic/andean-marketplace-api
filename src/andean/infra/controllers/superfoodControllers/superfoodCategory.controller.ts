@@ -48,65 +48,65 @@ export class SuperfoodCategoryController {
 		return await this.createSuperfoodCategoryUseCase.handle(dto);
 	}
 
-	@Get()
-	@ApiOperation({
-		summary: 'Listar todas las categorías',
-		description: 'Retorna todas las categorías de superfood disponibles',
-	})
-	@ApiResponse({
-		status: 200,
-		description: 'Lista de categorías',
-		type: [SuperfoodCategoryResponse],
-	})
-	async listCategories(): Promise<SuperfoodCategoryResponse[]> {
-		return await this.listSuperfoodCategoriesUseCase.handle();
-	}
+	// @Get()
+	// @ApiOperation({
+	// 	summary: 'Listar todas las categorías',
+	// 	description: 'Retorna todas las categorías de superfood disponibles',
+	// })
+	// @ApiResponse({
+	// 	status: 200,
+	// 	description: 'Lista de categorías',
+	// 	type: [SuperfoodCategoryResponse],
+	// })
+	// async listCategories(): Promise<SuperfoodCategoryResponse[]> {
+	// 	return await this.listSuperfoodCategoriesUseCase.handle();
+	// }
 
-	@Get('/:id')
-	@ApiOperation({
-		summary: 'Obtener categoría por ID',
-		description: 'Retorna una categoría específica por su ID',
-	})
-	@ApiParam({
-		name: 'id',
-		description: 'ID de la categoría',
-		example: 'uuid-1234-5678',
-	})
-	@ApiResponse({
-		status: 200,
-		description: 'Categoría encontrada',
-		type: SuperfoodCategoryResponse,
-	})
-	@ApiResponse({
-		status: 404,
-		description: 'Categoría no encontrada',
-	})
-	async getCategoryById(
-		@Param('id') id: string,
-	): Promise<SuperfoodCategoryResponse> {
-		return await this.getSuperfoodCategoryByIdUseCase.handle(id);
-	}
+	// @Get('/:id')
+	// @ApiOperation({
+	// 	summary: 'Obtener categoría por ID',
+	// 	description: 'Retorna una categoría específica por su ID',
+	// })
+	// @ApiParam({
+	// 	name: 'id',
+	// 	description: 'ID de la categoría',
+	// 	example: 'uuid-1234-5678',
+	// })
+	// @ApiResponse({
+	// 	status: 200,
+	// 	description: 'Categoría encontrada',
+	// 	type: SuperfoodCategoryResponse,
+	// })
+	// @ApiResponse({
+	// 	status: 404,
+	// 	description: 'Categoría no encontrada',
+	// })
+	// async getCategoryById(
+	// 	@Param('id') id: string,
+	// ): Promise<SuperfoodCategoryResponse> {
+	// 	return await this.getSuperfoodCategoryByIdUseCase.handle(id);
+	// }
 
-	@Delete('/:id')
-	@HttpCode(HttpStatus.NO_CONTENT)
-	@ApiOperation({
-		summary: 'Eliminar categoría',
-		description: 'Elimina una categoría de superfood por su ID',
-	})
-	@ApiParam({
-		name: 'id',
-		description: 'ID de la categoría a eliminar',
-		example: 'uuid-1234-5678',
-	})
-	@ApiResponse({
-		status: 204,
-		description: 'Categoría eliminada exitosamente',
-	})
-	@ApiResponse({
-		status: 404,
-		description: 'Categoría no encontrada',
-	})
-	async deleteCategory(@Param('id') id: string): Promise<void> {
-		await this.deleteSuperfoodCategoryUseCase.handle(id);
-	}
+	// @Delete('/:id')
+	// @HttpCode(HttpStatus.NO_CONTENT)
+	// @ApiOperation({
+	// 	summary: 'Eliminar categoría',
+	// 	description: 'Elimina una categoría de superfood por su ID',
+	// })
+	// @ApiParam({
+	// 	name: 'id',
+	// 	description: 'ID de la categoría a eliminar',
+	// 	example: 'uuid-1234-5678',
+	// })
+	// @ApiResponse({
+	// 	status: 204,
+	// 	description: 'Categoría eliminada exitosamente',
+	// })
+	// @ApiResponse({
+	// 	status: 404,
+	// 	description: 'Categoría no encontrada',
+	// })
+	// async deleteCategory(@Param('id') id: string): Promise<void> {
+	// 	await this.deleteSuperfoodCategoryUseCase.handle(id);
+	// }
 }

@@ -1,4 +1,9 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+	Inject,
+	Injectable,
+	NotFoundException,
+	BadRequestException,
+} from '@nestjs/common';
 import { CustomerProfileRepository } from '../../datastore/Customer.repo';
 import { CartShopRepository } from '../../datastore/CartShop.repo';
 import { AddCartItemDto } from '../../../infra/controllers/dto/AddCartItemDto';
@@ -44,6 +49,13 @@ export class AddItemToCartUseCase {
 			throw new NotFoundException('Variant not found');
 		}
 
+		// 2.1. Validar que la variante tenga stock disponible
+		if (variant.stock <= 0) {
+			throw new BadRequestException(
+				'La variante seleccionada no tiene stock disponible',
+			);
+		}
+
 		// 3. Obtener información del producto según el tipo (Strategy Pattern)
 		const productInfo = await this.productInfoRegistry.getProductInfo(
 			variant.productType,
@@ -69,6 +81,33 @@ export class AddItemToCartUseCase {
 				new Date(),
 			);
 			await this.cartShopRepository.createCart(cart);
+		}
+
+		// Verificar si ya existe un item en el carrito con la misma variante
+		const existingCartItems =
+			await this.cartItemRepository.getItemsByCartShopId(cart.id);
+		const existingItemWithSameVariant = existingCartItems.find(
+			(item) => item.variantProductId === variant.id,
+		);
+
+		// Calcular la cantidad total que se intentaría agregar
+		const totalQuantity = existingItemWithSameVariant
+			? existingItemWithSameVariant.quantity + itemDto.quantity
+			: itemDto.quantity;
+
+		// Validar que la cantidad total no exceda el stock disponible
+		if (totalQuantity > variant.stock) {
+			const availableStock = variant.stock;
+			const alreadyInCart = existingItemWithSameVariant
+				? existingItemWithSameVariant.quantity
+				: 0;
+			const maxCanAdd = availableStock - alreadyInCart;
+
+			throw new BadRequestException(
+				`Stock insuficiente. Stock disponible: ${availableStock}, ` +
+					`ya en carrito: ${alreadyInCart}, ` +
+					`máximo que puedes agregar: ${maxCanAdd}`,
+			);
 		}
 
 		// 6. Crear el item del carrito

@@ -48,65 +48,65 @@ export class SuperfoodBenefitController {
 		return await this.createSuperfoodBenefitUseCase.handle(dto);
 	}
 
-	@Get()
-	@ApiOperation({
-		summary: 'Listar todos los beneficios',
-		description: 'Retorna todos los beneficios disponibles',
-	})
-	@ApiResponse({
-		status: 200,
-		description: 'Lista de beneficios',
-		type: [SuperfoodBenefitResponse],
-	})
-	async listBenefits(): Promise<SuperfoodBenefitResponse[]> {
-		return await this.listSuperfoodBenefitsUseCase.handle();
-	}
+	// @Get()
+	// @ApiOperation({
+	// 	summary: 'Listar todos los beneficios',
+	// 	description: 'Retorna todos los beneficios disponibles',
+	// })
+	// @ApiResponse({
+	// 	status: 200,
+	// 	description: 'Lista de beneficios',
+	// 	type: [SuperfoodBenefitResponse],
+	// })
+	// async listBenefits(): Promise<SuperfoodBenefitResponse[]> {
+	// 	return await this.listSuperfoodBenefitsUseCase.handle();
+	// }
 
-	@Get('/:id')
-	@ApiOperation({
-		summary: 'Obtener beneficio por ID',
-		description: 'Retorna un beneficio específico por su ID',
-	})
-	@ApiParam({
-		name: 'id',
-		description: 'ID del beneficio',
-		example: 'uuid-1234-5678',
-	})
-	@ApiResponse({
-		status: 200,
-		description: 'Beneficio encontrado',
-		type: SuperfoodBenefitResponse,
-	})
-	@ApiResponse({
-		status: 404,
-		description: 'Beneficio no encontrado',
-	})
-	async getBenefitById(
-		@Param('id') id: string,
-	): Promise<SuperfoodBenefitResponse> {
-		return await this.getSuperfoodBenefitByIdUseCase.handle(id);
-	}
+	// @Get('/:id')
+	// @ApiOperation({
+	// 	summary: 'Obtener beneficio por ID',
+	// 	description: 'Retorna un beneficio específico por su ID',
+	// })
+	// @ApiParam({
+	// 	name: 'id',
+	// 	description: 'ID del beneficio',
+	// 	example: 'uuid-1234-5678',
+	// })
+	// @ApiResponse({
+	// 	status: 200,
+	// 	description: 'Beneficio encontrado',
+	// 	type: SuperfoodBenefitResponse,
+	// })
+	// @ApiResponse({
+	// 	status: 404,
+	// 	description: 'Beneficio no encontrado',
+	// })
+	// async getBenefitById(
+	// 	@Param('id') id: string,
+	// ): Promise<SuperfoodBenefitResponse> {
+	// 	return await this.getSuperfoodBenefitByIdUseCase.handle(id);
+	// }
 
-	@Delete('/:id')
-	@HttpCode(HttpStatus.NO_CONTENT)
-	@ApiOperation({
-		summary: 'Eliminar beneficio',
-		description: 'Elimina un beneficio por su ID',
-	})
-	@ApiParam({
-		name: 'id',
-		description: 'ID del beneficio a eliminar',
-		example: 'uuid-1234-5678',
-	})
-	@ApiResponse({
-		status: 204,
-		description: 'Beneficio eliminado exitosamente',
-	})
-	@ApiResponse({
-		status: 404,
-		description: 'Beneficio no encontrado',
-	})
-	async deleteBenefit(@Param('id') id: string): Promise<void> {
-		await this.deleteSuperfoodBenefitUseCase.handle(id);
-	}
+	// @Delete('/:id')
+	// @HttpCode(HttpStatus.NO_CONTENT)
+	// @ApiOperation({
+	// 	summary: 'Eliminar beneficio',
+	// 	description: 'Elimina un beneficio por su ID',
+	// })
+	// @ApiParam({
+	// 	name: 'id',
+	// 	description: 'ID del beneficio a eliminar',
+	// 	example: 'uuid-1234-5678',
+	// })
+	// @ApiResponse({
+	// 	status: 204,
+	// 	description: 'Beneficio eliminado exitosamente',
+	// })
+	// @ApiResponse({
+	// 	status: 404,
+	// 	description: 'Beneficio no encontrado',
+	// })
+	// async deleteBenefit(@Param('id') id: string): Promise<void> {
+	// 	await this.deleteSuperfoodBenefitUseCase.handle(id);
+	// }
 }

@@ -26,15 +26,15 @@ export class AdminController {
 		private readonly updateAccountStatusUseCase: UpdateAccountStatusUseCase,
 	) {}
 
-	@Get('/customers')
-	async getAllCustomers(): Promise<CustomerProfile[]> {
-		return this.getAllCustomerUseCase.handle();
-	}
+	// @Get('/customers')
+	// async getAllCustomers(): Promise<CustomerProfile[]> {
+	// 	return this.getAllCustomerUseCase.handle();
+	// }
 
-	@Get('/sellers')
-	async getAllSellers(): Promise<SellerProfile[]> {
-		return this.getAllSellersUseCase.handle();
-	}
+	// @Get('/sellers')
+	// async getAllSellers(): Promise<SellerProfile[]> {
+	// 	return this.getAllSellersUseCase.handle();
+	// }
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles(AccountRole.ADMIN)

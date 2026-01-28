@@ -50,7 +50,9 @@ export class ProductController {
 	}
 
 	@Get('/by-seller/:sellerId')
-	async getBySellerId(@Param('sellerId') sellerId: string): Promise<Product[]> {
+	async getBySellerId(
+		@Param('sellerId') sellerId: string,
+	): Promise<Product[]> {
 		return this.getProductsBySellerIdUseCase.handle(sellerId);
 	}
 

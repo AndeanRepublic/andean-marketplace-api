@@ -205,7 +205,14 @@ export class TextileProductController {
 		);
 	}
 
-	@Get('/:id')
+	// @Get('/:id')
+	// async getByIdTextileProduct(
+	// 	@Param('id') id: string,
+	// ): Promise<TextileProduct> {
+	// 	return this.getByIdTextileProductUseCase.handle(id);
+	// }
+
+	@Get('/:id/details')
 	@ApiOperation({
 		summary: 'Obtener producto textil por ID',
 		description:
@@ -214,7 +221,7 @@ export class TextileProductController {
 	@ApiParam({
 		name: 'id',
 		description: 'ID único del producto textil',
-		example: 'uuid-1234-5678-90ab-cdef',
+		example: '6973d8ffddef7b59c2d4dcfb',
 	})
 	@ApiResponse({
 		status: 200,
@@ -225,13 +232,6 @@ export class TextileProductController {
 		status: 404,
 		description: 'Producto no encontrado',
 	})
-	async getByIdTextileProduct(
-		@Param('id') id: string,
-	): Promise<TextileProduct> {
-		return this.getByIdTextileProductUseCase.handle(id);
-	}
-
-	@Get('/:id/details')
 	async getTextileProductDetail(
 		@Param('id') id: string,
 	): Promise<TextileProductDetailResponse> {

@@ -48,67 +48,67 @@ export class SuperfoodPreservationMethodController {
 		return await this.createSuperfoodPreservationMethodUseCase.handle(dto);
 	}
 
-	@Get()
-	@ApiOperation({
-		summary: 'Listar todos los métodos de preservación',
-		description: 'Retorna todos los métodos de preservación disponibles',
-	})
-	@ApiResponse({
-		status: 200,
-		description: 'Lista de métodos',
-		type: [SuperfoodPreservationMethodResponse],
-	})
-	async listPreservationMethods(): Promise<
-		SuperfoodPreservationMethodResponse[]
-	> {
-		return await this.listSuperfoodPreservationMethodsUseCase.handle();
-	}
+	// @Get()
+	// @ApiOperation({
+	// 	summary: 'Listar todos los métodos de preservación',
+	// 	description: 'Retorna todos los métodos de preservación disponibles',
+	// })
+	// @ApiResponse({
+	// 	status: 200,
+	// 	description: 'Lista de métodos',
+	// 	type: [SuperfoodPreservationMethodResponse],
+	// })
+	// async listPreservationMethods(): Promise<
+	// 	SuperfoodPreservationMethodResponse[]
+	// > {
+	// 	return await this.listSuperfoodPreservationMethodsUseCase.handle();
+	// }
 
-	@Get('/:id')
-	@ApiOperation({
-		summary: 'Obtener método por ID',
-		description: 'Retorna un método de preservación específico por su ID',
-	})
-	@ApiParam({
-		name: 'id',
-		description: 'ID del método',
-		example: 'uuid-1234-5678',
-	})
-	@ApiResponse({
-		status: 200,
-		description: 'Método encontrado',
-		type: SuperfoodPreservationMethodResponse,
-	})
-	@ApiResponse({
-		status: 404,
-		description: 'Método no encontrado',
-	})
-	async getPreservationMethodById(
-		@Param('id') id: string,
-	): Promise<SuperfoodPreservationMethodResponse> {
-		return await this.getSuperfoodPreservationMethodByIdUseCase.handle(id);
-	}
+	// @Get('/:id')
+	// @ApiOperation({
+	// 	summary: 'Obtener método por ID',
+	// 	description: 'Retorna un método de preservación específico por su ID',
+	// })
+	// @ApiParam({
+	// 	name: 'id',
+	// 	description: 'ID del método',
+	// 	example: 'uuid-1234-5678',
+	// })
+	// @ApiResponse({
+	// 	status: 200,
+	// 	description: 'Método encontrado',
+	// 	type: SuperfoodPreservationMethodResponse,
+	// })
+	// @ApiResponse({
+	// 	status: 404,
+	// 	description: 'Método no encontrado',
+	// })
+	// async getPreservationMethodById(
+	// 	@Param('id') id: string,
+	// ): Promise<SuperfoodPreservationMethodResponse> {
+	// 	return await this.getSuperfoodPreservationMethodByIdUseCase.handle(id);
+	// }
 
-	@Delete('/:id')
-	@HttpCode(HttpStatus.NO_CONTENT)
-	@ApiOperation({
-		summary: 'Eliminar método de preservación',
-		description: 'Elimina un método de preservación por su ID',
-	})
-	@ApiParam({
-		name: 'id',
-		description: 'ID del método a eliminar',
-		example: 'uuid-1234-5678',
-	})
-	@ApiResponse({
-		status: 204,
-		description: 'Método eliminado exitosamente',
-	})
-	@ApiResponse({
-		status: 404,
-		description: 'Método no encontrado',
-	})
-	async deletePreservationMethod(@Param('id') id: string): Promise<void> {
-		await this.deleteSuperfoodPreservationMethodUseCase.handle(id);
-	}
+	// @Delete('/:id')
+	// @HttpCode(HttpStatus.NO_CONTENT)
+	// @ApiOperation({
+	// 	summary: 'Eliminar método de preservación',
+	// 	description: 'Elimina un método de preservación por su ID',
+	// })
+	// @ApiParam({
+	// 	name: 'id',
+	// 	description: 'ID del método a eliminar',
+	// 	example: 'uuid-1234-5678',
+	// })
+	// @ApiResponse({
+	// 	status: 204,
+	// 	description: 'Método eliminado exitosamente',
+	// })
+	// @ApiResponse({
+	// 	status: 404,
+	// 	description: 'Método no encontrado',
+	// })
+	// async deletePreservationMethod(@Param('id') id: string): Promise<void> {
+	// 	await this.deleteSuperfoodPreservationMethodUseCase.handle(id);
+	// }
 }
