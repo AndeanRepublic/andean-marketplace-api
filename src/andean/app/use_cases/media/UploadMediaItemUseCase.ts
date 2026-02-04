@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { MediaItemRepository } from '../../datastore/MediaItem.repo';
 import { MediaItem } from '../../../domain/entities/MediaItem';
-import { S3StorageService } from '../../../infra/services/S3StorageService';
+import { StorageRepository } from '../../datastore/Storage.repo';
 import { MediaItemMapper } from '../../../infra/services/MediaItemMapper';
 
 export interface UploadMediaItemInput {
@@ -14,7 +14,7 @@ export interface UploadMediaItemInput {
 export class UploadMediaItemUseCase {
 	constructor(
 		private readonly mediaItemRepository: MediaItemRepository,
-		private readonly s3StorageService: S3StorageService,
+		private readonly storageRepository: StorageRepository,
 	) { }
 
 	async execute(input: UploadMediaItemInput): Promise<MediaItem> {
@@ -22,7 +22,7 @@ export class UploadMediaItemUseCase {
 
 		try {
 			// 1. Subir archivo a S3
-			const url = await this.s3StorageService.uploadFile(
+			const url = await this.storageRepository.uploadFile(
 				file.buffer,
 				type,
 				name,

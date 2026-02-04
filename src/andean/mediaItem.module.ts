@@ -4,12 +4,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 // Schema
 import { MediaItemSchema } from './infra/persistence/mediaItem.schema';
 
-// Repository
+// Repositories
 import { MediaItemRepository } from './app/datastore/MediaItem.repo';
 import { MediaItemRepoImpl } from './infra/datastore/mediaItem.repo.impl';
-
-// Services
-import { S3StorageService } from './infra/services/S3StorageService';
+import { StorageRepository } from './app/datastore/Storage.repo';
+import { S3StorageRepoImpl } from './infra/datastore/S3Storage.repo.impl';
 
 // Use Cases
 import { UploadMediaItemUseCase } from './app/use_cases/media/UploadMediaItemUseCase';
@@ -27,14 +26,15 @@ import { MediaItemController } from './infra/controllers/mediaItem.controller';
 	],
 	controllers: [MediaItemController],
 	providers: [
-		// Repository
+		// Repositories
 		{
 			provide: MediaItemRepository,
 			useClass: MediaItemRepoImpl,
 		},
-
-		// Services
-		S3StorageService,
+		{
+			provide: StorageRepository,
+			useClass: S3StorageRepoImpl,
+		},
 
 		// Use Cases
 		UploadMediaItemUseCase,
