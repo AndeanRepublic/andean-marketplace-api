@@ -1,0 +1,43 @@
+import { Injectable, BadRequestException } from '@nestjs/common';
+import { MediaItemRepository } from '../../datastore/MediaItem.repo';
+import { MediaItem } from '../../../domain/entities/MediaItem';
+import { S3StorageService } from '../../../infra/services/S3StorageService';
+import { MediaItemMapper } from '../../../infra/services/MediaItemMapper';
+
+export interface UploadMediaItemInput {
+	file: Express.Multer.File;
+	type: string;
+	name: string;
+}
+
+@Injectable()
+export class UploadMediaItemUseCase {
+	constructor(
+		private readonly mediaItemRepository: MediaItemRepository,
+		private readonly s3StorageService: S3StorageService,
+	) { }
+
+	async execute(input: UploadMediaItemInput): Promise<MediaItem> {
+		const { file, type, name } = input;
+
+		try {
+			// 1. Subir archivo a S3
+			const url = await this.s3StorageService.uploadFile(
+				file.buffer,
+				type,
+				name,
+				file.mimetype,
+			);
+
+			// 2. Crear entidad MediaItem usando mapper
+			const mediaItem = MediaItemMapper.fromUploadData(type, name, url);
+
+			// 3. Guardar en base de datos
+			return await this.mediaItemRepository.save(mediaItem);
+		} catch (error) {
+			throw new BadRequestException(
+				`Error uploading media item: ${error.message}`,
+			);
+		}
+	}
+}

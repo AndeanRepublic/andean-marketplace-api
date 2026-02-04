@@ -27,6 +27,17 @@ export class MediaItemMapper {
 		);
 	}
 
+	static fromUploadData(type: string, name: string, url: string): MediaItem {
+		return new MediaItem(
+			crypto.randomUUID(),
+			type,
+			name,
+			url,
+			new Date(),
+			new Date(),
+		);
+	}
+
 	static fromUpdateDto(
 		dto: UpdateMediaItemDto,
 		existing: MediaItem,
