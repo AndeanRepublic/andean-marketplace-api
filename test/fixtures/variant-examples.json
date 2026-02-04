@@ -1,0 +1,325 @@
+{
+	"single_variant": {
+		"productId": "textile-poncho-001",
+		"productType": "TEXTILE",
+		"combination": {
+			"color": "Rojo",
+			"size": "M"
+		},
+		"price": 85.50,
+		"stock": 15
+	},
+	"multiple_variants": {
+		"variants": [
+			{
+				"productId": "textile-poncho-001",
+				"productType": "TEXTILE",
+				"combination": {
+					"color": "Rojo",
+					"size": "S"
+				},
+				"price": 80.00,
+				"stock": 10
+			},
+			{
+				"productId": "textile-poncho-001",
+				"productType": "TEXTILE",
+				"combination": {
+					"color": "Rojo",
+					"size": "M"
+				},
+				"price": 85.50,
+				"stock": 15
+			},
+			{
+				"productId": "textile-poncho-001",
+				"productType": "TEXTILE",
+				"combination": {
+					"color": "Rojo",
+					"size": "L"
+				},
+				"price": 90.00,
+				"stock": 8
+			},
+			{
+				"productId": "textile-poncho-001",
+				"productType": "TEXTILE",
+				"combination": {
+					"color": "Azul",
+					"size": "S"
+				},
+				"price": 80.00,
+				"stock": 12
+			},
+			{
+				"productId": "textile-poncho-001",
+				"productType": "TEXTILE",
+				"combination": {
+					"color": "Azul",
+					"size": "M"
+				},
+				"price": 85.50,
+				"stock": 18
+			},
+			{
+				"productId": "textile-poncho-001",
+				"productType": "TEXTILE",
+				"combination": {
+					"color": "Azul",
+					"size": "L"
+				},
+				"price": 90.00,
+				"stock": 6
+			}
+		]
+	},
+	"sync_variants": {
+		"productId": "textile-manta-002",
+		"productType": "TEXTILE",
+		"variants": [
+			{
+				"combination": {
+					"color": "Verde",
+					"size": "Pequeña",
+					"material": "Alpaca"
+				},
+				"price": 120.00,
+				"stock": 5
+			},
+			{
+				"combination": {
+					"color": "Verde",
+					"size": "Mediana",
+					"material": "Alpaca"
+				},
+				"price": 150.00,
+				"stock": 8
+			},
+			{
+				"combination": {
+					"color": "Verde",
+					"size": "Grande",
+					"material": "Alpaca"
+				},
+				"price": 180.00,
+				"stock": 3
+			},
+			{
+				"combination": {
+					"color": "Marrón",
+					"size": "Pequeña",
+					"material": "Alpaca"
+				},
+				"price": 120.00,
+				"stock": 7
+			},
+			{
+				"combination": {
+					"color": "Marrón",
+					"size": "Mediana",
+					"material": "Alpaca"
+				},
+				"price": 150.00,
+				"stock": 10
+			},
+			{
+				"combination": {
+					"color": "Marrón",
+					"size": "Grande",
+					"material": "Alpaca"
+				},
+				"price": 180.00,
+				"stock": 4
+			}
+		]
+	},
+	"textile_sweater_examples": {
+		"variants": [
+			{
+				"productId": "textile-sweater-003",
+				"productType": "TEXTILE",
+				"combination": {
+					"color": "Natural",
+					"size": "XS",
+					"pattern": "Liso"
+				},
+				"price": 65.00,
+				"stock": 20
+			},
+			{
+				"productId": "textile-sweater-003",
+				"productType": "TEXTILE",
+				"combination": {
+					"color": "Natural",
+					"size": "S",
+					"pattern": "Liso"
+				},
+				"price": 70.00,
+				"stock": 25
+			},
+			{
+				"productId": "textile-sweater-003",
+				"productType": "TEXTILE",
+				"combination": {
+					"color": "Natural",
+					"size": "M",
+					"pattern": "Liso"
+				},
+				"price": 75.00,
+				"stock": 30
+			},
+			{
+				"productId": "textile-sweater-003",
+				"productType": "TEXTILE",
+				"combination": {
+					"color": "Gris",
+					"size": "S",
+					"pattern": "Andino"
+				},
+				"price": 85.00,
+				"stock": 15
+			},
+			{
+				"productId": "textile-sweater-003",
+				"productType": "TEXTILE",
+				"combination": {
+					"color": "Gris",
+					"size": "M",
+					"pattern": "Andino"
+				},
+				"price": 90.00,
+				"stock": 18
+			},
+			{
+				"productId": "textile-sweater-003",
+				"productType": "TEXTILE",
+				"combination": {
+					"color": "Gris",
+					"size": "L",
+					"pattern": "Andino"
+				},
+				"price": 95.00,
+				"stock": 12
+			}
+		]
+	},
+	"artisan_bag_variants": {
+		"variants": [
+			{
+				"productId": "textile-bag-004",
+				"productType": "TEXTILE",
+				"combination": {
+					"color": "Multicolor",
+					"size": "Pequeña",
+					"style": "Tradicional"
+				},
+				"price": 35.00,
+				"stock": 25
+			},
+			{
+				"productId": "textile-bag-004",
+				"productType": "TEXTILE",
+				"combination": {
+					"color": "Multicolor",
+					"size": "Mediana",
+					"style": "Tradicional"
+				},
+				"price": 45.00,
+				"stock": 20
+			},
+			{
+				"productId": "textile-bag-004",
+				"productType": "TEXTILE",
+				"combination": {
+					"color": "Multicolor",
+					"size": "Grande",
+					"style": "Tradicional"
+				},
+				"price": 55.00,
+				"stock": 15
+			},
+			{
+				"productId": "textile-bag-004",
+				"productType": "TEXTILE",
+				"combination": {
+					"color": "Negro",
+					"size": "Mediana",
+					"style": "Moderno"
+				},
+				"price": 50.00,
+				"stock": 18
+			},
+			{
+				"productId": "textile-bag-004",
+				"productType": "TEXTILE",
+				"combination": {
+					"color": "Negro",
+					"size": "Grande",
+					"style": "Moderno"
+				},
+				"price": 60.00,
+				"stock": 12
+			}
+		]
+	},
+	"update_variant_example": {
+		"price": 95.00,
+		"stock": 20
+	},
+	"complex_combinations": {
+		"variants": [
+			{
+				"productId": "textile-huipil-005",
+				"productType": "TEXTILE",
+				"combination": {
+					"color": "Blanco",
+					"size": "S",
+					"region": "Cusco",
+					"embroidery": "Floral",
+					"material": "Algodón"
+				},
+				"price": 110.00,
+				"stock": 8
+			},
+			{
+				"productId": "textile-huipil-005",
+				"productType": "TEXTILE",
+				"combination": {
+					"color": "Blanco",
+					"size": "M",
+					"region": "Cusco",
+					"embroidery": "Floral",
+					"material": "Algodón"
+				},
+				"price": 115.00,
+				"stock": 10
+			},
+			{
+				"productId": "textile-huipil-005",
+				"productType": "TEXTILE",
+				"combination": {
+					"color": "Crema",
+					"size": "S",
+					"region": "Ayacucho",
+					"embroidery": "Geométrico",
+					"material": "Alpaca"
+				},
+				"price": 140.00,
+				"stock": 5
+			},
+			{
+				"productId": "textile-huipil-005",
+				"productType": "TEXTILE",
+				"combination": {
+					"color": "Crema",
+					"size": "M",
+					"region": "Ayacucho",
+					"embroidery": "Geométrico",
+					"material": "Alpaca"
+				},
+				"price": 145.00,
+				"stock": 6
+			}
+		]
+	}
+}
