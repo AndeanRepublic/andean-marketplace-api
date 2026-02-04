@@ -1,12 +1,26 @@
-import { Body, Controller, Get, Post, Param, Put } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Get,
+	Post,
+	Param,
+	Put,
+	Query,
+	HttpCode,
+	HttpStatus,
+} from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiQuery } from '@nestjs/swagger';
 import { CreateOrderUseCase } from '../../app/use_cases/orders/CreateOrderUseCase';
 import { GetOrderByIdUseCase } from '../../app/use_cases/orders/GetOrderByIdUseCase';
 import { GetOrdersByCustomerUseCase } from '../../app/use_cases/orders/GetOrdersByCustomerUseCase';
 import { UpdateOrderStatusUseCase } from '../../app/use_cases/orders/UpdateOrderStatusUseCase';
-import { CreateOrderDto } from './dto/CreateOrderDto';
-import { Order } from '../../domain/entities/Order';
-import { UpdateOrderDto } from './dto/UpdateOrderDto';
+import { CreateOrderFromCartUseCase } from '../../app/use_cases/orders/CreateOrderFromCartUseCase';
+import { CreateOrderDto } from './dto/order/CreateOrderDto';
+import { CreateOrderFromCartDto } from './dto/order/CreateOrderFromCartDto';
+import { Order } from '../../domain/entities/order/Order';
+import { UpdateOrderDto } from './dto/order/UpdateOrderDto';
 
+@ApiTags('orders')
 @Controller('orders')
 export class OrderController {
 	constructor(
@@ -14,26 +28,109 @@ export class OrderController {
 		private readonly getOrderByIdUseCase: GetOrderByIdUseCase,
 		private readonly getOrdersByCustomerUseCase: GetOrdersByCustomerUseCase,
 		private readonly updateOrderStatusUseCase: UpdateOrderStatusUseCase,
+		private readonly createOrderFromCartUseCase: CreateOrderFromCartUseCase,
 	) {}
 
 	@Post('')
+	@ApiOperation({
+		summary: 'Crear orden',
+		description: 'Crea una nueva orden con la información proporcionada',
+	})
+	@ApiBody({ type: CreateOrderDto })
+	@ApiResponse({ status: 201, description: 'Orden creada exitosamente', type: Order })
+	@ApiResponse({ status: 400, description: 'Datos inválidos' })
 	async createOrder(@Body() body: CreateOrderDto): Promise<Order> {
 		return this.createOrderUseCase.handle(body);
 	}
 
+	@Post('/from-cart')
+	@HttpCode(HttpStatus.CREATED)
+	@ApiOperation({
+		summary: 'Crear orden desde carrito',
+		description: 'Crea una orden a partir del carrito del cliente',
+	})
+	@ApiQuery({
+		name: 'customerId',
+		description: 'ID del cliente (opcional si se proporciona customerEmail)',
+		type: String,
+		required: false,
+	})
+	@ApiQuery({
+		name: 'customerEmail',
+		description: 'Email del cliente (opcional si se proporciona customerId)',
+		type: String,
+		required: false,
+	})
+	@ApiBody({ type: CreateOrderFromCartDto })
+	@ApiResponse({
+		status: 201,
+		description: 'Orden creada exitosamente desde el carrito',
+		type: Order,
+	})
+	@ApiResponse({ status: 400, description: 'Carrito vacío o datos inválidos' })
+	@ApiResponse({ status: 404, description: 'Carrito no encontrado' })
+	async createOrderFromCart(
+		@Query('customerId') customerId: string | undefined,
+		@Query('customerEmail') customerEmail: string | undefined,
+		@Body() body: CreateOrderFromCartDto,
+	): Promise<Order> {
+		return this.createOrderFromCartUseCase.handle(customerId, customerEmail, body);
+	}
+
 	@Get('/:id')
+	@ApiOperation({
+		summary: 'Obtener orden por ID',
+		description: 'Recupera una orden específica por su ID',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID de la orden',
+		type: String,
+	})
+	@ApiResponse({ status: 200, description: 'Orden encontrada', type: Order })
+	@ApiResponse({ status: 404, description: 'Orden no encontrada' })
 	async getById(@Param('id') id: string): Promise<Order | null> {
 		return this.getOrderByIdUseCase.handle(id);
 	}
 
 	@Get('/by-customer/:customerId')
+	@ApiOperation({
+		summary: 'Obtener órdenes por cliente',
+		description: 'Recupera todas las órdenes de un cliente específico',
+	})
+	@ApiParam({
+		name: 'customerId',
+		description: 'ID del cliente',
+		type: String,
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista de órdenes del cliente',
+		type: [Order],
+	})
 	async getByCustomerId(
 		@Param('customerId') customerId: string,
 	): Promise<Order[]> {
 		return this.getOrdersByCustomerUseCase.handle(customerId);
 	}
 
-	@Put('/:id')
+	@Put('/:id/status')
+	@ApiOperation({
+		summary: 'Actualizar estado de la orden',
+		description: 'Cambia el estado de una orden existente',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID de la orden',
+		type: String,
+	})
+	@ApiBody({ type: UpdateOrderDto })
+	@ApiResponse({
+		status: 200,
+		description: 'Estado de la orden actualizado exitosamente',
+		type: Order,
+	})
+	@ApiResponse({ status: 404, description: 'Orden no encontrada' })
 	async updateById(
 		@Param('id') id: string,
 		@Body() body: UpdateOrderDto,
@@ -41,3 +138,4 @@ export class OrderController {
 		return this.updateOrderStatusUseCase.handle(id, body);
 	}
 }
+
