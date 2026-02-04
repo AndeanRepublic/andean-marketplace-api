@@ -21,6 +21,21 @@ export class CartShopRepoImpl extends CartShopRepository {
     return doc ? CartShopMapper.fromDocument(doc) : null;
   }
 
+  async getCartByCustomerEmail(customerEmail: string): Promise<CartShop | null> {
+    const doc = await this.cartShopModel.findOne({ customerEmail }).exec();
+    return doc ? CartShopMapper.fromDocument(doc) : null;
+  }
+
+  async getCartByIdentifier(customerId?: string, customerEmail?: string): Promise<CartShop | null> {
+    if (customerId) {
+      return this.getCartByCustomerId(customerId);
+    }
+    if (customerEmail) {
+      return this.getCartByCustomerEmail(customerEmail);
+    }
+    return null;
+  }
+
   async getCartById(cartShopId: string): Promise<CartShop | null> {
     const objectId = MongoIdUtils.stringToObjectId(cartShopId);
     const doc = await this.cartShopModel.findById(objectId).exec();
@@ -33,8 +48,13 @@ export class CartShopRepoImpl extends CartShopRepository {
 		return CartShopMapper.fromDocument(cartSaved);
 	}
 
-	async clearCart(customerId: string): Promise<void> {
-		const cart = await this.cartShopModel.findOne({ customerId });
+	async clearCart(customerId?: string, customerEmail?: string): Promise<void> {
+		let cart: CartShopDocument | null = null;
+		if (customerId) {
+			cart = await this.cartShopModel.findOne({ customerId }).exec();
+		} else if (customerEmail) {
+			cart = await this.cartShopModel.findOne({ customerEmail }).exec();
+		}
 		if (!cart) return;
 		await cart.save();
 	}

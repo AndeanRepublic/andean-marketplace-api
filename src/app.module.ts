@@ -7,6 +7,7 @@ import { ProductsModule } from './andean/product.module';
 import { ShopsModule } from './andean/shop.module';
 import { BankAccountsModule } from './andean/bankAccount.module';
 import { OrdersModule } from './andean/order.module';
+import { ShippingAddressModule } from './andean/shippingAddress.module';
 import { CartShopModule } from './andean/cartShop.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { UploadModule } from './andean/upload.module';
@@ -47,6 +48,7 @@ import { VariantModule } from './andean/variant.module';
 		BankAccountsModule,
 		CartShopModule,
 		OrdersModule,
+		ShippingAddressModule,
 		UploadModule,
 		AdminModule,
 		CommunityModule,

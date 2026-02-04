@@ -11,12 +11,7 @@ export class RemoveItemFromCartUseCase {
 		private readonly cartItemRepository: CartShopItemRepository,
 	) {}
 
-	async handle(customerId: string, itemId: string): Promise<void> {
-		const customerFound =
-			await this.customerRepository.getCustomerById(customerId);
-		if (!customerFound) {
-			throw new NotFoundException('CustomerProfile not found');
-		}
+	async handle(itemId: string): Promise<void> {
 		await this.cartItemRepository.deleteItem(itemId);
 	}
 }

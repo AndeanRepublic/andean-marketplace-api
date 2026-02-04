@@ -7,7 +7,6 @@ import { Model, FilterQuery, PipelineStage, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { TextileProductDocument } from '../../persistence/textileProducts/textileProduct.schema';
 import { VariantDocument } from '../../persistence/variant.schema';
-import { OrderItemDocument } from '../../persistence/orderItem.schema';
 import { TextileProduct } from 'src/andean/domain/entities/textileProducts/TextileProduct';
 import { TextileProductMapper } from '../../services/textileProducts/TextileProductMapper';
 import { MongoIdUtils } from '../../utils/MongoIdUtils';
@@ -22,8 +21,6 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 		private readonly textileProductModel: Model<TextileProductDocument>,
 		@InjectModel('Variant')
 		private readonly variantModel: Model<VariantDocument>,
-		@InjectModel('OrderItem')
-		private readonly orderItemModel: Model<OrderItemDocument>,
 	) {
 		super();
 	}
@@ -601,22 +598,30 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 		}
 
 		if (sortBy === ProductSortBy.POPULAR) {
-			// Lookup a OrderItems para contar ventas por productId
+			// Lookup a Orders para contar ventas por productId desde items embebidos
 			return [
 				{
 					$lookup: {
-						from: 'orderitems',
+						from: 'orders',
 						let: { productId: { $toString: '$_id' } },
 						pipeline: [
 							{
 								$match: {
-									$expr: { $eq: ['$productId', '$$productId'] },
+									'items.productId': { $toString: '$$productId' },
+								},
+							},
+							{
+								$unwind: '$items',
+							},
+							{
+								$match: {
+									$expr: { $eq: ['$items.productId', { $toString: '$$productId' }] },
 								},
 							},
 							{
 								$group: {
-									_id: '$productId',
-									totalSold: { $sum: '$quantity' },
+									_id: '$items.productId',
+									totalSold: { $sum: '$items.quantity' },
 								},
 							},
 						],

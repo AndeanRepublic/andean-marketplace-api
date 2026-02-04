@@ -27,16 +27,23 @@ export class GetCartByCustomerUseCase {
 		private readonly ownerNameResolver: OwnerNameResolver,
 	) { }
 
-	async handle(customerId: string): Promise<GetCartResponse> {
-		// 1. Validar que el customer existe
-		const customerFound =
-			await this.customerRepository.getCustomerById(customerId);
-		if (!customerFound) {
-			throw new NotFoundException('CustomerProfile not found');
+	async handle(customerId?: string, customerEmail?: string): Promise<GetCartResponse> {
+		// 1. Validar que al menos uno de los identificadores esté presente
+		if (!customerId && !customerEmail) {
+			throw new NotFoundException('Either customerId or customerEmail must be provided');
 		}
 
-		// 2. Obtener o crear el carrito
-		let cart = await this.cartShopRepository.getCartByCustomerId(customerId);
+		// 2. Si hay customerId, validar que el customer existe
+		if (customerId) {
+			const customerFound =
+				await this.customerRepository.getCustomerById(customerId);
+			if (!customerFound) {
+				throw new NotFoundException('CustomerProfile not found');
+			}
+		}
+
+		// 3. Obtener o crear el carrito
+		let cart = await this.cartShopRepository.getCartByIdentifier(customerId, customerEmail);
 		if (!cart) {
 			cart = new CartShop(
 				new Types.ObjectId().toString(),
@@ -46,6 +53,7 @@ export class GetCartByCustomerUseCase {
 				0, // discount
 				new Date(),
 				new Date(),
+				customerEmail,
 			);
 			await this.cartShopRepository.createCart(cart);
 
