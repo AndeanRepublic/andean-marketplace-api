@@ -8,8 +8,11 @@ import { MediaItemSchema } from './infra/persistence/mediaItem.schema';
 import { MediaItemRepository } from './app/datastore/MediaItem.repo';
 import { MediaItemRepoImpl } from './infra/datastore/mediaItem.repo.impl';
 
+// Services
+import { S3StorageService } from './infra/services/S3StorageService';
+
 // Use Cases
-import { CreateMediaItemUseCase } from './app/use_cases/media/CreateMediaItemUseCase';
+import { UploadMediaItemUseCase } from './app/use_cases/media/UploadMediaItemUseCase';
 import { UpdateMediaItemUseCase } from './app/use_cases/media/UpdateMediaItemUseCase';
 import { GetMediaItemByIdUseCase } from './app/use_cases/media/GetMediaItemByIdUseCase';
 import { ListMediaItemsUseCase } from './app/use_cases/media/ListMediaItemsUseCase';
@@ -30,8 +33,11 @@ import { MediaItemController } from './infra/controllers/mediaItem.controller';
 			useClass: MediaItemRepoImpl,
 		},
 
+		// Services
+		S3StorageService,
+
 		// Use Cases
-		CreateMediaItemUseCase,
+		UploadMediaItemUseCase,
 		UpdateMediaItemUseCase,
 		GetMediaItemByIdUseCase,
 		ListMediaItemsUseCase,
@@ -39,4 +45,4 @@ import { MediaItemController } from './infra/controllers/mediaItem.controller';
 	],
 	exports: [MediaItemRepository, MongooseModule],
 })
-export class MediaItemModule {}
+export class MediaItemModule { }
