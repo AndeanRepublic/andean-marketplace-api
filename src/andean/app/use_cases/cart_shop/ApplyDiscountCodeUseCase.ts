@@ -46,7 +46,7 @@ export class ApplyDiscountCodeUseCase {
 			);
 		}
 
-		// 4. Obtener el CartShop para obtener el customerId
+		// 4. Obtener el CartShop para obtener el customerId o customerEmail
 		const cartShop = await this.cartShopRepository.getCartById(
 			cartItem.cartShopId,
 		);
@@ -54,7 +54,16 @@ export class ApplyDiscountCodeUseCase {
 			throw new NotFoundException('CartShop not found');
 		}
 
-		// 5. Validar el código con la API externa
+		// Validar que el carrito tenga un identificador válido
+		if (!cartShop.customerId && !cartShop.customerEmail) {
+			throw new BadRequestException('CartShop must have either customerId or customerEmail');
+		}
+
+		// 5. Validar el código con la API externa (solo si hay customerId)
+		if (!cartShop.customerId) {
+			throw new BadRequestException('Discount codes can only be applied to carts with a registered customer');
+		}
+
 		const validationResult =
 			await this.discountCodeService.validateDiscountCode(
 				code,
@@ -71,17 +80,17 @@ export class ApplyDiscountCodeUseCase {
 			);
 		}
 
-		// 6. Calcular monto de descuento
+		// 7. Calcular monto de descuento
 		const discountAmount =
 			cartItem.unitPrice * (validationResult.percentage / 100);
 
-		// 7. Actualizar CartItem con el descuento
+		// 8. Actualizar CartItem con el descuento
 		const updatedCartItem = await this.cartItemRepository.updateDiscount(
 			cartItemId,
 			discountAmount,
 		);
 
-		// 8. Retornar response
+		// 9. Retornar response
 		return {
 			percentage: validationResult.percentage,
 			discount: discountAmount,

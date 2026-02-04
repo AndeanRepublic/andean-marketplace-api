@@ -1,30 +1,41 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { OrderSchema } from './infra/persistence/order.schema';
+import { OrderSchema } from './infra/persistence/order/order.schema';
 import { OrderController } from './infra/controllers/order.controller';
 import { CreateOrderUseCase } from './app/use_cases/orders/CreateOrderUseCase';
 import { GetOrderByIdUseCase } from './app/use_cases/orders/GetOrderByIdUseCase';
 import { GetOrdersByCustomerUseCase } from './app/use_cases/orders/GetOrdersByCustomerUseCase';
 import { UpdateOrderStatusUseCase } from './app/use_cases/orders/UpdateOrderStatusUseCase';
-import { OrderRepository } from './app/datastore/Order.repo';
-import { OrderRepositoryImpl } from './infra/datastore/order.repo.impl';
-import { CustomerProfileRepository } from './app/datastore/Customer.repo';
-import { CustomerProfileRepositoryImpl } from './infra/datastore/customer.repo.impl';
+import { OrderRepository } from './app/datastore/order/Order.repo';
+import { OrderRepositoryImpl } from './infra/datastore/order/order.repo.impl';
 import { UsersModule } from './users.module';
+import { CartShopModule } from './cartShop.module';
+import { VariantModule } from './variant.module';
+import { ProductInfoProviderRegistry } from './infra/services/products/ProductInfoProviderRegistry';
+import { TextileProductInfoProvider } from './infra/services/products/TextileProductInfoProvider';
+import { SuperfoodProductInfoProvider } from './infra/services/products/SuperfoodProductInfoProvider';
+import { TextileProductModule } from './textileProduct.module';
+import { SuperfoodModule } from './superfood.module';
+import { CreateOrderFromCartUseCase } from './app/use_cases/orders/CreateOrderFromCartUseCase';
 
 @Module({
 	imports: [
 		MongooseModule.forFeature([
 			{
-				name: `Order`,
+				name: 'Order',
 				schema: OrderSchema,
 			},
 		]),
 		UsersModule,
+		CartShopModule,
+		VariantModule,
+		TextileProductModule,
+		SuperfoodModule,
 	],
 	controllers: [OrderController],
 	providers: [
 		CreateOrderUseCase,
+		CreateOrderFromCartUseCase,
 		GetOrderByIdUseCase,
 		GetOrdersByCustomerUseCase,
 		UpdateOrderStatusUseCase,
@@ -32,10 +43,10 @@ import { UsersModule } from './users.module';
 			provide: OrderRepository,
 			useClass: OrderRepositoryImpl,
 		},
-		{
-			provide: CustomerProfileRepository,
-			useClass: CustomerProfileRepositoryImpl,
-		},
+		TextileProductInfoProvider,
+		SuperfoodProductInfoProvider,
+		ProductInfoProviderRegistry,
 	],
+	exports: [OrderRepository],
 })
 export class OrdersModule {}

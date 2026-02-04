@@ -1,7 +1,7 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CustomerProfileRepository } from '../../datastore/Customer.repo';
-import { OrderRepository } from '../../datastore/Order.repo';
-import { Order } from '../../../domain/entities/Order';
+import { OrderRepository } from '../../datastore/order/Order.repo';
+import { Order } from '../../../domain/entities/order/Order';
 
 @Injectable()
 export class GetOrdersByCustomerUseCase {

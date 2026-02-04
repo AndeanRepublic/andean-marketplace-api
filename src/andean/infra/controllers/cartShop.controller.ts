@@ -9,8 +9,9 @@ import {
   ParseIntPipe,
   HttpCode,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiQuery } from '@nestjs/swagger';
 import { AddItemToCartUseCase } from '../../app/use_cases/cart_shop/AddItemToCartUseCase';
 import { CleanCartUseCase } from '../../app/use_cases/cart_shop/CleanCartUseCase';
 import { GetCartByCustomerUseCase } from '../../app/use_cases/cart_shop/GetCartByCustomerUseCase';
@@ -24,7 +25,7 @@ import { ShoppingCartItemResponse } from '../../app/models/cart/ShoppingCartItem
 import { GetCartResponse } from '../../app/models/cart/GetCartResponse';
 import { ApplyDiscountResponse } from '../../app/models/cart/ApplyDiscountResponse';
 
-const root_path = 'users/customers/:customerId/cart';
+const root_path = 'cart';
 const path_cart_items = '/items';
 const path_remove_cart_item = path_cart_items + '/:itemId';
 const path_update_cart_item_quantity = path_cart_items + '/:itemId/quantity/:quantityDelta';
@@ -47,11 +48,19 @@ export class CartShopController {
     summary: 'Obtener carrito de compras',
     description: 'Recupera el carrito de compras completo del cliente con todos los items, precios y totales calculados'
   })
-  @ApiParam({
+  @ApiQuery({
     name: 'customerId',
-    description: 'ID del cliente',
+    description: 'ID del cliente (opcional si se proporciona customerEmail)',
     type: String,
+    required: false,
     example: '507f1f77bcf86cd799439011'
+  })
+  @ApiQuery({
+    name: 'customerEmail',
+    description: 'Email del cliente (opcional si se proporciona customerId)',
+    type: String,
+    required: false,
+    example: 'customer@example.com'
   })
   @ApiResponse({
     status: 200,
@@ -63,9 +72,10 @@ export class CartShopController {
     description: 'Cliente no encontrado'
   })
   async getCustomerCart(
-    @Param('customerId') customerId: string,
+    @Query('customerId') customerId?: string,
+    @Query('customerEmail') customerEmail?: string,
   ): Promise<GetCartResponse> {
-    return this.getCartByCustomerUseCase.handle(customerId);
+    return this.getCartByCustomerUseCase.handle(customerId, customerEmail);
   }
 
   @Post(path_cart_items)
@@ -73,11 +83,19 @@ export class CartShopController {
     summary: 'Agregar item al carrito',
     description: 'Agrega un producto con una variante específica al carrito de compras del cliente'
   })
-  @ApiParam({
+  @ApiQuery({
     name: 'customerId',
-    description: 'ID del cliente',
+    description: 'ID del cliente (opcional si se proporciona customerEmail)',
     type: String,
+    required: false,
     example: '507f1f77bcf86cd799439011'
+  })
+  @ApiQuery({
+    name: 'customerEmail',
+    description: 'Email del cliente (opcional si se proporciona customerId)',
+    type: String,
+    required: false,
+    example: 'customer@example.com'
   })
   @ApiBody({
     type: AddCartItemDto,
@@ -97,10 +115,11 @@ export class CartShopController {
     description: 'Cliente o variante no encontrada'
   })
   async addItemToCart(
-    @Param('customerId') customerId: string,
+    @Query('customerId') customerId: string | undefined,
+    @Query('customerEmail') customerEmail: string | undefined,
     @Body() body: AddCartItemDto,
   ): Promise<ShoppingCartItemResponse> {
-    return this.addItemToCartUseCase.handle(customerId, body);
+    return this.addItemToCartUseCase.handle(customerId, customerEmail, body);
   }
 
   @Delete('')
@@ -109,11 +128,19 @@ export class CartShopController {
     summary: 'Limpiar carrito',
     description: 'Elimina todos los items del carrito de compras del cliente'
   })
-  @ApiParam({
+  @ApiQuery({
     name: 'customerId',
-    description: 'ID del cliente',
+    description: 'ID del cliente (opcional si se proporciona customerEmail)',
     type: String,
+    required: false,
     example: '507f1f77bcf86cd799439011'
+  })
+  @ApiQuery({
+    name: 'customerEmail',
+    description: 'Email del cliente (opcional si se proporciona customerId)',
+    type: String,
+    required: false,
+    example: 'customer@example.com'
   })
   @ApiResponse({
     status: 204,
@@ -123,8 +150,11 @@ export class CartShopController {
     status: 404,
     description: 'Cliente no encontrado'
   })
-  async cleanCart(@Param('customerId') customerId: string): Promise<void> {
-    return this.cleanCartUseCase.handle(customerId);
+  async cleanCart(
+    @Query('customerId') customerId?: string,
+    @Query('customerEmail') customerEmail?: string,
+  ): Promise<void> {
+    return this.cleanCartUseCase.handle(customerId, customerEmail);
   }
 
   @Delete(path_remove_cart_item)
@@ -132,12 +162,6 @@ export class CartShopController {
   @ApiOperation({
     summary: 'Eliminar item del carrito',
     description: 'Elimina un item específico del carrito de compras'
-  })
-  @ApiParam({
-    name: 'customerId',
-    description: 'ID del cliente',
-    type: String,
-    example: '507f1f77bcf86cd799439011'
   })
   @ApiParam({
     name: 'itemId',
@@ -151,25 +175,18 @@ export class CartShopController {
   })
   @ApiResponse({
     status: 404,
-    description: 'Cliente o item no encontrado'
+    description: 'Item no encontrado'
   })
   async removeItemFromCart(
-    @Param('customerId') customerId: string,
     @Param('itemId') itemId: string,
   ): Promise<void> {
-    return this.removeItemFromCartUseCase.handle(customerId, itemId);
+    return this.removeItemFromCartUseCase.handle(itemId);
   }
 
   @Patch(path_update_cart_item_quantity)
   @ApiOperation({
     summary: 'Actualizar cantidad del item',
     description: 'Incrementa o decrementa la cantidad de un item en el carrito'
-  })
-  @ApiParam({
-    name: 'customerId',
-    description: 'ID del cliente',
-    type: String,
-    example: '507f1f77bcf86cd799439011'
   })
   @ApiParam({
     name: 'itemId',
@@ -206,13 +223,7 @@ export class CartShopController {
   @Post(path_apply_discount)
   @ApiOperation({
     summary: 'Aplicar código de descuento',
-    description: 'Aplica un código de descuento a un item específico del carrito'
-  })
-  @ApiParam({
-    name: 'customerId',
-    description: 'ID del cliente',
-    type: String,
-    example: '507f1f77bcf86cd799439011'
+    description: 'Aplica un código de descuento a un item específico del carrito (solo para clientes registrados)'
   })
   @ApiParam({
     name: 'itemId',
