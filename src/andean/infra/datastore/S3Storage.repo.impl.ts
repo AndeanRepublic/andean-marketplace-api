@@ -6,9 +6,10 @@ import {
 	DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
 import * as crypto from 'crypto';
+import { StorageRepository } from '../../app/datastore/Storage.repo';
 
 @Injectable()
-export class S3StorageService {
+export class S3StorageRepoImpl implements StorageRepository {
 	private readonly s3Client: S3Client;
 	private readonly bucket: string;
 	private readonly region: string;
@@ -29,14 +30,6 @@ export class S3StorageService {
 		});
 	}
 
-	/**
-	 * Sube un archivo a S3 organizado por tipo
-	 * @param file - Buffer del archivo
-	 * @param type - Tipo/carpeta (ej: 'products', 'avatars', 'banners')
-	 * @param fileName - Nombre original del archivo
-	 * @param mimeType - Tipo MIME del archivo
-	 * @returns URL pública del archivo subido
-	 */
 	async uploadFile(
 		file: Buffer,
 		type: string,
@@ -65,10 +58,6 @@ export class S3StorageService {
 		}
 	}
 
-	/**
-	 * Elimina un archivo de S3
-	 * @param url - URL completa del archivo a eliminar
-	 */
 	async deleteFile(url: string): Promise<void> {
 		const key = this.extractKeyFromUrl(url);
 
@@ -90,29 +79,19 @@ export class S3StorageService {
 		}
 	}
 
-	/**
-	 * Genera la URL pública del archivo
-	 */
 	private getPublicUrl(key: string): string {
 		return `https://${this.bucket}.s3.${this.region}.amazonaws.com/${key}`;
 	}
 
-	/**
-	 * Extrae la key de S3 desde una URL completa
-	 */
 	private extractKeyFromUrl(url: string): string | null {
 		try {
 			const urlObj = new URL(url);
-			// Quita el / inicial del pathname
 			return urlObj.pathname.substring(1);
 		} catch {
 			return null;
 		}
 	}
 
-	/**
-	 * Sanitiza el nombre del archivo para evitar caracteres problemáticos
-	 */
 	private sanitizeFileName(fileName: string): string {
 		return fileName
 			.toLowerCase()
