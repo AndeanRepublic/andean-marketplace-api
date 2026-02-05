@@ -54,7 +54,6 @@ export class MediaItemMapper {
 
 	static toPersistence(entity: MediaItem): any {
 		return {
-			id: entity.id,
 			type: entity.type,
 			name: entity.name,
 			url: entity.url,
