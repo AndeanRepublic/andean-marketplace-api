@@ -14,6 +14,7 @@ import {
 	MaxFileSizeValidator,
 	FileTypeValidator,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
 	ApiTags,
@@ -36,13 +37,19 @@ import { MediaItem } from '../../domain/entities/MediaItem';
 @ApiTags('Media Items')
 @Controller('media-items')
 export class MediaItemController {
+	private readonly storageBaseUrl: string;
+
 	constructor(
 		private readonly uploadMediaItemUseCase: UploadMediaItemUseCase,
 		private readonly updateMediaItemUseCase: UpdateMediaItemUseCase,
 		private readonly getMediaItemByIdUseCase: GetMediaItemByIdUseCase,
 		private readonly listMediaItemsUseCase: ListMediaItemsUseCase,
 		private readonly deleteMediaItemUseCase: DeleteMediaItemUseCase,
-	) { }
+		private readonly configService: ConfigService,
+	) {
+		// URL base para acceso a archivos (S3 o CloudFront)
+		this.storageBaseUrl = this.configService.get<string>('STORAGE_BASE_URL', '');
+	}
 
 	@Post()
 	@UseInterceptors(FileInterceptor('file'))
@@ -170,7 +177,7 @@ export class MediaItemController {
 			id: mediaItem.id,
 			type: mediaItem.type,
 			name: mediaItem.name,
-			url: mediaItem.url,
+			url: `${this.storageBaseUrl}/${mediaItem.key}`, // Construir URL dinámicamente
 			createdAt: mediaItem.createdAt!,
 			updatedAt: mediaItem.updatedAt!,
 		};
