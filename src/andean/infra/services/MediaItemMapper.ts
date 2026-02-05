@@ -3,6 +3,8 @@ import { MediaItem } from '../../domain/entities/MediaItem';
 import { CreateMediaItemDto } from '../controllers/dto/media/CreateMediaItemDto';
 import { UpdateMediaItemDto } from '../controllers/dto/media/UpdateMediaItemDto';
 import { Types } from 'mongoose';
+import { MediaItemType } from '../../domain/enums/MediaItemType';
+import { MediaItemRole } from '../../domain/enums/MediaItemRole';
 
 export class MediaItemMapper {
 	static fromDocument(doc: MediaItemDocument): MediaItem {
@@ -11,6 +13,7 @@ export class MediaItemMapper {
 			doc.type,
 			doc.name,
 			doc.key,
+			doc.role,
 			doc.createdAt,
 			doc.updatedAt,
 		);
@@ -22,17 +25,19 @@ export class MediaItemMapper {
 			dto.type,
 			dto.name,
 			dto.url, // Para compatibilidad con CreateMediaItemDto que tiene url
+			dto.role ?? MediaItemRole.NONE,
 			new Date(),
 			new Date(),
 		);
 	}
 
-	static fromUploadData(type: string, name: string, key: string): MediaItem {
+	static fromUploadData(type: MediaItemType, name: string, key: string, role: MediaItemRole = MediaItemRole.NONE): MediaItem {
 		return new MediaItem(
 			new Types.ObjectId().toString(), // Generar ObjectId temporal como string
 			type,
 			name,
 			key,
+			role,
 			new Date(),
 			new Date(),
 		);
@@ -47,6 +52,7 @@ export class MediaItemMapper {
 			dto.type ?? existing.type,
 			dto.name ?? existing.name,
 			dto.url ?? existing.key, // Mapear url del DTO al key de la entidad
+			dto.role ?? existing.role,
 			existing.createdAt,
 			new Date(),
 		);
@@ -57,6 +63,7 @@ export class MediaItemMapper {
 			type: entity.type,
 			name: entity.name,
 			key: entity.key,
+			role: entity.role,
 			createdAt: entity.createdAt || new Date(),
 			updatedAt: entity.updatedAt || new Date(),
 		};

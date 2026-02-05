@@ -1,15 +1,17 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, IsEnum, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { MediaItemType } from '../../../../domain/enums/MediaItemType';
+import { MediaItemRole } from '../../../../domain/enums/MediaItemRole';
 
 export class UploadMediaItemDto {
 	@ApiProperty({
-		description:
-			'Tipo/carpeta donde se almacenará el archivo (ej: products, avatars, banners)',
-		example: 'products',
+		description: 'Tipo de media item',
+		enum: MediaItemType,
+		example: MediaItemType.IMG,
 	})
-	@IsString()
+	@IsEnum(MediaItemType)
 	@IsNotEmpty()
-	type: string;
+	type!: MediaItemType;
 
 	@ApiProperty({
 		description: 'Nombre del archivo',
@@ -17,5 +19,15 @@ export class UploadMediaItemDto {
 	})
 	@IsString()
 	@IsNotEmpty()
-	name: string;
+	name!: string;
+
+	@ApiProperty({
+		description: 'Rol del media item',
+		enum: MediaItemRole,
+		example: MediaItemRole.PRINCIPAL,
+		required: false,
+	})
+	@IsEnum(MediaItemRole)
+	@IsOptional()
+	role?: MediaItemRole;
 }

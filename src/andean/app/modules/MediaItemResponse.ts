@@ -1,21 +1,26 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { MediaItemType } from '../../domain/enums/MediaItemType';
+import { MediaItemRole } from '../../domain/enums/MediaItemRole';
 
 export class MediaItemResponse {
 	@ApiProperty()
-	id: string;
+	id!: string;
+
+	@ApiProperty({ enum: MediaItemType, description: 'Tipo de media item' })
+	type!: MediaItemType;
 
 	@ApiProperty()
-	type: string;
+	name!: string;
 
 	@ApiProperty()
-	name: string;
+	url!: string;
+
+	@ApiProperty({ enum: MediaItemRole, description: 'Rol del media item' })
+	role!: MediaItemRole;
 
 	@ApiProperty()
-	url: string;
+	createdAt!: Date;
 
 	@ApiProperty()
-	createdAt: Date;
-
-	@ApiProperty()
-	updatedAt: Date;
+	updatedAt!: Date;
 }
