@@ -33,7 +33,7 @@ export class UploadMediaItemUseCase {
 			const mediaItem = MediaItemMapper.fromUploadData(type, name, url);
 
 			// 3. Guardar en base de datos
-			return await this.mediaItemRepository.save(mediaItem);
+			return await this.mediaItemRepository.create(mediaItem);
 		} catch (error) {
 			throw new BadRequestException(
 				`Error uploading media item: ${error.message}`,
