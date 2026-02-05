@@ -1,7 +1,6 @@
 import { Document, Schema } from 'mongoose';
 
 export const MediaItemSchema = new Schema({
-	id: { type: String, required: true, unique: true },
 	type: { type: String, required: true }, // e.g., "image", "video"
 	name: { type: String, required: true },
 	url: { type: String, required: true },
@@ -10,7 +9,6 @@ export const MediaItemSchema = new Schema({
 });
 
 export interface MediaItemDocument extends Document {
-	id: string;
 	type: string;
 	name: string;
 	url: string;

@@ -2,12 +2,12 @@ import { MediaItemDocument } from '../persistence/mediaItem.schema';
 import { MediaItem } from '../../domain/entities/MediaItem';
 import { CreateMediaItemDto } from '../controllers/dto/media/CreateMediaItemDto';
 import { UpdateMediaItemDto } from '../controllers/dto/media/UpdateMediaItemDto';
-import * as crypto from 'crypto';
+import { Types } from 'mongoose';
 
 export class MediaItemMapper {
 	static fromDocument(doc: MediaItemDocument): MediaItem {
 		return new MediaItem(
-			doc.id,
+			doc._id.toString(),
 			doc.type,
 			doc.name,
 			doc.url,
@@ -18,7 +18,7 @@ export class MediaItemMapper {
 
 	static fromCreateDto(dto: CreateMediaItemDto): MediaItem {
 		return new MediaItem(
-			crypto.randomUUID(),
+			new Types.ObjectId().toString(), // Generar ObjectId temporal como string
 			dto.type,
 			dto.name,
 			dto.url,
@@ -29,7 +29,7 @@ export class MediaItemMapper {
 
 	static fromUploadData(type: string, name: string, url: string): MediaItem {
 		return new MediaItem(
-			crypto.randomUUID(),
+			new Types.ObjectId().toString(), // Generar ObjectId temporal como string
 			type,
 			name,
 			url,
