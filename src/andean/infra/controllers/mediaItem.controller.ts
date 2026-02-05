@@ -33,6 +33,8 @@ import { UploadMediaItemDto } from './dto/media/UploadMediaItemDto';
 import { UpdateMediaItemDto } from './dto/media/UpdateMediaItemDto';
 import { MediaItemResponse } from '../../app/modules/MediaItemResponse';
 import { MediaItem } from '../../domain/entities/MediaItem';
+import { MediaItemType } from '../../domain/enums/MediaItemType';
+import { MediaItemRole } from '../../domain/enums/MediaItemRole';
 
 @ApiTags('Media Items')
 @Controller('media-items')
@@ -67,13 +69,20 @@ export class MediaItemController {
 				},
 				type: {
 					type: 'string',
-					description: 'Tipo/carpeta (ej: products, avatars, banners)',
-					example: 'products',
+					enum: Object.values(MediaItemType),
+					description: 'Tipo de media item',
+					example: 'img',
 				},
 				name: {
 					type: 'string',
 					description: 'Nombre del archivo',
 					example: 'quinoa-roja.png',
+				},
+				role: {
+					type: 'string',
+					enum: Object.values(MediaItemRole),
+					description: 'Rol del media item',
+					example: 'principal',
 				},
 			},
 		},
@@ -103,6 +112,7 @@ export class MediaItemController {
 			file,
 			type: dto.type,
 			name: dto.name,
+			role: dto.role,
 		});
 		return this.toResponse(mediaItem);
 	}
@@ -178,6 +188,7 @@ export class MediaItemController {
 			type: mediaItem.type,
 			name: mediaItem.name,
 			url: `${this.storageBaseUrl}/${mediaItem.key}`, // Construir URL dinámicamente
+			role: mediaItem.role,
 			createdAt: mediaItem.createdAt!,
 			updatedAt: mediaItem.updatedAt!,
 		};
