@@ -50,7 +50,8 @@ export class S3StorageRepoImpl implements StorageRepository {
 
 			await this.s3Client.send(command);
 
-			return this.getPublicUrl(key);
+			// Retornar solo el key, no la URL completa
+			return key;
 		} catch (error) {
 			throw new InternalServerErrorException(
 				`Error uploading file to S3: ${error.message}`,
@@ -58,9 +59,7 @@ export class S3StorageRepoImpl implements StorageRepository {
 		}
 	}
 
-	async deleteFile(url: string): Promise<void> {
-		const key = this.extractKeyFromUrl(url);
-
+	async deleteFile(key: string): Promise<void> {
 		if (!key) {
 			return;
 		}
@@ -76,19 +75,6 @@ export class S3StorageRepoImpl implements StorageRepository {
 			throw new InternalServerErrorException(
 				`Error deleting file from S3: ${error.message}`,
 			);
-		}
-	}
-
-	private getPublicUrl(key: string): string {
-		return `https://${this.bucket}.s3.${this.region}.amazonaws.com/${key}`;
-	}
-
-	private extractKeyFromUrl(url: string): string | null {
-		try {
-			const urlObj = new URL(url);
-			return urlObj.pathname.substring(1);
-		} catch {
-			return null;
 		}
 	}
 

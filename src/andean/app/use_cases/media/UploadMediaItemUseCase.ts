@@ -21,16 +21,16 @@ export class UploadMediaItemUseCase {
 		const { file, type, name } = input;
 
 		try {
-			// 1. Subir archivo a S3
-			const url = await this.storageRepository.uploadFile(
+			// 1. Subir archivo a S3 y obtener key
+			const key = await this.storageRepository.uploadFile(
 				file.buffer,
 				type,
 				name,
 				file.mimetype,
 			);
 
-			// 2. Crear entidad MediaItem usando mapper
-			const mediaItem = MediaItemMapper.fromUploadData(type, name, url);
+			// 2. Crear entidad MediaItem usando mapper con el key
+			const mediaItem = MediaItemMapper.fromUploadData(type, name, key);
 
 			// 3. Guardar en base de datos
 			return await this.mediaItemRepository.create(mediaItem);

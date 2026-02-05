@@ -10,7 +10,7 @@ export class MediaItemMapper {
 			doc._id.toString(),
 			doc.type,
 			doc.name,
-			doc.url,
+			doc.key,
 			doc.createdAt,
 			doc.updatedAt,
 		);
@@ -21,18 +21,18 @@ export class MediaItemMapper {
 			new Types.ObjectId().toString(), // Generar ObjectId temporal como string
 			dto.type,
 			dto.name,
-			dto.url,
+			dto.url, // Para compatibilidad con CreateMediaItemDto que tiene url
 			new Date(),
 			new Date(),
 		);
 	}
 
-	static fromUploadData(type: string, name: string, url: string): MediaItem {
+	static fromUploadData(type: string, name: string, key: string): MediaItem {
 		return new MediaItem(
 			new Types.ObjectId().toString(), // Generar ObjectId temporal como string
 			type,
 			name,
-			url,
+			key,
 			new Date(),
 			new Date(),
 		);
@@ -46,7 +46,7 @@ export class MediaItemMapper {
 			existing.id,
 			dto.type ?? existing.type,
 			dto.name ?? existing.name,
-			dto.url ?? existing.url,
+			dto.url ?? existing.key, // Mapear url del DTO al key de la entidad
 			existing.createdAt,
 			new Date(),
 		);
@@ -56,7 +56,7 @@ export class MediaItemMapper {
 		return {
 			type: entity.type,
 			name: entity.name,
-			url: entity.url,
+			key: entity.key,
 			createdAt: entity.createdAt || new Date(),
 			updatedAt: entity.updatedAt || new Date(),
 		};
