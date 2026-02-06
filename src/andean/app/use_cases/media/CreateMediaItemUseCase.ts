@@ -6,12 +6,12 @@ import { MediaItemMapper } from '../../../infra/services/MediaItemMapper';
 
 @Injectable()
 export class CreateMediaItemUseCase {
-	constructor(private readonly mediaItemRepository: MediaItemRepository) {}
+	constructor(private readonly mediaItemRepository: MediaItemRepository) { }
 
 	async execute(dto: CreateMediaItemDto): Promise<MediaItem> {
 		try {
 			const mediaItem = MediaItemMapper.fromCreateDto(dto);
-			return await this.mediaItemRepository.save(mediaItem);
+			return await this.mediaItemRepository.create(mediaItem);
 		} catch (error) {
 			throw new BadRequestException(
 				`Error creating media item: ${error.message}`,

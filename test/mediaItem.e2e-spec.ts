@@ -8,6 +8,8 @@ import { ListMediaItemsUseCase } from '../src/andean/app/use_cases/media/ListMed
 import { UpdateMediaItemUseCase } from '../src/andean/app/use_cases/media/UpdateMediaItemUseCase';
 import { DeleteMediaItemUseCase } from '../src/andean/app/use_cases/media/DeleteMediaItemUseCase';
 import { MediaItemResponse } from '../src/andean/app/modules/MediaItemResponse';
+import { MediaItemType } from '../src/andean/domain/enums/MediaItemType';
+import { MediaItemRole } from '../src/andean/domain/enums/MediaItemRole';
 
 describe('MediaItemController (e2e)', () => {
 	let app: INestApplication;
@@ -20,17 +22,19 @@ describe('MediaItemController (e2e)', () => {
 	// Mock data
 	const mockMediaItemResponse: MediaItemResponse = {
 		id: '123e4567-e89b-12d3-a456-426614174000',
-		type: 'image',
+		type: MediaItemType.IMG,
 		name: 'icon-protein.svg',
 		url: 'https://example.com/uploads/icon-protein.svg',
+		role: MediaItemRole.NONE,
 		createdAt: new Date('2026-01-01'),
 		updatedAt: new Date('2026-01-01'),
 	};
 
 	const createDto = {
-		type: 'image',
+		type: MediaItemType.IMG,
 		name: 'icon-energy.svg',
 		url: 'https://example.com/uploads/icon-energy.svg',
+		role: MediaItemRole.PRINCIPAL,
 	};
 
 	const updateDto = {
@@ -116,6 +120,7 @@ describe('MediaItemController (e2e)', () => {
 					expect(res.body).toHaveProperty('type');
 					expect(res.body).toHaveProperty('name');
 					expect(res.body).toHaveProperty('url');
+					expect(res.body).toHaveProperty('role');
 					expect(res.body).toHaveProperty('createdAt');
 					expect(res.body).toHaveProperty('updatedAt');
 				});
@@ -124,28 +129,28 @@ describe('MediaItemController (e2e)', () => {
 		it('should return 400 when type is missing', () => {
 			return request(app.getHttpServer())
 				.post('/media-items')
-				.send({ name: 'icon.svg', url: 'https://example.com/icon.svg' })
+				.send({ name: 'icon.svg', url: 'https://example.com/icon.svg', role: MediaItemRole.NONE })
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 
 		it('should return 400 when name is missing', () => {
 			return request(app.getHttpServer())
 				.post('/media-items')
-				.send({ type: 'image', url: 'https://example.com/icon.svg' })
+				.send({ type: MediaItemType.IMG, url: 'https://example.com/icon.svg', role: MediaItemRole.NONE })
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 
 		it('should return 400 when url is missing', () => {
 			return request(app.getHttpServer())
 				.post('/media-items')
-				.send({ type: 'image', name: 'icon.svg' })
+				.send({ type: MediaItemType.IMG, name: 'icon.svg', role: MediaItemRole.NONE })
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 
 		it('should return 400 when url is not valid', () => {
 			return request(app.getHttpServer())
 				.post('/media-items')
-				.send({ type: 'image', name: 'icon.svg', url: 'not-a-url' })
+				.send({ type: MediaItemType.IMG, name: 'icon.svg', url: 'not-a-url', role: MediaItemRole.NONE })
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 	});
