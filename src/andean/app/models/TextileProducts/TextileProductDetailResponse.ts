@@ -1,19 +1,19 @@
 export class TextileProductDetailResponse {
-	name: string;
-	availableSizes: string[];
-	availableColors: string[];
-	availableMaterials: string[];
-	variantInfo: {
+	name!: string;
+	availableSizes!: string[];
+	availableColors!: string[];
+	availableMaterials!: string[];
+	variantInfo!: {
 		size: string;
 		color: string;
 		material: string;
 		price: number;
 		stock: number;
 	}[];
-	generalStock: number;
-	information: string;
-	description: string;
-	traceabilityInfo: {
+	generalStock!: number;
+	information!: string;
+	description!: string;
+	traceabilityInfo!: {
 		blockchainLink?: string;
 		origen: {
 			title: string;
@@ -44,7 +44,7 @@ export class TextileProductDetailResponse {
 			description: string;
 		}[];
 	};
-	reviews: {
+	reviews!: {
 		rating: {
 			count5stars: number;
 			count4stars: number;
@@ -64,7 +64,7 @@ export class TextileProductDetailResponse {
 			dislikes: number;
 		}[];
 	};
-	similarProducts: {
+	similarProducts!: {
 		title: string;
 		categoryName: string;
 		productorName: string;
@@ -77,7 +77,7 @@ export class TextileProductDetailResponse {
 		price: number;
 	}[];
 	communityInfo?: {
-		bannerImageUrl: string;
+		bannerImageId: string;
 		name: string;
 		seals: {
 			title: string;
