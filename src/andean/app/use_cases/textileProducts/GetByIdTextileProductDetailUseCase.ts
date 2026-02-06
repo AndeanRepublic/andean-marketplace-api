@@ -163,7 +163,7 @@ export class GetByIdTextileProductDetailUseCase {
 			| {
 				bannerImageId: string;
 				name: string;
-				seals: { title: string; description: string; logoUrl: string }[];
+				seals: { title: string; description: string; logoMediaId: string }[];
 			}
 			| undefined = undefined;
 		if (product.baseInfo.ownerType === OwnerType.COMMUNITY) {
@@ -187,7 +187,7 @@ export class GetByIdTextileProductDetailUseCase {
 						.map((seal) => ({
 							title: seal.name,
 							description: seal.description,
-							logoUrl: seal.logoUrl,
+							logoMediaId: seal.logoMediaId,
 						})),
 				};
 			}

@@ -3,11 +3,11 @@ import { Document, Schema } from 'mongoose';
 export const SealSchema = new Schema({
 	name: String,
 	description: String,
-	logoUrl: String,
+	logoMediaId: String,
 });
 
 export interface SealDocument extends Document {
 	name: string;
 	description: string;
-	logoUrl: string;
+	logoMediaId: string;
 }

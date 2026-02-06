@@ -82,7 +82,7 @@ export class TextileProductDetailResponse {
 		seals: {
 			title: string;
 			description: string;
-			logoUrl: string;
+			logoMediaId: string;
 		}[];
 	};
 }
