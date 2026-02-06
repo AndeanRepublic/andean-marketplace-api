@@ -14,6 +14,7 @@ export const CustomerProfileSchema = new Schema({
 		enum: Object.values(CoinType),
 		required: true,
 	},
+	profilePictureMediaId: { type: String, required: false },
 });
 
 export interface CustomerProfileDocument extends Document<string> {
@@ -25,4 +26,5 @@ export interface CustomerProfileDocument extends Document<string> {
 	phoneNumber: string;
 	language: string;
 	coin: CoinType;
+	profilePictureMediaId?: string;
 }

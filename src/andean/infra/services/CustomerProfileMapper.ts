@@ -31,7 +31,7 @@ export class CustomerProfileMapper {
 		userId: string,
 		dto: UpdateCustomerProfileDto,
 	) {
-		const { birthDate, profilePictureUrl, ...customerData } = dto;
+		const { birthDate, ...customerData } = dto;
 
 		const plain = {
 			id: id,
