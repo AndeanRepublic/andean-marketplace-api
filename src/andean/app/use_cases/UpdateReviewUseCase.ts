@@ -1,5 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ReviewRepository } from '../datastore/Review.repo';
+import { MediaItemRepository } from '../datastore/MediaItem.repo';
 import { Review } from 'src/andean/domain/entities/Review';
 import { ReviewMapper } from 'src/andean/infra/services/ReviewMapper';
 import { CreateReviewDto } from 'src/andean/infra/controllers/dto/CreateReviewDto';
@@ -20,7 +21,9 @@ export class UpdateReviewUseCase {
 		private readonly textileProductRepository: TextileProductRepository,
 		@Inject(SuperfoodProductRepository)
 		private readonly superfoodProductRepository: SuperfoodProductRepository,
-	) {}
+		@Inject(MediaItemRepository)
+		private readonly mediaItemRepository: MediaItemRepository,
+	) { }
 
 	async handle(id: string, dto: UpdateReviewDto): Promise<Review> {
 		const reviewFound = await this.reviewRepository.getById(id);
@@ -61,8 +64,15 @@ export class UpdateReviewUseCase {
 			}
 		}
 
-		console.log('reviewFound', reviewFound);
-		console.log('dto', dto);
+		// Validar que el MediaItem existe si se proporciona
+		if (dto.mediaId) {
+			const mediaItemFound = await this.mediaItemRepository.getById(
+				dto.mediaId,
+			);
+			if (!mediaItemFound) {
+				throw new NotFoundException(`MediaItem with id ${dto.mediaId} not found`);
+			}
+		}
 
 		const updatedData: Partial<Review> = {
 			...reviewFound,
