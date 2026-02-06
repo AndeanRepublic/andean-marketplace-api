@@ -11,5 +11,5 @@ export class CreateManyVariantsDto {
 	@IsArray()
 	@ValidateNested({ each: true })
 	@Type(() => CreateVariantDto)
-	variants: CreateVariantDto[];
+	variants!: CreateVariantDto[];
 }

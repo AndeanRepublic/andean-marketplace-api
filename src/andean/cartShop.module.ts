@@ -80,5 +80,9 @@ import { OwnerNameResolver } from './infra/services/OwnerNameResolver';
 		ProductInfoProviderRegistry,
 		OwnerNameResolver,
 	],
+	exports: [
+		CartShopRepository,
+		CartShopItemRepository,
+	],
 })
 export class CartShopModule { }

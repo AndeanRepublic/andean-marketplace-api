@@ -1,19 +1,21 @@
 import { Document, Schema } from 'mongoose';
+import { MediaItemType } from '../../domain/enums/MediaItemType';
+import { MediaItemRole } from '../../domain/enums/MediaItemRole';
 
 export const MediaItemSchema = new Schema({
-	id: { type: String, required: true, unique: true },
-	type: { type: String, required: true }, // e.g., "image", "video"
+	type: { type: String, enum: Object.values(MediaItemType), required: true },
 	name: { type: String, required: true },
-	url: { type: String, required: true },
+	key: { type: String, required: true }, // Path dentro del bucket
+	role: { type: String, enum: Object.values(MediaItemRole), default: MediaItemRole.NONE },
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 });
 
 export interface MediaItemDocument extends Document {
-	id: string;
-	type: string;
+	type: MediaItemType;
 	name: string;
-	url: string;
+	key: string;
+	role: MediaItemRole;
 	createdAt: Date;
 	updatedAt: Date;
 }
