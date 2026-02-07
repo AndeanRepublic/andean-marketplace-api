@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional, IsMongoId } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateSuperfoodBenefitDto {
@@ -10,7 +10,7 @@ export class CreateSuperfoodBenefitDto {
 	})
 	@IsString()
 	@IsNotEmpty()
-	name: string;
+	name!: string;
 
 	@ApiProperty({
 		description: 'ID del MediaItem que representa el icono del beneficio',
@@ -18,6 +18,7 @@ export class CreateSuperfoodBenefitDto {
 		required: false,
 	})
 	@IsString()
+	@IsMongoId()
 	@IsOptional()
 	iconId?: string;
 }

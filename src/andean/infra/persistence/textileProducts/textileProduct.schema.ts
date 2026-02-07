@@ -11,7 +11,7 @@ import { TextileOptionName } from 'src/andean/domain/enums/TextileOptionName';
 const BaseInfoSchema = new Schema(
 	{
 		title: { type: String, required: true },
-		media: { type: [String], required: true },
+		mediaIds: { type: [String], required: true },
 		description: { type: String, required: true },
 		ownerType: {
 			type: String,
@@ -139,7 +139,7 @@ export interface TextileProductDocument extends Document {
 	status: TextileProductStatus;
 	baseInfo: {
 		title: string;
-		media: string[];
+		mediaIds: string[];
 		description: string;
 		ownerType: OwnerType;
 		ownerId: string;

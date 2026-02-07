@@ -39,7 +39,7 @@ export class GetByIdTextileProductDetailUseCase {
 		private readonly shopRepository: ShopRepository,
 		@Inject(VariantRepository)
 		private readonly variantRepository: VariantRepository,
-	) {}
+	) { }
 
 	async handle(id: string): Promise<TextileProductDetailResponse> {
 		// 1. Obtener el producto principal
@@ -161,10 +161,10 @@ export class GetByIdTextileProductDetailUseCase {
 		// 14. Obtener communityInfo si es COMMUNITY
 		let communityInfo:
 			| {
-					bannerImageUrl: string;
-					name: string;
-					seals: { title: string; description: string; logoUrl: string }[];
-			  }
+				bannerImageId: string;
+				name: string;
+				seals: { title: string; description: string; logoMediaId: string }[];
+			}
 			| undefined = undefined;
 		if (product.baseInfo.ownerType === OwnerType.COMMUNITY) {
 			const community = await this.communityRepository.getById(
@@ -173,21 +173,21 @@ export class GetByIdTextileProductDetailUseCase {
 			if (community) {
 				const seals = community.seals
 					? await Promise.all(
-							community.seals.map((sealId) =>
-								this.sealRepository.getById(sealId),
-							),
-						)
+						community.seals.map((sealId) =>
+							this.sealRepository.getById(sealId),
+						),
+					)
 					: [];
 
 				communityInfo = {
-					bannerImageUrl: community.bannerImageUrl,
+					bannerImageId: community.bannerImageId,
 					name: community.name,
 					seals: seals
 						.filter((seal): seal is NonNullable<typeof seal> => seal !== null)
 						.map((seal) => ({
 							title: seal.name,
 							description: seal.description,
-							logoUrl: seal.logoUrl,
+							logoMediaId: seal.logoMediaId,
 						})),
 				};
 			}
@@ -500,7 +500,7 @@ export class GetByIdTextileProductDetailUseCase {
 					productorName,
 					colors,
 					sizes,
-					principalImgUrl: product.baseInfo.media?.[0] || '',
+					principalImgUrl: product.baseInfo.mediaIds?.[0] || '',
 					price: product.priceInventary.basePrice,
 				};
 			}),

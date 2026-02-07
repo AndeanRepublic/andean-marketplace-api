@@ -25,6 +25,9 @@ import { GetByIdSealUseCase } from './app/use_cases/community/GetByIdSealUseCase
 import { UpdateSealUseCase } from './app/use_cases/community/UpdateSealUseCase';
 import { DeleteSealUseCase } from './app/use_cases/community/DeleteSealUseCase';
 
+// Modules
+import { MediaItemModule } from './mediaItem.module';
+
 // Controller
 import { CommunityController } from './infra/controllers/community.controller';
 
@@ -34,6 +37,7 @@ import { CommunityController } from './infra/controllers/community.controller';
 			{ name: 'Community', schema: CommunitySchema },
 			{ name: 'Seal', schema: SealSchema },
 		]),
+		MediaItemModule,
 	],
 	controllers: [CommunityController],
 	providers: [
@@ -46,7 +50,6 @@ import { CommunityController } from './infra/controllers/community.controller';
 			provide: SealRepository,
 			useClass: SealRepositoryImpl,
 		},
-
 		// Use Cases
 		CreateCommunityUseCase,
 		UpdateCommunityUseCase,
@@ -62,7 +65,7 @@ import { CommunityController } from './infra/controllers/community.controller';
 	exports: [CommunityRepository, SealRepository],
 })
 export class CommunityModule implements OnModuleInit {
-	constructor(@InjectConnection() private readonly connection: Connection) {}
+	constructor(@InjectConnection() private readonly connection: Connection) { }
 
 	async onModuleInit() {
 		try {
@@ -76,7 +79,7 @@ export class CommunityModule implements OnModuleInit {
 				await collection.dropIndex('id_1');
 				console.log('✅ Índice viejo "id_1" eliminado de communities');
 			}
-		} catch (error) {
+		} catch (error: any) {
 			// Si el índice no existe, ignorar el error
 			if (error.code !== 27) {
 				console.warn('⚠️ No se pudo eliminar el índice viejo:', error.message);

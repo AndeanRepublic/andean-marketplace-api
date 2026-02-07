@@ -13,6 +13,7 @@ import { SizeOptionAlternativeSchema } from './infra/persistence/textileProducts
 import { UsersModule } from './users.module';
 import { ShopsModule } from './shop.module';
 import { CommunityModule } from './community.module';
+import { MediaItemModule } from './mediaItem.module';
 import { OriginProductModule } from './originProduct.module';
 import { CreateTextileCategoryUseCase } from './app/use_cases/textileProducts/CreateTextileCategoryUseCase';
 import { TextileCategoryRepository } from './app/datastore/textileProducts/TextileCategory.repo';
@@ -180,6 +181,7 @@ import { VariantSchema } from './infra/persistence/variant.schema';
 		CommunityModule,
 		OriginProductModule,
 		VariantModule,
+		MediaItemModule,
 		forwardRef(() => SuperfoodModule),
 	],
 	controllers: [
