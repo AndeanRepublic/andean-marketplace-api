@@ -2,4 +2,5 @@ export enum ProductType {
 	SUPERFOOD = 'SUPERFOOD',
 	TEXTILE = 'TEXTILE',
 	EXPERIENCE = 'EXPERIENCE',
+	BOX = 'BOX',
 }
