@@ -7,15 +7,14 @@ import {
 import { OrderRepository } from '../../datastore/order/Order.repo';
 import { CreateOrderDto } from '../../../infra/controllers/dto/order/CreateOrderDto';
 import { Order } from '../../../domain/entities/order/Order';
-import { OrderStatus } from '../../../domain/enums/OrderStatus';
-import { Types } from 'mongoose';
+import { OrderMapper } from '../../../infra/services/order/OrderMapper';
 
 @Injectable()
 export class CreateOrderUseCase {
 	constructor(
 		@Inject(OrderRepository)
 		private readonly orderRepository: OrderRepository,
-	) {}
+	) { }
 
 	async handle(orderDto: CreateOrderDto): Promise<Order> {
 		// Validar que customerId o customerEmail esté presente
@@ -25,20 +24,8 @@ export class CreateOrderUseCase {
 			);
 		}
 
-		// Crear Order desde DTO
-		const now = new Date();
-		const order = new Order(
-			new Types.ObjectId().toString(),
-			orderDto.customerId,
-			orderDto.customerEmail,
-			orderDto.status || OrderStatus.PROCESSING,
-			orderDto.items,
-			orderDto.pricing,
-			orderDto.shippingInfo,
-			orderDto.payment,
-			now,
-			now,
-		);
+		// Crear Order desde DTO usando mapper
+		const order = OrderMapper.fromCreateDto(orderDto);
 
 		return this.orderRepository.createOrder(order);
 	}

@@ -10,6 +10,7 @@ import {
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PaymentMethod } from 'src/andean/domain/enums/PaymentMethod';
+import { DeliveryOption } from 'src/andean/domain/enums/DeliveryOption';
 import {
 	ShippingInfo,
 	PaymentInfo,
@@ -26,13 +27,13 @@ export class CreateOrderFromCartDto {
 	@ValidateNested()
 	@Type(() => ShippingInfoDto)
 	@IsObject()
-	shippingInfo: ShippingInfoDto;
+	shippingInfo!: ShippingInfoDto;
 
 	@ApiProperty({ type: PaymentInfoDto, description: 'Información de pago' })
 	@ValidateNested()
 	@Type(() => PaymentInfoDto)
 	@IsObject()
-	payment: PaymentInfoDto;
+	payment!: PaymentInfoDto;
 
 	@ApiProperty({
 		description: 'Moneda (USD, PEN, CAD, etc)',
@@ -40,5 +41,14 @@ export class CreateOrderFromCartDto {
 	})
 	@IsString()
 	@IsNotEmpty()
-	currency: string;
+	currency!: string;
+
+	@ApiPropertyOptional({
+		enum: DeliveryOption,
+		description: 'Opción de entrega',
+		default: DeliveryOption.DHL,
+	})
+	@IsEnum(DeliveryOption)
+	@IsOptional()
+	deliveryOption?: DeliveryOption;
 }
