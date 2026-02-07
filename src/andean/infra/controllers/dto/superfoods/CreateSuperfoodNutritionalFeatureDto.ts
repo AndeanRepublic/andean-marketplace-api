@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional, IsMongoId } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateSuperfoodNutritionalFeatureDto {
@@ -10,7 +10,7 @@ export class CreateSuperfoodNutritionalFeatureDto {
 	})
 	@IsString()
 	@IsNotEmpty()
-	name: string;
+	name!: string;
 
 	@ApiProperty({
 		description:
@@ -19,6 +19,7 @@ export class CreateSuperfoodNutritionalFeatureDto {
 		required: false,
 	})
 	@IsString()
+	@IsMongoId()
 	@IsOptional()
 	iconId?: string;
 }

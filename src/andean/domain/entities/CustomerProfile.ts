@@ -9,5 +9,6 @@ export class CustomerProfile {
 		public phoneNumber: string,
 		public language: string,
 		public coin: CoinType,
+		public profilePictureMediaId?: string,
 	) {}
 }

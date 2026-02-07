@@ -1,32 +1,33 @@
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { IsEnum, IsMongoId, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { CoinType } from '../../../domain/enums/CoinType';
 
 export class UpdateCustomerProfileDto {
 	@IsString()
 	@IsNotEmpty()
-	name: string;
+	name!: string;
 
 	@IsString()
 	@IsNotEmpty()
-	phoneNumber: string;
+	phoneNumber!: string;
 
 	@IsString()
 	@IsNotEmpty()
-	birthDate: string;
+	birthDate!: string;
+
+	@IsString()
+	@IsMongoId()
+	@IsOptional()
+	profilePictureMediaId?: string;
 
 	@IsString()
 	@IsNotEmpty()
-	profilePictureUrl: string;
+	country!: string;
 
 	@IsString()
 	@IsNotEmpty()
-	country: string;
-
-	@IsString()
-	@IsNotEmpty()
-	language: string;
+	language!: string;
 
 	@IsEnum(CoinType)
 	@IsNotEmpty()
-	coin: CoinType;
+	coin!: CoinType;
 }

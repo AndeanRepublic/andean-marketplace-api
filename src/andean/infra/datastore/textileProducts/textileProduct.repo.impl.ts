@@ -358,7 +358,7 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 					],
 				},
 				principalImgUrl: {
-					$ifNull: [{ $arrayElemAt: ['$baseInfo.media', 0] }, ''],
+					$ifNull: [{ $arrayElemAt: ['$baseInfo.mediaIds', 0] }, ''],
 				},
 				price: '$priceInventary.basePrice',
 				colors: {
