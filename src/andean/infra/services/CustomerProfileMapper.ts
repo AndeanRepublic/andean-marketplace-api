@@ -8,7 +8,11 @@ export class CustomerProfileMapper {
 	static fromDocument(doc: CustomerProfileDocument): CustomerProfile {
 		const plain = doc.toObject();
 		const { _id, ...rest } = plain;
-		return plainToInstance(CustomerProfile, rest);
+		return plainToInstance<CustomerProfile, Record<string, any>>(
+			CustomerProfile,
+			rest,
+			{ excludeExtraneousValues: false },
+		) as unknown as CustomerProfile;
 	}
 
 	static fromCreateDto(
@@ -23,7 +27,11 @@ export class CustomerProfileMapper {
 			...customerData,
 		};
 
-		return plainToInstance(CustomerProfile, plain);
+		return plainToInstance<CustomerProfile, Record<string, any>>(
+			CustomerProfile,
+			plain,
+			{ excludeExtraneousValues: false },
+		) as unknown as CustomerProfile;
 	}
 
 	static fromUpdateDto(
@@ -39,7 +47,11 @@ export class CustomerProfileMapper {
 			...customerData,
 		};
 
-		return plainToInstance(CustomerProfile, plain);
+		return plainToInstance<CustomerProfile, Record<string, any>>(
+			CustomerProfile,
+			plain,
+			{ excludeExtraneousValues: false },
+		) as unknown as CustomerProfile;
 	}
 
 	static toPersistence(profile: CustomerProfile) {
