@@ -19,12 +19,13 @@ export class CustomerProfileMapper {
 		userId: string,
 		dto: CreateCustomerDto,
 	): CustomerProfile {
-		const { email, password, name, ...customerData } = dto;
+		const { email, password, name, birthDate, ...customerData } = dto;
 
 		const plain = {
 			id: crypto.randomUUID(),
 			userId: userId,
 			...customerData,
+			...(birthDate && { birthDate: new Date(birthDate) }),
 		};
 
 		return plainToInstance<CustomerProfile, Record<string, any>>(
@@ -45,6 +46,7 @@ export class CustomerProfileMapper {
 			id: id,
 			userId: userId,
 			...customerData,
+			...(birthDate && { birthDate: new Date(birthDate) }),
 		};
 
 		return plainToInstance<CustomerProfile, Record<string, any>>(

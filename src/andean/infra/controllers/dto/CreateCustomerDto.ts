@@ -1,17 +1,17 @@
-import { IsString, IsNotEmpty, IsEnum } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsNotEmpty, IsEnum, IsOptional, IsDateString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { CoinType } from '../../../domain/enums/CoinType';
 
 export class CreateCustomerDto {
-	@ApiProperty({ description: 'País de residencia', example: 'Perú' })
+	@ApiPropertyOptional({ description: 'País de residencia', example: 'Perú' })
 	@IsString()
-	@IsNotEmpty()
-	country!: string;
+	@IsOptional()
+	country?: string;
 
-	@ApiProperty({ description: 'Número de teléfono', example: '+51987654321' })
+	@ApiPropertyOptional({ description: 'Número de teléfono', example: '+51987654321' })
 	@IsString()
-	@IsNotEmpty()
-	phoneNumber!: string;
+	@IsOptional()
+	phoneNumber?: string;
 
 	@ApiProperty({
 		description: 'Correo electrónico',
@@ -29,19 +29,34 @@ export class CreateCustomerDto {
 	@IsNotEmpty()
 	name!: string;
 
-	@ApiProperty({ description: 'Idioma preferido', example: 'es' })
+	@ApiPropertyOptional({ description: 'Idioma preferido', example: 'es' })
 	@IsString()
-	@IsNotEmpty()
-	language!: string;
+	@IsOptional()
+	language?: string;
 
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'Tipo de moneda preferida',
 		enum: CoinType,
 		example: CoinType.PEN,
 	})
 	@IsEnum(CoinType)
-	@IsNotEmpty()
-	coin!: CoinType;
+	@IsOptional()
+	coin?: CoinType;
+
+	@ApiPropertyOptional({
+		description: 'Fecha de nacimiento',
+		example: '1990-01-15',
+	})
+	@IsDateString()
+	@IsOptional()
+	birthDate?: string;
+
+	@ApiPropertyOptional({
+		description: 'ID del MediaItem de la foto de perfil',
+	})
+	@IsString()
+	@IsOptional()
+	profilePictureMediaId?: string;
 
 	@ApiProperty({
 		description: 'Contraseña para la cuenta',

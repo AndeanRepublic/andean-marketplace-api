@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { CoinType } from '../../domain/enums/CoinType';
 
 export class CustomerProfileResponse {
@@ -14,28 +14,39 @@ export class CustomerProfileResponse {
 	})
 	userId!: string;
 
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'País de residencia del cliente',
 		example: 'Perú',
 	})
-	country!: string;
+	country?: string;
 
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'Número de teléfono del cliente',
 		example: '+51 987654321',
 	})
-	phoneNumber!: string;
+	phoneNumber?: string;
 
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'Idioma preferido del cliente',
 		example: 'es',
 	})
-	language!: string;
+	language?: string;
 
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'Tipo de moneda preferida del cliente',
 		enum: CoinType,
 		example: CoinType.PEN,
 	})
-	coin!: CoinType;
+	coin?: CoinType;
+
+	@ApiPropertyOptional({
+		description: 'Fecha de nacimiento del cliente',
+		example: '1990-01-15',
+	})
+	birthDate?: Date;
+
+	@ApiPropertyOptional({
+		description: 'ID del MediaItem de la foto de perfil',
+	})
+	profilePictureMediaId?: string;
 }
