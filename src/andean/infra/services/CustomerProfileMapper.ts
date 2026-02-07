@@ -19,7 +19,7 @@ export class CustomerProfileMapper {
 		userId: string,
 		dto: CreateCustomerDto,
 	): CustomerProfile {
-		const { email, password, ...customerData } = dto;
+		const { email, password, name, ...customerData } = dto;
 
 		const plain = {
 			id: crypto.randomUUID(),

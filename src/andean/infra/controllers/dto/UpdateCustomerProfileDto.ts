@@ -4,10 +4,6 @@ import { CoinType } from '../../../domain/enums/CoinType';
 export class UpdateCustomerProfileDto {
 	@IsString()
 	@IsNotEmpty()
-	name!: string;
-
-	@IsString()
-	@IsNotEmpty()
 	phoneNumber!: string;
 
 	@IsString()
