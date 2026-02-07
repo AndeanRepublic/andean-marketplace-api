@@ -8,22 +8,31 @@ export class CustomerProfileMapper {
 	static fromDocument(doc: CustomerProfileDocument): CustomerProfile {
 		const plain = doc.toObject();
 		const { _id, ...rest } = plain;
-		return plainToInstance(CustomerProfile, rest);
+		return plainToInstance<CustomerProfile, Record<string, any>>(
+			CustomerProfile,
+			rest,
+			{ excludeExtraneousValues: false },
+		) as unknown as CustomerProfile;
 	}
 
 	static fromCreateDto(
 		userId: string,
 		dto: CreateCustomerDto,
 	): CustomerProfile {
-		const { email, password, ...customerData } = dto;
+		const { email, password, name, birthDate, ...customerData } = dto;
 
 		const plain = {
 			id: crypto.randomUUID(),
 			userId: userId,
 			...customerData,
+			...(birthDate && { birthDate: new Date(birthDate) }),
 		};
 
-		return plainToInstance(CustomerProfile, plain);
+		return plainToInstance<CustomerProfile, Record<string, any>>(
+			CustomerProfile,
+			plain,
+			{ excludeExtraneousValues: false },
+		) as unknown as CustomerProfile;
 	}
 
 	static fromUpdateDto(
@@ -37,9 +46,14 @@ export class CustomerProfileMapper {
 			id: id,
 			userId: userId,
 			...customerData,
+			...(birthDate && { birthDate: new Date(birthDate) }),
 		};
 
-		return plainToInstance(CustomerProfile, plain);
+		return plainToInstance<CustomerProfile, Record<string, any>>(
+			CustomerProfile,
+			plain,
+			{ excludeExtraneousValues: false },
+		) as unknown as CustomerProfile;
 	}
 
 	static toPersistence(profile: CustomerProfile) {

@@ -7,6 +7,7 @@ import { Model } from 'mongoose';
 import { OrderMapper } from '../../services/order/OrderMapper';
 import { MongoIdUtils } from '../../utils/MongoIdUtils';
 import { OrderStatus } from '../../../domain/enums/OrderStatus';
+import { DeliveryOption } from '../../../domain/enums/DeliveryOption';
 import { CartShop } from '../../../domain/entities/CartShop';
 import { CartItem } from '../../../domain/entities/CartItem';
 import { VariantRepository } from '../../../app/datastore/Variant.repo';
@@ -155,6 +156,7 @@ export class OrderRepositoryImpl extends OrderRepository {
 			pricing,
 			shippingInfo,
 			payment,
+			DeliveryOption.DHL,
 			now,
 			now,
 		);

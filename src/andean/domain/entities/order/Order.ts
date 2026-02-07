@@ -1,6 +1,7 @@
 import { OrderStatus } from '../../enums/OrderStatus';
 import { ProductType } from '../../enums/ProductType';
 import { PaymentMethod } from '../../enums/PaymentMethod';
+import { DeliveryOption } from '../../enums/DeliveryOption';
 
 /**
  * Item embebido dentro de una Order
@@ -78,7 +79,8 @@ export class Order {
 		public pricing: OrderPricing,
 		public shippingInfo: ShippingInfo,
 		public payment: PaymentInfo,
+		public deliveryOption: DeliveryOption | undefined,
 		public createdAt: Date,
 		public updatedAt: Date,
-	) {}
+	) { }
 }

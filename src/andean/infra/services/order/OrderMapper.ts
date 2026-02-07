@@ -1,8 +1,12 @@
 import { Order, OrderItem, OrderPricing, ShippingInfo, PaymentInfo } from '../../../domain/entities/order/Order';
 import { OrderDocument } from '../../persistence/order/order.schema';
+import { OrderStatus } from '../../../domain/enums/OrderStatus';
+import { DeliveryOption } from '../../../domain/enums/DeliveryOption';
 import { Variant } from '../../../domain/entities/Variant';
 import { TextileOptionName } from '../../../domain/enums/TextileOptionName';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
+import { CreateOrderDto } from '../../controllers/dto/order/CreateOrderDto';
+import { Types } from 'mongoose';
 
 export class OrderMapper {
 	static fromDocument(doc: OrderDocument): Order {
@@ -16,9 +20,58 @@ export class OrderMapper {
 			pricing: plain.pricing,
 			shippingInfo: plain.shippingInfo,
 			payment: plain.payment,
+			deliveryOption: plain.deliveryOption,
 			createdAt: plain.createdAt,
 			updatedAt: plain.updatedAt,
 		});
+	}
+
+	/**
+	 * Crea una entidad Order desde CreateOrderDto
+	 */
+	static fromCreateDto(dto: CreateOrderDto): Order {
+		const now = new Date();
+		return new Order(
+			new Types.ObjectId().toString(),
+			dto.customerId,
+			dto.customerEmail,
+			dto.status || OrderStatus.PROCESSING,
+			dto.items,
+			dto.pricing,
+			dto.shippingInfo,
+			dto.payment,
+			dto.deliveryOption ?? DeliveryOption.DHL,
+			now,
+			now,
+		);
+	}
+
+	/**
+	 * Crea una entidad Order desde datos del carrito
+	 */
+	static fromCartData(
+		customerId: string | undefined,
+		customerEmail: string | undefined,
+		orderItems: OrderItem[],
+		pricing: OrderPricing,
+		shippingInfo: ShippingInfo,
+		payment: PaymentInfo,
+		deliveryOption?: DeliveryOption,
+	): Order {
+		const now = new Date();
+		return new Order(
+			new Types.ObjectId().toString(),
+			customerId,
+			customerEmail,
+			OrderStatus.PROCESSING,
+			orderItems,
+			pricing,
+			shippingInfo,
+			payment,
+			deliveryOption ?? DeliveryOption.DHL,
+			now,
+			now,
+		);
 	}
 
 	static toPersistence(order: Order | Partial<Order>) {

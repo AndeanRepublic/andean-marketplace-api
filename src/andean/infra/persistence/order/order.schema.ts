@@ -2,6 +2,7 @@ import { Document, Schema } from 'mongoose';
 import { OrderStatus } from '../../../domain/enums/OrderStatus';
 import { PaymentMethod } from '../../../domain/enums/PaymentMethod';
 import { ProductType } from '../../../domain/enums/ProductType';
+import { DeliveryOption } from '../../../domain/enums/DeliveryOption';
 
 // Schema para OrderItem embebido
 const OrderItemSchema = new Schema(
@@ -96,6 +97,12 @@ export const OrderSchema = new Schema({
 	pricing: { type: OrderPricingSchema, required: true },
 	shippingInfo: { type: ShippingInfoSchema, required: true },
 	payment: { type: PaymentInfoSchema, required: true },
+	deliveryOption: {
+		type: String,
+		enum: Object.values(DeliveryOption),
+		required: false,
+		default: DeliveryOption.DHL,
+	},
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 });
@@ -146,6 +153,7 @@ export interface OrderDocument extends Document {
 		transactionId?: string;
 		paidAt?: Date;
 	};
+	deliveryOption?: DeliveryOption;
 	createdAt: Date;
 	updatedAt: Date;
 }
