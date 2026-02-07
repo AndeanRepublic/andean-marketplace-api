@@ -7,9 +7,7 @@ import {
 import { OrderRepository } from '../../datastore/order/Order.repo';
 import { CreateOrderDto } from '../../../infra/controllers/dto/order/CreateOrderDto';
 import { Order } from '../../../domain/entities/order/Order';
-import { OrderStatus } from '../../../domain/enums/OrderStatus';
-import { DeliveryOption } from '../../../domain/enums/DeliveryOption';
-import { Types } from 'mongoose';
+import { OrderMapper } from '../../../infra/services/order/OrderMapper';
 
 @Injectable()
 export class CreateOrderUseCase {
@@ -26,21 +24,8 @@ export class CreateOrderUseCase {
 			);
 		}
 
-		// Crear Order desde DTO
-		const now = new Date();
-		const order = new Order(
-			new Types.ObjectId().toString(),
-			orderDto.customerId,
-			orderDto.customerEmail,
-			orderDto.status || OrderStatus.PROCESSING,
-			orderDto.items,
-			orderDto.pricing,
-			orderDto.shippingInfo,
-			orderDto.payment,
-			orderDto.deliveryOption ?? DeliveryOption.DHL,
-			now,
-			now,
-		);
+		// Crear Order desde DTO usando mapper
+		const order = OrderMapper.fromCreateDto(orderDto);
 
 		return this.orderRepository.createOrder(order);
 	}
