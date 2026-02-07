@@ -1,5 +1,6 @@
 import { Order, OrderItem, OrderPricing, ShippingInfo, PaymentInfo } from '../../../domain/entities/order/Order';
 import { OrderDocument } from '../../persistence/order/order.schema';
+import { DeliveryOption } from '../../../domain/enums/DeliveryOption';
 import { Variant } from '../../../domain/entities/Variant';
 import { TextileOptionName } from '../../../domain/enums/TextileOptionName';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
@@ -16,6 +17,7 @@ export class OrderMapper {
 			pricing: plain.pricing,
 			shippingInfo: plain.shippingInfo,
 			payment: plain.payment,
+			deliveryOption: plain.deliveryOption,
 			createdAt: plain.createdAt,
 			updatedAt: plain.updatedAt,
 		});

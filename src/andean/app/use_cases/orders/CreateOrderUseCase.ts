@@ -8,6 +8,7 @@ import { OrderRepository } from '../../datastore/order/Order.repo';
 import { CreateOrderDto } from '../../../infra/controllers/dto/order/CreateOrderDto';
 import { Order } from '../../../domain/entities/order/Order';
 import { OrderStatus } from '../../../domain/enums/OrderStatus';
+import { DeliveryOption } from '../../../domain/enums/DeliveryOption';
 import { Types } from 'mongoose';
 
 @Injectable()
@@ -15,7 +16,7 @@ export class CreateOrderUseCase {
 	constructor(
 		@Inject(OrderRepository)
 		private readonly orderRepository: OrderRepository,
-	) {}
+	) { }
 
 	async handle(orderDto: CreateOrderDto): Promise<Order> {
 		// Validar que customerId o customerEmail esté presente
@@ -36,6 +37,7 @@ export class CreateOrderUseCase {
 			orderDto.pricing,
 			orderDto.shippingInfo,
 			orderDto.payment,
+			orderDto.deliveryOption ?? DeliveryOption.DHL,
 			now,
 			now,
 		);
