@@ -13,6 +13,7 @@ import { SizeOptionAlternativeRepository } from '../../datastore/textileProducts
 import { TextileCategoryRepository } from '../../datastore/textileProducts/TextileCategory.repo';
 import { ShopRepository } from '../../datastore/Shop.repo';
 import { VariantRepository } from '../../datastore/Variant.repo';
+import { AccountRepository } from '../../datastore/Account.repo';
 import { Review } from 'src/andean/domain/entities/Review';
 import { Variant } from 'src/andean/domain/entities/Variant';
 
@@ -39,6 +40,8 @@ export class GetByIdTextileProductDetailUseCase {
 		private readonly shopRepository: ShopRepository,
 		@Inject(VariantRepository)
 		private readonly variantRepository: VariantRepository,
+		@Inject(AccountRepository)
+		private readonly accountRepository: AccountRepository,
 	) { }
 
 	async handle(id: string): Promise<TextileProductDetailResponse> {
@@ -55,11 +58,16 @@ export class GetByIdTextileProductDetailUseCase {
 			ProductType.TEXTILE,
 		);
 
-		// 3. Obtener customers para las reviews
+		// 3. Obtener customers para las reviews y sus nombres de Account
 		const customerPromises = reviews.map((review) =>
 			this.customerProfileRepository.getCustomerById(review.customerId),
 		);
 		const customers = await Promise.all(customerPromises);
+
+		const accountPromises = customers.map((customer) =>
+			customer ? this.accountRepository.getAccountByUserId(customer.userId) : Promise.resolve(null),
+		);
+		const accounts = await Promise.all(accountPromises);
 
 		// 4. Calcular estadísticas de ratings
 		const ratingStats = this.calculateRatingStats(reviews);
@@ -67,7 +75,7 @@ export class GetByIdTextileProductDetailUseCase {
 		// 5. Mapear comments de reviews
 		const comments = reviews.map((review, index) => ({
 			idReview: review.id,
-			nameUser: customers[index]?.name || 'Usuario Anónimo',
+			nameUser: accounts[index]?.name || 'Usuario Anónimo',
 			content: review.content,
 			numberStarts: review.numberStarts,
 			date: review.createdAt,
