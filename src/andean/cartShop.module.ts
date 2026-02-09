@@ -9,13 +9,10 @@ import { GetCartByCustomerUseCase } from './app/use_cases/cart_shop/GetCartByCus
 import { RemoveItemFromCartUseCase } from './app/use_cases/cart_shop/RemoveItemFromCartUseCase';
 import { UpdateCartItemQuantityUseCase } from './app/use_cases/cart_shop/UpdateCartItemQuantityUseCase';
 import { ApplyDiscountCodeUseCase } from './app/use_cases/cart_shop/ApplyDiscountCodeUseCase';
-import { ProductRepository } from './app/datastore/Product.repo';
-import { ProductRepoImpl } from './infra/datastore/product.repo.impl';
 import { CustomerProfileRepository } from './app/datastore/Customer.repo';
 import { CustomerProfileRepositoryImpl } from './infra/datastore/customer.repo.impl';
 import { CartShopRepository } from './app/datastore/CartShop.repo';
 import { CartShopRepoImpl } from './infra/datastore/cartShop.repo.impl';
-import { ProductsModule } from './product.module';
 import { UsersModule } from './users.module';
 import { CartItemSchema } from './infra/persistence/cartShopItem.schema';
 import { CartShopItemRepository } from './app/datastore/CartShopItem.repo';
@@ -43,7 +40,6 @@ import { OwnerNameResolver } from './infra/services/OwnerNameResolver';
 			},
 		]),
 		HttpModule,
-		ProductsModule,
 		UsersModule,
 		VariantModule,
 		TextileProductModule,
@@ -59,10 +55,6 @@ import { OwnerNameResolver } from './infra/services/OwnerNameResolver';
 		UpdateCartItemQuantityUseCase,
 		ApplyDiscountCodeUseCase,
 		DiscountCodeService,
-		{
-			provide: ProductRepository,
-			useClass: ProductRepoImpl,
-		},
 		{
 			provide: CartShopItemRepository,
 			useClass: CartShopItemRepoImpl,

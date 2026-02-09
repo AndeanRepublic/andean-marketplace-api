@@ -26,7 +26,7 @@ describe('CommunityController (e2e)', () => {
 	const mockCommunity: Community = {
 		id: '123e4567-e89b-12d3-a456-426614174000',
 		name: 'Test Community E2E',
-		bannerImageUrl: 'https://example.com/images/community-banner.jpg',
+		bannerImageId: 'media-123e4567',
 		createdAt: new Date('2026-01-01'),
 		updatedAt: new Date('2026-01-01'),
 	} as Community;
