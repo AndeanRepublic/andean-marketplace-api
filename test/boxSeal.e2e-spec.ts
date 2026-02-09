@@ -14,7 +14,7 @@ import { UpdateBoxSealUseCase } from '../src/andean/app/use_cases/boxSeals/Updat
 import { DeleteBoxSealUseCase } from '../src/andean/app/use_cases/boxSeals/DeleteBoxSealUseCase';
 
 // ─── Domain ─────────────────────────────────────────────────────────────────
-import { BoxSeal } from '../src/andean/domain/entities/BoxSeal';
+import { BoxSeal } from '../src/andean/domain/entities/box/BoxSeal';
 
 describe('BoxSealController (e2e)', () => {
 	let app: INestApplication;

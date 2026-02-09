@@ -12,7 +12,7 @@ import { GetAllBoxesUseCase } from '../src/andean/app/use_cases/boxes/GetAllBoxe
 import { GetBoxDetailUseCase } from '../src/andean/app/use_cases/boxes/GetBoxDetailUseCase';
 
 // ─── Domain ─────────────────────────────────────────────────────────────────
-import { Box } from '../src/andean/domain/entities/Box';
+import { Box } from '../src/andean/domain/entities/box/Box';
 
 describe('BoxController (e2e)', () => {
 	let app: INestApplication;
