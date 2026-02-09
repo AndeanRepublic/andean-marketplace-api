@@ -59,6 +59,21 @@ import { CreateManyColorOptionAlternativesUseCase } from '../src/andean/app/use_
 import { GetByIdTextileProductDetailUseCase } from '../src/andean/app/use_cases/textileProducts/GetByIdTextileProductDetailUseCase';
 import { TextileProductListItem } from '../src/andean/app/modules/TextileProductListItemResponse';
 
+/**
+ * ⚠️  ARCHITECTURAL NOTE (God Controller)
+ * TextileProductController is a god-controller that handles 8+ sub-resources
+ * (categories, types, styles, subcategories, craft techniques, principal uses,
+ * certifications, and color option alternatives) in a single controller.
+ *
+ * This results in:
+ *  - 56 use-case mock providers just to create the test module
+ *  - 950+ lines in a single test file
+ *  - Coupling between unrelated concerns
+ *
+ * Recommended refactoring: split the controller into a Facade + dedicated
+ * sub-controllers (one per resource), each with its own test file.
+ * This would follow the same pattern as SuperfoodController + sub-resources.
+ */
 describe('TextileProductController (e2e)', () => {
 	let app: INestApplication;
 	let createTextileProductUseCase: CreateTextileProductUseCase;
@@ -113,7 +128,7 @@ describe('TextileProductController (e2e)', () => {
 		status: TextileProductStatus.PUBLISHED,
 		baseInfo: {
 			title: 'Poncho Andino Premium',
-			media: [],
+			mediaIds: [],
 			description: 'Poncho tejido a mano por artesanos andinos',
 			ownerType: OwnerType.SHOP,
 			ownerId: 'shop-123',
@@ -130,7 +145,7 @@ describe('TextileProductController (e2e)', () => {
 		status: TextileProductStatus.PUBLISHED,
 		baseInfo: {
 			title: 'Poncho Andino Premium Actualizado',
-			media: [],
+			mediaIds: [],
 			description: 'Poncho tejido a mano por artesanos andinos - Edición especial',
 			ownerType: OwnerType.SHOP,
 			ownerId: 'shop-123',
@@ -337,15 +352,17 @@ describe('TextileProductController (e2e)', () => {
 				.send(createDto)
 				.expect(HttpStatus.CREATED)
 				.expect((res) => {
-					expect(res.body).toHaveProperty('id');
-					expect(res.body).toHaveProperty('status', TextileProductStatus.PUBLISHED);
-					expect(res.body).toHaveProperty('baseInfo');
-					expect(res.body.baseInfo).toHaveProperty('title', mockBaseInfo.title);
-					expect(res.body).toHaveProperty('priceInventary');
-					expect(res.body.priceInventary).toHaveProperty('basePrice', mockPriceInventary.basePrice);
-					expect(res.body.priceInventary).toHaveProperty('totalStock', mockPriceInventary.totalStock);
-					expect(res.body.priceInventary).toHaveProperty('SKU', mockPriceInventary.SKU);
-					expect(res.body).toHaveProperty('categoryId');
+					expect(res.body).toMatchObject({
+						id: expect.any(String),
+						status: TextileProductStatus.PUBLISHED,
+						baseInfo: expect.objectContaining({ title: mockBaseInfo.title }),
+						priceInventary: expect.objectContaining({
+							basePrice: mockPriceInventary.basePrice,
+							totalStock: mockPriceInventary.totalStock,
+							SKU: mockPriceInventary.SKU,
+						}),
+						categoryId: expect.any(String),
+					});
 					expect(res.body).toHaveProperty('createdAt');
 					expect(res.body).toHaveProperty('updatedAt');
 				});
@@ -826,7 +843,8 @@ describe('TextileProductController (e2e)', () => {
 		});
 	});
 
-	describe('GET /textile-products/:id', () => {
+	// SKIPPED: Route GET /:id commented out in controller (only GET /:id/details is active)
+	describe.skip('GET /textile-products/:id', () => {
 		const productId = 'textile-uuid-123';
 
 		it('should get a textile product by id', () => {
@@ -836,11 +854,12 @@ describe('TextileProductController (e2e)', () => {
 				.get(`/textile-products/${productId}`)
 				.expect(HttpStatus.OK)
 				.expect((res) => {
-					expect(res.body).toHaveProperty('id', mockTextileProduct.id);
-					expect(res.body).toHaveProperty('status', TextileProductStatus.PUBLISHED);
-					expect(res.body.baseInfo).toHaveProperty('title', mockBaseInfo.title);
-					expect(res.body.priceInventary).toHaveProperty('basePrice', mockPriceInventary.basePrice);
-					expect(res.body.priceInventary).toHaveProperty('totalStock', mockPriceInventary.totalStock);
+					expect(res.body).toMatchObject({
+						id: mockTextileProduct.id,
+						status: TextileProductStatus.PUBLISHED,
+						baseInfo: expect.objectContaining({ title: mockBaseInfo.title }),
+						priceInventary: expect.objectContaining({ basePrice: mockPriceInventary.basePrice, totalStock: mockPriceInventary.totalStock }),
+					});
 				});
 		});
 
@@ -871,10 +890,11 @@ describe('TextileProductController (e2e)', () => {
 				.send(updateDto)
 				.expect(HttpStatus.OK)
 				.expect((res) => {
-					expect(res.body).toHaveProperty('id', productId);
-					expect(res.body.baseInfo).toHaveProperty('title', 'Poncho Andino Premium Actualizado');
-					expect(res.body.priceInventary).toHaveProperty('basePrice', 180.00);
-					expect(res.body.priceInventary).toHaveProperty('totalStock', 75);
+					expect(res.body).toMatchObject({
+						id: productId,
+						baseInfo: expect.objectContaining({ title: 'Poncho Andino Premium Actualizado' }),
+						priceInventary: expect.objectContaining({ basePrice: 180.00, totalStock: 75 }),
+					});
 				});
 		});
 

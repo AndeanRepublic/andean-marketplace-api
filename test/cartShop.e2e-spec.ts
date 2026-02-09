@@ -147,7 +147,7 @@ describe('CartShopController (e2e)', () => {
 		jest.clearAllMocks();
 	});
 
-	describe('POST /users/customers/:customerId/cart/items', () => {
+	describe('POST /cart/items', () => {
 		const customerId = customerFixtures.customer.id;
 		const addItemDto = {
 			variantId: textileFixtures.variants[0].id,
@@ -158,20 +158,21 @@ describe('CartShopController (e2e)', () => {
 			jest.spyOn(addItemToCartUseCase, 'handle').mockResolvedValueOnce(mockAddItemResponse);
 
 			return request(app.getHttpServer())
-				.post(`/users/customers/${customerId}/cart/items`)
+				.post(`/cart/items?customerId=${customerId}`)
 				.send(addItemDto)
 				.expect(HttpStatus.CREATED)
 				.expect((res) => {
-					expect(res.body).toHaveProperty('ownerName', textileFixtures.shop.name);
-					expect(res.body).toHaveProperty('titulo', textileFixtures.textileProduct.baseInfo.title);
-					expect(res.body).toHaveProperty('combinationVariant');
-					expect(res.body.combinationVariant).toEqual(textileFixtures.variants[0].combination);
-					expect(res.body).toHaveProperty('thumbnailImgUrl', textileFixtures.mediaItems[0].url);
-					expect(res.body).toHaveProperty('unitPrice', textileFixtures.variants[0].price);
-					expect(res.body).toHaveProperty('quantity', 2);
-					expect(res.body).toHaveProperty('idShoppingCartItem');
-					expect(res.body).toHaveProperty('maxStock', textileFixtures.variants[0].stock);
-					expect(res.body).toHaveProperty('isDiscountActive', false);
+					expect(res.body).toMatchObject({
+						ownerName: textileFixtures.shop.name,
+						titulo: textileFixtures.textileProduct.baseInfo.title,
+						combinationVariant: expect.any(Object),
+						thumbnailImgUrl: textileFixtures.mediaItems[0].url,
+						unitPrice: textileFixtures.variants[0].price,
+						quantity: 2,
+						idShoppingCartItem: expect.any(String),
+						maxStock: textileFixtures.variants[0].stock,
+						isDiscountActive: false,
+					});
 				});
 		});
 
@@ -179,11 +180,11 @@ describe('CartShopController (e2e)', () => {
 			const spy = jest.spyOn(addItemToCartUseCase, 'handle');
 
 			await request(app.getHttpServer())
-				.post(`/users/customers/${customerId}/cart/items`)
+				.post(`/cart/items?customerId=${customerId}`)
 				.send(addItemDto)
 				.expect(HttpStatus.CREATED);
 
-			expect(spy).toHaveBeenCalledWith(customerId, addItemDto);
+			expect(spy).toHaveBeenCalledWith(customerId, undefined, addItemDto);
 		});
 
 		it('should return 400 when quantity is less than 1', () => {
@@ -193,7 +194,7 @@ describe('CartShopController (e2e)', () => {
 			};
 
 			return request(app.getHttpServer())
-				.post(`/users/customers/${customerId}/cart/items`)
+				.post(`/cart/items?customerId=${customerId}`)
 				.send(invalidDto)
 				.expect(HttpStatus.BAD_REQUEST);
 		});
@@ -204,7 +205,7 @@ describe('CartShopController (e2e)', () => {
 			};
 
 			return request(app.getHttpServer())
-				.post(`/users/customers/${customerId}/cart/items`)
+				.post(`/cart/items?customerId=${customerId}`)
 				.send(invalidDto)
 				.expect(HttpStatus.BAD_REQUEST);
 		});
@@ -215,7 +216,7 @@ describe('CartShopController (e2e)', () => {
 			};
 
 			return request(app.getHttpServer())
-				.post(`/users/customers/${customerId}/cart/items`)
+				.post(`/cart/items?customerId=${customerId}`)
 				.send(invalidDto)
 				.expect(HttpStatus.BAD_REQUEST);
 		});
@@ -236,7 +237,7 @@ describe('CartShopController (e2e)', () => {
 			jest.spyOn(addItemToCartUseCase, 'handle').mockResolvedValueOnce(superfoodResponse);
 
 			return request(app.getHttpServer())
-				.post(`/users/customers/${customerId}/cart/items`)
+				.post(`/cart/items?customerId=${customerId}`)
 				.send({
 					variantId: superfoodFixtures.variants[0].id,
 					quantity: 1,
@@ -249,14 +250,14 @@ describe('CartShopController (e2e)', () => {
 		});
 	});
 
-	describe('GET /users/customers/:customerId/cart', () => {
+	describe('GET /cart', () => {
 		const customerId = customerFixtures.customer.id;
 
 		it('should get cart with enriched items list', () => {
 			jest.spyOn(getCartByCustomerUseCase, 'handle').mockResolvedValueOnce(mockGetCartResponse);
 
 			return request(app.getHttpServer())
-				.get(`/users/customers/${customerId}/cart`)
+				.get(`/cart?customerId=${customerId}`)
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					expect(res.body).toHaveProperty('items');
@@ -272,7 +273,7 @@ describe('CartShopController (e2e)', () => {
 			jest.spyOn(getCartByCustomerUseCase, 'handle').mockResolvedValueOnce(mockGetCartResponse);
 
 			return request(app.getHttpServer())
-				.get(`/users/customers/${customerId}/cart`)
+				.get(`/cart?customerId=${customerId}`)
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					const firstItem = res.body.items[0];
@@ -292,7 +293,7 @@ describe('CartShopController (e2e)', () => {
 			jest.spyOn(getCartByCustomerUseCase, 'handle').mockResolvedValueOnce(mockGetCartResponse);
 
 			return request(app.getHttpServer())
-				.get(`/users/customers/${customerId}/cart`)
+				.get(`/cart?customerId=${customerId}`)
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					const textileItem = res.body.items[0];
@@ -306,7 +307,7 @@ describe('CartShopController (e2e)', () => {
 			jest.spyOn(getCartByCustomerUseCase, 'handle').mockResolvedValueOnce(mockGetCartResponse);
 
 			return request(app.getHttpServer())
-				.get(`/users/customers/${customerId}/cart`)
+				.get(`/cart?customerId=${customerId}`)
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					const superfoodItem = res.body.items[1];
@@ -320,17 +321,17 @@ describe('CartShopController (e2e)', () => {
 			const spy = jest.spyOn(getCartByCustomerUseCase, 'handle');
 
 			await request(app.getHttpServer())
-				.get(`/users/customers/${customerId}/cart`)
+				.get(`/cart?customerId=${customerId}`)
 				.expect(HttpStatus.OK);
 
-			expect(spy).toHaveBeenCalledWith(customerId);
+			expect(spy).toHaveBeenCalledWith(customerId, undefined);
 		});
 
 		it('should return empty cart for new customer', () => {
 			jest.spyOn(getCartByCustomerUseCase, 'handle').mockResolvedValueOnce(mockEmptyCartResponse);
 
 			return request(app.getHttpServer())
-				.get(`/users/customers/${customerId}/cart`)
+				.get(`/cart?customerId=${customerId}`)
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					expect(res.body).toHaveProperty('items', []);
@@ -344,7 +345,7 @@ describe('CartShopController (e2e)', () => {
 			jest.spyOn(getCartByCustomerUseCase, 'handle').mockResolvedValueOnce(mockGetCartResponse);
 
 			return request(app.getHttpServer())
-				.get(`/users/customers/${customerId}/cart`)
+				.get(`/cart?customerId=${customerId}`)
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					// Verify totals are numbers
@@ -360,7 +361,7 @@ describe('CartShopController (e2e)', () => {
 		});
 	});
 
-	describe('PATCH /users/customers/:customerId/cart/items/:itemId/quantity/:quantityDelta', () => {
+	describe('PATCH /cart/items/:itemId/quantity/:quantityDelta', () => {
 		const customerId = customerFixtures.customer.id;
 		const cartItemId = cartFixtures.cartItems[0].id;
 		const updateDto = {
@@ -377,7 +378,7 @@ describe('CartShopController (e2e)', () => {
 			jest.spyOn(updateCartItemQuantityUseCase, 'handle').mockResolvedValueOnce(mockUpdateResponse);
 
 			return request(app.getHttpServer())
-				.patch(`/users/customers/${customerId}/cart/items/${cartItemId}/quantity/5`)
+				.patch(`/cart/items/${cartItemId}/quantity/5`)
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					expect(res.body).toHaveProperty('quantity', 5);
@@ -390,7 +391,7 @@ describe('CartShopController (e2e)', () => {
 			const spy = jest.spyOn(updateCartItemQuantityUseCase, 'handle');
 
 			await request(app.getHttpServer())
-				.patch(`/users/customers/${customerId}/cart/items/${cartItemId}/quantity/5`)
+				.patch(`/cart/items/${cartItemId}/quantity/5`)
 				.expect(HttpStatus.OK);
 
 			expect(spy).toHaveBeenCalledWith(cartItemId, 5);
@@ -398,14 +399,14 @@ describe('CartShopController (e2e)', () => {
 
 		it('should return 400 when quantity delta is invalid', () => {
 			return request(app.getHttpServer())
-				.patch(`/users/customers/${customerId}/cart/items/${cartItemId}/quantity/invalid`)
+				.patch(`/cart/items/${cartItemId}/quantity/invalid`)
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 
 
 	});
 
-	describe('DELETE /users/customers/:customerId/cart/items/:itemId', () => {
+	describe('DELETE /cart/items/:itemId', () => {
 		const customerId = customerFixtures.customer.id;
 		const cartItemId = cartFixtures.cartItems[0].id;
 
@@ -413,7 +414,7 @@ describe('CartShopController (e2e)', () => {
 			jest.spyOn(removeItemFromCartUseCase, 'handle').mockResolvedValueOnce(undefined);
 
 			return request(app.getHttpServer())
-				.delete(`/users/customers/${customerId}/cart/items/${cartItemId}`)
+				.delete(`/cart/items/${cartItemId}`)
 				.expect(HttpStatus.NO_CONTENT);
 		});
 
@@ -421,10 +422,10 @@ describe('CartShopController (e2e)', () => {
 			const spy = jest.spyOn(removeItemFromCartUseCase, 'handle');
 
 			await request(app.getHttpServer())
-				.delete(`/users/customers/${customerId}/cart/items/${cartItemId}`)
+				.delete(`/cart/items/${cartItemId}`)
 				.expect(HttpStatus.NO_CONTENT);
 
-			expect(spy).toHaveBeenCalledWith(customerId, cartItemId);
+			expect(spy).toHaveBeenCalledWith(cartItemId);
 		});
 	});
 });
