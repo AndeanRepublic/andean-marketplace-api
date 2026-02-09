@@ -70,7 +70,7 @@ describe('TextileProductController (e2e)', () => {
 	// Mock data
 	const mockBaseInfo: BaseInfo = {
 		title: 'Poncho Andino Premium',
-		media: [],
+		mediaIds: [],
 		description: 'Poncho tejido a mano por artesanos andinos',
 		ownerType: OwnerType.SHOP,
 		ownerId: 'shop-123',
