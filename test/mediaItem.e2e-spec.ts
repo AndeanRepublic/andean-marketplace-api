@@ -7,7 +7,6 @@ import { GetMediaItemByIdUseCase } from '../src/andean/app/use_cases/media/GetMe
 import { ListMediaItemsUseCase } from '../src/andean/app/use_cases/media/ListMediaItemsUseCase';
 import { UpdateMediaItemUseCase } from '../src/andean/app/use_cases/media/UpdateMediaItemUseCase';
 import { DeleteMediaItemUseCase } from '../src/andean/app/use_cases/media/DeleteMediaItemUseCase';
-import { MediaItemResponse } from '../src/andean/app/modules/MediaItemResponse';
 import { MediaItemType } from '../src/andean/domain/enums/MediaItemType';
 import { MediaItemRole } from '../src/andean/domain/enums/MediaItemRole';
 
@@ -20,15 +19,16 @@ describe('MediaItemController (e2e)', () => {
 	let deleteMediaItemUseCase: DeleteMediaItemUseCase;
 
 	// Mock data
-	const mockMediaItemResponse: MediaItemResponse = {
+	const mockMediaItemResponse = {
 		id: '123e4567-e89b-12d3-a456-426614174000',
 		type: MediaItemType.IMG,
 		name: 'icon-protein.svg',
+		key: 'uploads/icon-protein.svg',
 		url: 'https://example.com/uploads/icon-protein.svg',
 		role: MediaItemRole.NONE,
 		createdAt: new Date('2026-01-01'),
 		updatedAt: new Date('2026-01-01'),
-	};
+	} as any;
 
 	const createDto = {
 		type: MediaItemType.IMG,
