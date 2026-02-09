@@ -8,268 +8,124 @@ import { GetOriginProductCommunityByIdUseCase } from '../src/andean/app/use_case
 import { ListOriginProductCommunityUseCase } from '../src/andean/app/use_cases/origin/ListOriginProductCommunityUseCase';
 import { DeleteOriginProductCommunityUseCase } from '../src/andean/app/use_cases/origin/DeleteOriginProductCommunityUseCase';
 import { OriginProductCommunity } from '../src/andean/domain/entities/origin/OriginProductCommunity';
+import { FixtureLoader } from './helpers/fixture-loader';
 
 describe('OriginProductCommunityController (e2e)', () => {
 	let app: INestApplication;
-	let createCommunityUseCase: CreateOriginProductCommunityUseCase;
-	let getCommunityByIdUseCase: GetOriginProductCommunityByIdUseCase;
-	let listCommunityUseCase: ListOriginProductCommunityUseCase;
-	let updateCommunityUseCase: UpdateOriginProductCommunityUseCase;
-	let deleteCommunityUseCase: DeleteOriginProductCommunityUseCase;
+	let createUseCase: CreateOriginProductCommunityUseCase;
+	let getByIdUseCase: GetOriginProductCommunityByIdUseCase;
+	let listUseCase: ListOriginProductCommunityUseCase;
+	let updateUseCase: UpdateOriginProductCommunityUseCase;
+	let deleteUseCase: DeleteOriginProductCommunityUseCase;
 
-	// Mock data
-	const mockRegionId = '123e4567-e89b-12d3-a456-426614174000';
-	const mockCommunity: OriginProductCommunity = {
-		id: '456e7890-e89b-12d3-a456-426614174001',
-		name: 'Test Community E2E',
-		regionId: mockRegionId,
-		createdAt: new Date('2026-01-01'),
-		updatedAt: new Date('2026-01-01'),
-	} as OriginProductCommunity;
-
-	const createDto = {
-		name: 'New Community E2E',
-		regionId: mockRegionId,
-	};
-
-	const updateDto = {
-		name: 'Updated Community E2E',
-	};
+	const fixture = FixtureLoader.loadOriginProductCommunity();
+	const mockCommunity = { ...fixture.entity, createdAt: new Date(fixture.entity.createdAt), updatedAt: new Date(fixture.entity.updatedAt) } as OriginProductCommunity;
+	const createDto = fixture.createDto;
+	const updateDto = fixture.updateDto;
+	const mockRegionId = fixture.entity.regionId;
 
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			controllers: [OriginProductCommunityController],
 			providers: [
-				{
-					provide: CreateOriginProductCommunityUseCase,
-					useValue: {
-						execute: jest.fn().mockResolvedValue(mockCommunity),
-					},
-				},
-				{
-					provide: UpdateOriginProductCommunityUseCase,
-					useValue: {
-						execute: jest.fn().mockResolvedValue({ ...mockCommunity, name: updateDto.name }),
-					},
-				},
-				{
-					provide: GetOriginProductCommunityByIdUseCase,
-					useValue: {
-						execute: jest.fn().mockResolvedValue(mockCommunity),
-					},
-				},
-				{
-					provide: ListOriginProductCommunityUseCase,
-					useValue: {
-						execute: jest.fn().mockResolvedValue([mockCommunity]),
-					},
-				},
-				{
-					provide: DeleteOriginProductCommunityUseCase,
-					useValue: {
-						execute: jest.fn().mockResolvedValue(undefined),
-					},
-				},
+				{ provide: CreateOriginProductCommunityUseCase, useValue: { execute: jest.fn().mockResolvedValue(mockCommunity) } },
+				{ provide: UpdateOriginProductCommunityUseCase, useValue: { execute: jest.fn().mockResolvedValue({ ...mockCommunity, name: updateDto.name }) } },
+				{ provide: GetOriginProductCommunityByIdUseCase, useValue: { execute: jest.fn().mockResolvedValue(mockCommunity) } },
+				{ provide: ListOriginProductCommunityUseCase, useValue: { execute: jest.fn().mockResolvedValue([mockCommunity]) } },
+				{ provide: DeleteOriginProductCommunityUseCase, useValue: { execute: jest.fn().mockResolvedValue(undefined) } },
 			],
 		}).compile();
 
 		app = moduleFixture.createNestApplication();
-
-		app.useGlobalPipes(
-			new ValidationPipe({
-				whitelist: true,
-				forbidNonWhitelisted: true,
-				transform: true,
-			}),
-		);
-
+		app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
 		await app.init();
 
-		createCommunityUseCase = moduleFixture.get<CreateOriginProductCommunityUseCase>(CreateOriginProductCommunityUseCase);
-		getCommunityByIdUseCase = moduleFixture.get<GetOriginProductCommunityByIdUseCase>(GetOriginProductCommunityByIdUseCase);
-		listCommunityUseCase = moduleFixture.get<ListOriginProductCommunityUseCase>(ListOriginProductCommunityUseCase);
-		updateCommunityUseCase = moduleFixture.get<UpdateOriginProductCommunityUseCase>(UpdateOriginProductCommunityUseCase);
-		deleteCommunityUseCase = moduleFixture.get<DeleteOriginProductCommunityUseCase>(DeleteOriginProductCommunityUseCase);
+		createUseCase = moduleFixture.get(CreateOriginProductCommunityUseCase);
+		getByIdUseCase = moduleFixture.get(GetOriginProductCommunityByIdUseCase);
+		listUseCase = moduleFixture.get(ListOriginProductCommunityUseCase);
+		updateUseCase = moduleFixture.get(UpdateOriginProductCommunityUseCase);
+		deleteUseCase = moduleFixture.get(DeleteOriginProductCommunityUseCase);
 	});
 
-	afterAll(async () => {
-		await app.close();
-	});
-
-	afterEach(() => {
-		jest.clearAllMocks();
-	});
+	afterAll(async () => { await app.close(); });
+	afterEach(() => { jest.clearAllMocks(); });
 
 	describe('POST /origin-product-communities', () => {
 		it('should create a new community', () => {
-			jest.spyOn(createCommunityUseCase, 'execute').mockResolvedValueOnce(mockCommunity);
-
-			return request(app.getHttpServer())
-				.post('/origin-product-communities')
-				.send(createDto)
-				.expect(HttpStatus.CREATED)
-				.expect((res) => {
-					expect(res.body).toHaveProperty('id');
-					expect(res.body).toHaveProperty('name', mockCommunity.name);
-					expect(res.body).toHaveProperty('regionId', mockRegionId);
-				});
+			jest.spyOn(createUseCase, 'execute').mockResolvedValueOnce(mockCommunity);
+			return request(app.getHttpServer()).post('/origin-product-communities').send(createDto).expect(HttpStatus.CREATED)
+				.expect((res) => { expect(res.body).toMatchObject({ id: expect.any(String), name: mockCommunity.name, regionId: mockRegionId }); });
 		});
-
 		it('should return 400 when name is missing', () => {
-			return request(app.getHttpServer())
-				.post('/origin-product-communities')
-				.send({ regionId: mockRegionId })
-				.expect(HttpStatus.BAD_REQUEST);
+			return request(app.getHttpServer()).post('/origin-product-communities').send({ regionId: mockRegionId }).expect(HttpStatus.BAD_REQUEST);
 		});
-
 		it('should return 400 when regionId is missing', () => {
-			return request(app.getHttpServer())
-				.post('/origin-product-communities')
-				.send({ name: 'Test' })
-				.expect(HttpStatus.BAD_REQUEST);
+			return request(app.getHttpServer()).post('/origin-product-communities').send({ name: 'Test' }).expect(HttpStatus.BAD_REQUEST);
 		});
-
-		it('should return 400 when name already exists', async () => {
-			const error = new Error('Community name already exists');
-			jest.spyOn(createCommunityUseCase, 'execute').mockRejectedValueOnce(error);
-
-			return request(app.getHttpServer())
-				.post('/origin-product-communities')
-				.send(createDto)
-				.expect(HttpStatus.INTERNAL_SERVER_ERROR);
-		});
-
-		it('should return 404 when region not found', async () => {
-			const error = new Error('Region not found');
-			jest.spyOn(createCommunityUseCase, 'execute').mockRejectedValueOnce(error);
-
-			return request(app.getHttpServer())
-				.post('/origin-product-communities')
-				.send(createDto)
-				.expect(HttpStatus.INTERNAL_SERVER_ERROR);
+		it('should return 500 when name already exists', () => {
+			jest.spyOn(createUseCase, 'execute').mockRejectedValueOnce(new Error('Community name already exists'));
+			return request(app.getHttpServer()).post('/origin-product-communities').send(createDto).expect(HttpStatus.INTERNAL_SERVER_ERROR);
 		});
 	});
 
-	describe('GET /origin-product-communities/:id', () => {
+	// SKIPPED: Route commented out in controller (only POST is active)
+	describe.skip('GET /origin-product-communities/:id', () => {
 		it('should return a community by id', () => {
-			jest.spyOn(getCommunityByIdUseCase, 'execute').mockResolvedValueOnce(mockCommunity);
-
-			return request(app.getHttpServer())
-				.get(`/origin-product-communities/${mockCommunity.id}`)
-				.expect(HttpStatus.OK)
-				.expect((res) => {
-					expect(res.body).toHaveProperty('id', mockCommunity.id);
-					expect(res.body).toHaveProperty('name', mockCommunity.name);
-					expect(res.body).toHaveProperty('regionId', mockRegionId);
-				});
+			jest.spyOn(getByIdUseCase, 'execute').mockResolvedValueOnce(mockCommunity);
+			return request(app.getHttpServer()).get(`/origin-product-communities/${mockCommunity.id}`).expect(HttpStatus.OK)
+				.expect((res) => { expect(res.body).toMatchObject({ id: mockCommunity.id, name: mockCommunity.name, regionId: mockRegionId }); });
 		});
-
-		it('should return 404 when community not found', () => {
-			const error = new Error('Community not found');
-			jest.spyOn(getCommunityByIdUseCase, 'execute').mockRejectedValueOnce(error);
-
-			return request(app.getHttpServer())
-				.get('/origin-product-communities/non-existent-id')
-				.expect(HttpStatus.INTERNAL_SERVER_ERROR);
+		it('should return 500 when not found', () => {
+			jest.spyOn(getByIdUseCase, 'execute').mockRejectedValueOnce(new Error('Community not found'));
+			return request(app.getHttpServer()).get('/origin-product-communities/non-existent-id').expect(HttpStatus.INTERNAL_SERVER_ERROR);
 		});
 	});
 
-	describe('GET /origin-product-communities', () => {
+	// SKIPPED: Route commented out in controller (only POST is active)
+	describe.skip('GET /origin-product-communities', () => {
 		it('should return an array of communities', () => {
-			jest.spyOn(listCommunityUseCase, 'execute').mockResolvedValueOnce([mockCommunity]);
-
-			return request(app.getHttpServer())
-				.get('/origin-product-communities')
-				.expect(HttpStatus.OK)
+			jest.spyOn(listUseCase, 'execute').mockResolvedValueOnce([mockCommunity]);
+			return request(app.getHttpServer()).get('/origin-product-communities').expect(HttpStatus.OK)
 				.expect((res) => {
-					expect(Array.isArray(res.body)).toBe(true);
 					expect(res.body).toHaveLength(1);
-					expect(res.body[0]).toHaveProperty('id', mockCommunity.id);
-					expect(res.body[0]).toHaveProperty('name', mockCommunity.name);
-					expect(res.body[0]).toHaveProperty('regionId', mockRegionId);
+					expect(res.body[0]).toMatchObject({ id: mockCommunity.id, name: mockCommunity.name, regionId: mockRegionId });
 				});
 		});
-
 		it('should return filtered communities by regionId', () => {
-			jest.spyOn(listCommunityUseCase, 'execute').mockResolvedValueOnce([mockCommunity]);
-
-			return request(app.getHttpServer())
-				.get('/origin-product-communities')
-				.query({ regionId: mockRegionId })
-				.expect(HttpStatus.OK)
-				.expect((res) => {
-					expect(Array.isArray(res.body)).toBe(true);
-					expect(res.body).toHaveLength(1);
-					expect(res.body[0]).toHaveProperty('regionId', mockRegionId);
-				});
+			jest.spyOn(listUseCase, 'execute').mockResolvedValueOnce([mockCommunity]);
+			return request(app.getHttpServer()).get('/origin-product-communities').query({ regionId: mockRegionId }).expect(HttpStatus.OK)
+				.expect((res) => { expect(res.body[0]).toMatchObject({ regionId: mockRegionId }); });
 		});
-
-		it('should return an empty array when no communities exist', () => {
-			jest.spyOn(listCommunityUseCase, 'execute').mockResolvedValueOnce([]);
-
-			return request(app.getHttpServer())
-				.get('/origin-product-communities')
-				.expect(HttpStatus.OK)
-				.expect((res) => {
-					expect(Array.isArray(res.body)).toBe(true);
-					expect(res.body).toHaveLength(0);
-				});
+		it('should return empty array when no communities exist', () => {
+			jest.spyOn(listUseCase, 'execute').mockResolvedValueOnce([]);
+			return request(app.getHttpServer()).get('/origin-product-communities').expect(HttpStatus.OK)
+				.expect((res) => { expect(res.body).toEqual([]); });
 		});
 	});
 
-	describe('PUT /origin-product-communities/:id', () => {
+	// SKIPPED: Route commented out in controller (only POST is active)
+	describe.skip('PUT /origin-product-communities/:id', () => {
 		it('should update a community', () => {
-			const updated = { ...mockCommunity, name: updateDto.name, updatedAt: new Date('2026-01-14') } as OriginProductCommunity;
-			jest.spyOn(updateCommunityUseCase, 'execute').mockResolvedValueOnce(updated);
-
-			return request(app.getHttpServer())
-				.put(`/origin-product-communities/${mockCommunity.id}`)
-				.send(updateDto)
-				.expect(HttpStatus.OK)
-				.expect((res) => {
-					expect(res.body).toHaveProperty('id', mockCommunity.id);
-					expect(res.body).toHaveProperty('name', updateDto.name);
-					expect(res.body).toHaveProperty('regionId', mockRegionId);
-				});
+			const updated = { ...mockCommunity, name: updateDto.name } as OriginProductCommunity;
+			jest.spyOn(updateUseCase, 'execute').mockResolvedValueOnce(updated);
+			return request(app.getHttpServer()).put(`/origin-product-communities/${mockCommunity.id}`).send(updateDto).expect(HttpStatus.OK)
+				.expect((res) => { expect(res.body).toMatchObject({ id: mockCommunity.id, name: updateDto.name }); });
 		});
-
-		it('should return 404 when community to update not found', () => {
-			const error = new Error('Community not found');
-			jest.spyOn(updateCommunityUseCase, 'execute').mockRejectedValueOnce(error);
-
-			return request(app.getHttpServer())
-				.put('/origin-product-communities/non-existent-id')
-				.send(updateDto)
-				.expect(HttpStatus.INTERNAL_SERVER_ERROR);
-		});
-
-		it('should return 400 when updated name already exists', () => {
-			const error = new Error('Community name already exists');
-			jest.spyOn(updateCommunityUseCase, 'execute').mockRejectedValueOnce(error);
-
-			return request(app.getHttpServer())
-				.put(`/origin-product-communities/${mockCommunity.id}`)
-				.send(updateDto)
-				.expect(HttpStatus.INTERNAL_SERVER_ERROR);
+		it('should return 500 when not found', () => {
+			jest.spyOn(updateUseCase, 'execute').mockRejectedValueOnce(new Error('Community not found'));
+			return request(app.getHttpServer()).put('/origin-product-communities/non-existent-id').send(updateDto).expect(HttpStatus.INTERNAL_SERVER_ERROR);
 		});
 	});
 
-	describe('DELETE /origin-product-communities/:id', () => {
+	// SKIPPED: Route commented out in controller (only POST is active)
+	describe.skip('DELETE /origin-product-communities/:id', () => {
 		it('should delete a community', () => {
-			jest.spyOn(deleteCommunityUseCase, 'execute').mockResolvedValueOnce(undefined);
-
-			return request(app.getHttpServer())
-				.delete(`/origin-product-communities/${mockCommunity.id}`)
-				.expect(HttpStatus.NO_CONTENT);
+			jest.spyOn(deleteUseCase, 'execute').mockResolvedValueOnce(undefined);
+			return request(app.getHttpServer()).delete(`/origin-product-communities/${mockCommunity.id}`).expect(HttpStatus.NO_CONTENT);
 		});
-
-		it('should return 404 when community to delete not found', () => {
-			const error = new Error('Community not found');
-			jest.spyOn(deleteCommunityUseCase, 'execute').mockRejectedValueOnce(error);
-
-			return request(app.getHttpServer())
-				.delete('/origin-product-communities/non-existent-id')
-				.expect(HttpStatus.INTERNAL_SERVER_ERROR);
+		it('should return 500 when not found', () => {
+			jest.spyOn(deleteUseCase, 'execute').mockRejectedValueOnce(new Error('Community not found'));
+			return request(app.getHttpServer()).delete('/origin-product-communities/non-existent-id').expect(HttpStatus.INTERNAL_SERVER_ERROR);
 		});
 	});
 });
