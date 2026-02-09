@@ -9,6 +9,7 @@ import { BoxController } from '../src/andean/infra/controllers/box.controller';
 // ─── Use Cases ──────────────────────────────────────────────────────────────
 import { CreateBoxUseCase } from '../src/andean/app/use_cases/boxes/CreateBoxUseCase';
 import { GetAllBoxesUseCase } from '../src/andean/app/use_cases/boxes/GetAllBoxesUseCase';
+import { GetBoxDetailUseCase } from '../src/andean/app/use_cases/boxes/GetBoxDetailUseCase';
 
 // ─── Domain ─────────────────────────────────────────────────────────────────
 import { Box } from '../src/andean/domain/entities/Box';
@@ -17,6 +18,7 @@ describe('BoxController (e2e)', () => {
 	let app: INestApplication;
 	let createBoxUseCase: CreateBoxUseCase;
 	let getAllBoxesUseCase: GetAllBoxesUseCase;
+	let getBoxDetailUseCase: GetBoxDetailUseCase;
 
 	// Load mock data from JSON fixture
 	const fixture = FixtureLoader.loadBox();
@@ -27,6 +29,7 @@ describe('BoxController (e2e)', () => {
 	} as Box;
 	const createDto = fixture.createDto;
 	const listResponse = fixture.listResponse;
+	const detailResponse = fixture.detailResponse;
 
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -40,6 +43,10 @@ describe('BoxController (e2e)', () => {
 					provide: GetAllBoxesUseCase,
 					useValue: { handle: jest.fn().mockResolvedValue(listResponse) },
 				},
+				{
+					provide: GetBoxDetailUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue(detailResponse) },
+				},
 			],
 		}).compile();
 
@@ -51,6 +58,7 @@ describe('BoxController (e2e)', () => {
 
 		createBoxUseCase = moduleFixture.get(CreateBoxUseCase);
 		getAllBoxesUseCase = moduleFixture.get(GetAllBoxesUseCase);
+		getBoxDetailUseCase = moduleFixture.get(GetBoxDetailUseCase);
 	});
 
 	afterAll(async () => {
@@ -316,6 +324,202 @@ describe('BoxController (e2e)', () => {
 					expect(superfoods).toHaveLength(2);
 					expect(textiles).toHaveLength(1);
 				});
+		});
+	});
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// GET /boxes/:boxId  —  Box detail
+	// ═══════════════════════════════════════════════════════════════════════════
+	describe('GET /boxes/:boxId', () => {
+		const boxId = mockBox.id;
+
+		it('should return the full box detail by id', () => {
+			jest.spyOn(getBoxDetailUseCase, 'handle').mockResolvedValueOnce(detailResponse);
+			return request(app.getHttpServer())
+				.get(`/boxes/${boxId}`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					expect(res.body).toHaveProperty('id', boxId);
+					expect(res.body).toHaveProperty('heroDetail');
+					expect(res.body).toHaveProperty('detail');
+					expect(res.body).toHaveProperty('containedProducts');
+					expect(res.body).toHaveProperty('priceDetail');
+					expect(res.body).toHaveProperty('boxSeals');
+				});
+		});
+
+		it('should call the use case with the correct boxId', async () => {
+			const spy = jest.spyOn(getBoxDetailUseCase, 'handle');
+			await request(app.getHttpServer())
+				.get(`/boxes/${boxId}`)
+				.expect(HttpStatus.OK);
+			expect(spy).toHaveBeenCalledWith(boxId);
+		});
+
+		// ── heroDetail ────────────────────────────────────────────────────
+		it('should return correct heroDetail shape', () => {
+			jest.spyOn(getBoxDetailUseCase, 'handle').mockResolvedValueOnce(detailResponse);
+			return request(app.getHttpServer())
+				.get(`/boxes/${boxId}`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					const hero = res.body.heroDetail;
+					expect(hero).toHaveProperty('title');
+					expect(hero).toHaveProperty('subtitle');
+					expect(hero).toHaveProperty('thumbnailImage');
+					expect(hero.thumbnailImage).toHaveProperty('url');
+					expect(hero.thumbnailImage).toHaveProperty('name');
+					expect(hero).toHaveProperty('mainImage');
+					expect(hero.mainImage).toHaveProperty('url');
+					expect(hero.mainImage).toHaveProperty('name');
+				});
+		});
+
+		it('should return correct heroDetail values from fixture', () => {
+			jest.spyOn(getBoxDetailUseCase, 'handle').mockResolvedValueOnce(detailResponse);
+			return request(app.getHttpServer())
+				.get(`/boxes/${boxId}`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					const hero = res.body.heroDetail;
+					expect(hero.title).toBe('Caja Andina Esencial');
+					expect(hero.subtitle).toBe('Lo mejor de los Andes en una caja');
+					expect(hero.thumbnailImage.url).toContain('box-thumbnail');
+					expect(hero.mainImage.url).toContain('box-main');
+				});
+		});
+
+		// ── detail ─────────────────────────────────────────────────────────
+		it('should return correct detail shape', () => {
+			jest.spyOn(getBoxDetailUseCase, 'handle').mockResolvedValueOnce(detailResponse);
+			return request(app.getHttpServer())
+				.get(`/boxes/${boxId}`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					const detail = res.body.detail;
+					expect(detail).toHaveProperty('description');
+					expect(detail).toHaveProperty('images');
+					expect(Array.isArray(detail.images)).toBe(true);
+					detail.images.forEach((img: any) => {
+						expect(img).toHaveProperty('url');
+						expect(img).toHaveProperty('name');
+					});
+				});
+		});
+
+		// ── containedProducts ──────────────────────────────────────────────
+		it('should return correct containedProducts shape', () => {
+			jest.spyOn(getBoxDetailUseCase, 'handle').mockResolvedValueOnce(detailResponse);
+			return request(app.getHttpServer())
+				.get(`/boxes/${boxId}`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					const products = res.body.containedProducts;
+					expect(Array.isArray(products)).toBe(true);
+					expect(products).toHaveLength(3);
+					products.forEach((p: any) => {
+						expect(p).toHaveProperty('id');
+						expect(p).toHaveProperty('title');
+						expect(p).toHaveProperty('thumbnailImage');
+						expect(p.thumbnailImage).toHaveProperty('url');
+						expect(p.thumbnailImage).toHaveProperty('name');
+						expect(p).toHaveProperty('information');
+						expect(p).toHaveProperty('type');
+						expect(['SUPERFOOD', 'TEXTILE']).toContain(p.type);
+						expect(p).toHaveProperty('discartedPrice');
+						expect(p).toHaveProperty('price');
+					});
+				});
+		});
+
+		it('should contain both superfood and textile products', () => {
+			jest.spyOn(getBoxDetailUseCase, 'handle').mockResolvedValueOnce(detailResponse);
+			return request(app.getHttpServer())
+				.get(`/boxes/${boxId}`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					const products = res.body.containedProducts;
+					const superfoods = products.filter((p: any) => p.type === 'SUPERFOOD');
+					const textiles = products.filter((p: any) => p.type === 'TEXTILE');
+					expect(superfoods).toHaveLength(2);
+					expect(textiles).toHaveLength(1);
+				});
+		});
+
+		it('should return correct product prices in containedProducts', () => {
+			jest.spyOn(getBoxDetailUseCase, 'handle').mockResolvedValueOnce(detailResponse);
+			return request(app.getHttpServer())
+				.get(`/boxes/${boxId}`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					const products = res.body.containedProducts;
+					// Quinua = 25.50, Maca = 30.00, Poncho variant = 150.00
+					expect(products[0].price).toBe(25.50);
+					expect(products[1].price).toBe(30.00);
+					expect(products[2].price).toBe(150.00);
+				});
+		});
+
+		// ── priceDetail ────────────────────────────────────────────────────
+		it('should return correct priceDetail shape and values', () => {
+			jest.spyOn(getBoxDetailUseCase, 'handle').mockResolvedValueOnce(detailResponse);
+			return request(app.getHttpServer())
+				.get(`/boxes/${boxId}`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					const price = res.body.priceDetail;
+					expect(price).toHaveProperty('discartedPrice');
+					expect(price).toHaveProperty('totalPrice');
+					expect(price).toHaveProperty('discountPorcentage');
+					// discartedPrice = 25.50 + 30.00 + 150.00 = 205.50
+					expect(price.discartedPrice).toBe(205.50);
+					// totalPrice = box price
+					expect(price.totalPrice).toBe(89.90);
+					// discountPorcentage = Math.round((1 - 89.90/205.50) * 100) = 56
+					expect(price.discountPorcentage).toBe(56);
+				});
+		});
+
+		// ── boxSeals ───────────────────────────────────────────────────────
+		it('should return correct boxSeals shape', () => {
+			jest.spyOn(getBoxDetailUseCase, 'handle').mockResolvedValueOnce(detailResponse);
+			return request(app.getHttpServer())
+				.get(`/boxes/${boxId}`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					const seals = res.body.boxSeals;
+					expect(Array.isArray(seals)).toBe(true);
+					expect(seals).toHaveLength(2);
+					seals.forEach((seal: any) => {
+						expect(seal).toHaveProperty('name');
+						expect(seal).toHaveProperty('description');
+						expect(seal).toHaveProperty('logo');
+						expect(seal.logo).toHaveProperty('url');
+						expect(seal.logo).toHaveProperty('name');
+					});
+				});
+		});
+
+		it('should return correct seal values from fixture', () => {
+			jest.spyOn(getBoxDetailUseCase, 'handle').mockResolvedValueOnce(detailResponse);
+			return request(app.getHttpServer())
+				.get(`/boxes/${boxId}`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					const seals = res.body.boxSeals;
+					expect(seals[0].name).toBe('Sello Orgánico Certificado');
+					expect(seals[1].name).toBe('Sello Comercio Justo');
+				});
+		});
+
+		// ── error cases ────────────────────────────────────────────────────
+		it('should return 404 when box is not found', () => {
+			jest.spyOn(getBoxDetailUseCase, 'handle').mockRejectedValueOnce(
+				new (require('@nestjs/common').NotFoundException)('Box not found'),
+			);
+			return request(app.getHttpServer())
+				.get('/boxes/non-existent-id')
+				.expect(HttpStatus.NOT_FOUND);
 		});
 	});
 });
