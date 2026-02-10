@@ -117,25 +117,25 @@ export class MediaItemController {
 		return this.toResponse(mediaItem);
 	}
 
-	@Put(':id')
-	@ApiOperation({ summary: 'Actualizar un media item' })
-	@ApiParam({ name: 'id', description: 'ID del media item' })
-	@ApiResponse({
-		status: HttpStatus.OK,
-		description: 'Media item actualizado exitosamente',
-		type: MediaItemResponse,
-	})
-	@ApiResponse({
-		status: HttpStatus.NOT_FOUND,
-		description: 'Media item no encontrado',
-	})
-	async update(
-		@Param('id') id: string,
-		@Body() dto: UpdateMediaItemDto,
-	): Promise<MediaItemResponse> {
-		const mediaItem = await this.updateMediaItemUseCase.execute(id, dto);
-		return this.toResponse(mediaItem);
-	}
+	// @Put(':id')
+	// @ApiOperation({ summary: 'Actualizar un media item' })
+	// @ApiParam({ name: 'id', description: 'ID del media item' })
+	// @ApiResponse({
+	// 	status: HttpStatus.OK,
+	// 	description: 'Media item actualizado exitosamente',
+	// 	type: MediaItemResponse,
+	// })
+	// @ApiResponse({
+	// 	status: HttpStatus.NOT_FOUND,
+	// 	description: 'Media item no encontrado',
+	// })
+	// async update(
+	// 	@Param('id') id: string,
+	// 	@Body() dto: UpdateMediaItemDto,
+	// ): Promise<MediaItemResponse> {
+	// 	const mediaItem = await this.updateMediaItemUseCase.execute(id, dto);
+	// 	return this.toResponse(mediaItem);
+	// }
 
 	@Get(':id')
 	@ApiOperation({ summary: 'Obtener un media item por ID' })
@@ -154,33 +154,33 @@ export class MediaItemController {
 		return this.toResponse(mediaItem);
 	}
 
-	@Get()
-	@ApiOperation({ summary: 'Listar todos los media items' })
-	@ApiResponse({
-		status: HttpStatus.OK,
-		description: 'Lista de media items',
-		type: [MediaItemResponse],
-	})
-	async list(): Promise<MediaItemResponse[]> {
-		const mediaItems = await this.listMediaItemsUseCase.execute();
-		return mediaItems.map((item) => this.toResponse(item));
-	}
+	// @Get()
+	// @ApiOperation({ summary: 'Listar todos los media items' })
+	// @ApiResponse({
+	// 	status: HttpStatus.OK,
+	// 	description: 'Lista de media items',
+	// 	type: [MediaItemResponse],
+	// })
+	// async list(): Promise<MediaItemResponse[]> {
+	// 	const mediaItems = await this.listMediaItemsUseCase.execute();
+	// 	return mediaItems.map((item) => this.toResponse(item));
+	// }
 
-	@Delete(':id')
-	@HttpCode(HttpStatus.NO_CONTENT)
-	@ApiOperation({ summary: 'Eliminar un media item' })
-	@ApiParam({ name: 'id', description: 'ID del media item' })
-	@ApiResponse({
-		status: HttpStatus.NO_CONTENT,
-		description: 'Media item eliminado exitosamente',
-	})
-	@ApiResponse({
-		status: HttpStatus.NOT_FOUND,
-		description: 'Media item no encontrado',
-	})
-	async delete(@Param('id') id: string): Promise<void> {
-		await this.deleteMediaItemUseCase.execute(id);
-	}
+	// @Delete(':id')
+	// @HttpCode(HttpStatus.NO_CONTENT)
+	// @ApiOperation({ summary: 'Eliminar un media item' })
+	// @ApiParam({ name: 'id', description: 'ID del media item' })
+	// @ApiResponse({
+	// 	status: HttpStatus.NO_CONTENT,
+	// 	description: 'Media item eliminado exitosamente',
+	// })
+	// @ApiResponse({
+	// 	status: HttpStatus.NOT_FOUND,
+	// 	description: 'Media item no encontrado',
+	// })
+	// async delete(@Param('id') id: string): Promise<void> {
+	// 	await this.deleteMediaItemUseCase.execute(id);
+	// }
 
 	private toResponse(mediaItem: MediaItem): MediaItemResponse {
 		return {
