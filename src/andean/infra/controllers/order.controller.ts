@@ -97,15 +97,15 @@ export class OrderController {
 	})
 	@ApiResponse({
 		status: 404,
-		description: 'Orden no encontrada',
+		description: 'Order not found',
 		type: OrderErrorResponse,
 	})
 	@ApiResponse({
 		status: 400,
-		description: 'ID inválido',
+		description: 'Invalid order ID',
 		type: OrderErrorResponse,
 	})
-	async getById(@Param('id') id: string): Promise<Order | null> {
+	async getById(@Param('id') id: string): Promise<Order> {
 		return this.getOrderByIdUseCase.handle(id);
 	}
 
@@ -126,8 +126,13 @@ export class OrderController {
 		type: [OrderResponse],
 	})
 	@ApiResponse({
+		status: 404,
+		description: 'Customer not found',
+		type: OrderErrorResponse,
+	})
+	@ApiResponse({
 		status: 400,
-		description: 'ID de cliente inválido',
+		description: 'Invalid customer ID',
 		type: OrderErrorResponse,
 	})
 	async getByCustomerId(
@@ -155,12 +160,12 @@ export class OrderController {
 	})
 	@ApiResponse({
 		status: 404,
-		description: 'Orden no encontrada',
+		description: 'Order not found',
 		type: OrderErrorResponse,
 	})
 	@ApiResponse({
 		status: 400,
-		description: 'Datos inválidos o estado inválido',
+		description: 'Invalid order ID or invalid order status',
 		type: OrderErrorResponse,
 	})
 	async updateById(
