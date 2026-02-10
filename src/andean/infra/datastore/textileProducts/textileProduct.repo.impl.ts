@@ -678,4 +678,11 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 			total: countResult,
 		};
 	}
+
+	async getByIds(ids: string[]): Promise<TextileProduct[]> {
+		if (!ids.length) return [];
+		const objectIds = ids.map((id) => MongoIdUtils.stringToObjectId(id));
+		const docs = await this.textileProductModel.find({ _id: { $in: objectIds } }).exec();
+		return docs.map((doc) => TextileProductMapper.fromDocument(doc));
+	}
 }

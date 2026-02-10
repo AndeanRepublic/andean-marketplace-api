@@ -1,5 +1,5 @@
-import { CartShopItemDocument } from '../persistence/cartShopItem.schema';
-import { CartItem } from '../../domain/entities/CartItem';
+import { CartShopItemDocument } from '../../persistence/cartShopItem.schema';
+import { CartItem } from '../../../domain/entities/CartItem';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { Types } from 'mongoose';
 

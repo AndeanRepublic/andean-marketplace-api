@@ -106,4 +106,13 @@ export class FixtureLoader {
 	static loadSuperfoodType() {
 		return this.load('superfood-type.fixture.json');
 	}
+
+	// ─── Box & BoxSeal fixtures ─────────────────────────────────────
+	static loadBox() {
+		return this.load('box.fixture.json');
+	}
+
+	static loadBoxSeal() {
+		return this.load('box-seal.fixture.json');
+	}
 }
