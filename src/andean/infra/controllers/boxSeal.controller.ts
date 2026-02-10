@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateBoxSealUseCase } from '../../app/use_cases/boxSeals/CreateBoxSealUseCase';
 import { GetAllBoxSealsUseCase } from '../../app/use_cases/boxSeals/GetAllBoxSealsUseCase';
 import { GetBoxSealByIdUseCase } from '../../app/use_cases/boxSeals/GetBoxSealByIdUseCase';
@@ -8,6 +9,7 @@ import { BoxSeal } from '../../domain/entities/box/BoxSeal';
 import { CreateBoxSealDto } from './dto/box/CreateBoxSealDto';
 import { UpdateBoxSealDto } from './dto/box/UpdateBoxSealDto';
 
+@ApiTags('Box Seals')
 @Controller('box-seals')
 export class BoxSealController {
 	constructor(
@@ -19,6 +21,20 @@ export class BoxSealController {
 	) { }
 
 	@Post('')
+	@HttpCode(HttpStatus.CREATED)
+	@ApiOperation({
+		summary: 'Crear nuevo sello de box',
+		description: 'Crea un nuevo sello (certificación) que puede ser asociado a boxes. Requiere nombre, descripción y un media ID del logo.',
+	})
+	@ApiResponse({
+		status: 201,
+		description: 'Sello creado exitosamente',
+		type: BoxSeal,
+	})
+	@ApiResponse({
+		status: 400,
+		description: 'Datos de entrada inválidos',
+	})
 	async createBoxSeal(@Body() dto: CreateBoxSealDto): Promise<BoxSeal> {
 		return this.createBoxSealUseCase.handle(dto);
 	}
