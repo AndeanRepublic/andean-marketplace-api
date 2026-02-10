@@ -4,7 +4,7 @@ import * as request from 'supertest';
 import { FixtureLoader } from './helpers/fixture-loader';
 
 // ─── Controller ─────────────────────────────────────────────────────────────
-import { BoxSealController } from '../src/andean/infra/controllers/boxSeal.controller';
+import { BoxSealController } from '../src/andean/infra/controllers/box/boxSeal.controller';
 
 // ─── Use Cases ──────────────────────────────────────────────────────────────
 import { CreateBoxSealUseCase } from '../src/andean/app/use_cases/boxSeals/CreateBoxSealUseCase';

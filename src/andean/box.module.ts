@@ -17,7 +17,7 @@ import { GetBoxDetailUseCase } from './app/use_cases/boxes/GetBoxDetailUseCase';
 import { BoxProductResolutionService } from './infra/services/box/BoxProductResolutionService';
 
 // Controller
-import { BoxController } from './infra/controllers/box.controller';
+import { BoxController } from './infra/controllers/box/box.controller';
 
 // Dependent modules
 import { BoxSealModule } from './boxSeal.module';

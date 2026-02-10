@@ -4,7 +4,7 @@ import * as request from 'supertest';
 import { FixtureLoader } from './helpers/fixture-loader';
 
 // ─── Controller ─────────────────────────────────────────────────────────────
-import { BoxController } from '../src/andean/infra/controllers/box.controller';
+import { BoxController } from '../src/andean/infra/controllers/box/box.controller';
 
 // ─── Use Cases ──────────────────────────────────────────────────────────────
 import { CreateBoxUseCase } from '../src/andean/app/use_cases/boxes/CreateBoxUseCase';

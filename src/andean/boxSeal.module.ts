@@ -16,7 +16,7 @@ import { UpdateBoxSealUseCase } from './app/use_cases/boxSeals/UpdateBoxSealUseC
 import { DeleteBoxSealUseCase } from './app/use_cases/boxSeals/DeleteBoxSealUseCase';
 
 // Controller
-import { BoxSealController } from './infra/controllers/boxSeal.controller';
+import { BoxSealController } from './infra/controllers/box/boxSeal.controller';
 
 @Module({
 	imports: [

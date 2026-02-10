@@ -17,13 +17,13 @@ import {
 	ApiParam,
 	ApiQuery,
 } from '@nestjs/swagger';
-import { CreateBoxUseCase } from '../../app/use_cases/boxes/CreateBoxUseCase';
-import { GetAllBoxesUseCase } from '../../app/use_cases/boxes/GetAllBoxesUseCase';
-import { GetBoxDetailUseCase } from '../../app/use_cases/boxes/GetBoxDetailUseCase';
-import { Box } from '../../domain/entities/box/Box';
-import { CreateBoxDto } from './dto/box/CreateBoxDto';
-import { BoxListPaginatedResponse } from '../../app/models/box/BoxListResponse';
-import { BoxDetailResponse } from '../../app/models/box/BoxDetailResponse';
+import { CreateBoxUseCase } from '../../../app/use_cases/boxes/CreateBoxUseCase';
+import { GetAllBoxesUseCase } from '../../../app/use_cases/boxes/GetAllBoxesUseCase';
+import { GetBoxDetailUseCase } from '../../../app/use_cases/boxes/GetBoxDetailUseCase';
+import { Box } from '../../../domain/entities/box/Box';
+import { CreateBoxDto } from '../dto/box/CreateBoxDto';
+import { BoxListPaginatedResponse } from '../../../app/models/box/BoxListResponse';
+import { BoxDetailResponse } from '../../../app/models/box/BoxDetailResponse';
 
 @Controller('Box')
 export class BoxController {

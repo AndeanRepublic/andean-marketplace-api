@@ -1,13 +1,13 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { CreateBoxSealUseCase } from '../../app/use_cases/boxSeals/CreateBoxSealUseCase';
-import { GetAllBoxSealsUseCase } from '../../app/use_cases/boxSeals/GetAllBoxSealsUseCase';
-import { GetBoxSealByIdUseCase } from '../../app/use_cases/boxSeals/GetBoxSealByIdUseCase';
-import { UpdateBoxSealUseCase } from '../../app/use_cases/boxSeals/UpdateBoxSealUseCase';
-import { DeleteBoxSealUseCase } from '../../app/use_cases/boxSeals/DeleteBoxSealUseCase';
-import { BoxSeal } from '../../domain/entities/box/BoxSeal';
-import { CreateBoxSealDto } from './dto/box/CreateBoxSealDto';
-import { UpdateBoxSealDto } from './dto/box/UpdateBoxSealDto';
+import { CreateBoxSealUseCase } from '../../../app/use_cases/boxSeals/CreateBoxSealUseCase';
+import { GetAllBoxSealsUseCase } from '../../../app/use_cases/boxSeals/GetAllBoxSealsUseCase';
+import { GetBoxSealByIdUseCase } from '../../../app/use_cases/boxSeals/GetBoxSealByIdUseCase';
+import { UpdateBoxSealUseCase } from '../../../app/use_cases/boxSeals/UpdateBoxSealUseCase';
+import { DeleteBoxSealUseCase } from '../../../app/use_cases/boxSeals/DeleteBoxSealUseCase';
+import { BoxSeal } from '../../../domain/entities/box/BoxSeal';
+import { CreateBoxSealDto } from '../dto/box/CreateBoxSealDto';
+import { UpdateBoxSealDto } from '../dto/box/UpdateBoxSealDto';
 
 @ApiTags('Box Seals')
 @Controller('box-seals')
