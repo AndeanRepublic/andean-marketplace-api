@@ -12,11 +12,11 @@ import { ApplyDiscountCodeUseCase } from './app/use_cases/cart_shop/ApplyDiscoun
 import { CustomerProfileRepository } from './app/datastore/Customer.repo';
 import { CustomerProfileRepositoryImpl } from './infra/datastore/customer.repo.impl';
 import { CartShopRepository } from './app/datastore/CartShop.repo';
-import { CartShopRepoImpl } from './infra/datastore/cartShop.repo.impl';
+import { CartShopRepoImpl } from './infra/datastore/cart/cartShop.repo.impl';
 import { UsersModule } from './users.module';
 import { CartItemSchema } from './infra/persistence/cartShopItem.schema';
 import { CartShopItemRepository } from './app/datastore/CartShopItem.repo';
-import { CartShopItemRepoImpl } from './infra/datastore/cartShopItem.repo.impl';
+import { CartShopItemRepoImpl } from './infra/datastore/cart/cartShopItem.repo.impl';
 import { VariantModule } from './variant.module';
 import { TextileProductModule } from './textileProduct.module';
 import { SuperfoodModule } from './superfood.module';
@@ -24,8 +24,11 @@ import { CommunityModule } from './community.module';
 import { DiscountCodeService } from './infra/services/DiscountCodeService';
 import { TextileProductInfoProvider } from './infra/services/products/TextileProductInfoProvider';
 import { SuperfoodProductInfoProvider } from './infra/services/products/SuperfoodProductInfoProvider';
+import { BoxProductInfoProvider } from './infra/services/products/BoxProductInfoProvider';
 import { ProductInfoProviderRegistry } from './infra/services/products/ProductInfoProviderRegistry';
 import { OwnerNameResolver } from './infra/services/OwnerNameResolver';
+import { BoxCartContentResolver } from './infra/services/cart/BoxCartContentResolver';
+import { BoxModule } from './box.module';
 
 @Module({
 	imports: [
@@ -45,8 +48,8 @@ import { OwnerNameResolver } from './infra/services/OwnerNameResolver';
 		TextileProductModule,
 		SuperfoodModule,
 		CommunityModule,
-	],
-	controllers: [CartShopController],
+		BoxModule,
+	], controllers: [CartShopController],
 	providers: [
 		AddItemToCartUseCase,
 		CleanCartUseCase,
@@ -69,8 +72,10 @@ import { OwnerNameResolver } from './infra/services/OwnerNameResolver';
 		},
 		TextileProductInfoProvider,
 		SuperfoodProductInfoProvider,
+		BoxProductInfoProvider,
 		ProductInfoProviderRegistry,
 		OwnerNameResolver,
+		BoxCartContentResolver,
 	],
 	exports: [
 		CartShopRepository,

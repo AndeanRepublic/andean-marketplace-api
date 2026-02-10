@@ -16,7 +16,9 @@ import { TextileProductInfoProvider } from './infra/services/products/TextilePro
 import { SuperfoodProductInfoProvider } from './infra/services/products/SuperfoodProductInfoProvider';
 import { TextileProductModule } from './textileProduct.module';
 import { SuperfoodModule } from './superfood.module';
+import { BoxModule } from './box.module';
 import { CreateOrderFromCartUseCase } from './app/use_cases/orders/CreateOrderFromCartUseCase';
+import { BoxProductInfoProvider } from './infra/services/products/BoxProductInfoProvider';
 
 @Module({
 	imports: [
@@ -31,6 +33,7 @@ import { CreateOrderFromCartUseCase } from './app/use_cases/orders/CreateOrderFr
 		VariantModule,
 		TextileProductModule,
 		SuperfoodModule,
+		BoxModule,
 	],
 	controllers: [OrderController],
 	providers: [
@@ -45,8 +48,9 @@ import { CreateOrderFromCartUseCase } from './app/use_cases/orders/CreateOrderFr
 		},
 		TextileProductInfoProvider,
 		SuperfoodProductInfoProvider,
+		BoxProductInfoProvider,
 		ProductInfoProviderRegistry,
 	],
 	exports: [OrderRepository],
 })
-export class OrdersModule {}
+export class OrdersModule { }

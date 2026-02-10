@@ -1,0 +1,37 @@
+{
+	"entity": {
+		"id": "box-seal-uuid-001",
+		"name": "Sello Orgánico Certificado",
+		"description": "Certificación de producto orgánico avalado por SENASA",
+		"logoMediaId": "media-logo-seal-001",
+		"createdAt": "2026-01-01T00:00:00.000Z",
+		"updatedAt": "2026-01-01T00:00:00.000Z"
+	},
+	"createDto": {
+		"name": "Sello Orgánico Certificado",
+		"description": "Certificación de producto orgánico avalado por SENASA",
+		"logoMediaId": "media-logo-seal-001"
+	},
+	"updateDto": {
+		"name": "Sello Orgánico Premium",
+		"description": "Certificación de producto orgánico premium"
+	},
+	"additionalEntities": [
+		{
+			"id": "box-seal-uuid-002",
+			"name": "Sello Comercio Justo",
+			"description": "Garantiza condiciones justas de comercio",
+			"logoMediaId": "media-logo-seal-002",
+			"createdAt": "2026-01-01T00:00:00.000Z",
+			"updatedAt": "2026-01-01T00:00:00.000Z"
+		},
+		{
+			"id": "box-seal-uuid-003",
+			"name": "Sello Artesanal",
+			"description": "Producto elaborado artesanalmente",
+			"logoMediaId": "media-logo-seal-003",
+			"createdAt": "2026-01-01T00:00:00.000Z",
+			"updatedAt": "2026-01-01T00:00:00.000Z"
+		}
+	]
+}

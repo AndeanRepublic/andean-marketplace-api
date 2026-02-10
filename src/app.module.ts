@@ -20,6 +20,8 @@ import { SuperfoodModule } from './andean/superfood.module';
 import { MediaItemModule } from './andean/mediaItem.module';
 import { TextileProductModule } from './andean/textileProduct.module';
 import { VariantModule } from './andean/variant.module';
+import { BoxModule } from './andean/box.module';
+import { BoxSealModule } from './andean/boxSeal.module';
 
 @Module({
 	imports: [
@@ -56,6 +58,8 @@ import { VariantModule } from './andean/variant.module';
 		MediaItemModule,
 		TextileProductModule,
 		VariantModule,
+		BoxModule,
+		BoxSealModule,
 	],
 	controllers: [],
 	providers: [],

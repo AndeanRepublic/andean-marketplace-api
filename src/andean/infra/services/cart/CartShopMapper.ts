@@ -1,5 +1,5 @@
-import { CartShopDocument } from '../persistence/cartShop.schema';
-import { CartShop } from '../../domain/entities/CartShop';
+import { CartShopDocument } from '../../persistence/cartShop.schema';
+import { CartShop } from '../../../domain/entities/CartShop';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
 
 export class CartShopMapper {

@@ -12,4 +12,5 @@ export abstract class VariantRepository {
 	): Promise<Variant | null>;
 	abstract delete(id: string): Promise<boolean>;
 	abstract deleteByProductId(productId: string): Promise<boolean>;
+	abstract getByIds(ids: string[]): Promise<Variant[]>;
 }

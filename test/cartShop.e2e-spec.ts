@@ -9,6 +9,7 @@ import { RemoveItemFromCartUseCase } from '../src/andean/app/use_cases/cart_shop
 import { CleanCartUseCase } from '../src/andean/app/use_cases/cart_shop/CleanCartUseCase';
 import { ApplyDiscountCodeUseCase } from '../src/andean/app/use_cases/cart_shop/ApplyDiscountCodeUseCase';
 import { FixtureLoader } from './helpers/fixture-loader';
+import { ProductType } from '../src/andean/domain/enums/ProductType';
 
 describe('CartShopController (e2e)', () => {
 	let app: INestApplication;
@@ -22,6 +23,7 @@ describe('CartShopController (e2e)', () => {
 	const superfoodFixtures = FixtureLoader.loadSuperfood();
 	const customerFixtures = FixtureLoader.loadCustomer();
 	const cartFixtures = FixtureLoader.loadCart();
+	const boxFixtures = FixtureLoader.loadBox();
 
 	// Mock responses using fixtures
 	const mockAddItemResponse = {
@@ -34,6 +36,7 @@ describe('CartShopController (e2e)', () => {
 		idShoppingCartItem: cartFixtures.cartItems[0].id,
 		maxStock: textileFixtures.variants[0].stock,
 		isDiscountActive: textileFixtures.textileProduct.isDiscountActive,
+		productType: ProductType.TEXTILE,
 	};
 
 	const mockGetCartResponse = {
@@ -48,6 +51,7 @@ describe('CartShopController (e2e)', () => {
 				idShoppingCartItem: cartFixtures.cartItems[0].id,
 				maxStock: textileFixtures.variants[0].stock,
 				isDiscountActive: textileFixtures.textileProduct.isDiscountActive,
+				productType: ProductType.TEXTILE,
 			},
 			{
 				ownerName: superfoodFixtures.community.name,
@@ -59,6 +63,7 @@ describe('CartShopController (e2e)', () => {
 				idShoppingCartItem: cartFixtures.cartItems[1].id,
 				maxStock: superfoodFixtures.variants[0].stock,
 				isDiscountActive: superfoodFixtures.superfood.isDiscountActive,
+				productType: ProductType.SUPERFOOD,
 			},
 		],
 		delivery: 15.0,
@@ -71,6 +76,63 @@ describe('CartShopController (e2e)', () => {
 		delivery: 0,
 		discount: 0,
 		taxOrFee: 0,
+	};
+
+	// Mock response for adding a box item to the cart
+	const mockAddBoxItemResponse = {
+		ownerName: '',
+		titulo: boxFixtures.entity.title,
+		combinationVariant: {},
+		thumbnailImgUrl: boxFixtures.entity.thumbnailImageId,
+		unitPrice: boxFixtures.entity.price,
+		quantity: 1,
+		idShoppingCartItem: 'cart-item-box-001',
+		maxStock: 1,
+		isDiscountActive: false,
+		productType: ProductType.BOX,
+		boxContent: [
+			{ title: boxFixtures.relatedProducts.superfoods[0].baseInfo.title, productType: ProductType.SUPERFOOD },
+			{ title: boxFixtures.relatedProducts.superfoods[1].baseInfo.title, productType: ProductType.SUPERFOOD },
+			{ title: boxFixtures.relatedProducts.textiles[0].product.baseInfo.title, productType: ProductType.TEXTILE },
+		],
+	};
+
+	// Mock response for GET cart including a box item
+	const mockGetCartWithBoxResponse = {
+		items: [
+			{
+				ownerName: textileFixtures.shop.name,
+				titulo: textileFixtures.textileProduct.baseInfo.title,
+				combinationVariant: textileFixtures.variants[0].combination,
+				thumbnailImgUrl: textileFixtures.mediaItems[0].url,
+				unitPrice: textileFixtures.variants[0].price,
+				quantity: 2,
+				idShoppingCartItem: cartFixtures.cartItems[0].id,
+				maxStock: textileFixtures.variants[0].stock,
+				isDiscountActive: textileFixtures.textileProduct.isDiscountActive,
+				productType: ProductType.TEXTILE,
+			},
+			{
+				ownerName: '',
+				titulo: boxFixtures.entity.title,
+				combinationVariant: {},
+				thumbnailImgUrl: boxFixtures.entity.thumbnailImageId,
+				unitPrice: boxFixtures.entity.price,
+				quantity: 1,
+				idShoppingCartItem: 'cart-item-box-001',
+				maxStock: 1,
+				isDiscountActive: false,
+				productType: ProductType.BOX,
+				boxContent: [
+					{ title: boxFixtures.relatedProducts.superfoods[0].baseInfo.title, productType: ProductType.SUPERFOOD },
+					{ title: boxFixtures.relatedProducts.superfoods[1].baseInfo.title, productType: ProductType.SUPERFOOD },
+					{ title: boxFixtures.relatedProducts.textiles[0].product.baseInfo.title, productType: ProductType.TEXTILE },
+				],
+			},
+		],
+		delivery: 15.0,
+		discount: 0,
+		taxOrFee: 27.0,
 	};
 
 	beforeAll(async () => {
@@ -232,6 +294,7 @@ describe('CartShopController (e2e)', () => {
 				idShoppingCartItem: 'cart-item-new',
 				maxStock: superfoodFixtures.variants[0].stock,
 				isDiscountActive: false,
+				productType: ProductType.SUPERFOOD,
 			};
 
 			jest.spyOn(addItemToCartUseCase, 'handle').mockResolvedValueOnce(superfoodResponse);
@@ -246,6 +309,60 @@ describe('CartShopController (e2e)', () => {
 				.expect((res) => {
 					expect(res.body).toHaveProperty('ownerName', superfoodFixtures.community.name);
 					expect(res.body).toHaveProperty('titulo', superfoodFixtures.superfood.baseInfo.title);
+				});
+		});
+
+		it('should handle adding a box item with boxContent', () => {
+			jest.spyOn(addItemToCartUseCase, 'handle').mockResolvedValueOnce(mockAddBoxItemResponse);
+
+			return request(app.getHttpServer())
+				.post(`/cart/items?customerId=${customerId}`)
+				.send({
+					variantId: boxFixtures.entity.id,
+					quantity: 1,
+				})
+				.expect(HttpStatus.CREATED)
+				.expect((res) => {
+					expect(res.body).toMatchObject({
+						ownerName: '',
+						titulo: boxFixtures.entity.title,
+						combinationVariant: {},
+						unitPrice: boxFixtures.entity.price,
+						quantity: 1,
+						maxStock: 1,
+						isDiscountActive: false,
+						productType: ProductType.BOX,
+					});
+					expect(res.body).toHaveProperty('boxContent');
+					expect(Array.isArray(res.body.boxContent)).toBe(true);
+					expect(res.body.boxContent).toHaveLength(3);
+				});
+		});
+
+		it('should return box item with correct boxContent product types', () => {
+			jest.spyOn(addItemToCartUseCase, 'handle').mockResolvedValueOnce(mockAddBoxItemResponse);
+
+			return request(app.getHttpServer())
+				.post(`/cart/items?customerId=${customerId}`)
+				.send({
+					variantId: boxFixtures.entity.id,
+					quantity: 1,
+				})
+				.expect(HttpStatus.CREATED)
+				.expect((res) => {
+					const boxContent = res.body.boxContent;
+					expect(boxContent[0]).toEqual({
+						title: boxFixtures.relatedProducts.superfoods[0].baseInfo.title,
+						productType: ProductType.SUPERFOOD,
+					});
+					expect(boxContent[1]).toEqual({
+						title: boxFixtures.relatedProducts.superfoods[1].baseInfo.title,
+						productType: ProductType.SUPERFOOD,
+					});
+					expect(boxContent[2]).toEqual({
+						title: boxFixtures.relatedProducts.textiles[0].product.baseInfo.title,
+						productType: ProductType.TEXTILE,
+					});
 				});
 		});
 	});
@@ -357,6 +474,82 @@ describe('CartShopController (e2e)', () => {
 					expect(res.body.delivery).toBe(15.0);
 					expect(res.body.discount).toBe(0);
 					expect(res.body.taxOrFee).toBe(27.0);
+				});
+		});
+
+		it('should return cart with box item containing boxContent', () => {
+			jest.spyOn(getCartByCustomerUseCase, 'handle').mockResolvedValueOnce(mockGetCartWithBoxResponse);
+
+			return request(app.getHttpServer())
+				.get(`/cart?customerId=${customerId}`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					expect(res.body.items).toHaveLength(2);
+
+					const boxItem = res.body.items[1];
+					expect(boxItem.productType).toBe(ProductType.BOX);
+					expect(boxItem.ownerName).toBe('');
+					expect(boxItem.titulo).toBe(boxFixtures.entity.title);
+					expect(boxItem.combinationVariant).toEqual({});
+					expect(boxItem.quantity).toBe(1);
+					expect(boxItem.maxStock).toBe(1);
+					expect(boxItem.isDiscountActive).toBe(false);
+				});
+		});
+
+		it('should return box item with correct boxContent structure', () => {
+			jest.spyOn(getCartByCustomerUseCase, 'handle').mockResolvedValueOnce(mockGetCartWithBoxResponse);
+
+			return request(app.getHttpServer())
+				.get(`/cart?customerId=${customerId}`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					const boxItem = res.body.items[1];
+					expect(boxItem).toHaveProperty('boxContent');
+					expect(Array.isArray(boxItem.boxContent)).toBe(true);
+					expect(boxItem.boxContent).toHaveLength(3);
+
+					// Verify each contained product has title and productType
+					boxItem.boxContent.forEach((contentItem: any) => {
+						expect(contentItem).toHaveProperty('title');
+						expect(contentItem).toHaveProperty('productType');
+						expect([ProductType.SUPERFOOD, ProductType.TEXTILE]).toContain(contentItem.productType);
+					});
+				});
+		});
+
+		it('should return box item boxContent with correct product types per item', () => {
+			jest.spyOn(getCartByCustomerUseCase, 'handle').mockResolvedValueOnce(mockGetCartWithBoxResponse);
+
+			return request(app.getHttpServer())
+				.get(`/cart?customerId=${customerId}`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					const boxContent = res.body.items[1].boxContent;
+
+					// 2 superfoods + 1 textile
+					const superfoodItems = boxContent.filter((c: any) => c.productType === ProductType.SUPERFOOD);
+					const textileItems = boxContent.filter((c: any) => c.productType === ProductType.TEXTILE);
+
+					expect(superfoodItems).toHaveLength(2);
+					expect(textileItems).toHaveLength(1);
+
+					expect(superfoodItems[0].title).toBe(boxFixtures.relatedProducts.superfoods[0].baseInfo.title);
+					expect(superfoodItems[1].title).toBe(boxFixtures.relatedProducts.superfoods[1].baseInfo.title);
+					expect(textileItems[0].title).toBe(boxFixtures.relatedProducts.textiles[0].product.baseInfo.title);
+				});
+		});
+
+		it('should not include boxContent on non-box items', () => {
+			jest.spyOn(getCartByCustomerUseCase, 'handle').mockResolvedValueOnce(mockGetCartWithBoxResponse);
+
+			return request(app.getHttpServer())
+				.get(`/cart?customerId=${customerId}`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					const textileItem = res.body.items[0];
+					expect(textileItem.productType).toBe(ProductType.TEXTILE);
+					expect(textileItem.boxContent).toBeUndefined();
 				});
 		});
 	});

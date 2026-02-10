@@ -10,4 +10,6 @@ export abstract class MediaItemRepository {
 	abstract update(mediaItem: MediaItem): Promise<MediaItem>;
 
 	abstract delete(id: string): Promise<void>;
+
+	abstract getByIds(ids: string[]): Promise<MediaItem[]>;
 }
