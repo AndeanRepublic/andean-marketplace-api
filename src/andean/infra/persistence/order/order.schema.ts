@@ -3,6 +3,7 @@ import { OrderStatus } from '../../../domain/enums/OrderStatus';
 import { PaymentMethod } from '../../../domain/enums/PaymentMethod';
 import { ProductType } from '../../../domain/enums/ProductType';
 import { DeliveryOption } from '../../../domain/enums/DeliveryOption';
+import { PaymentProvider } from '../../../domain/enums/PaymentProvider';
 
 // Schema para OrderItem embebido
 const OrderItemSchema = new Schema(
@@ -75,7 +76,7 @@ const PaymentInfoSchema = new Schema(
 		},
 		provider: {
 			type: String,
-			enum: ['PAYPAL', 'NIUBIZ', 'MERCADOPAGO'],
+			enum: Object.values(PaymentProvider),
 			required: false,
 		},
 		transactionId: { type: String, required: false },
@@ -149,7 +150,7 @@ export interface OrderDocument extends Document {
 	};
 	payment: {
 		method: PaymentMethod;
-		provider?: 'PAYPAL' | 'NIUBIZ' | 'MERCADOPAGO';
+		provider?: PaymentProvider;
 		transactionId?: string;
 		paidAt?: Date;
 	};

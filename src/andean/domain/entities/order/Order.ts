@@ -2,6 +2,7 @@ import { OrderStatus } from '../../enums/OrderStatus';
 import { ProductType } from '../../enums/ProductType';
 import { PaymentMethod } from '../../enums/PaymentMethod';
 import { DeliveryOption } from '../../enums/DeliveryOption';
+import { PaymentProvider } from '../../enums/PaymentProvider';
 
 /**
  * Item embebido dentro de una Order
@@ -61,7 +62,7 @@ export interface OrderPricing {
  */
 export interface PaymentInfo {
 	method: PaymentMethod;
-	provider?: 'PAYPAL' | 'NIUBIZ' | 'MERCADOPAGO';
+	provider?: PaymentProvider;
 	transactionId?: string;
 	paidAt?: Date;
 }
