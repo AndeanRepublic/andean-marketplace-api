@@ -54,4 +54,11 @@ export class MediaItemRepoImpl implements MediaItemRepository {
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		await this.model.findByIdAndDelete(objectId).exec();
 	}
+
+	async getByIds(ids: string[]): Promise<MediaItem[]> {
+		if (!ids.length) return [];
+		const objectIds = ids.map((id) => MongoIdUtils.stringToObjectId(id));
+		const docs = await this.model.find({ _id: { $in: objectIds } }).exec();
+		return docs.map((doc) => MediaItemMapper.fromDocument(doc));
+	}
 }
