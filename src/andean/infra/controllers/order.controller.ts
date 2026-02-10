@@ -19,6 +19,8 @@ import { CreateOrderDto } from './dto/order/CreateOrderDto';
 import { CreateOrderFromCartDto } from './dto/order/CreateOrderFromCartDto';
 import { Order } from '../../domain/entities/order/Order';
 import { UpdateOrderDto } from './dto/order/UpdateOrderDto';
+import { OrderResponse } from '../../app/models/order/OrderResponse';
+import { OrderErrorResponse } from '../../app/models/order/OrderErrorResponse';
 
 @ApiTags('orders')
 @Controller('orders')
@@ -29,7 +31,7 @@ export class OrderController {
 		private readonly getOrdersByCustomerUseCase: GetOrdersByCustomerUseCase,
 		private readonly updateOrderStatusUseCase: UpdateOrderStatusUseCase,
 		private readonly createOrderFromCartUseCase: CreateOrderFromCartUseCase,
-	) {}
+	) { }
 
 	@Post('')
 	@ApiOperation({
@@ -86,9 +88,23 @@ export class OrderController {
 		name: 'id',
 		description: 'ID de la orden',
 		type: String,
+		example: '507f1f77bcf86cd799439011',
 	})
-	@ApiResponse({ status: 200, description: 'Orden encontrada', type: Order })
-	@ApiResponse({ status: 404, description: 'Orden no encontrada' })
+	@ApiResponse({
+		status: 200,
+		description: 'Orden encontrada exitosamente',
+		type: OrderResponse,
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Orden no encontrada',
+		type: OrderErrorResponse,
+	})
+	@ApiResponse({
+		status: 400,
+		description: 'ID inválido',
+		type: OrderErrorResponse,
+	})
 	async getById(@Param('id') id: string): Promise<Order | null> {
 		return this.getOrderByIdUseCase.handle(id);
 	}
@@ -102,11 +118,17 @@ export class OrderController {
 		name: 'customerId',
 		description: 'ID del cliente',
 		type: String,
+		example: '507f191e810c19729de860ea',
 	})
 	@ApiResponse({
 		status: 200,
-		description: 'Lista de órdenes del cliente',
-		type: [Order],
+		description: 'Lista de órdenes del cliente obtenida exitosamente',
+		type: [OrderResponse],
+	})
+	@ApiResponse({
+		status: 400,
+		description: 'ID de cliente inválido',
+		type: OrderErrorResponse,
 	})
 	async getByCustomerId(
 		@Param('customerId') customerId: string,
@@ -123,14 +145,24 @@ export class OrderController {
 		name: 'id',
 		description: 'ID de la orden',
 		type: String,
+		example: '507f1f77bcf86cd799439011',
 	})
 	@ApiBody({ type: UpdateOrderDto })
 	@ApiResponse({
 		status: 200,
 		description: 'Estado de la orden actualizado exitosamente',
-		type: Order,
+		type: OrderResponse,
 	})
-	@ApiResponse({ status: 404, description: 'Orden no encontrada' })
+	@ApiResponse({
+		status: 404,
+		description: 'Orden no encontrada',
+		type: OrderErrorResponse,
+	})
+	@ApiResponse({
+		status: 400,
+		description: 'Datos inválidos o estado inválido',
+		type: OrderErrorResponse,
+	})
 	async updateById(
 		@Param('id') id: string,
 		@Body() body: UpdateOrderDto,
