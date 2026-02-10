@@ -18,6 +18,7 @@ import { OrderStatus } from 'src/andean/domain/enums/OrderStatus';
 import { PaymentMethod } from 'src/andean/domain/enums/PaymentMethod';
 import { ProductType } from 'src/andean/domain/enums/ProductType';
 import { DeliveryOption } from 'src/andean/domain/enums/DeliveryOption';
+import { PaymentProvider } from 'src/andean/domain/enums/PaymentProvider';
 import {
 	OrderItem,
 	OrderPricing,
@@ -197,12 +198,12 @@ export class PaymentInfoDto implements PaymentInfo {
 	method!: PaymentMethod;
 
 	@ApiPropertyOptional({
-		enum: ['PAYPAL', 'NIUBIZ', 'MERCADOPAGO'],
+		enum: PaymentProvider,
 		description: 'Proveedor de pago',
 	})
-	@IsString()
+	@IsEnum(PaymentProvider)
 	@IsOptional()
-	provider?: 'PAYPAL' | 'NIUBIZ' | 'MERCADOPAGO';
+	provider?: PaymentProvider;
 
 	@ApiPropertyOptional({ description: 'ID de transacción' })
 	@IsString()
