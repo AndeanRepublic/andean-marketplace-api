@@ -24,8 +24,11 @@ import { CommunityModule } from './community.module';
 import { DiscountCodeService } from './infra/services/DiscountCodeService';
 import { TextileProductInfoProvider } from './infra/services/products/TextileProductInfoProvider';
 import { SuperfoodProductInfoProvider } from './infra/services/products/SuperfoodProductInfoProvider';
+import { BoxProductInfoProvider } from './infra/services/products/BoxProductInfoProvider';
 import { ProductInfoProviderRegistry } from './infra/services/products/ProductInfoProviderRegistry';
 import { OwnerNameResolver } from './infra/services/OwnerNameResolver';
+import { BoxCartContentResolver } from './infra/services/cart/BoxCartContentResolver';
+import { BoxModule } from './box.module';
 
 @Module({
 	imports: [
@@ -45,8 +48,8 @@ import { OwnerNameResolver } from './infra/services/OwnerNameResolver';
 		TextileProductModule,
 		SuperfoodModule,
 		CommunityModule,
-	],
-	controllers: [CartShopController],
+		BoxModule,
+	], controllers: [CartShopController],
 	providers: [
 		AddItemToCartUseCase,
 		CleanCartUseCase,
@@ -69,8 +72,10 @@ import { OwnerNameResolver } from './infra/services/OwnerNameResolver';
 		},
 		TextileProductInfoProvider,
 		SuperfoodProductInfoProvider,
+		BoxProductInfoProvider,
 		ProductInfoProviderRegistry,
 		OwnerNameResolver,
+		BoxCartContentResolver,
 	],
 	exports: [
 		CartShopRepository,
