@@ -25,7 +25,7 @@ import { CreateBoxDto } from '../dto/box/CreateBoxDto';
 import { BoxListPaginatedResponse } from '../../../app/models/box/BoxListResponse';
 import { BoxDetailResponse } from '../../../app/models/box/BoxDetailResponse';
 
-@Controller('Box')
+@Controller('boxes')
 export class BoxController {
 	constructor(
 		private readonly createBoxUseCase: CreateBoxUseCase,
