@@ -22,4 +22,9 @@ export abstract class SuperfoodProductRepository {
 	abstract deleteSuperfoodProduct(id: string): Promise<void>;
 
 	abstract getByIds(ids: string[]): Promise<SuperfoodProduct[]>;
+
+	abstract reduceStock(
+		id: string,
+		quantity: number,
+	): Promise<SuperfoodProduct | null>;
 }

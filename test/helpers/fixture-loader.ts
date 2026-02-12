@@ -119,4 +119,9 @@ export class FixtureLoader {
 	static loadReview() {
 		return this.load('review.fixture.json');
 	}
+
+	// ─── Order fixtures ─────────────────────────────────────────────
+	static loadOrder() {
+		return this.load('order.fixture.json');
+	}
 }

@@ -167,7 +167,7 @@ describe('BoxController (e2e)', () => {
 				.post('/boxes')
 				.send({
 					...createDto,
-					products: [{ productId: 'superfood-uuid-123' }],
+					products: [{ productType: 'SUPERFOOD', productId: 'superfood-uuid-123' }],
 				})
 				.expect(HttpStatus.CREATED);
 		});
@@ -178,9 +178,29 @@ describe('BoxController (e2e)', () => {
 				.post('/boxes')
 				.send({
 					...createDto,
-					products: [{ variantId: 'variant-textile-001' }],
+					products: [{ productType: 'TEXTILE', variantId: 'variant-textile-001' }],
 				})
 				.expect(HttpStatus.CREATED);
+		});
+
+		it('should return 400 when product has invalid productType', () => {
+			return request(app.getHttpServer())
+				.post('/boxes')
+				.send({
+					...createDto,
+					products: [{ productType: 'INVALID', productId: 'superfood-uuid-123' }],
+				})
+				.expect(HttpStatus.BAD_REQUEST);
+		});
+
+		it('should return 400 when product is missing productType', () => {
+			return request(app.getHttpServer())
+				.post('/boxes')
+				.send({
+					...createDto,
+					products: [{ productId: 'superfood-uuid-123' }],
+				})
+				.expect(HttpStatus.BAD_REQUEST);
 		});
 	});
 
