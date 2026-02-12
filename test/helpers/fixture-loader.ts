@@ -115,4 +115,8 @@ export class FixtureLoader {
 	static loadBoxSeal() {
 		return this.load('box-seal.fixture.json');
 	}
+
+	static loadReview() {
+		return this.load('review.fixture.json');
+	}
 }
