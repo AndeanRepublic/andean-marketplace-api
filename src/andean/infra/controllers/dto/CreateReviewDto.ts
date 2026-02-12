@@ -4,9 +4,10 @@ import {
 	IsInt,
 	IsEnum,
 	IsOptional,
-	IsMongoId,
 } from 'class-validator';
 import { ProductType } from 'src/andean/domain/enums/ProductType';
+import { MediaItemType } from 'src/andean/domain/enums/MediaItemType';
+import { MediaItemRole } from 'src/andean/domain/enums/MediaItemRole';
 
 export class CreateReviewDto {
 	@IsString()
@@ -17,10 +18,18 @@ export class CreateReviewDto {
 	@IsNotEmpty()
 	numberStarts!: number;
 
-	@IsString()
-	@IsMongoId()
+	// Campos opcionales para subir media directamente
+	@IsEnum(MediaItemType)
 	@IsOptional()
-	mediaId?: string;
+	mediaType?: MediaItemType;
+
+	@IsString()
+	@IsOptional()
+	mediaName?: string;
+
+	@IsEnum(MediaItemRole)
+	@IsOptional()
+	mediaRole?: MediaItemRole;
 
 	@IsString()
 	@IsNotEmpty()
