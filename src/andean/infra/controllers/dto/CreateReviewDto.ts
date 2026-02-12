@@ -5,6 +5,7 @@ import {
 	IsEnum,
 	IsOptional,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 import { ProductType } from 'src/andean/domain/enums/ProductType';
 import { MediaItemType } from 'src/andean/domain/enums/MediaItemType';
 import { MediaItemRole } from 'src/andean/domain/enums/MediaItemRole';
@@ -14,6 +15,7 @@ export class CreateReviewDto {
 	@IsNotEmpty()
 	content!: string;
 
+	@Transform(({ value }) => parseInt(value))
 	@IsInt()
 	@IsNotEmpty()
 	numberStarts!: number;
