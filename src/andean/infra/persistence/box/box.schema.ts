@@ -29,7 +29,7 @@ export interface BoxDocument extends Document {
 	description: string;
 	thumbnailImageId: string;
 	mainImageId: string;
-	products: { productId?: string; variantId?: string }[];
+	products: { productType?: string; productId?: string; variantId?: string }[];
 	price: number;
 	sealIds: string[];
 	createdAt: Date;

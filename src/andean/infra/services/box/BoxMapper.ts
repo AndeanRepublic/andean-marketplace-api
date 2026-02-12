@@ -1,6 +1,7 @@
 import { plainToInstance, instanceToPlain } from 'class-transformer';
 import { Types } from 'mongoose';
 import { Box, BoxProduct } from '../../../domain/entities/box/Box';
+import { ProductType } from '../../../domain/enums/ProductType';
 import { BoxDocument } from '../../persistence/box/box.schema';
 import { CreateBoxDto } from '../../controllers/dto/box/CreateBoxDto';
 import { MongoIdUtils } from '../../utils/MongoIdUtils';
@@ -9,7 +10,7 @@ export class BoxMapper {
 	static fromDocument(doc: BoxDocument): Box {
 		const plain = doc.toObject();
 		const products = (plain.products || []).map(
-			(p: any) => new BoxProduct(p.productId, p.variantId),
+			(p: any) => new BoxProduct(p.productType as ProductType, p.productId, p.variantId),
 		);
 		return new Box(
 			MongoIdUtils.objectIdToString(plain._id),
@@ -29,7 +30,7 @@ export class BoxMapper {
 	static fromCreateDto(dto: CreateBoxDto): Box {
 		const id = new Types.ObjectId().toString();
 		const products = (dto.products || []).map(
-			(p) => new BoxProduct(p.productId, p.variantId),
+			(p) => new BoxProduct(p.productType as ProductType, p.productId, p.variantId),
 		);
 		const now = new Date();
 		return new Box(

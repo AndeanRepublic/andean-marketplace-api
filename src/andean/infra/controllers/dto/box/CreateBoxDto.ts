@@ -12,8 +12,17 @@ import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class BoxProductDto {
+	@ApiProperty({
+		description: 'Tipo de producto (TEXTILE o SUPERFOOD)',
+		example: 'TEXTILE',
+		enum: ['TEXTILE', 'SUPERFOOD'],
+	})
+	@IsString()
+	@IsNotEmpty()
+	productType!: string;
+
 	@ApiPropertyOptional({
-		description: 'ID del producto superfood a incluir en el box',
+		description: 'ID del producto a incluir en el box',
 		example: '6973d8ffddef7b59c2d4dcfb',
 	})
 	@IsString()
@@ -21,7 +30,7 @@ export class BoxProductDto {
 	productId?: string;
 
 	@ApiPropertyOptional({
-		description: 'ID de la variante textil a incluir en el box',
+		description: 'ID de la variante a incluir en el box',
 		example: '6973d8ffddef7b59c2d4dcfc',
 	})
 	@IsString()
