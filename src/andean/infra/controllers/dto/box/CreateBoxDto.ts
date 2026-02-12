@@ -6,20 +6,22 @@ import {
 	ArrayNotEmpty,
 	ValidateNested,
 	IsOptional,
+	IsEnum,
 	Min,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { BoxProductType } from '../../../../domain/enums/BoxProductType';
 
 export class BoxProductDto {
 	@ApiProperty({
 		description: 'Tipo de producto (TEXTILE o SUPERFOOD)',
 		example: 'TEXTILE',
-		enum: ['TEXTILE', 'SUPERFOOD'],
+		enum: BoxProductType,
 	})
-	@IsString()
+	@IsEnum(BoxProductType)
 	@IsNotEmpty()
-	productType!: string;
+	productType!: BoxProductType;
 
 	@ApiPropertyOptional({
 		description: 'ID del producto a incluir en el box',

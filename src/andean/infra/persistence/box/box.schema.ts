@@ -1,7 +1,13 @@
 import { Document, Schema } from 'mongoose';
+import { BoxProductType } from '../../../domain/enums/BoxProductType';
 
 const BoxProductSchema = new Schema(
 	{
+		productType: {
+			type: String,
+			enum: Object.values(BoxProductType),
+			required: true,
+		},
 		productId: { type: String },
 		variantId: { type: String },
 	},

@@ -1,8 +1,8 @@
-import { ProductType } from '../../enums/ProductType';
+import { BoxProductType } from '../../enums/BoxProductType';
 
 export class BoxProduct {
 	constructor(
-		public productType?: ProductType,
+		public productType?: BoxProductType,
 		public productId?: string,
 		public variantId?: string,
 	) { }
