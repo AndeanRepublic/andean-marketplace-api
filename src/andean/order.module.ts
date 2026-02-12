@@ -19,6 +19,11 @@ import { SuperfoodModule } from './superfood.module';
 import { BoxModule } from './box.module';
 import { CreateOrderFromCartUseCase } from './app/use_cases/orders/CreateOrderFromCartUseCase';
 import { BoxProductInfoProvider } from './infra/services/products/BoxProductInfoProvider';
+import { ReduceStockFromOrderUseCase } from './app/use_cases/orders/ReduceStockFromOrderUseCase';
+import { TextileStockReducer } from './infra/services/stock/TextileStockReducer';
+import { SuperfoodStockReducer } from './infra/services/stock/SuperfoodStockReducer';
+import { BoxStockReducer } from './infra/services/stock/BoxStockReducer';
+import { StockReducerRegistry } from './infra/services/stock/StockReducerRegistry';
 
 @Module({
 	imports: [
@@ -50,6 +55,11 @@ import { BoxProductInfoProvider } from './infra/services/products/BoxProductInfo
 		SuperfoodProductInfoProvider,
 		BoxProductInfoProvider,
 		ProductInfoProviderRegistry,
+		TextileStockReducer,
+		SuperfoodStockReducer,
+		BoxStockReducer,
+		StockReducerRegistry,
+		ReduceStockFromOrderUseCase,
 	],
 	exports: [OrderRepository],
 })
