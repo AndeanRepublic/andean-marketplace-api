@@ -685,4 +685,19 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 		const docs = await this.textileProductModel.find({ _id: { $in: objectIds } }).exec();
 		return docs.map((doc) => TextileProductMapper.fromDocument(doc));
 	}
+
+	async reduceStock(id: string, quantity: number): Promise<TextileProduct | null> {
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		const updated = await this.textileProductModel
+			.findOneAndUpdate(
+				{ _id: objectId, 'priceInventary.totalStock': { $gte: quantity } },
+				{
+					$inc: { 'priceInventary.totalStock': -quantity },
+					$set: { updatedAt: new Date() },
+				},
+				{ new: true },
+			)
+			.exec();
+		return updated ? TextileProductMapper.fromDocument(updated) : null;
+	}
 }

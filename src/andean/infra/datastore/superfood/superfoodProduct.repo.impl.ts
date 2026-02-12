@@ -5,6 +5,7 @@ import { SuperfoodProductRepository } from '../../../app/datastore/superfoods/Su
 import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
 import { SuperfoodProductDocument } from '../../persistence/superfood/superfood.schema';
 import { SuperfoodProductMapper } from '../../services/superfood/SuperfoodProductMapper';
+import { MongoIdUtils } from '../../utils/MongoIdUtils';
 
 @Injectable()
 export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
@@ -75,5 +76,20 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 		if (!ids.length) return [];
 		const docs = await this.model.find({ id: { $in: ids } }).exec();
 		return docs.map((doc) => SuperfoodProductMapper.fromDocument(doc));
+	}
+
+	async reduceStock(id: string, quantity: number): Promise<SuperfoodProduct | null> {
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		const updated = await this.model
+			.findOneAndUpdate(
+				{ _id: objectId, 'priceInventory.totalStock': { $gte: quantity } },
+				{
+					$inc: { 'priceInventory.totalStock': -quantity },
+					$set: { updatedAt: new Date() },
+				},
+				{ new: true },
+			)
+			.exec();
+		return updated ? SuperfoodProductMapper.fromDocument(updated) : null;
 	}
 }
