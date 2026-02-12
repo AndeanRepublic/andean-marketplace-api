@@ -1,0 +1,16 @@
+{
+	"entity": {
+		"id": "456e7890-e89b-12d3-a456-426614174001",
+		"name": "Test Community E2E",
+		"regionId": "123e4567-e89b-12d3-a456-426614174000",
+		"createdAt": "2026-01-01T00:00:00.000Z",
+		"updatedAt": "2026-01-01T00:00:00.000Z"
+	},
+	"createDto": {
+		"name": "New Community E2E",
+		"regionId": "123e4567-e89b-12d3-a456-426614174000"
+	},
+	"updateDto": {
+		"name": "Updated Community E2E"
+	}
+}

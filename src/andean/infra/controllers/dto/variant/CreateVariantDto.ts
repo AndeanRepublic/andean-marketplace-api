@@ -17,7 +17,7 @@ export class CreateVariantDto {
 	})
 	@IsString()
 	@IsNotEmpty()
-	productId: string;
+	productId!: string;
 
 	@ApiProperty({
 		description: 'Tipo de producto al que pertenece esta variante',
@@ -26,7 +26,7 @@ export class CreateVariantDto {
 	})
 	@IsEnum(ProductType)
 	@IsNotEmpty()
-	productType: ProductType;
+	productType!: ProductType;
 
 	@ApiProperty({
 		description: 'Combinación de opciones que define esta variante',
@@ -34,7 +34,7 @@ export class CreateVariantDto {
 	})
 	@IsObject()
 	@IsNotEmpty()
-	combination: Record<string, string>;
+	combination!: Record<string, string>;
 
 	@ApiProperty({
 		description: 'Precio específico de esta variante',
@@ -44,7 +44,7 @@ export class CreateVariantDto {
 	@IsNumber()
 	@Min(0)
 	@IsNotEmpty()
-	price: number;
+	price!: number;
 
 	@ApiProperty({
 		description: 'Stock disponible de esta variante',
@@ -54,5 +54,5 @@ export class CreateVariantDto {
 	@IsInt()
 	@Min(0)
 	@IsNotEmpty()
-	stock: number;
+	stock!: number;
 }

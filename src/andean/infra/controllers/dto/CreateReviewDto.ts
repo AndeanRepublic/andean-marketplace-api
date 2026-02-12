@@ -4,31 +4,33 @@ import {
 	IsInt,
 	IsEnum,
 	IsOptional,
+	IsMongoId,
 } from 'class-validator';
 import { ProductType } from 'src/andean/domain/enums/ProductType';
 
 export class CreateReviewDto {
 	@IsString()
 	@IsNotEmpty()
-	content: string;
+	content!: string;
 
 	@IsInt()
 	@IsNotEmpty()
-	numberStarts: number;
+	numberStarts!: number;
 
 	@IsString()
+	@IsMongoId()
 	@IsOptional()
-	imgUrl?: string;
+	mediaId?: string;
 
 	@IsString()
 	@IsNotEmpty()
-	customerId: string;
+	customerId!: string;
 
 	@IsString()
 	@IsNotEmpty()
-	productId: string;
+	productId!: string;
 
 	@IsEnum(ProductType)
 	@IsNotEmpty()
-	productType: ProductType;
+	productType!: ProductType;
 }

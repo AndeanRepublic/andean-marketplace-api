@@ -4,7 +4,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 // Schemas
 import { SuperfoodProductSchema } from './infra/persistence/superfood/superfood.schema';
 import { SuperfoodCategorySchema } from './infra/persistence/superfood/superfoodCategory.schema';
-import { MediaItemSchema } from './infra/persistence/mediaItem.schema';
 import { SuperfoodNutritionalFeatureSchema } from './infra/persistence/superfood/superfoodNutritionalFeature.schema';
 import { SuperfoodBenefitSchema } from './infra/persistence/superfood/superfoodBenefit.schema';
 import { SuperfoodPreservationMethodSchema } from './infra/persistence/superfood/superfoodPreservationMethod.schema';
@@ -84,7 +83,6 @@ import { DeleteSuperfoodSalesUnitSizeUseCase } from './app/use_cases/superfoods/
 // Repositories (Abstract)
 import { SuperfoodProductRepository } from './app/datastore/superfoods/SuperfoodProduct.repo';
 import { SuperfoodCategoryRepository } from './app/datastore/superfoods/SuperfoodCategory.repo';
-import { MediaItemRepository } from './app/datastore/MediaItem.repo';
 import { SuperfoodTypeRepository } from './app/datastore/superfoods/SuperfoodType.repo';
 import { SuperfoodNutritionalFeatureRepository } from './app/datastore/superfoods/SuperfoodNutritionalFeature.repo';
 import { SuperfoodBenefitRepository } from './app/datastore/superfoods/SuperfoodBenefit.repo';
@@ -96,7 +94,6 @@ import { SuperfoodProductPresentationRepository } from './app/datastore/superfoo
 // Repositories (Implementation)
 import { SuperfoodProductRepoImpl } from './infra/datastore/superfood/superfoodProduct.repo.impl';
 import { SuperfoodCategoryRepoImpl } from './infra/datastore/superfood/superfoodCategory.repo.impl';
-import { MediaItemRepoImpl } from './infra/datastore/mediaItem.repo.impl';
 import { SuperfoodTypeRepoImpl } from './infra/datastore/superfood/superfoodType.repo.impl';
 import { SuperfoodNutritionalFeatureRepoImpl } from './infra/datastore/superfood/superfoodNutritionalFeature.repo.impl';
 import { SuperfoodBenefitRepoImpl } from './infra/datastore/superfood/superfoodBenefit.repo.impl';
@@ -108,6 +105,7 @@ import { SuperfoodProductPresentationRepoImpl } from './infra/datastore/superfoo
 // Other modules
 import { ShopsModule } from './shop.module';
 import { CommunityModule } from './community.module';
+import { MediaItemModule } from './mediaItem.module';
 import { ReviewSchema } from './infra/persistence/Review.schema';
 import { ReviewRepository } from './app/datastore/Review.repo';
 import { ReviewRepositoryImpl } from './infra/datastore/Review.repo.impl';
@@ -128,7 +126,6 @@ import { TextileProductModule } from './textileProduct.module';
 		MongooseModule.forFeature([
 			{ name: 'SuperfoodProduct', schema: SuperfoodProductSchema },
 			{ name: 'SuperfoodCategory', schema: SuperfoodCategorySchema },
-			{ name: 'MediaItem', schema: MediaItemSchema },
 			{
 				name: 'SuperfoodNutritionalFeature',
 				schema: SuperfoodNutritionalFeatureSchema,
@@ -150,6 +147,7 @@ import { TextileProductModule } from './textileProduct.module';
 		ShopsModule,
 		CommunityModule,
 		UsersModule,
+		MediaItemModule,
 		forwardRef(() => TextileProductModule),
 	],
 	controllers: [
@@ -242,10 +240,6 @@ import { TextileProductModule } from './textileProduct.module';
 			useClass: SuperfoodCategoryRepoImpl,
 		},
 		{
-			provide: MediaItemRepository,
-			useClass: MediaItemRepoImpl,
-		},
-		{
 			provide: SuperfoodTypeRepository,
 			useClass: SuperfoodTypeRepoImpl,
 		},
@@ -281,7 +275,6 @@ import { TextileProductModule } from './textileProduct.module';
 	exports: [
 		SuperfoodProductRepository,
 		SuperfoodCategoryRepository,
-		MediaItemRepository,
 		SuperfoodTypeRepository,
 		SuperfoodNutritionalFeatureRepository,
 		SuperfoodBenefitRepository,
@@ -293,4 +286,4 @@ import { TextileProductModule } from './textileProduct.module';
 		MongooseModule,
 	],
 })
-export class SuperfoodModule {}
+export class SuperfoodModule { }

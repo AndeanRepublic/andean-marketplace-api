@@ -30,7 +30,7 @@ export class PreparationTimeDto {
 	@IsInt()
 	@Min(0)
 	@IsNotEmpty()
-	days: number;
+	days!: number;
 
 	@ApiProperty({
 		description: 'Número de horas adicionales requeridas para la preparación',
@@ -40,7 +40,7 @@ export class PreparationTimeDto {
 	@IsInt()
 	@Min(0)
 	@IsNotEmpty()
-	hours: number;
+	hours!: number;
 }
 
 export class BaseInfoDto {
@@ -52,16 +52,16 @@ export class BaseInfoDto {
 	})
 	@IsString()
 	@IsNotEmpty()
-	title: string;
+	title!: string;
 
 	@ApiProperty({
-		description: 'Lista de IDs de archivos multimedia asociados al producto',
+		description: 'Lista de IDs de MediaItems asociados al producto',
 		type: [String],
-		example: ['media-001', 'media-002', 'media-003'],
+		example: ['67890abcdef1234567890123', '67890abcdef1234567890124'],
 	})
 	@IsArray()
 	@IsString({ each: true })
-	media: string[];
+	mediaIds!: string[];
 
 	@ApiProperty({
 		description: 'Descripción detallada del producto',
@@ -70,7 +70,7 @@ export class BaseInfoDto {
 	})
 	@IsString()
 	@IsNotEmpty()
-	description: string;
+	description!: string;
 
 	@ApiProperty({
 		description: 'Tipo de propietario del producto',
@@ -79,7 +79,7 @@ export class BaseInfoDto {
 	})
 	@IsEnum(OwnerType)
 	@IsNotEmpty()
-	ownerType: OwnerType;
+	ownerType!: OwnerType;
 
 	@ApiProperty({
 		description: 'ID del propietario (tienda o comunidad)',
@@ -87,7 +87,7 @@ export class BaseInfoDto {
 	})
 	@IsString()
 	@IsNotEmpty()
-	ownerId: string;
+	ownerId!: string;
 
 	@ApiPropertyOptional({
 		description: 'Información adicional del producto',
@@ -107,7 +107,7 @@ export class PriceInventaryDto {
 	@IsNumber()
 	@Min(0)
 	@IsNotEmpty()
-	basePrice: number;
+	basePrice!: number;
 
 	@ApiProperty({
 		description: 'Stock total disponible del producto',
@@ -117,7 +117,7 @@ export class PriceInventaryDto {
 	@IsInt()
 	@Min(0)
 	@IsNotEmpty()
-	totalStock: number;
+	totalStock!: number;
 
 	@ApiPropertyOptional({
 		description: 'Código SKU único del producto',
@@ -198,7 +198,7 @@ export class TextileOptionsItemDto {
 	})
 	@IsString()
 	@IsNotEmpty()
-	label: string;
+	label!: string;
 
 	@ApiPropertyOptional({
 		description: 'IDs de archivos multimedia asociados a este valor',
@@ -224,7 +224,7 @@ export class TextileOptionsDto {
 	@ApiProperty({ enum: TextileOptionName, description: 'Nombre de la opción' })
 	@IsEnum(TextileOptionName)
 	@IsNotEmpty()
-	name: TextileOptionName;
+	name!: TextileOptionName;
 
 	@ApiProperty({
 		description: 'Valores disponibles para esta opción',
@@ -234,7 +234,7 @@ export class TextileOptionsDto {
 	@ValidateNested({ each: true })
 	@Type(() => TextileOptionsItemDto)
 	@IsNotEmpty()
-	values: TextileOptionsItemDto[];
+	values!: TextileOptionsItemDto[];
 }
 
 export class DetailTraceabilityDto {
@@ -340,7 +340,7 @@ export class CreateTextileProductDto {
 	})
 	@IsEnum(TextileProductStatus)
 	@IsNotEmpty()
-	status: TextileProductStatus;
+	status!: TextileProductStatus;
 
 	@ApiProperty({
 		description:
@@ -350,7 +350,7 @@ export class CreateTextileProductDto {
 	@ValidateNested()
 	@Type(() => BaseInfoDto)
 	@IsNotEmpty()
-	baseInfo: BaseInfoDto;
+	baseInfo!: BaseInfoDto;
 
 	@ApiProperty({
 		description: 'Información de precio e inventario',
@@ -359,7 +359,7 @@ export class CreateTextileProductDto {
 	@ValidateNested()
 	@Type(() => PriceInventaryDto)
 	@IsNotEmpty()
-	priceInventary: PriceInventaryDto;
+	priceInventary!: PriceInventaryDto;
 
 	@ApiPropertyOptional({
 		description: 'ID de la categoría del producto textil',

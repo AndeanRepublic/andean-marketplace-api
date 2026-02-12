@@ -13,6 +13,7 @@ import { SizeOptionAlternativeSchema } from './infra/persistence/textileProducts
 import { UsersModule } from './users.module';
 import { ShopsModule } from './shop.module';
 import { CommunityModule } from './community.module';
+import { MediaItemModule } from './mediaItem.module';
 import { OriginProductModule } from './originProduct.module';
 import { CreateTextileCategoryUseCase } from './app/use_cases/textileProducts/CreateTextileCategoryUseCase';
 import { TextileCategoryRepository } from './app/datastore/textileProducts/TextileCategory.repo';
@@ -118,7 +119,6 @@ import { DecrementDislikesUseCase } from './app/use_cases/DecrementDislikesUseCa
 import { SuperfoodModule } from './superfood.module';
 import { VariantModule } from './variant.module';
 import { VariantSchema } from './infra/persistence/variant.schema';
-import { OrderItemSchema } from './infra/persistence/orderItem.schema';
 
 @Module({
 	imports: [
@@ -175,16 +175,13 @@ import { OrderItemSchema } from './infra/persistence/orderItem.schema';
 				name: 'Variant',
 				schema: VariantSchema,
 			},
-			{
-				name: 'OrderItem',
-				schema: OrderItemSchema,
-			},
 		]),
 		UsersModule,
 		ShopsModule,
 		CommunityModule,
 		OriginProductModule,
 		VariantModule,
+		MediaItemModule,
 		forwardRef(() => SuperfoodModule),
 	],
 	controllers: [

@@ -5,7 +5,7 @@ import {
 	MaxLength,
 	IsArray,
 	IsOptional,
-	IsUrl,
+	IsMongoId,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -20,16 +20,16 @@ export class CreateCommunityDto {
 	@IsNotEmpty()
 	@MinLength(3)
 	@MaxLength(100)
-	name: string;
+	name!: string;
 
 	@ApiProperty({
-		description: 'URL de la imagen banner de la comunidad',
-		example: 'https://example.com/images/community-banner.jpg',
+		description: 'ID del MediaItem para la imagen banner de la comunidad',
+		example: '67890abcdef1234567890123',
 	})
 	@IsString()
 	@IsNotEmpty()
-	@IsUrl()
-	bannerImageUrl: string;
+	@IsMongoId()
+	bannerImageId!: string;
 
 	@ApiPropertyOptional({
 		description: 'Array de IDs de seals asociados a la comunidad',

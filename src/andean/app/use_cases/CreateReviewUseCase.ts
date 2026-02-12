@@ -1,5 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ReviewRepository } from '../datastore/Review.repo';
+import { MediaItemRepository } from '../datastore/MediaItem.repo';
 import { CreateReviewDto } from 'src/andean/infra/controllers/dto/CreateReviewDto';
 import { Review } from 'src/andean/domain/entities/Review';
 import { ReviewMapper } from 'src/andean/infra/services/ReviewMapper';
@@ -19,7 +20,9 @@ export class CreateReviewUseCase {
 		private readonly textileProductRepository: TextileProductRepository,
 		@Inject(SuperfoodProductRepository)
 		private readonly superfoodProductRepository: SuperfoodProductRepository,
-	) {}
+		@Inject(MediaItemRepository)
+		private readonly mediaItemRepository: MediaItemRepository,
+	) { }
 
 	async handle(dto: CreateReviewDto): Promise<Review> {
 		// Validar customerId
@@ -50,6 +53,16 @@ export class CreateReviewUseCase {
 		} else if (dto.productType === ProductType.EXPERIENCE) {
 			// TODO: Agregar validación cuando exista ExperienceProductRepository
 			// Por ahora solo validamos que el tipo sea válido
+		}
+
+		// Validar que el MediaItem existe si se proporciona
+		if (dto.mediaId) {
+			const mediaItemFound = await this.mediaItemRepository.getById(
+				dto.mediaId,
+			);
+			if (!mediaItemFound) {
+				throw new NotFoundException(`MediaItem with id ${dto.mediaId} not found`);
+			}
 		}
 
 		const reviewToSave = ReviewMapper.fromCreateDto(dto);

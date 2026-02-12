@@ -3,10 +3,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './andean/users.module';
 import { AuthModule } from './andean/auth.module';
-import { ProductsModule } from './andean/product.module';
 import { ShopsModule } from './andean/shop.module';
 import { BankAccountsModule } from './andean/bankAccount.module';
 import { OrdersModule } from './andean/order.module';
+import { ShippingAddressModule } from './andean/shippingAddress.module';
 import { CartShopModule } from './andean/cartShop.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { UploadModule } from './andean/upload.module';
@@ -20,6 +20,8 @@ import { SuperfoodModule } from './andean/superfood.module';
 import { MediaItemModule } from './andean/mediaItem.module';
 import { TextileProductModule } from './andean/textileProduct.module';
 import { VariantModule } from './andean/variant.module';
+import { BoxModule } from './andean/box.module';
+import { BoxSealModule } from './andean/boxSeal.module';
 
 @Module({
 	imports: [
@@ -42,11 +44,11 @@ import { VariantModule } from './andean/variant.module';
 		}),
 		UsersModule,
 		AuthModule,
-		ProductsModule,
 		ShopsModule,
 		BankAccountsModule,
 		CartShopModule,
 		OrdersModule,
+		ShippingAddressModule,
 		UploadModule,
 		AdminModule,
 		CommunityModule,
@@ -56,6 +58,8 @@ import { VariantModule } from './andean/variant.module';
 		MediaItemModule,
 		TextileProductModule,
 		VariantModule,
+		BoxModule,
+		BoxSealModule,
 	],
 	controllers: [],
 	providers: [],

@@ -1,0 +1,75 @@
+{
+	"entity": {
+		"id": "superfood-uuid-123",
+		"status": "PUBLISHED",
+		"baseInfo": {
+			"title": "Quinua Premium",
+			"mediaIds": [],
+			"description": "Quinua orgánica de los Andes peruanos",
+			"general_features": [
+				"Orgánica",
+				"Sin gluten",
+				"Alto en proteínas"
+			],
+			"nutritional_features": [],
+			"benefits": [],
+			"ownerType": "SHOP",
+			"ownerId": "shop-123"
+		},
+		"priceInventory": {
+			"basePrice": 25.50,
+			"totalStock": 100,
+			"SKU": "QUINUA-PREM-001"
+		},
+		"categoryId": "category-quinua-001",
+		"createdAt": "2026-01-01T00:00:00.000Z",
+		"updatedAt": "2026-01-01T00:00:00.000Z"
+	},
+	"createDto": {
+		"status": "PUBLISHED",
+		"baseInfo": {
+			"title": "Quinua Premium",
+			"mediaIds": [],
+			"description": "Quinua orgánica de los Andes peruanos",
+			"general_features": [
+				"Orgánica",
+				"Sin gluten",
+				"Alto en proteínas"
+			],
+			"nutritional_features": [],
+			"benefits": [],
+			"ownerType": "SHOP",
+			"ownerId": "shop-123"
+		},
+		"priceInventory": {
+			"basePrice": 25.50,
+			"totalStock": 100,
+			"SKU": "QUINUA-PREM-001"
+		},
+		"categoryId": "category-quinua-001"
+	},
+	"updateDto": {
+		"status": "PUBLISHED",
+		"baseInfo": {
+			"title": "Quinua Premium Actualizada",
+			"mediaIds": [],
+			"description": "Quinua orgánica de los Andes peruanos - Actualizada",
+			"general_features": [
+				"Orgánica",
+				"Sin gluten",
+				"Alto en proteínas",
+				"Certificado"
+			],
+			"nutritional_features": [],
+			"benefits": [],
+			"ownerType": "SHOP",
+			"ownerId": "shop-123"
+		},
+		"priceInventory": {
+			"basePrice": 30.00,
+			"totalStock": 150,
+			"SKU": "QUINUA-PREM-001"
+		},
+		"categoryId": "category-quinua-001"
+	}
+}

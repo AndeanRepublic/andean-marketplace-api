@@ -5,9 +5,11 @@ export abstract class MediaItemRepository {
 
 	abstract getAll(): Promise<MediaItem[]>;
 
-	abstract save(mediaItem: MediaItem): Promise<MediaItem>;
+	abstract create(mediaItem: MediaItem): Promise<MediaItem>;
 
 	abstract update(mediaItem: MediaItem): Promise<MediaItem>;
 
 	abstract delete(id: string): Promise<void>;
+
+	abstract getByIds(ids: string[]): Promise<MediaItem[]>;
 }

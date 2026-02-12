@@ -4,12 +4,14 @@ import { MongooseModule } from '@nestjs/mongoose';
 // Schema
 import { MediaItemSchema } from './infra/persistence/mediaItem.schema';
 
-// Repository
+// Repositories
 import { MediaItemRepository } from './app/datastore/MediaItem.repo';
 import { MediaItemRepoImpl } from './infra/datastore/mediaItem.repo.impl';
+import { StorageRepository } from './app/datastore/Storage.repo';
+import { S3StorageRepoImpl } from './infra/datastore/S3Storage.repo.impl';
 
 // Use Cases
-import { CreateMediaItemUseCase } from './app/use_cases/media/CreateMediaItemUseCase';
+import { UploadMediaItemUseCase } from './app/use_cases/media/UploadMediaItemUseCase';
 import { UpdateMediaItemUseCase } from './app/use_cases/media/UpdateMediaItemUseCase';
 import { GetMediaItemByIdUseCase } from './app/use_cases/media/GetMediaItemByIdUseCase';
 import { ListMediaItemsUseCase } from './app/use_cases/media/ListMediaItemsUseCase';
@@ -24,14 +26,18 @@ import { MediaItemController } from './infra/controllers/mediaItem.controller';
 	],
 	controllers: [MediaItemController],
 	providers: [
-		// Repository
+		// Repositories
 		{
 			provide: MediaItemRepository,
 			useClass: MediaItemRepoImpl,
 		},
+		{
+			provide: StorageRepository,
+			useClass: S3StorageRepoImpl,
+		},
 
 		// Use Cases
-		CreateMediaItemUseCase,
+		UploadMediaItemUseCase,
 		UpdateMediaItemUseCase,
 		GetMediaItemByIdUseCase,
 		ListMediaItemsUseCase,
@@ -39,4 +45,4 @@ import { MediaItemController } from './infra/controllers/mediaItem.controller';
 	],
 	exports: [MediaItemRepository, MongooseModule],
 })
-export class MediaItemModule {}
+export class MediaItemModule { }

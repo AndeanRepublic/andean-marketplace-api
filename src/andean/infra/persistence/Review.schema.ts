@@ -4,7 +4,7 @@ import { ProductType } from 'src/andean/domain/enums/ProductType';
 export const ReviewSchema = new Schema({
 	content: String,
 	numberStarts: Number,
-	imgUrl: { type: String, required: false },
+	mediaId: { type: String, required: false },
 	customerId: String,
 	productId: String,
 	productType: {
@@ -21,7 +21,7 @@ export const ReviewSchema = new Schema({
 export interface ReviewDocument extends Document {
 	content: string;
 	numberStarts: number;
-	imgUrl?: string;
+	mediaId?: string;
 	customerId: string;
 	productId: string;
 	productType: ProductType;

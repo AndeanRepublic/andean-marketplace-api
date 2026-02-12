@@ -11,6 +11,8 @@ import { ProductInfoProviderRegistry } from '../../../infra/services/products/Pr
 import { OwnerNameResolver } from '../../../infra/services/OwnerNameResolver';
 import { CartItem } from '../../../domain/entities/CartItem';
 import { ShoppingCartItemMapper } from '../../../infra/services/cart/ShoppingCartItemMapper';
+import { ProductType } from '../../../domain/enums/ProductType';
+import { BoxCartContentResolver } from '../../../infra/services/cart/BoxCartContentResolver';
 
 @Injectable()
 export class GetCartByCustomerUseCase {
@@ -25,18 +27,26 @@ export class GetCartByCustomerUseCase {
 		private readonly variantRepository: VariantRepository,
 		private readonly productInfoRegistry: ProductInfoProviderRegistry,
 		private readonly ownerNameResolver: OwnerNameResolver,
+		private readonly boxCartContentResolver: BoxCartContentResolver,
 	) { }
 
-	async handle(customerId: string): Promise<GetCartResponse> {
-		// 1. Validar que el customer existe
-		const customerFound =
-			await this.customerRepository.getCustomerById(customerId);
-		if (!customerFound) {
-			throw new NotFoundException('CustomerProfile not found');
+	async handle(customerId?: string, customerEmail?: string): Promise<GetCartResponse> {
+		// 1. Validar que al menos uno de los identificadores esté presente
+		if (!customerId && !customerEmail) {
+			throw new NotFoundException('Either customerId or customerEmail must be provided');
 		}
 
-		// 2. Obtener o crear el carrito
-		let cart = await this.cartShopRepository.getCartByCustomerId(customerId);
+		// 2. Si hay customerId, validar que el customer existe
+		if (customerId) {
+			const customerFound =
+				await this.customerRepository.getCustomerById(customerId);
+			if (!customerFound) {
+				throw new NotFoundException('CustomerProfile not found');
+			}
+		}
+
+		// 3. Obtener o crear el carrito
+		let cart = await this.cartShopRepository.getCartByIdentifier(customerId, customerEmail);
 		if (!cart) {
 			cart = new CartShop(
 				new Types.ObjectId().toString(),
@@ -46,6 +56,7 @@ export class GetCartByCustomerUseCase {
 				0, // discount
 				new Date(),
 				new Date(),
+				customerEmail,
 			);
 			await this.cartShopRepository.createCart(cart);
 
@@ -79,28 +90,33 @@ export class GetCartByCustomerUseCase {
 
 	/**
 	 * Enriquece un item del carrito con información del producto y variante.
+	 * Para items de tipo BOX, usa un flujo especial sin variante ni ownerName.
 	 */
 	private async enrichCartItem(
 		item: CartItem,
 	): Promise<ShoppingCartItemResponse> {
-		// Obtener variante para combination y stock
-		const variant = item.variantProductId
-			? await this.variantRepository.getById(item.variantProductId)
-			: null;
-
 		// Obtener información del producto
 		const productInfo = await this.productInfoRegistry.getProductInfo(
 			item.productType,
 			item.productId,
 		);
 
-		// Obtener nombre del owner
+		// Flujo especial para BOX: sin variante, sin owner, con contenido de caja
+		if (item.productType === ProductType.BOX) {
+			const boxContent = await this.boxCartContentResolver.resolve(item.productId);
+			return ShoppingCartItemMapper.toBoxResponse(item, productInfo, boxContent);
+		}
+
+		// Flujo estándar para TEXTILE/SUPERFOOD
+		const variant = item.variantProductId
+			? await this.variantRepository.getById(item.variantProductId)
+			: null;
+
 		const ownerName = await this.ownerNameResolver.resolve(
 			productInfo.ownerType,
 			productInfo.ownerId,
 		);
 
-		// Usar mapper para construir la respuesta
 		return ShoppingCartItemMapper.toResponse(item, variant, productInfo, ownerName);
 	}
 }

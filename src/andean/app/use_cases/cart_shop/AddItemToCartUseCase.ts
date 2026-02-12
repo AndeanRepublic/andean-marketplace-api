@@ -33,14 +33,22 @@ export class AddItemToCartUseCase {
 	) { }
 
 	async handle(
-		customerId: string,
+		customerId: string | undefined,
+		customerEmail: string | undefined,
 		itemDto: AddCartItemDto,
 	): Promise<ShoppingCartItemResponse> {
-		// 1. Validar que el customer existe
-		const customerFound =
-			await this.customerRepository.getCustomerById(customerId);
-		if (!customerFound) {
-			throw new NotFoundException('CustomerProfile not found');
+		// 1. Validar que al menos uno de los identificadores esté presente
+		if (!customerId && !customerEmail) {
+			throw new NotFoundException('Either customerId or customerEmail must be provided');
+		}
+
+		// 2. Si hay customerId, validar que el customer existe
+		if (customerId) {
+			const customerFound =
+				await this.customerRepository.getCustomerById(customerId);
+			if (!customerFound) {
+				throw new NotFoundException('CustomerProfile not found');
+			}
 		}
 
 		// 2. Obtener la variante
@@ -69,7 +77,7 @@ export class AddItemToCartUseCase {
 		);
 
 		// 5. Obtener o crear el carrito del customer
-		let cart = await this.cartShopRepository.getCartByCustomerId(customerId);
+		let cart = await this.cartShopRepository.getCartByIdentifier(customerId, customerEmail);
 		if (!cart) {
 			cart = new CartShop(
 				new Types.ObjectId().toString(),
@@ -79,6 +87,7 @@ export class AddItemToCartUseCase {
 				0, // discount
 				new Date(),
 				new Date(),
+				customerEmail,
 			);
 			await this.cartShopRepository.createCart(cart);
 		}
