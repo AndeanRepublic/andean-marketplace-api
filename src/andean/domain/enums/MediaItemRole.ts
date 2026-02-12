@@ -1,6 +1,6 @@
 export enum MediaItemRole {
-	THUMBNAIL = 'thumbnail',
-	PRINCIPAL = 'principal',
-	SECUNDARY = 'secundary',
-	NONE = 'none',
+	THUMBNAIL = 'THUMBNAIL',
+	PRINCIPAL = 'PRINCIPAL',
+	SECUNDARY = 'SECUNDARY',
+	NONE = 'NONE',
 }
