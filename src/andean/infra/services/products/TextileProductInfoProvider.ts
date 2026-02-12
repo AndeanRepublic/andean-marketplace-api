@@ -27,7 +27,7 @@ export class TextileProductInfoProvider extends ProductInfoProvider {
 
 		return {
 			title: product.baseInfo.title,
-			thumbnailImgUrl: product.baseInfo.media[0] || '',
+			thumbnailImgUrl: product.baseInfo.mediaIds[0] || '',
 			ownerType: product.baseInfo.ownerType,
 			ownerId: product.baseInfo.ownerId,
 			isDiscountActive: product.isDiscountActive,

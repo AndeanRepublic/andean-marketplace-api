@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { CommunityRepository } from '../../datastore/community/community.repo';
 import { SealRepository } from '../../datastore/community/Seal.repo';
+import { MediaItemRepository } from '../../datastore/MediaItem.repo';
 import { Community } from '../../../domain/entities/community/Community';
 import { UpdateCommunityDto } from '../../../infra/controllers/dto/community/UpdateCommunityDto';
 import { CommunityMapper } from '../../../infra/services/community/CommunityMapper';
@@ -16,7 +17,9 @@ export class UpdateCommunityUseCase {
 		private readonly communityRepository: CommunityRepository,
 		@Inject(SealRepository)
 		private readonly sealRepository: SealRepository,
-	) {}
+		@Inject(MediaItemRepository)
+		private readonly mediaItemRepository: MediaItemRepository,
+	) { }
 
 	async execute(id: string, dto: UpdateCommunityDto): Promise<Community> {
 		// Verificar existencia
@@ -33,6 +36,18 @@ export class UpdateCommunityUseCase {
 			if (communityWithSameName) {
 				throw new BadRequestException(
 					`Community with name "${dto.name}" already exists`,
+				);
+			}
+		}
+
+		// Validar que el MediaItem del banner existe si se proporciona
+		if (dto.bannerImageId) {
+			const mediaItemFound = await this.mediaItemRepository.getById(
+				dto.bannerImageId,
+			);
+			if (!mediaItemFound) {
+				throw new NotFoundException(
+					`MediaItem with id ${dto.bannerImageId} not found`,
 				);
 			}
 		}

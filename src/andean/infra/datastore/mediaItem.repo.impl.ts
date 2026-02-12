@@ -5,16 +5,18 @@ import { MediaItemRepository } from '../../app/datastore/MediaItem.repo';
 import { MediaItem } from '../../domain/entities/MediaItem';
 import { MediaItemDocument } from '../persistence/mediaItem.schema';
 import { MediaItemMapper } from '../services/MediaItemMapper';
+import { MongoIdUtils } from '../utils/MongoIdUtils';
 
 @Injectable()
 export class MediaItemRepoImpl implements MediaItemRepository {
 	constructor(
 		@InjectModel('MediaItem')
 		private readonly model: Model<MediaItemDocument>,
-	) {}
+	) { }
 
 	async getById(id: string): Promise<MediaItem | null> {
-		const doc = await this.model.findOne({ id }).exec();
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		const doc = await this.model.findById(objectId).exec();
 		if (!doc) return null;
 		return MediaItemMapper.fromDocument(doc);
 	}
@@ -24,12 +26,10 @@ export class MediaItemRepoImpl implements MediaItemRepository {
 		return docs.map((doc) => MediaItemMapper.fromDocument(doc));
 	}
 
-	async save(mediaItem: MediaItem): Promise<MediaItem> {
+	async create(mediaItem: MediaItem): Promise<MediaItem> {
 		const persistenceData = MediaItemMapper.toPersistence(mediaItem);
-		const newDoc = new this.model({
-			_id: crypto.randomUUID(),
-			...persistenceData,
-		});
+		// MongoDB genera automáticamente el _id como ObjectId
+		const newDoc = new this.model(persistenceData);
 		const savedDoc = await newDoc.save();
 		return MediaItemMapper.fromDocument(savedDoc);
 	}
@@ -38,12 +38,9 @@ export class MediaItemRepoImpl implements MediaItemRepository {
 		const persistenceData = MediaItemMapper.toPersistence(mediaItem);
 		persistenceData.updatedAt = new Date();
 
+		const objectId = MongoIdUtils.stringToObjectId(mediaItem.id);
 		const updatedDoc = await this.model
-			.findOneAndUpdate(
-				{ id: mediaItem.id },
-				{ $set: persistenceData },
-				{ new: true },
-			)
+			.findByIdAndUpdate(objectId, { $set: persistenceData }, { new: true })
 			.exec();
 
 		if (!updatedDoc) {
@@ -54,6 +51,14 @@ export class MediaItemRepoImpl implements MediaItemRepository {
 	}
 
 	async delete(id: string): Promise<void> {
-		await this.model.deleteOne({ id }).exec();
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		await this.model.findByIdAndDelete(objectId).exec();
+	}
+
+	async getByIds(ids: string[]): Promise<MediaItem[]> {
+		if (!ids.length) return [];
+		const objectIds = ids.map((id) => MongoIdUtils.stringToObjectId(id));
+		const docs = await this.model.find({ _id: { $in: objectIds } }).exec();
+		return docs.map((doc) => MediaItemMapper.fromDocument(doc));
 	}
 }

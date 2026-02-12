@@ -1,0 +1,72 @@
+{
+	"entity": {
+		"id": "variant-123",
+		"productId": "product-123",
+		"productType": "TEXTILE",
+		"combination": {
+			"color": "Red",
+			"size": "M"
+		},
+		"price": 50.0,
+		"stock": 10,
+		"createdAt": "2026-01-26T18:42:52.753Z",
+		"updatedAt": "2026-01-26T18:42:52.753Z"
+	},
+	"createDto": {
+		"productId": "product-123",
+		"productType": "TEXTILE",
+		"combination": {
+			"color": "Red",
+			"size": "M"
+		},
+		"price": 50.0,
+		"stock": 10
+	},
+	"createManyDto": {
+		"variants": [
+			{
+				"productId": "product-123",
+				"productType": "TEXTILE",
+				"combination": {
+					"color": "Red",
+					"size": "M"
+				},
+				"price": 50.0,
+				"stock": 10
+			},
+			{
+				"productId": "product-123",
+				"productType": "TEXTILE",
+				"combination": {
+					"color": "Blue",
+					"size": "L"
+				},
+				"price": 55.0,
+				"stock": 5
+			}
+		]
+	},
+	"syncDto": {
+		"productId": "product-123",
+		"productType": "TEXTILE",
+		"variants": [
+			{
+				"combination": {
+					"color": "Red",
+					"size": "M"
+				},
+				"price": 50.0,
+				"stock": 10
+			}
+		]
+	},
+	"updateDto": {
+		"price": 60.0,
+		"stock": 15
+	},
+	"invalidDto": {
+		"productId": "",
+		"productType": "INVALID_TYPE",
+		"price": -10
+	}
+}

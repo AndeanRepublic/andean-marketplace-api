@@ -32,4 +32,5 @@ export abstract class TextileProductRepository {
 		product: TextileProduct,
 	): Promise<TextileProduct>;
 	abstract deleteTextileProduct(id: string): Promise<void>;
+	abstract getByIds(ids: string[]): Promise<TextileProduct[]>;
 }

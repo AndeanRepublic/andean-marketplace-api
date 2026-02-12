@@ -4,6 +4,7 @@ import { ProductInfo } from '../../../domain/interfaces/ProductInfo';
 import { ProductType } from '../../../domain/enums/ProductType';
 import { TextileProductInfoProvider } from './TextileProductInfoProvider';
 import { SuperfoodProductInfoProvider } from './SuperfoodProductInfoProvider';
+import { BoxProductInfoProvider } from './BoxProductInfoProvider';
 
 /**
  * Registry que agrupa todos los ProductInfoProviders.
@@ -21,13 +22,12 @@ export class ProductInfoProviderRegistry {
 	constructor(
 		private readonly textileProvider: TextileProductInfoProvider,
 		private readonly superfoodProvider: SuperfoodProductInfoProvider,
-		// Agregar nuevos providers aquí cuando se implementen
-		// private readonly experienceProvider: ExperienceProductInfoProvider,
+		private readonly boxProvider: BoxProductInfoProvider,
 	) {
 		this.providers = [
 			this.textileProvider,
 			this.superfoodProvider,
-			// this.experienceProvider,
+			this.boxProvider,
 		];
 	}
 

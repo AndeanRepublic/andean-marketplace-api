@@ -10,4 +10,5 @@ export abstract class CommunityRepository {
 		community: Partial<Community>,
 	): Promise<Community | null>;
 	abstract delete(id: string): Promise<boolean>;
+	abstract getByIds(ids: string[]): Promise<Community[]>;
 }

@@ -11,7 +11,7 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 	constructor(
 		@InjectModel('SuperfoodProduct')
 		private readonly model: Model<SuperfoodProductDocument>,
-	) {}
+	) { }
 
 	async getSuperfoodProductById(id: string): Promise<SuperfoodProduct | null> {
 		const doc = await this.model.findOne({ id }).exec();
@@ -69,5 +69,11 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 
 	async deleteSuperfoodProduct(id: string): Promise<void> {
 		await this.model.deleteOne({ id }).exec();
+	}
+
+	async getByIds(ids: string[]): Promise<SuperfoodProduct[]> {
+		if (!ids.length) return [];
+		const docs = await this.model.find({ id: { $in: ids } }).exec();
+		return docs.map((doc) => SuperfoodProductMapper.fromDocument(doc));
 	}
 }

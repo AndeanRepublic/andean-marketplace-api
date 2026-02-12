@@ -1,15 +1,16 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsMongoId } from 'class-validator';
 
 export class CreateSealDto {
 	@IsString()
 	@IsNotEmpty()
-	name: string;
+	name!: string;
 
 	@IsString()
 	@IsNotEmpty()
-	description: string;
+	description!: string;
 
 	@IsString()
 	@IsNotEmpty()
-	logoUrl: string;
+	@IsMongoId()
+	logoMediaId!: string;
 }

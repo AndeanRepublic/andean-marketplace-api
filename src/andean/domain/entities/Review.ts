@@ -12,6 +12,6 @@ export class Review {
 		public numberDislikes: number,
 		public createdAt: Date,
 		public updatedAt: Date,
-		public imgUrl?: string,
-	) {}
+		public mediaId?: string,
+	) { }
 }

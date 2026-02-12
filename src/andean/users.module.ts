@@ -19,6 +19,7 @@ import { UpdateCustomerProfileUseCase } from './app/use_cases/users/UpdateCustom
 import { UpdateSellerProfileUseCase } from './app/use_cases/users/UpdateSellerProfileUseCase';
 import { GetCustomerProfileUseCase } from './app/use_cases/users/GetCustomerProfileUseCase';
 import { GetSellerProfileUseCase } from './app/use_cases/users/GetSellerProfileUseCase';
+import { MediaItemModule } from './mediaItem.module';
 
 @Module({
 	imports: [
@@ -36,6 +37,7 @@ import { GetSellerProfileUseCase } from './app/use_cases/users/GetSellerProfileU
 				schema: AccountSchema,
 			},
 		]),
+		MediaItemModule,
 	],
 	controllers: [UserController],
 	providers: [

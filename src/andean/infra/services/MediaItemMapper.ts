@@ -2,15 +2,18 @@ import { MediaItemDocument } from '../persistence/mediaItem.schema';
 import { MediaItem } from '../../domain/entities/MediaItem';
 import { CreateMediaItemDto } from '../controllers/dto/media/CreateMediaItemDto';
 import { UpdateMediaItemDto } from '../controllers/dto/media/UpdateMediaItemDto';
-import * as crypto from 'crypto';
+import { Types } from 'mongoose';
+import { MediaItemType } from '../../domain/enums/MediaItemType';
+import { MediaItemRole } from '../../domain/enums/MediaItemRole';
 
 export class MediaItemMapper {
 	static fromDocument(doc: MediaItemDocument): MediaItem {
 		return new MediaItem(
-			doc.id,
+			doc._id.toString(),
 			doc.type,
 			doc.name,
-			doc.url,
+			doc.key,
+			doc.role,
 			doc.createdAt,
 			doc.updatedAt,
 		);
@@ -18,10 +21,23 @@ export class MediaItemMapper {
 
 	static fromCreateDto(dto: CreateMediaItemDto): MediaItem {
 		return new MediaItem(
-			crypto.randomUUID(),
+			new Types.ObjectId().toString(), // Generar ObjectId temporal como string
 			dto.type,
 			dto.name,
-			dto.url,
+			dto.url, // Para compatibilidad con CreateMediaItemDto que tiene url
+			dto.role ?? MediaItemRole.NONE,
+			new Date(),
+			new Date(),
+		);
+	}
+
+	static fromUploadData(type: MediaItemType, name: string, key: string, role: MediaItemRole = MediaItemRole.NONE): MediaItem {
+		return new MediaItem(
+			new Types.ObjectId().toString(), // Generar ObjectId temporal como string
+			type,
+			name,
+			key,
+			role,
 			new Date(),
 			new Date(),
 		);
@@ -35,7 +51,8 @@ export class MediaItemMapper {
 			existing.id,
 			dto.type ?? existing.type,
 			dto.name ?? existing.name,
-			dto.url ?? existing.url,
+			dto.url ?? existing.key, // Mapear url del DTO al key de la entidad
+			dto.role ?? existing.role,
 			existing.createdAt,
 			new Date(),
 		);
@@ -43,10 +60,10 @@ export class MediaItemMapper {
 
 	static toPersistence(entity: MediaItem): any {
 		return {
-			id: entity.id,
 			type: entity.type,
 			name: entity.name,
-			url: entity.url,
+			key: entity.key,
+			role: entity.role,
 			createdAt: entity.createdAt || new Date(),
 			updatedAt: entity.updatedAt || new Date(),
 		};
