@@ -100,7 +100,9 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 		const matchingProducts = await this.textileProductModel
 			.find(baseQuery)
 			.exec();
-		const productIds = matchingProducts.map((p) => p._id.toString());
+		const productIds = matchingProducts.map((p) =>
+			(p as any).toObject()._id.toString(),
+		);
 
 		if (productIds.length === 0) {
 			return [];
@@ -615,7 +617,9 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 							},
 							{
 								$match: {
-									$expr: { $eq: ['$items.productId', { $toString: '$$productId' }] },
+									$expr: {
+										$eq: ['$items.productId', { $toString: '$$productId' }],
+									},
 								},
 							},
 							{
@@ -682,7 +686,9 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 	async getByIds(ids: string[]): Promise<TextileProduct[]> {
 		if (!ids.length) return [];
 		const objectIds = ids.map((id) => MongoIdUtils.stringToObjectId(id));
-		const docs = await this.textileProductModel.find({ _id: { $in: objectIds } }).exec();
+		const docs = await this.textileProductModel
+			.find({ _id: { $in: objectIds } })
+			.exec();
 		return docs.map((doc) => TextileProductMapper.fromDocument(doc));
 	}
 }
