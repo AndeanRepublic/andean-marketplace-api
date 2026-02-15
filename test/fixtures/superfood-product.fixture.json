@@ -94,5 +94,56 @@
 			]
 		},
 		"categoryId": "category-quinua-001"
+	},
+	"listItem": {
+		"id": "superfood-uuid-123",
+		"color": "Púrpura",
+		"title": "Quinua Premium",
+		"ownerName": "Artesanos Andinos",
+		"price": 25.50,
+		"totalStock": 100,
+		"mainImage": {
+			"name": "quinua-main.jpg",
+			"url": "https://example.com/quinua-main.jpg"
+		},
+		"sourceProductImage": {
+			"name": "quinua-source.jpg",
+			"url": "https://example.com/quinua-source.jpg"
+		},
+		"nutritionItems": [
+			"Alto en proteínas",
+			"Rico en hierro",
+			"Contiene fibra"
+		]
+	},
+	"paginatedResponse": {
+		"products": [
+			{
+				"id": "superfood-uuid-123",
+				"color": "Púrpura",
+				"title": "Quinua Premium",
+				"ownerName": "Artesanos Andinos",
+				"price": 25.50,
+				"totalStock": 100,
+				"mainImage": {
+					"name": "quinua-main.jpg",
+					"url": "https://example.com/quinua-main.jpg"
+				},
+				"sourceProductImage": {
+					"name": "quinua-source.jpg",
+					"url": "https://example.com/quinua-source.jpg"
+				},
+				"nutritionItems": [
+					"Alto en proteínas",
+					"Rico en hierro",
+					"Contiene fibra"
+				]
+			}
+		],
+		"pagination": {
+			"total": 1,
+			"page": 1,
+			"per_page": 10
+		}
 	}
 }

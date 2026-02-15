@@ -4,8 +4,7 @@ import * as request from 'supertest';
 import { SuperfoodController } from '../src/andean/infra/controllers/superfoodControllers/superfood.controller';
 import { CreateSuperfoodProductUseCase } from '../src/andean/app/use_cases/superfoods/CreateSuperfoodProductUseCase';
 import { GetSuperfoodProductByIdUseCase } from '../src/andean/app/use_cases/superfoods/GetSuperfoodProductByIdUseCase';
-import { GetSuperfoodProductsByOwnerUseCase } from '../src/andean/app/use_cases/superfoods/GetSuperfoodProductsByOwnerUseCase';
-import { GetSuperfoodProductsByCategoryUseCase } from '../src/andean/app/use_cases/superfoods/GetSuperfoodProductsByCategoryUseCase';
+import { GetAllSuperfoodProductsUseCase } from '../src/andean/app/use_cases/superfoods/GetAllSuperfoodProductsUseCase';
 import { UpdateSuperfoodProductUseCase } from '../src/andean/app/use_cases/superfoods/UpdateSuperfoodProductUseCase';
 import { DeleteSuperfoodProductUseCase } from '../src/andean/app/use_cases/superfoods/DeleteSuperfoodProductUseCase';
 import { CreateDetailSourceProductUseCase } from '../src/andean/app/use_cases/detailSourceProduct/CreateDetailSourceProductUseCase';
@@ -15,14 +14,15 @@ import { SuperfoodProduct } from '../src/andean/domain/entities/superfoods/Super
 import { SuperfoodProductStatus } from '../src/andean/domain/enums/SuperfoodProductStatus';
 import { SuperfoodOwnerType } from '../src/andean/domain/enums/SuperfoodOwnerType';
 import { SuperfoodColor } from '../src/andean/domain/enums/SuperfoodColor';
+import { ProductSortBy } from '../src/andean/domain/enums/ProductSortBy';
+import { SuperfoodProductListItem } from '../src/andean/app/models/superfoods/SuperfoodProductListItem';
 import { FixtureLoader } from './helpers/fixture-loader';
 
 describe('SuperfoodController (e2e)', () => {
 	let app: INestApplication;
 	let createSuperfoodProductUseCase: CreateSuperfoodProductUseCase;
 	let getSuperfoodProductByIdUseCase: GetSuperfoodProductByIdUseCase;
-	let getSuperfoodProductsByOwnerUseCase: GetSuperfoodProductsByOwnerUseCase;
-	let getSuperfoodProductsByCategoryUseCase: GetSuperfoodProductsByCategoryUseCase;
+	let getAllSuperfoodProductsUseCase: GetAllSuperfoodProductsUseCase;
 	let updateSuperfoodProductUseCase: UpdateSuperfoodProductUseCase;
 	let deleteSuperfoodProductUseCase: DeleteSuperfoodProductUseCase;
 	let createDetailSourceProductUseCase: CreateDetailSourceProductUseCase;
@@ -40,6 +40,8 @@ describe('SuperfoodController (e2e)', () => {
 	} as SuperfoodProduct;
 	const createDto = fixture.createDto;
 	const updateDto = fixture.updateDto;
+	const mockSuperfoodProductListItem = fixture.listItem;
+	const mockPaginatedResponse = fixture.paginatedResponse;
 
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -47,8 +49,7 @@ describe('SuperfoodController (e2e)', () => {
 			providers: [
 				{ provide: CreateSuperfoodProductUseCase, useValue: { handle: jest.fn().mockResolvedValue(mockSuperfoodProduct) } },
 				{ provide: GetSuperfoodProductByIdUseCase, useValue: { handle: jest.fn().mockResolvedValue(mockSuperfoodProduct) } },
-				{ provide: GetSuperfoodProductsByOwnerUseCase, useValue: { handle: jest.fn().mockResolvedValue([mockSuperfoodProduct]) } },
-				{ provide: GetSuperfoodProductsByCategoryUseCase, useValue: { handle: jest.fn().mockResolvedValue([mockSuperfoodProduct]) } },
+				{ provide: GetAllSuperfoodProductsUseCase, useValue: { handle: jest.fn().mockResolvedValue(mockPaginatedResponse) } },
 				{
 					provide: UpdateSuperfoodProductUseCase,
 					useValue: {
@@ -72,11 +73,10 @@ describe('SuperfoodController (e2e)', () => {
 
 		createSuperfoodProductUseCase = moduleFixture.get(CreateSuperfoodProductUseCase);
 		getSuperfoodProductByIdUseCase = moduleFixture.get(GetSuperfoodProductByIdUseCase);
-		getSuperfoodProductsByOwnerUseCase = moduleFixture.get(GetSuperfoodProductsByOwnerUseCase);
+		getAllSuperfoodProductsUseCase = moduleFixture.get(GetAllSuperfoodProductsUseCase);
 		createDetailSourceProductUseCase = moduleFixture.get(CreateDetailSourceProductUseCase);
 		updateDetailSourceProductUseCase = moduleFixture.get(UpdateDetailSourceProductUseCase);
 		deleteDetailSourceProductUseCase = moduleFixture.get(DeleteDetailSourceProductUseCase);
-		getSuperfoodProductsByCategoryUseCase = moduleFixture.get(GetSuperfoodProductsByCategoryUseCase);
 		updateSuperfoodProductUseCase = moduleFixture.get(UpdateSuperfoodProductUseCase);
 		deleteSuperfoodProductUseCase = moduleFixture.get(DeleteSuperfoodProductUseCase);
 	});
@@ -163,6 +163,230 @@ describe('SuperfoodController (e2e)', () => {
 		});
 	});
 
+	describe('GET /superfoods', () => {
+		it('should get all superfood products with default pagination', async () => {
+			jest.spyOn(getAllSuperfoodProductsUseCase, 'handle').mockResolvedValueOnce(mockPaginatedResponse);
+
+			const response = await request(app.getHttpServer())
+				.get('/superfoods')
+				.expect(HttpStatus.OK);
+
+			expect(response.body).toHaveProperty('products');
+			expect(response.body).toHaveProperty('pagination');
+			expect(Array.isArray(response.body.products)).toBe(true);
+			expect(response.body.pagination).toHaveProperty('total');
+			expect(response.body.pagination).toHaveProperty('page');
+			expect(response.body.pagination).toHaveProperty('per_page');
+		});
+
+		it('should get superfood products with pagination', async () => {
+			const paginatedResponse = {
+				products: [mockSuperfoodProductListItem],
+				pagination: {
+					total: 100,
+					page: 2,
+					per_page: 20,
+				},
+			};
+
+			jest.spyOn(getAllSuperfoodProductsUseCase, 'handle').mockResolvedValueOnce(paginatedResponse);
+
+			const response = await request(app.getHttpServer())
+				.get('/superfoods?page=2&per_page=20')
+				.expect(HttpStatus.OK);
+
+			expect(response.body).toHaveProperty('products');
+			expect(response.body).toHaveProperty('pagination');
+			expect(response.body.pagination.page).toBe(2);
+			expect(response.body.pagination.per_page).toBe(20);
+			expect(response.body.pagination.total).toBe(100);
+		});
+
+		it('should call the use case with correct pagination params', async () => {
+			const spy = jest.spyOn(getAllSuperfoodProductsUseCase, 'handle');
+
+			await request(app.getHttpServer())
+				.get('/superfoods?page=3&per_page=15')
+				.expect(HttpStatus.OK);
+
+			expect(spy).toHaveBeenCalledWith({ page: 3, perPage: 15 });
+		});
+
+		it('should filter superfood products by price range', async () => {
+			const filteredResponse = {
+				products: [mockSuperfoodProductListItem],
+				pagination: { total: 1, page: 1, per_page: 10 },
+			};
+
+			jest.spyOn(getAllSuperfoodProductsUseCase, 'handle').mockResolvedValueOnce(filteredResponse);
+
+			const response = await request(app.getHttpServer())
+				.get('/superfoods?min_price=20&max_price=30')
+				.expect(HttpStatus.OK);
+
+			expect(response.body).toHaveProperty('products');
+			expect(response.body.products).toHaveLength(1);
+		});
+
+		it('should call the use case with correct price filter params', async () => {
+			const spy = jest.spyOn(getAllSuperfoodProductsUseCase, 'handle');
+
+			await request(app.getHttpServer())
+				.get('/superfoods?min_price=50&max_price=200')
+				.expect(HttpStatus.OK);
+
+			expect(spy).toHaveBeenCalledWith({ minPrice: 50, maxPrice: 200 });
+		});
+
+		it('should filter superfood products by category', async () => {
+			const filteredResponse = {
+				products: [mockSuperfoodProductListItem],
+				pagination: { total: 5, page: 1, per_page: 10 },
+			};
+
+			jest.spyOn(getAllSuperfoodProductsUseCase, 'handle').mockResolvedValueOnce(filteredResponse);
+
+			const response = await request(app.getHttpServer())
+				.get('/superfoods?category_id=category-quinua-001')
+				.expect(HttpStatus.OK);
+
+			expect(response.body).toHaveProperty('products');
+			expect(response.body).toHaveProperty('pagination');
+		});
+
+		it('should call the use case with correct category filter', async () => {
+			const spy = jest.spyOn(getAllSuperfoodProductsUseCase, 'handle');
+
+			await request(app.getHttpServer())
+				.get('/superfoods?category_id=category-quinua-001')
+				.expect(HttpStatus.OK);
+
+			expect(spy).toHaveBeenCalledWith({ categoryId: 'category-quinua-001' });
+		});
+
+		it('should filter superfood products by owner', async () => {
+			const filteredResponse = {
+				products: [mockSuperfoodProductListItem],
+				pagination: { total: 3, page: 1, per_page: 10 },
+			};
+
+			jest.spyOn(getAllSuperfoodProductsUseCase, 'handle').mockResolvedValueOnce(filteredResponse);
+
+			const response = await request(app.getHttpServer())
+				.get('/superfoods?owner_id=shop-uuid-123')
+				.expect(HttpStatus.OK);
+
+			expect(response.body).toHaveProperty('products');
+			expect(response.body).toHaveProperty('pagination');
+		});
+
+		it('should call the use case with correct owner filter', async () => {
+			const spy = jest.spyOn(getAllSuperfoodProductsUseCase, 'handle');
+
+			await request(app.getHttpServer())
+				.get('/superfoods?owner_id=shop-uuid-123')
+				.expect(HttpStatus.OK);
+
+			expect(spy).toHaveBeenCalledWith({ ownerId: 'shop-uuid-123' });
+		});
+
+		it('should sort superfood products by latest', async () => {
+			const sortedResponse = {
+				products: [mockSuperfoodProductListItem],
+				pagination: { total: 1, page: 1, per_page: 10 },
+			};
+
+			jest.spyOn(getAllSuperfoodProductsUseCase, 'handle').mockResolvedValueOnce(sortedResponse);
+
+			const response = await request(app.getHttpServer())
+				.get('/superfoods?sort_by=latest')
+				.expect(HttpStatus.OK);
+
+			expect(response.body).toHaveProperty('products');
+		});
+
+		it('should sort superfood products by popular', async () => {
+			const sortedResponse = {
+				products: [mockSuperfoodProductListItem],
+				pagination: { total: 1, page: 1, per_page: 10 },
+			};
+
+			jest.spyOn(getAllSuperfoodProductsUseCase, 'handle').mockResolvedValueOnce(sortedResponse);
+
+			const response = await request(app.getHttpServer())
+				.get('/superfoods?sort_by=popular')
+				.expect(HttpStatus.OK);
+
+			expect(response.body).toHaveProperty('products');
+		});
+
+		it('should call the use case with correct sort_by param', async () => {
+			const spy = jest.spyOn(getAllSuperfoodProductsUseCase, 'handle');
+
+			await request(app.getHttpServer())
+				.get('/superfoods?sort_by=popular')
+				.expect(HttpStatus.OK);
+
+			expect(spy).toHaveBeenCalledWith({ sortBy: ProductSortBy.POPULAR });
+		});
+
+		it('should filter with multiple params', async () => {
+			const filteredResponse = {
+				products: [mockSuperfoodProductListItem],
+				pagination: { total: 2, page: 1, per_page: 10 },
+			};
+
+			jest.spyOn(getAllSuperfoodProductsUseCase, 'handle').mockResolvedValueOnce(filteredResponse);
+
+			const response = await request(app.getHttpServer())
+				.get('/superfoods?category_id=category-quinua-001&min_price=20&max_price=30&owner_id=shop-123&sort_by=latest')
+				.expect(HttpStatus.OK);
+
+			expect(response.body).toHaveProperty('products');
+			expect(response.body).toHaveProperty('pagination');
+		});
+
+		it('should call the use case with all filter params', async () => {
+			const spy = jest.spyOn(getAllSuperfoodProductsUseCase, 'handle');
+
+			await request(app.getHttpServer())
+				.get('/superfoods?page=2&per_page=15&category_id=cat-123&owner_id=owner-456&min_price=25&max_price=100&sort_by=popular')
+				.expect(HttpStatus.OK);
+
+			expect(spy).toHaveBeenCalledWith({
+				page: 2,
+				perPage: 15,
+				categoryId: 'cat-123',
+				ownerId: 'owner-456',
+				minPrice: 25,
+				maxPrice: 100,
+				sortBy: ProductSortBy.POPULAR,
+			});
+		});
+
+		it('should return products with correct structure', async () => {
+			jest.spyOn(getAllSuperfoodProductsUseCase, 'handle').mockResolvedValueOnce(mockPaginatedResponse);
+
+			const response = await request(app.getHttpServer())
+				.get('/superfoods')
+				.expect(HttpStatus.OK);
+
+			expect(response.body.products[0]).toHaveProperty('id');
+			expect(response.body.products[0]).toHaveProperty('title');
+			expect(response.body.products[0]).toHaveProperty('ownerName');
+			expect(response.body.products[0]).toHaveProperty('price');
+			expect(response.body.products[0]).toHaveProperty('totalStock');
+			expect(response.body.products[0]).toHaveProperty('mainImage');
+			expect(response.body.products[0]).toHaveProperty('sourceProductImage');
+			expect(response.body.products[0]).toHaveProperty('nutritionItems');
+			expect(response.body.products[0].mainImage).toHaveProperty('name');
+			expect(response.body.products[0].mainImage).toHaveProperty('url');
+			expect(response.body.products[0].sourceProductImage).toHaveProperty('name');
+			expect(response.body.products[0].sourceProductImage).toHaveProperty('url');
+			expect(Array.isArray(response.body.products[0].nutritionItems)).toBe(true);
+		});
+	});
+
 	describe('GET /superfoods/:productId', () => {
 		const productId = mockSuperfoodProduct.id;
 
@@ -187,61 +411,7 @@ describe('SuperfoodController (e2e)', () => {
 		});
 	});
 
-	describe('GET /superfoods/owner/:ownerId', () => {
-		const ownerId = mockBasicInfo.ownerId;
-
-		it('should get superfood products by owner', () => {
-			jest.spyOn(getSuperfoodProductsByOwnerUseCase, 'handle').mockResolvedValueOnce([mockSuperfoodProduct]);
-			return request(app.getHttpServer())
-				.get(`/superfoods/owner/${ownerId}`).expect(HttpStatus.OK)
-				.expect((res) => {
-					expect(res.body).toHaveLength(1);
-					expect(res.body[0]).toMatchObject({ id: mockSuperfoodProduct.id, baseInfo: expect.objectContaining({ ownerId }) });
-				});
-		});
-
-		it('should return empty array when owner has no products', () => {
-			jest.spyOn(getSuperfoodProductsByOwnerUseCase, 'handle').mockResolvedValueOnce([]);
-			return request(app.getHttpServer())
-				.get(`/superfoods/owner/${ownerId}`).expect(HttpStatus.OK)
-				.expect((res) => { expect(res.body).toEqual([]); });
-		});
-
-		it('should call the use case with correct ownerId', async () => {
-			const spy = jest.spyOn(getSuperfoodProductsByOwnerUseCase, 'handle');
-			await request(app.getHttpServer()).get(`/superfoods/owner/${ownerId}`).expect(HttpStatus.OK);
-			expect(spy).toHaveBeenCalledWith(ownerId);
-		});
-	});
-
-	describe('GET /superfoods/category/:categoryId', () => {
-		const categoryId = mockSuperfoodProduct.categoryId;
-
-		it('should get superfood products by category', () => {
-			jest.spyOn(getSuperfoodProductsByCategoryUseCase, 'handle').mockResolvedValueOnce([mockSuperfoodProduct]);
-			return request(app.getHttpServer())
-				.get(`/superfoods/category/${categoryId}`).expect(HttpStatus.OK)
-				.expect((res) => {
-					expect(res.body).toHaveLength(1);
-					expect(res.body[0]).toMatchObject({ id: mockSuperfoodProduct.id, categoryId });
-				});
-		});
-
-		it('should return empty array when category has no products', () => {
-			jest.spyOn(getSuperfoodProductsByCategoryUseCase, 'handle').mockResolvedValueOnce([]);
-			return request(app.getHttpServer())
-				.get(`/superfoods/category/${categoryId}`).expect(HttpStatus.OK)
-				.expect((res) => { expect(res.body).toEqual([]); });
-		});
-
-		it('should call the use case with correct categoryId', async () => {
-			const spy = jest.spyOn(getSuperfoodProductsByCategoryUseCase, 'handle');
-			await request(app.getHttpServer()).get(`/superfoods/category/${categoryId}`).expect(HttpStatus.OK);
-			expect(spy).toHaveBeenCalledWith(categoryId);
-		});
-	});
-
-	describe('PATCH /superfoods/:productId', () => {
+	describe('PUT /superfoods/:productId', () => {
 		const productId = mockSuperfoodProduct.id;
 		const updatedProduct = {
 			...mockSuperfoodProduct,
@@ -252,7 +422,7 @@ describe('SuperfoodController (e2e)', () => {
 		it('should update a superfood product', () => {
 			jest.spyOn(updateSuperfoodProductUseCase, 'handle').mockResolvedValueOnce(updatedProduct);
 			return request(app.getHttpServer())
-				.patch(`/superfoods/${productId}`).send(updateDto).expect(HttpStatus.OK)
+				.put(`/superfoods/${productId}`).send(updateDto).expect(HttpStatus.OK)
 				.expect((res) => {
 					expect(res.body).toMatchObject({
 						id: productId,
@@ -264,7 +434,7 @@ describe('SuperfoodController (e2e)', () => {
 
 		it('should call the use case with correct productId and dto', async () => {
 			const spy = jest.spyOn(updateSuperfoodProductUseCase, 'handle');
-			await request(app.getHttpServer()).patch(`/superfoods/${productId}`).send(updateDto).expect(HttpStatus.OK);
+			await request(app.getHttpServer()).put(`/superfoods/${productId}`).send(updateDto).expect(HttpStatus.OK);
 			expect(spy).toHaveBeenCalledWith(productId, expect.objectContaining({
 				status: updateDto.status,
 				baseInfo: expect.objectContaining({ title: updateDto.baseInfo.title }),
@@ -273,7 +443,7 @@ describe('SuperfoodController (e2e)', () => {
 
 		it('should return 400 when updating with invalid basePrice', () => {
 			return request(app.getHttpServer())
-				.patch(`/superfoods/${productId}`).send({ ...updateDto, priceInventory: { ...updateDto.priceInventory, basePrice: -10 } })
+				.put(`/superfoods/${productId}`).send({ ...updateDto, priceInventory: { ...updateDto.priceInventory, basePrice: -10 } })
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 	});
