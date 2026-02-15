@@ -21,6 +21,8 @@
 			"totalStock": 100,
 			"SKU": "QUINUA-PREM-001"
 		},
+		"color": "PURPLE",
+		"detailSourceProductId": "detail-source-123",
 		"categoryId": "category-quinua-001",
 		"createdAt": "2026-01-01T00:00:00.000Z",
 		"updatedAt": "2026-01-01T00:00:00.000Z"
@@ -46,6 +48,16 @@
 			"totalStock": 100,
 			"SKU": "QUINUA-PREM-001"
 		},
+		"color": "PURPLE",
+		"detailSourceProduct": {
+			"name": "Origen Andino Premium",
+			"description": "Producto cultivado en las altas montañas de los Andes peruanos",
+			"features": [
+				"Cultivo orgánico certificado",
+				"Cosecha manual",
+				"Proceso tradicional"
+			]
+		},
 		"categoryId": "category-quinua-001"
 	},
 	"updateDto": {
@@ -69,6 +81,17 @@
 			"basePrice": 30.00,
 			"totalStock": 150,
 			"SKU": "QUINUA-PREM-001"
+		},
+		"color": "RED",
+		"detailSourceProduct": {
+			"name": "Origen Andino Premium Actualizado",
+			"description": "Producto cultivado en las altas montañas de los Andes peruanos - Versión mejorada",
+			"features": [
+				"Cultivo orgánico certificado",
+				"Cosecha manual",
+				"Proceso tradicional",
+				"Secado natural"
+			]
 		},
 		"categoryId": "category-quinua-001"
 	}

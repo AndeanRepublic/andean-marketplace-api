@@ -8,9 +8,13 @@ import { GetSuperfoodProductsByOwnerUseCase } from '../src/andean/app/use_cases/
 import { GetSuperfoodProductsByCategoryUseCase } from '../src/andean/app/use_cases/superfoods/GetSuperfoodProductsByCategoryUseCase';
 import { UpdateSuperfoodProductUseCase } from '../src/andean/app/use_cases/superfoods/UpdateSuperfoodProductUseCase';
 import { DeleteSuperfoodProductUseCase } from '../src/andean/app/use_cases/superfoods/DeleteSuperfoodProductUseCase';
+import { CreateDetailSourceProductUseCase } from '../src/andean/app/use_cases/detailSourceProduct/CreateDetailSourceProductUseCase';
+import { UpdateDetailSourceProductUseCase } from '../src/andean/app/use_cases/detailSourceProduct/UpdateDetailSourceProductUseCase';
+import { DeleteDetailSourceProductUseCase } from '../src/andean/app/use_cases/detailSourceProduct/DeleteDetailSourceProductUseCase';
 import { SuperfoodProduct } from '../src/andean/domain/entities/superfoods/SuperfoodProduct';
 import { SuperfoodProductStatus } from '../src/andean/domain/enums/SuperfoodProductStatus';
 import { SuperfoodOwnerType } from '../src/andean/domain/enums/SuperfoodOwnerType';
+import { SuperfoodColor } from '../src/andean/domain/enums/SuperfoodColor';
 import { FixtureLoader } from './helpers/fixture-loader';
 
 describe('SuperfoodController (e2e)', () => {
@@ -21,6 +25,9 @@ describe('SuperfoodController (e2e)', () => {
 	let getSuperfoodProductsByCategoryUseCase: GetSuperfoodProductsByCategoryUseCase;
 	let updateSuperfoodProductUseCase: UpdateSuperfoodProductUseCase;
 	let deleteSuperfoodProductUseCase: DeleteSuperfoodProductUseCase;
+	let createDetailSourceProductUseCase: CreateDetailSourceProductUseCase;
+	let updateDetailSourceProductUseCase: UpdateDetailSourceProductUseCase;
+	let deleteDetailSourceProductUseCase: DeleteDetailSourceProductUseCase;
 
 	// Load mock data from JSON fixture
 	const fixture = FixtureLoader.loadSuperfoodProduct();
@@ -53,6 +60,9 @@ describe('SuperfoodController (e2e)', () => {
 					},
 				},
 				{ provide: DeleteSuperfoodProductUseCase, useValue: { handle: jest.fn().mockResolvedValue(undefined) } },
+				{ provide: CreateDetailSourceProductUseCase, useValue: { handle: jest.fn().mockResolvedValue({ id: 'detail-source-123' }) } },
+				{ provide: UpdateDetailSourceProductUseCase, useValue: { handle: jest.fn().mockResolvedValue({ id: 'detail-source-123' }) } },
+				{ provide: DeleteDetailSourceProductUseCase, useValue: { handle: jest.fn().mockResolvedValue(undefined) } },
 			],
 		}).compile();
 
@@ -63,6 +73,9 @@ describe('SuperfoodController (e2e)', () => {
 		createSuperfoodProductUseCase = moduleFixture.get(CreateSuperfoodProductUseCase);
 		getSuperfoodProductByIdUseCase = moduleFixture.get(GetSuperfoodProductByIdUseCase);
 		getSuperfoodProductsByOwnerUseCase = moduleFixture.get(GetSuperfoodProductsByOwnerUseCase);
+		createDetailSourceProductUseCase = moduleFixture.get(CreateDetailSourceProductUseCase);
+		updateDetailSourceProductUseCase = moduleFixture.get(UpdateDetailSourceProductUseCase);
+		deleteDetailSourceProductUseCase = moduleFixture.get(DeleteDetailSourceProductUseCase);
 		getSuperfoodProductsByCategoryUseCase = moduleFixture.get(GetSuperfoodProductsByCategoryUseCase);
 		updateSuperfoodProductUseCase = moduleFixture.get(UpdateSuperfoodProductUseCase);
 		deleteSuperfoodProductUseCase = moduleFixture.get(DeleteSuperfoodProductUseCase);
@@ -110,6 +123,36 @@ describe('SuperfoodController (e2e)', () => {
 		it('should return 400 when totalStock is negative', () => {
 			return request(app.getHttpServer())
 				.post('/superfoods').send({ ...createDto, priceInventory: { ...createDto.priceInventory, totalStock: -1 } })
+				.expect(HttpStatus.BAD_REQUEST);
+		});
+
+		it('should create a superfood with color field', () => {
+			jest.spyOn(createSuperfoodProductUseCase, 'handle').mockResolvedValueOnce(mockSuperfoodProduct);
+			return request(app.getHttpServer())
+				.post('/superfoods').send({ ...createDto, color: SuperfoodColor.PURPLE })
+				.expect(HttpStatus.CREATED)
+				.expect((res) => {
+					expect(res.body).toHaveProperty('id');
+					expect(res.body.color).toBe(SuperfoodColor.PURPLE);
+				});
+		});
+
+		it('should create a superfood with detailSourceProduct nested object', () => {
+			jest.spyOn(createSuperfoodProductUseCase, 'handle').mockResolvedValueOnce({
+				...mockSuperfoodProduct,
+				detailSourceProductId: 'detail-source-123',
+			});
+			return request(app.getHttpServer())
+				.post('/superfoods').send(createDto)
+				.expect(HttpStatus.CREATED)
+				.expect((res) => {
+					expect(res.body).toHaveProperty('detailSourceProductId');
+				});
+		});
+
+		it('should return 400 when color is invalid', () => {
+			return request(app.getHttpServer())
+				.post('/superfoods').send({ ...createDto, color: 'INVALID_COLOR' })
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 
