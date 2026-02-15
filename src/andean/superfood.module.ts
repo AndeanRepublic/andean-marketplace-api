@@ -106,6 +106,7 @@ import { SuperfoodProductPresentationRepoImpl } from './infra/datastore/superfoo
 import { ShopsModule } from './shop.module';
 import { CommunityModule } from './community.module';
 import { MediaItemModule } from './mediaItem.module';
+import { DetailSourceProductModule } from './detailSourceProduct.module';
 import { ReviewSchema } from './infra/persistence/Review.schema';
 import { ReviewRepository } from './app/datastore/Review.repo';
 import { ReviewRepositoryImpl } from './infra/datastore/Review.repo.impl';
@@ -148,6 +149,7 @@ import { TextileProductModule } from './textileProduct.module';
 		CommunityModule,
 		UsersModule,
 		MediaItemModule,
+		DetailSourceProductModule,
 		forwardRef(() => TextileProductModule),
 	],
 	controllers: [
