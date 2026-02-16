@@ -12,7 +12,7 @@ export class SuperfoodBenefitRepoImpl implements SuperfoodBenefitRepository {
 	constructor(
 		@InjectModel('SuperfoodBenefit')
 		private readonly model: Model<SuperfoodBenefitDocument>,
-	) {}
+	) { }
 
 	async getById(id: string): Promise<SuperfoodBenefit | null> {
 		// Convertir string a ObjectId
@@ -56,5 +56,12 @@ export class SuperfoodBenefitRepoImpl implements SuperfoodBenefitRepository {
 		// Convertir string a ObjectId
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		await this.model.findByIdAndDelete(objectId).exec();
+	}
+
+	async getByIds(ids: string[]): Promise<SuperfoodBenefit[]> {
+		if (!ids.length) return [];
+		const objectIds = ids.map((id) => MongoIdUtils.stringToObjectId(id));
+		const docs = await this.model.find({ _id: { $in: objectIds } }).exec();
+		return docs.map((doc) => SuperfoodBenefitMapper.fromDocument(doc));
 	}
 }
