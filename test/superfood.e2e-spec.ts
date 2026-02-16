@@ -3,7 +3,7 @@ import { INestApplication, HttpStatus, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { SuperfoodController } from '../src/andean/infra/controllers/superfoodControllers/superfood.controller';
 import { CreateSuperfoodProductUseCase } from '../src/andean/app/use_cases/superfoods/CreateSuperfoodProductUseCase';
-import { GetSuperfoodProductByIdUseCase } from '../src/andean/app/use_cases/superfoods/GetSuperfoodProductByIdUseCase';
+import { GetByIdSuperfoodProductDetailUseCase } from '../src/andean/app/use_cases/superfoods/GetByIdSuperfoodProductDetailUseCase';
 import { GetAllSuperfoodProductsUseCase } from '../src/andean/app/use_cases/superfoods/GetAllSuperfoodProductsUseCase';
 import { UpdateSuperfoodProductUseCase } from '../src/andean/app/use_cases/superfoods/UpdateSuperfoodProductUseCase';
 import { DeleteSuperfoodProductUseCase } from '../src/andean/app/use_cases/superfoods/DeleteSuperfoodProductUseCase';
@@ -21,7 +21,7 @@ import { FixtureLoader } from './helpers/fixture-loader';
 describe('SuperfoodController (e2e)', () => {
 	let app: INestApplication;
 	let createSuperfoodProductUseCase: CreateSuperfoodProductUseCase;
-	let getSuperfoodProductByIdUseCase: GetSuperfoodProductByIdUseCase;
+	let getByIdSuperfoodProductDetailUseCase: GetByIdSuperfoodProductDetailUseCase;
 	let getAllSuperfoodProductsUseCase: GetAllSuperfoodProductsUseCase;
 	let updateSuperfoodProductUseCase: UpdateSuperfoodProductUseCase;
 	let deleteSuperfoodProductUseCase: DeleteSuperfoodProductUseCase;
@@ -42,13 +42,14 @@ describe('SuperfoodController (e2e)', () => {
 	const updateDto = fixture.updateDto;
 	const mockSuperfoodProductListItem = fixture.listItem;
 	const mockPaginatedResponse = fixture.paginatedResponse;
+	const mockDetailResponse = fixture.detailResponse;
 
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			controllers: [SuperfoodController],
 			providers: [
 				{ provide: CreateSuperfoodProductUseCase, useValue: { handle: jest.fn().mockResolvedValue(mockSuperfoodProduct) } },
-				{ provide: GetSuperfoodProductByIdUseCase, useValue: { handle: jest.fn().mockResolvedValue(mockSuperfoodProduct) } },
+				{ provide: GetByIdSuperfoodProductDetailUseCase, useValue: { handle: jest.fn().mockResolvedValue(mockDetailResponse) } },
 				{ provide: GetAllSuperfoodProductsUseCase, useValue: { handle: jest.fn().mockResolvedValue(mockPaginatedResponse) } },
 				{
 					provide: UpdateSuperfoodProductUseCase,
@@ -72,7 +73,7 @@ describe('SuperfoodController (e2e)', () => {
 		await app.init();
 
 		createSuperfoodProductUseCase = moduleFixture.get(CreateSuperfoodProductUseCase);
-		getSuperfoodProductByIdUseCase = moduleFixture.get(GetSuperfoodProductByIdUseCase);
+		getByIdSuperfoodProductDetailUseCase = moduleFixture.get(GetByIdSuperfoodProductDetailUseCase);
 		getAllSuperfoodProductsUseCase = moduleFixture.get(GetAllSuperfoodProductsUseCase);
 		createDetailSourceProductUseCase = moduleFixture.get(CreateDetailSourceProductUseCase);
 		updateDetailSourceProductUseCase = moduleFixture.get(UpdateDetailSourceProductUseCase);
@@ -390,22 +391,38 @@ describe('SuperfoodController (e2e)', () => {
 	describe('GET /superfoods/:productId', () => {
 		const productId = mockSuperfoodProduct.id;
 
-		it('should get a superfood product by id', () => {
-			jest.spyOn(getSuperfoodProductByIdUseCase, 'handle').mockResolvedValueOnce(mockSuperfoodProduct);
+		it('should get a superfood product detail by id', () => {
+			jest.spyOn(getByIdSuperfoodProductDetailUseCase, 'handle').mockResolvedValueOnce(mockDetailResponse);
 			return request(app.getHttpServer())
 				.get(`/superfoods/${productId}`).expect(HttpStatus.OK)
 				.expect((res) => {
 					expect(res.body).toMatchObject({
-						id: mockSuperfoodProduct.id,
-						status: SuperfoodProductStatus.PUBLISHED,
-						baseInfo: expect.objectContaining({ title: mockBasicInfo.title }),
-						priceInventory: expect.objectContaining({ basePrice: mockPriceInventory.basePrice }),
+						id: mockDetailResponse.id,
+						mainImg: expect.objectContaining({ name: expect.any(String), url: expect.any(String) }),
+						plateImg: expect.objectContaining({ name: expect.any(String), url: expect.any(String) }),
+						sourceProductImg: expect.objectContaining({ name: expect.any(String), url: expect.any(String) }),
+						heroDetail: expect.objectContaining({
+							title: mockDetailResponse.heroDetail.title,
+							basePrice: mockDetailResponse.heroDetail.basePrice,
+							totalStock: mockDetailResponse.heroDetail.totalStock,
+							isDiscountActive: mockDetailResponse.heroDetail.isDiscountActive,
+						}),
+						owner: expect.objectContaining({ id: expect.any(String), type: expect.any(String), name: expect.any(String) }),
+						reviews: expect.objectContaining({
+							rating: expect.objectContaining({ totalReviews: expect.any(Number), averagePunctuation: expect.any(Number) }),
+							comments: expect.any(Array),
+						}),
 					});
+					expect(res.body).toHaveProperty('benefitsInfo');
+					expect(res.body).toHaveProperty('sourceProductInfo');
+					expect(res.body).toHaveProperty('strikingNutritionalItems');
+					expect(res.body).toHaveProperty('nutritionalInformation');
+					expect(res.body).toHaveProperty('moreProducts');
 				});
 		});
 
 		it('should call the use case with correct productId', async () => {
-			const spy = jest.spyOn(getSuperfoodProductByIdUseCase, 'handle');
+			const spy = jest.spyOn(getByIdSuperfoodProductDetailUseCase, 'handle');
 			await request(app.getHttpServer()).get(`/superfoods/${productId}`).expect(HttpStatus.OK);
 			expect(spy).toHaveBeenCalledWith(productId);
 		});

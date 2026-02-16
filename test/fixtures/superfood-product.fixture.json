@@ -145,5 +145,106 @@
 			"page": 1,
 			"per_page": 10
 		}
+	},
+	"detailResponse": {
+		"id": "superfood-uuid-123",
+		"mainImg": {
+			"name": "quinua-main.jpg",
+			"url": "https://example.com/quinua-main.jpg"
+		},
+		"plateImg": {
+			"name": "quinua-plate.jpg",
+			"url": "https://example.com/quinua-plate.jpg"
+		},
+		"sourceProductImg": {
+			"name": "quinua-source.jpg",
+			"url": "https://example.com/quinua-source.jpg"
+		},
+		"heroDetail": {
+			"title": "Quinua Premium",
+			"description": "Quinua orgánica de los Andes peruanos",
+			"nutritionalFeatures": [
+				{
+					"id": "nf-001",
+					"name": "Alto en proteínas",
+					"iconUrl": "https://example.com/icon-protein.png"
+				}
+			],
+			"basePrice": 25.50,
+			"totalStock": 100,
+			"isDiscountActive": false,
+			"traceabilityInfo": {
+				"blockchainLink": "https://blockchain.example.com/tx/123",
+				"origen": [
+					{
+						"title": "Cosecha",
+						"supplier": "Cooperativa Andina",
+						"country": "Perú",
+						"city": "Cusco",
+						"description": "Cosecha manual en los Andes"
+					}
+				],
+				"processing": [],
+				"development": [],
+				"merchandising": []
+			}
+		},
+		"owner": {
+			"id": "shop-123",
+			"type": "SHOP",
+			"name": "Artesanos Andinos",
+			"imgUrl": ""
+		},
+		"benefitsInfo": [
+			{
+				"id": "benefit-001",
+				"name": "Energía natural",
+				"iconUrl": "https://example.com/icon-energy.png",
+				"description": "Fuente de energía sostenida",
+				"color": "GREEN"
+			}
+		],
+		"sourceProductInfo": {
+			"name": "Origen Andino Premium",
+			"description": "Producto cultivado en las altas montañas de los Andes peruanos",
+			"features": [
+				"Cultivo orgánico certificado",
+				"Cosecha manual",
+				"Proceso tradicional"
+			]
+		},
+		"strikingNutritionalItems": [
+			{
+				"id": "nutri-001",
+				"quantity": "14g",
+				"name": "Proteína",
+				"strikingFeature": "Alto contenido"
+			}
+		],
+		"nutritionalInformation": [
+			{
+				"id": "nutri-001",
+				"quantity": "14g",
+				"name": "Proteína"
+			},
+			{
+				"id": "nutri-002",
+				"quantity": "7g",
+				"name": "Fibra"
+			}
+		],
+		"moreProducts": [],
+		"reviews": {
+			"rating": {
+				"count5stars": 0,
+				"count4stars": 0,
+				"count3stars": 0,
+				"count2stars": 0,
+				"count1star": 0,
+				"totalReviews": 0,
+				"averagePunctuation": 0
+			},
+			"comments": []
+		}
 	}
 }
