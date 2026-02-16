@@ -22,7 +22,6 @@ import { CreateSuperfoodDto } from '../dto/superfoods/CreateSuperfoodDto';
 import { UpdateSuperfoodDto } from '../dto/superfoods/UpdateSuperfoodDto';
 import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
 import { CreateSuperfoodProductUseCase } from '../../../app/use_cases/superfoods/CreateSuperfoodProductUseCase';
-import { GetSuperfoodProductByIdUseCase } from '../../../app/use_cases/superfoods/GetSuperfoodProductByIdUseCase';
 import { UpdateSuperfoodProductUseCase } from '../../../app/use_cases/superfoods/UpdateSuperfoodProductUseCase';
 import { DeleteSuperfoodProductUseCase } from '../../../app/use_cases/superfoods/DeleteSuperfoodProductUseCase';
 import { GetAllSuperfoodProductsUseCase } from '../../../app/use_cases/superfoods/GetAllSuperfoodProductsUseCase';
@@ -30,16 +29,18 @@ import { PaginatedProductsResponse } from '../../../app/modules/PaginatedProduct
 import { SuperfoodProductListItem } from '../../../app/models/superfoods/SuperfoodProductListItem';
 import { PaginatedSuperfoodProductsResponse } from '../../../app/models/superfoods/PaginatedSuperfoodProductsResponse';
 import { ProductSortBy } from '../../../domain/enums/ProductSortBy';
+import { GetByIdSuperfoodProductDetailUseCase } from '../../../app/use_cases/superfoods/GetByIdSuperfoodProductDetailUseCase';
+import { SuperfoodProductDetailResponse } from '../../../app/models/superfoods/SuperfoodProductDetailResponse';
 
 @ApiTags('Superfoods')
 @Controller('superfoods')
 export class SuperfoodController {
 	constructor(
 		private readonly createSuperfoodProductUseCase: CreateSuperfoodProductUseCase,
-		private readonly getSuperfoodProductByIdUseCase: GetSuperfoodProductByIdUseCase,
 		private readonly getAllSuperfoodProductsUseCase: GetAllSuperfoodProductsUseCase,
 		private readonly updateSuperfoodProductUseCase: UpdateSuperfoodProductUseCase,
 		private readonly deleteSuperfoodProductUseCase: DeleteSuperfoodProductUseCase,
+		private readonly getByIdSuperfoodProductDetailUseCase: GetByIdSuperfoodProductDetailUseCase,
 	) { }
 
 	@Post()
@@ -158,19 +159,19 @@ export class SuperfoodController {
 
 	@Get('/:productId')
 	@ApiOperation({
-		summary: 'Obtener producto superfood por ID',
+		summary: 'Obtener detalle completo de producto superfood por ID',
 		description:
-			'Retorna toda la información completa de un producto superfood específico incluyendo información base, precios, inventario, detalles nutricionales, trazabilidad, opciones y variantes',
+			'Retorna toda la información completa de un producto superfood específico incluyendo imágenes por rol, hero detail, owner, beneficios, información nutricional, trazabilidad, productos similares y reviews',
 	})
 	@ApiParam({
 		name: 'productId',
 		description: 'ID único del producto superfood',
-		example: 'uuid-1234-5678-90ab-cdef',
+		example: '6973d8ffddef7b59c2d4dcfb',
 	})
 	@ApiResponse({
 		status: 200,
-		description: 'Producto encontrado',
-		type: SuperfoodProduct,
+		description: 'Detalle completo del producto',
+		type: SuperfoodProductDetailResponse,
 	})
 	@ApiResponse({
 		status: 404,
@@ -178,8 +179,8 @@ export class SuperfoodController {
 	})
 	async getSuperfoodById(
 		@Param('productId') productId: string,
-	): Promise<SuperfoodProduct> {
-		return this.getSuperfoodProductByIdUseCase.handle(productId);
+	): Promise<SuperfoodProductDetailResponse> {
+		return this.getByIdSuperfoodProductDetailUseCase.handle(productId);
 	}
 
 	@Put('/:productId')
