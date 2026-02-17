@@ -1,5 +1,5 @@
 export enum MediaItemType {
-	IMG = 'img',
-	VIDEO = 'video',
-	ICON = 'icon',
+	IMG = 'IMG',
+	VIDEO = 'VIDEO',
+	ICON = 'ICON',
 }

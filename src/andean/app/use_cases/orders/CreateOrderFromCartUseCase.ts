@@ -8,8 +8,8 @@ import { OrderRepository } from '../../datastore/order/Order.repo';
 import { CartShopRepository } from '../../datastore/CartShop.repo';
 import { CartShopItemRepository } from '../../datastore/CartShopItem.repo';
 import { Order } from '../../../domain/entities/order/Order';
-import { ShippingInfo, PaymentInfo } from '../../../domain/entities/order/Order';
 import { CreateOrderFromCartDto } from '../../../infra/controllers/dto/order/CreateOrderFromCartDto';
+import { ReduceStockFromOrderUseCase } from './ReduceStockFromOrderUseCase';
 
 @Injectable()
 export class CreateOrderFromCartUseCase {
@@ -20,7 +20,8 @@ export class CreateOrderFromCartUseCase {
 		private readonly cartShopRepository: CartShopRepository,
 		@Inject(CartShopItemRepository)
 		private readonly cartItemRepository: CartShopItemRepository,
-	) {}
+		private readonly reduceStockUseCase: ReduceStockFromOrderUseCase,
+	) { }
 
 	async handle(
 		customerId: string | undefined,
@@ -54,7 +55,10 @@ export class CreateOrderFromCartUseCase {
 			);
 		}
 
-		// 5. Crear orden desde el carrito
+		// 5. Validar y reducir stock antes de crear la orden
+		await this.reduceStockUseCase.handle(cartItems);
+
+		// 6. Crear orden desde el carrito
 		const order = await this.orderRepository.createOrderFromCart(
 			cart,
 			cartItems,
@@ -63,7 +67,7 @@ export class CreateOrderFromCartUseCase {
 			dto.currency,
 		);
 
-		// 6. Limpiar el carrito después de crear la orden exitosamente
+		// 7. Limpiar el carrito después de crear la orden exitosamente
 		await this.cartItemRepository.deleteItemsByCartShopId(cart.id);
 
 		return order;

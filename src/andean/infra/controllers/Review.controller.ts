@@ -7,7 +7,13 @@ import {
 	Put,
 	Delete,
 	Patch,
+	UseInterceptors,
+	UploadedFile,
+	ParseFilePipe,
+	MaxFileSizeValidator,
+	FileTypeValidator,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateReviewUseCase } from 'src/andean/app/use_cases/CreateReviewUseCase';
 import { Review } from 'src/andean/domain/entities/Review';
 import { CreateReviewDto } from './dto/CreateReviewDto';
@@ -36,11 +42,24 @@ export class ReviewController {
 		private readonly incrementDislikesUseCase: IncrementDislikesUseCase,
 		private readonly decrementLikesUseCase: DecrementLikesUseCase,
 		private readonly decrementDislikesUseCase: DecrementDislikesUseCase,
-	) {}
+	) { }
 
 	@Post(path_reviews)
-	async createReview(@Body() body: CreateReviewDto): Promise<Review> {
-		return this.createReviewUseCase.handle(body);
+	@UseInterceptors(FileInterceptor('file'))
+	async createReview(
+		@UploadedFile(
+			new ParseFilePipe({
+				validators: [
+					new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }), // 5MB
+					new FileTypeValidator({ fileType: /^image\/(jpeg|png|webp)$/ }),
+				],
+				fileIsRequired: false, // El archivo es opcional
+			}),
+		)
+		file: Express.Multer.File | undefined,
+		@Body() body: CreateReviewDto,
+	): Promise<Review> {
+		return this.createReviewUseCase.handle(body, file);
 	}
 
 	@Get(path_reviews)

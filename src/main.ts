@@ -9,6 +9,12 @@ import { join } from 'path';
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
 
+	app.enableCors({
+		origin: ['http://localhost:3000', 'http://localhost:3001'],
+		methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+		credentials: true,
+	});
+
 	const configService = app.get(ConfigService);
 	const port = configService.get<number>('PORT', 3000);
 
@@ -19,7 +25,9 @@ async function bootstrap() {
 	// Swagger Configuration
 	const config = new DocumentBuilder()
 		.setTitle('Andean Marketplace API')
-		.setDescription('API para el marketplace de productos andinos que conecta comunidades con compradores')
+		.setDescription(
+			'API para el marketplace de productos andinos que conecta comunidades con compradores',
+		)
 		.setVersion('1.0')
 		.addTag('auth', 'Autenticación y gestión de sesiones')
 		.addBearerAuth(
@@ -42,7 +50,9 @@ async function bootstrap() {
 		customCss: '.swagger-ui .topbar { display: none }',
 	});
 
-	console.log(`📚 Swagger docs available at: http://localhost:${port}/api/docs`);
+	console.log(
+		`📚 Swagger docs available at: http://localhost:${port}/api/docs`,
+	);
 
 	await app.listen(port);
 }

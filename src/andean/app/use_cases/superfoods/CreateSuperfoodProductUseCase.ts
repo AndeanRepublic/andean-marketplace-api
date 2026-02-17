@@ -12,6 +12,7 @@ import { CreateSuperfoodDto } from '../../../infra/controllers/dto/superfoods/Cr
 import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
 import { SuperfoodProductMapper } from '../../../infra/services/superfood/SuperfoodProductMapper';
 import { SuperfoodOwnerType } from '../../../domain/enums/SuperfoodOwnerType';
+import { CreateDetailSourceProductUseCase } from '../detailSourceProduct/CreateDetailSourceProductUseCase';
 
 @Injectable()
 export class CreateSuperfoodProductUseCase {
@@ -27,7 +28,9 @@ export class CreateSuperfoodProductUseCase {
 
 		@Inject(CommunityRepository)
 		private readonly communityRepository: CommunityRepository,
-	) {}
+
+		private readonly createDetailSourceProductUseCase: CreateDetailSourceProductUseCase,
+	) { }
 
 	async handle(dto: CreateSuperfoodDto): Promise<SuperfoodProduct> {
 		// 1. Validar que la categoría existe solo si se proporciona
@@ -61,10 +64,23 @@ export class CreateSuperfoodProductUseCase {
 			}
 		}
 
-		// 3. Mapear DTO a entidad de dominio
-		const productToSave = SuperfoodProductMapper.fromCreateDto(dto);
+		// 3. Si viene detailSourceProduct, crearlo primero
+		let detailSourceProductId: string | undefined;
+		if (dto.detailSourceProduct) {
+			const createdDetailSource =
+				await this.createDetailSourceProductUseCase.handle(
+					dto.detailSourceProduct,
+				);
+			detailSourceProductId = createdDetailSource.id;
+		}
 
-		// 4. Guardar en base de datos
+		// 4. Mapear DTO a entidad de dominio
+		const productToSave = SuperfoodProductMapper.fromCreateDto(dto);
+		if (detailSourceProductId) {
+			productToSave.detailSourceProductId = detailSourceProductId;
+		}
+
+		// 5. Guardar en base de datos
 		return this.superfoodProductRepository.saveSuperfoodProduct(productToSave);
 	}
 }

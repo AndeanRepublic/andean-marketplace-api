@@ -1,7 +1,6 @@
 import { SuperfoodProductDocument } from '../../persistence/superfood/superfood.schema';
 import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
 import { CreateSuperfoodDto } from '../../controllers/dto/superfoods/CreateSuperfoodDto';
-import { SuperfoodProductStatus } from '../../../domain/enums/SuperfoodProductStatus';
 import { SuperfoodBasicInfo } from '../../../domain/entities/superfoods/SuperfoodBasicInfo';
 import { SuperfoodPriceInventory } from '../../../domain/entities/superfoods/SuperfoodPriceInventory';
 import { SuperfoodDetailProduct } from '../../../domain/entities/superfoods/SuperfoodDetailProduct';
@@ -77,6 +76,8 @@ export class SuperfoodProductMapper {
 			detailTraceability,
 			productTraceability,
 			options,
+			color: plain.color,
+			detailSourceProductId: plain.detailSourceProductId,
 			isDiscountActive: plain.isDiscountActive ?? false,
 			createdAt: plain.createdAt || new Date(),
 			updatedAt: plain.updatedAt || new Date(),

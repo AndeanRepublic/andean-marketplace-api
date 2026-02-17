@@ -14,4 +14,6 @@ export abstract class SuperfoodNutritionalFeatureRepository {
 	): Promise<SuperfoodNutritionalFeature>;
 
 	abstract delete(id: string): Promise<void>;
+
+	abstract getByIds(ids: string[]): Promise<SuperfoodNutritionalFeature[]>;
 }
