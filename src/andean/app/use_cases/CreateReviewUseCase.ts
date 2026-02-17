@@ -1,13 +1,17 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ReviewRepository } from '../datastore/Review.repo';
 import { MediaItemRepository } from '../datastore/MediaItem.repo';
+import { StorageRepository } from '../datastore/Storage.repo';
 import { CreateReviewDto } from 'src/andean/infra/controllers/dto/CreateReviewDto';
 import { Review } from 'src/andean/domain/entities/Review';
 import { ReviewMapper } from 'src/andean/infra/services/ReviewMapper';
+import { MediaItemMapper } from 'src/andean/infra/services/MediaItemMapper';
 import { CustomerProfileRepository } from '../datastore/Customer.repo';
 import { TextileProductRepository } from '../datastore/textileProducts/TextileProduct.repo';
 import { SuperfoodProductRepository } from '../datastore/superfoods/SuperfoodProduct.repo';
 import { ProductType } from 'src/andean/domain/enums/ProductType';
+import { MediaItemType } from 'src/andean/domain/enums/MediaItemType';
+import { MediaItemRole } from 'src/andean/domain/enums/MediaItemRole';
 
 @Injectable()
 export class CreateReviewUseCase {
@@ -22,9 +26,11 @@ export class CreateReviewUseCase {
 		private readonly superfoodProductRepository: SuperfoodProductRepository,
 		@Inject(MediaItemRepository)
 		private readonly mediaItemRepository: MediaItemRepository,
+		@Inject(StorageRepository)
+		private readonly storageRepository: StorageRepository,
 	) { }
 
-	async handle(dto: CreateReviewDto): Promise<Review> {
+	async handle(dto: CreateReviewDto, file?: Express.Multer.File): Promise<Review> {
 		// Validar customerId
 		const customerFound = await this.customerProfileRepository.getCustomerById(
 			dto.customerId,
@@ -55,17 +61,37 @@ export class CreateReviewUseCase {
 			// Por ahora solo validamos que el tipo sea válido
 		}
 
-		// Validar que el MediaItem existe si se proporciona
-		if (dto.mediaId) {
-			const mediaItemFound = await this.mediaItemRepository.getById(
-				dto.mediaId,
+		// Crear MediaItem si se proporciona archivo
+		let mediaId: string | undefined;
+		if (file && dto.mediaType && dto.mediaName) {
+			// 1. Subir archivo a S3
+			const key = await this.storageRepository.uploadFile(
+				file.buffer,
+				dto.mediaType,
+				dto.mediaName,
+				file.mimetype,
 			);
-			if (!mediaItemFound) {
-				throw new NotFoundException(`MediaItem with id ${dto.mediaId} not found`);
-			}
+
+			// 2. Crear MediaItem
+			const mediaItem = MediaItemMapper.fromUploadData(
+				dto.mediaType,
+				dto.mediaName,
+				key,
+				dto.mediaRole ?? MediaItemRole.NONE,
+			);
+
+			// 3. Guardar MediaItem en base de datos
+			const savedMediaItem = await this.mediaItemRepository.create(mediaItem);
+			mediaId = savedMediaItem.id;
 		}
 
-		const reviewToSave = ReviewMapper.fromCreateDto(dto);
+		// Crear DTO modificado con el mediaId
+		const reviewDto = {
+			...dto,
+			mediaId,
+		};
+
+		const reviewToSave = ReviewMapper.fromCreateDto(reviewDto as any);
 		return this.reviewRepository.create(reviewToSave);
 	}
 }

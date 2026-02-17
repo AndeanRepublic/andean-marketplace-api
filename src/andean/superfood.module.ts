@@ -26,11 +26,10 @@ import { ReviewController } from './infra/controllers/Review.controller';
 
 // Use Cases - Product
 import { CreateSuperfoodProductUseCase } from './app/use_cases/superfoods/CreateSuperfoodProductUseCase';
-import { GetSuperfoodProductByIdUseCase } from './app/use_cases/superfoods/GetSuperfoodProductByIdUseCase';
-import { GetSuperfoodProductsByOwnerUseCase } from './app/use_cases/superfoods/GetSuperfoodProductsByOwnerUseCase';
-import { GetSuperfoodProductsByCategoryUseCase } from './app/use_cases/superfoods/GetSuperfoodProductsByCategoryUseCase';
+import { GetAllSuperfoodProductsUseCase } from './app/use_cases/superfoods/GetAllSuperfoodProductsUseCase';
 import { UpdateSuperfoodProductUseCase } from './app/use_cases/superfoods/UpdateSuperfoodProductUseCase';
 import { DeleteSuperfoodProductUseCase } from './app/use_cases/superfoods/DeleteSuperfoodProductUseCase';
+import { GetByIdSuperfoodProductDetailUseCase } from './app/use_cases/superfoods/GetByIdSuperfoodProductDetailUseCase';
 
 // Use Cases - Category
 import { CreateSuperfoodCategoryUseCase } from './app/use_cases/superfoods/category/CreateSuperfoodCategoryUseCase';
@@ -106,6 +105,7 @@ import { SuperfoodProductPresentationRepoImpl } from './infra/datastore/superfoo
 import { ShopsModule } from './shop.module';
 import { CommunityModule } from './community.module';
 import { MediaItemModule } from './mediaItem.module';
+import { DetailSourceProductModule } from './detailSourceProduct.module';
 import { ReviewSchema } from './infra/persistence/Review.schema';
 import { ReviewRepository } from './app/datastore/Review.repo';
 import { ReviewRepositoryImpl } from './infra/datastore/Review.repo.impl';
@@ -148,6 +148,7 @@ import { TextileProductModule } from './textileProduct.module';
 		CommunityModule,
 		UsersModule,
 		MediaItemModule,
+		DetailSourceProductModule,
 		forwardRef(() => TextileProductModule),
 	],
 	controllers: [
@@ -165,11 +166,10 @@ import { TextileProductModule } from './textileProduct.module';
 	providers: [
 		// Use Cases - Product
 		CreateSuperfoodProductUseCase,
-		GetSuperfoodProductByIdUseCase,
-		GetSuperfoodProductsByOwnerUseCase,
-		GetSuperfoodProductsByCategoryUseCase,
+		GetAllSuperfoodProductsUseCase,
 		UpdateSuperfoodProductUseCase,
 		DeleteSuperfoodProductUseCase,
+		GetByIdSuperfoodProductDetailUseCase,
 
 		// Use Cases - Category
 		CreateSuperfoodCategoryUseCase,

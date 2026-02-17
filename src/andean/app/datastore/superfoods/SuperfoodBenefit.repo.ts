@@ -10,4 +10,6 @@ export abstract class SuperfoodBenefitRepository {
 	abstract update(benefit: SuperfoodBenefit): Promise<SuperfoodBenefit>;
 
 	abstract delete(id: string): Promise<void>;
+
+	abstract getByIds(ids: string[]): Promise<SuperfoodBenefit[]>;
 }

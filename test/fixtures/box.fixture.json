@@ -8,12 +8,15 @@
 		"mainImageId": "media-main-box-001",
 		"products": [
 			{
+				"productType": "SUPERFOOD",
 				"productId": "superfood-uuid-123"
 			},
 			{
+				"productType": "SUPERFOOD",
 				"productId": "superfood-uuid-456"
 			},
 			{
+				"productType": "TEXTILE",
 				"variantId": "variant-textile-001"
 			}
 		],
@@ -33,12 +36,15 @@
 		"mainImageId": "media-main-box-001",
 		"products": [
 			{
+				"productType": "SUPERFOOD",
 				"productId": "superfood-uuid-123"
 			},
 			{
+				"productType": "SUPERFOOD",
 				"productId": "superfood-uuid-456"
 			},
 			{
+				"productType": "TEXTILE",
 				"variantId": "variant-textile-001"
 			}
 		],

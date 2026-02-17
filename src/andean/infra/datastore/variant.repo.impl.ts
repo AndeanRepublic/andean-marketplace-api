@@ -78,4 +78,16 @@ export class VariantRepositoryImpl extends VariantRepositoryBase {
 		const docs = await this.variantModel.find({ _id: { $in: objectIds } }).exec();
 		return docs.map((doc) => VariantMapper.fromDocument(doc));
 	}
+
+	async reduceStock(id: string, quantity: number): Promise<Variant | null> {
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		const updated = await this.variantModel
+			.findOneAndUpdate(
+				{ _id: objectId, stock: { $gte: quantity } },
+				{ $inc: { stock: -quantity }, $set: { updatedAt: new Date() } },
+				{ new: true },
+			)
+			.exec();
+		return updated ? VariantMapper.fromDocument(updated) : null;
+	}
 }
