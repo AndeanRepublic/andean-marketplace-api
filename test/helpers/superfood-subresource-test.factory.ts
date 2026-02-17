@@ -149,7 +149,8 @@ export function createSuperfoodSubResourceTests(config: SubResourceTestConfig): 
 					const withoutOptional = { ...mockResponse, [optionalFieldName]: undefined };
 					jest.spyOn(createUseCase, 'handle').mockResolvedValueOnce(withoutOptional);
 
-					const dtoWithoutOptional = { name: createDto.name };
+					const dtoWithoutOptional = { ...createDto };
+					delete dtoWithoutOptional[optionalFieldName];
 
 					return request(app.getHttpServer())
 						.post(config.endpoint)

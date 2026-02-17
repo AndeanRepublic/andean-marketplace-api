@@ -14,6 +14,8 @@ import { ShopRepository } from '../../datastore/Shop.repo';
 import { SuperfoodOwnerType } from '../../../domain/enums/SuperfoodOwnerType';
 import { instanceToPlain } from 'class-transformer';
 import { CreateSuperfoodDto } from '../../../infra/controllers/dto/superfoods/CreateSuperfoodDto';
+import { CreateDetailSourceProductUseCase } from '../detailSourceProduct/CreateDetailSourceProductUseCase';
+import { UpdateDetailSourceProductUseCase } from '../detailSourceProduct/UpdateDetailSourceProductUseCase';
 
 @Injectable()
 export class UpdateSuperfoodProductUseCase {
@@ -26,7 +28,10 @@ export class UpdateSuperfoodProductUseCase {
 		private readonly shopRepository: ShopRepository,
 		@Inject(CommunityRepository)
 		private readonly communityRepository: CommunityRepository,
-	) {}
+
+		private readonly createDetailSourceProductUseCase: CreateDetailSourceProductUseCase,
+		private readonly updateDetailSourceProductUseCase: UpdateDetailSourceProductUseCase,
+	) { }
 
 	async handle(
 		productId: string,
@@ -91,10 +96,31 @@ export class UpdateSuperfoodProductUseCase {
 			throw new BadRequestException('The total stock cannot be negative');
 		}
 
-		// 5. Usar el mapper para crear la entidad actualizada
-		const toUpdate = SuperfoodProductMapper.fromUpdateDto(productId, dto);
+		// 5. Manejar detailSourceProduct si viene en el DTO
+		let detailSourceProductId = existingProduct.detailSourceProductId;
+		if (dto.detailSourceProduct) {
+			if (existingProduct.detailSourceProductId) {
+				// Actualizar el DetailSourceProduct existente
+				await this.updateDetailSourceProductUseCase.handle(
+					existingProduct.detailSourceProductId,
+					dto.detailSourceProduct,
+				);
+			} else {
+				// Crear uno nuevo si no existe
+				const created = await this.createDetailSourceProductUseCase.handle(
+					dto.detailSourceProduct,
+				);
+				detailSourceProductId = created.id;
+			}
+		}
 
-		// 6. Guardar cambios
+		// 6. Usar el mapper para crear la entidad actualizada
+		const toUpdate = SuperfoodProductMapper.fromUpdateDto(productId, dto);
+		if (detailSourceProductId) {
+			toUpdate.detailSourceProductId = detailSourceProductId;
+		}
+
+		// 7. Guardar cambios
 		return this.superfoodProductRepository.updateSuperfoodProduct(toUpdate);
 	}
 }

@@ -1,5 +1,6 @@
 import { Document, Schema } from 'mongoose';
 import { SuperfoodProductStatus } from '../../../domain/enums/SuperfoodProductStatus';
+import { SuperfoodColor } from '../../../domain/enums/SuperfoodColor';
 import { SuperfoodConsumptionWay } from '../../../domain/enums/SuperfoodConsumptionWay';
 import { SuperfoodProductionMethod } from '../../../domain/enums/SuperfoodProductionMethod';
 import { SuperfoodOwnerType } from '../../../domain/enums/SuperfoodOwnerType';
@@ -140,6 +141,12 @@ export const SuperfoodProductSchema = new Schema({
 		enum: Object.values(SuperfoodProductStatus),
 		required: true,
 	},
+	color: {
+		type: String,
+		enum: Object.values(SuperfoodColor),
+		required: false,
+	},
+	detailSourceProductId: { type: String, required: false },
 	baseInfo: { type: SuperfoodBasicInfoSchema, required: true },
 	priceInventory: { type: SuperfoodPriceInventorySchema, required: true },
 	detailProduct: { type: SuperfoodDetailProductSchema, required: false },
@@ -165,6 +172,8 @@ export const SuperfoodProductSchema = new Schema({
 export interface SuperfoodProductDocument extends Document {
 	categoryId?: string;
 	status: SuperfoodProductStatus;
+	color?: SuperfoodColor;
+	detailSourceProductId?: string;
 	baseInfo: any;
 	priceInventory: any;
 	detailProduct?: any;
