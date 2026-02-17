@@ -226,7 +226,7 @@ export class TextileProductController {
 	@ApiResponse({
 		status: 200,
 		description: 'Producto encontrado',
-		type: TextileProduct,
+		type: TextileProductDetailResponse,
 	})
 	@ApiResponse({
 		status: 404,

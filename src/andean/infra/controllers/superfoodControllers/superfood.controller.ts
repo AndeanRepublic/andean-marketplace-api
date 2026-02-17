@@ -2,35 +2,46 @@ import {
 	Controller,
 	Get,
 	Post,
-	Patch,
+	Put,
 	Delete,
 	Body,
 	Param,
 	HttpCode,
 	HttpStatus,
+	Query,
+	ParseIntPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import {
+	ApiTags,
+	ApiOperation,
+	ApiResponse,
+	ApiParam,
+	ApiQuery,
+} from '@nestjs/swagger';
 import { CreateSuperfoodDto } from '../dto/superfoods/CreateSuperfoodDto';
 import { UpdateSuperfoodDto } from '../dto/superfoods/UpdateSuperfoodDto';
 import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
 import { CreateSuperfoodProductUseCase } from '../../../app/use_cases/superfoods/CreateSuperfoodProductUseCase';
-import { GetSuperfoodProductByIdUseCase } from '../../../app/use_cases/superfoods/GetSuperfoodProductByIdUseCase';
-import { GetSuperfoodProductsByOwnerUseCase } from '../../../app/use_cases/superfoods/GetSuperfoodProductsByOwnerUseCase';
-import { GetSuperfoodProductsByCategoryUseCase } from '../../../app/use_cases/superfoods/GetSuperfoodProductsByCategoryUseCase';
 import { UpdateSuperfoodProductUseCase } from '../../../app/use_cases/superfoods/UpdateSuperfoodProductUseCase';
 import { DeleteSuperfoodProductUseCase } from '../../../app/use_cases/superfoods/DeleteSuperfoodProductUseCase';
+import { GetAllSuperfoodProductsUseCase } from '../../../app/use_cases/superfoods/GetAllSuperfoodProductsUseCase';
+import { PaginatedProductsResponse } from '../../../app/modules/PaginatedProductsResponse';
+import { SuperfoodProductListItem } from '../../../app/models/superfoods/SuperfoodProductListItem';
+import { PaginatedSuperfoodProductsResponse } from '../../../app/models/superfoods/PaginatedSuperfoodProductsResponse';
+import { ProductSortBy } from '../../../domain/enums/ProductSortBy';
+import { GetByIdSuperfoodProductDetailUseCase } from '../../../app/use_cases/superfoods/GetByIdSuperfoodProductDetailUseCase';
+import { SuperfoodProductDetailResponse } from '../../../app/models/superfoods/SuperfoodProductDetailResponse';
 
 @ApiTags('Superfoods')
 @Controller('superfoods')
 export class SuperfoodController {
 	constructor(
 		private readonly createSuperfoodProductUseCase: CreateSuperfoodProductUseCase,
-		private readonly getSuperfoodProductByIdUseCase: GetSuperfoodProductByIdUseCase,
-		private readonly getSuperfoodProductsByOwnerUseCase: GetSuperfoodProductsByOwnerUseCase,
-		private readonly getSuperfoodProductsByCategoryUseCase: GetSuperfoodProductsByCategoryUseCase,
+		private readonly getAllSuperfoodProductsUseCase: GetAllSuperfoodProductsUseCase,
 		private readonly updateSuperfoodProductUseCase: UpdateSuperfoodProductUseCase,
 		private readonly deleteSuperfoodProductUseCase: DeleteSuperfoodProductUseCase,
-	) {}
+		private readonly getByIdSuperfoodProductDetailUseCase: GetByIdSuperfoodProductDetailUseCase,
+	) { }
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
@@ -59,21 +70,108 @@ export class SuperfoodController {
 		return this.createSuperfoodProductUseCase.handle(dto);
 	}
 
+	@Get()
+	@ApiOperation({
+		summary: 'Listar productos superfood con filtros',
+		description:
+			'Retorna una lista paginada de productos superfood con stock disponible (totalStock > 0). Soporta filtros por rango de precio, categoría y propietario. La respuesta incluye información resumida optimizada para listados.',
+	})
+	@ApiQuery({
+		name: 'page',
+		required: false,
+		type: Number,
+		description: 'Número de página para paginación (por defecto: 1)',
+		example: 1,
+	})
+	@ApiQuery({
+		name: 'per_page',
+		required: false,
+		type: Number,
+		description: 'Cantidad de productos por página (por defecto: 10)',
+		example: 10,
+	})
+	@ApiQuery({
+		name: 'min_price',
+		required: false,
+		type: Number,
+		description: 'Precio mínimo para filtrar productos (en la moneda base)',
+		example: 50,
+	})
+	@ApiQuery({
+		name: 'max_price',
+		required: false,
+		type: Number,
+		description: 'Precio máximo para filtrar productos (en la moneda base)',
+		example: 200,
+	})
+	@ApiQuery({
+		name: 'category_id',
+		required: false,
+		type: String,
+		description: 'Filtrar por ID de categoría superfood',
+		example: 'category-quinua-001',
+	})
+	@ApiQuery({
+		name: 'owner_id',
+		required: false,
+		type: String,
+		description: 'Filtrar por ID del propietario/vendedor (shop o comunidad)',
+		example: 'shop-uuid-1234',
+	})
+	@ApiQuery({
+		name: 'sort_by',
+		required: false,
+		enum: ProductSortBy,
+		description:
+			'Criterio de ordenamiento: "latest" (más recientes primero) o "popular" (más comprados primero)',
+		example: 'latest',
+	})
+	@ApiResponse({
+		status: 200,
+		description:
+			'Lista paginada de productos superfood con información resumida',
+		type: PaginatedSuperfoodProductsResponse,
+	})
+	async getAllSuperfoodProducts(
+		@Query('page', new ParseIntPipe({ optional: true })) page?: number,
+		@Query('per_page', new ParseIntPipe({ optional: true })) perPage?: number,
+		@Query('min_price', new ParseIntPipe({ optional: true }))
+		minPrice?: number,
+		@Query('max_price', new ParseIntPipe({ optional: true }))
+		maxPrice?: number,
+		@Query('category_id') categoryId?: string,
+		@Query('owner_id') ownerId?: string,
+		@Query('sort_by') sortBy?: ProductSortBy,
+	): Promise<PaginatedProductsResponse<SuperfoodProductListItem>> {
+		const filters: any = {};
+		if (page !== undefined) filters.page = page;
+		if (perPage !== undefined) filters.perPage = perPage;
+		if (minPrice !== undefined) filters.minPrice = minPrice;
+		if (maxPrice !== undefined) filters.maxPrice = maxPrice;
+		if (categoryId) filters.categoryId = categoryId;
+		if (ownerId) filters.ownerId = ownerId;
+		if (sortBy) filters.sortBy = sortBy;
+
+		return this.getAllSuperfoodProductsUseCase.handle(
+			Object.keys(filters).length > 0 ? filters : undefined,
+		);
+	}
+
 	@Get('/:productId')
 	@ApiOperation({
-		summary: 'Obtener producto superfood por ID',
+		summary: 'Obtener detalle completo de producto superfood por ID',
 		description:
-			'Retorna toda la información completa de un producto superfood específico incluyendo información base, precios, inventario, detalles nutricionales, trazabilidad, opciones y variantes',
+			'Retorna toda la información completa de un producto superfood específico incluyendo imágenes por rol, hero detail, owner, beneficios, información nutricional, trazabilidad, productos similares y reviews',
 	})
 	@ApiParam({
 		name: 'productId',
 		description: 'ID único del producto superfood',
-		example: 'uuid-1234-5678-90ab-cdef',
+		example: '6973d8ffddef7b59c2d4dcfb',
 	})
 	@ApiResponse({
 		status: 200,
-		description: 'Producto encontrado',
-		type: SuperfoodProduct,
+		description: 'Detalle completo del producto',
+		type: SuperfoodProductDetailResponse,
 	})
 	@ApiResponse({
 		status: 404,
@@ -81,60 +179,11 @@ export class SuperfoodController {
 	})
 	async getSuperfoodById(
 		@Param('productId') productId: string,
-	): Promise<SuperfoodProduct> {
-		return this.getSuperfoodProductByIdUseCase.handle(productId);
+	): Promise<SuperfoodProductDetailResponse> {
+		return this.getByIdSuperfoodProductDetailUseCase.handle(productId);
 	}
 
-	@Get('/owner/:ownerId')
-	@ApiOperation({
-		summary: 'Obtener productos superfood por owner',
-		description:
-			'Retorna todos los productos de un shop o comunidad específica. Útil para listar el catálogo de un vendedor.',
-	})
-	@ApiParam({
-		name: 'ownerId',
-		description: 'ID del shop o comunidad propietaria de los productos',
-		example: 'shop-uuid-1234',
-	})
-	@ApiResponse({
-		status: 200,
-		description:
-			'Lista de productos del owner (puede ser array vacío si no tiene productos)',
-		type: [SuperfoodProduct],
-	})
-	async getSuperfoodsByOwner(
-		@Param('ownerId') ownerId: string,
-	): Promise<SuperfoodProduct[]> {
-		return this.getSuperfoodProductsByOwnerUseCase.handle(ownerId);
-	}
-
-	@Get('/category/:categoryId')
-	@ApiOperation({
-		summary: 'Obtener productos superfood por categoría',
-		description:
-			'Retorna todos los productos de una categoría específica (ej: Quinua, Maca, Cacao). Útil para filtros de navegación y catálogos por categoría.',
-	})
-	@ApiParam({
-		name: 'categoryId',
-		description: 'ID de la categoría de superfood',
-		example: 'category-quinua-001',
-	})
-	@ApiResponse({
-		status: 200,
-		description: 'Lista de productos de la categoría',
-		type: [SuperfoodProduct],
-	})
-	@ApiResponse({
-		status: 404,
-		description: 'Categoría no encontrada',
-	})
-	async getSuperfoodsByCategory(
-		@Param('categoryId') categoryId: string,
-	): Promise<SuperfoodProduct[]> {
-		return this.getSuperfoodProductsByCategoryUseCase.handle(categoryId);
-	}
-
-	@Patch('/:productId')
+	@Put('/:productId')
 	@ApiOperation({
 		summary: 'Actualizar producto superfood',
 		description:
