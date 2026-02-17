@@ -43,6 +43,6 @@ import { MediaItemController } from './infra/controllers/mediaItem.controller';
 		ListMediaItemsUseCase,
 		DeleteMediaItemUseCase,
 	],
-	exports: [MediaItemRepository, MongooseModule],
+	exports: [MediaItemRepository, StorageRepository, MongooseModule],
 })
 export class MediaItemModule { }

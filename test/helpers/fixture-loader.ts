@@ -115,4 +115,13 @@ export class FixtureLoader {
 	static loadBoxSeal() {
 		return this.load('box-seal.fixture.json');
 	}
+
+	static loadReview() {
+		return this.load('review.fixture.json');
+	}
+
+	// ─── Order fixtures ─────────────────────────────────────────────
+	static loadOrder() {
+		return this.load('order.fixture.json');
+	}
 }

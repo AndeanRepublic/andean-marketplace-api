@@ -9,7 +9,14 @@ import {
 	HttpCode,
 	HttpStatus,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiQuery } from '@nestjs/swagger';
+import {
+	ApiTags,
+	ApiOperation,
+	ApiResponse,
+	ApiParam,
+	ApiBody,
+	ApiQuery,
+} from '@nestjs/swagger';
 import { CreateOrderUseCase } from '../../app/use_cases/orders/CreateOrderUseCase';
 import { GetOrderByIdUseCase } from '../../app/use_cases/orders/GetOrderByIdUseCase';
 import { GetOrdersByCustomerUseCase } from '../../app/use_cases/orders/GetOrdersByCustomerUseCase';
@@ -21,6 +28,10 @@ import { Order } from '../../domain/entities/order/Order';
 import { UpdateOrderDto } from './dto/order/UpdateOrderDto';
 import { OrderResponse } from '../../app/models/order/OrderResponse';
 import { OrderErrorResponse } from '../../app/models/order/OrderErrorResponse';
+import { CreatePayPalOrderUseCase } from '../../app/use_cases/payments/CreatePayPalOrderUseCase';
+import { CapturePayPalOrderUseCase } from '../../app/use_cases/payments/CapturePayPalOrderUseCase';
+import { CreatePayPalOrderDto } from './dto/payment/CreatePayPalOrderDto';
+import { CapturePayPalOrderDto } from './dto/payment/CapturePayPalOrderDto';
 
 @ApiTags('orders')
 @Controller('orders')
@@ -31,7 +42,9 @@ export class OrderController {
 		private readonly getOrdersByCustomerUseCase: GetOrdersByCustomerUseCase,
 		private readonly updateOrderStatusUseCase: UpdateOrderStatusUseCase,
 		private readonly createOrderFromCartUseCase: CreateOrderFromCartUseCase,
-	) { }
+		private readonly createPayPalOrderUseCase: CreatePayPalOrderUseCase,
+		private readonly capturePayPalOrderUseCase: CapturePayPalOrderUseCase,
+	) {}
 
 	@Post('')
 	@ApiOperation({
@@ -39,7 +52,11 @@ export class OrderController {
 		description: 'Crea una nueva orden con la información proporcionada',
 	})
 	@ApiBody({ type: CreateOrderDto })
-	@ApiResponse({ status: 201, description: 'Orden creada exitosamente', type: Order })
+	@ApiResponse({
+		status: 201,
+		description: 'Orden creada exitosamente',
+		type: Order,
+	})
 	@ApiResponse({ status: 400, description: 'Datos inválidos' })
 	async createOrder(@Body() body: CreateOrderDto): Promise<Order> {
 		return this.createOrderUseCase.handle(body);
@@ -76,7 +93,11 @@ export class OrderController {
 		@Query('customerEmail') customerEmail: string | undefined,
 		@Body() body: CreateOrderFromCartDto,
 	): Promise<Order> {
-		return this.createOrderFromCartUseCase.handle(customerId, customerEmail, body);
+		return this.createOrderFromCartUseCase.handle(
+			customerId,
+			customerEmail,
+			body,
+		);
 	}
 
 	@Get('/:id')
@@ -174,5 +195,74 @@ export class OrderController {
 	): Promise<Order> {
 		return this.updateOrderStatusUseCase.handle(id, body);
 	}
-}
 
+	@Post('/paypal/create-order')
+	@HttpCode(HttpStatus.CREATED)
+	@ApiOperation({
+		summary: 'Crear orden de PayPal',
+		description: 'Crea una orden de pago en PayPal y retorna el orderId',
+	})
+	@ApiBody({ type: CreatePayPalOrderDto })
+	@ApiResponse({
+		status: 201,
+		description: 'Orden de PayPal creada exitosamente',
+		schema: {
+			type: 'object',
+			properties: {
+				orderId: {
+					type: 'string',
+					example: '5O190127TN364715T',
+				},
+			},
+		},
+	})
+	@ApiResponse({ status: 400, description: 'Datos inválidos' })
+	async createPayPalOrder(
+		@Body() body: CreatePayPalOrderDto,
+	): Promise<{ orderId: string }> {
+		return this.createPayPalOrderUseCase.handle(body);
+	}
+
+	@Post('/paypal/capture-order')
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		summary: 'Capturar orden de PayPal',
+		description:
+			'Captura una orden de PayPal después de que el usuario la aprueba',
+	})
+	@ApiBody({ type: CapturePayPalOrderDto })
+	@ApiResponse({
+		status: 200,
+		description: 'Orden de PayPal capturada exitosamente',
+		schema: {
+			type: 'object',
+			properties: {
+				success: {
+					type: 'boolean',
+					example: true,
+				},
+				orderId: {
+					type: 'string',
+					example: '5O190127TN364715T',
+				},
+				status: {
+					type: 'string',
+					example: 'COMPLETED',
+				},
+				transactionId: {
+					type: 'string',
+					example: '8F148899LY528414L',
+				},
+			},
+		},
+	})
+	@ApiResponse({ status: 400, description: 'Datos inválidos' })
+	async capturePayPalOrder(@Body() body: CapturePayPalOrderDto): Promise<{
+		success: boolean;
+		orderId: string;
+		status: string;
+		transactionId?: string;
+	}> {
+		return this.capturePayPalOrderUseCase.handle(body);
+	}
+}

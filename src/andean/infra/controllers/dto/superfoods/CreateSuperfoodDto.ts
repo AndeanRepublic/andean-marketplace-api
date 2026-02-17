@@ -12,12 +12,14 @@ import {
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { SuperfoodProductStatus } from '../../../../domain/enums/SuperfoodProductStatus';
+import { SuperfoodColor } from '../../../../domain/enums/SuperfoodColor';
 import { CreateSuperfoodBasicInfoDto } from './CreateSuperfoodBasicInfoDto';
 import { CreateSuperfoodDetailDto } from './CreateSuperfoodDetailDto';
 import { CreateSuperfoodNutritionalDto } from './CreateSuperfoodNutritionalDto';
 import { CreateSuperfoodOptionsDto } from './CreateSuperfoodOptionsDto';
 import { CreateSuperfoodDetailTraceabilityDto } from './CreateSuperfoodDetailTraceabilityDto';
 import { CreateProductTraceabilityDto } from '../traceability/CreateProductTraceabilityDto';
+import { CreateDetailSourceProductDto } from '../detailSourceProduct/CreateDetailSourceProductDto';
 
 export class CreateSuperfoodPriceInventoryDto {
 	@ApiProperty({
@@ -28,7 +30,7 @@ export class CreateSuperfoodPriceInventoryDto {
 	@IsNumber()
 	@IsNotEmpty()
 	@Min(0.01, { message: 'Base price must be greater than 0' })
-	basePrice: number;
+	basePrice!: number;
 
 	@ApiProperty({
 		description: 'Stock total disponible',
@@ -38,7 +40,7 @@ export class CreateSuperfoodPriceInventoryDto {
 	@IsNumber()
 	@IsNotEmpty()
 	@Min(0, { message: 'Total stock cannot be negative' })
-	totalStock: number;
+	totalStock!: number;
 
 	@ApiProperty()
 	@IsString()
@@ -53,17 +55,36 @@ export class CreateSuperfoodDto {
 	})
 	@IsEnum(SuperfoodProductStatus)
 	@IsNotEmpty()
-	status: SuperfoodProductStatus;
+	status!: SuperfoodProductStatus;
 
 	@ApiProperty({ type: CreateSuperfoodBasicInfoDto })
 	@ValidateNested()
 	@Type(() => CreateSuperfoodBasicInfoDto)
-	baseInfo: CreateSuperfoodBasicInfoDto;
+	baseInfo!: CreateSuperfoodBasicInfoDto;
 
 	@ApiProperty({ type: CreateSuperfoodPriceInventoryDto })
 	@ValidateNested()
 	@Type(() => CreateSuperfoodPriceInventoryDto)
-	priceInventory: CreateSuperfoodPriceInventoryDto;
+	priceInventory!: CreateSuperfoodPriceInventoryDto;
+
+	@ApiPropertyOptional({
+		description: 'Color del producto superfood',
+		enum: SuperfoodColor,
+		example: SuperfoodColor.PURPLE,
+	})
+	@IsEnum(SuperfoodColor)
+	@IsOptional()
+	color?: SuperfoodColor;
+
+	@ApiPropertyOptional({
+		description:
+			'Detalle de origen del producto (se crea/actualiza automáticamente)',
+		type: CreateDetailSourceProductDto,
+	})
+	@ValidateNested()
+	@Type(() => CreateDetailSourceProductDto)
+	@IsOptional()
+	detailSourceProduct?: CreateDetailSourceProductDto;
 
 	@ApiProperty({ description: 'ID de categoría de superfood', required: false })
 	@IsString()
