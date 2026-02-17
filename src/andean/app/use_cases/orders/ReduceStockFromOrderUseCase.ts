@@ -5,9 +5,7 @@ import { CartItem } from '../../../domain/entities/CartItem';
 
 @Injectable()
 export class ReduceStockFromOrderUseCase {
-	constructor(
-		private readonly stockReducerRegistry: StockReducerRegistry,
-	) { }
+	constructor(private readonly stockReducerRegistry: StockReducerRegistry) {}
 
 	async handle(cartItems: CartItem[]): Promise<void> {
 		const stockItems: StockReductionItem[] = cartItems.map((item) => ({
@@ -23,9 +21,7 @@ export class ReduceStockFromOrderUseCase {
 			if (error instanceof BadRequestException) {
 				throw error;
 			}
-			throw new BadRequestException(
-				'Failed to reduce stock for order items',
-			);
+			throw new BadRequestException('Failed to reduce stock for order items');
 		}
 	}
 }
