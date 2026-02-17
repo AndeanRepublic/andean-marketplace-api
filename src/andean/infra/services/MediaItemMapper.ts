@@ -8,14 +8,15 @@ import { MediaItemRole } from '../../domain/enums/MediaItemRole';
 
 export class MediaItemMapper {
 	static fromDocument(doc: MediaItemDocument): MediaItem {
+		const plain = doc.toObject();
 		return new MediaItem(
-			doc._id.toString(),
-			doc.type,
-			doc.name,
-			doc.key,
-			doc.role,
-			doc.createdAt,
-			doc.updatedAt,
+			plain._id.toString(),
+			plain.type,
+			plain.name,
+			plain.key,
+			plain.role,
+			plain.createdAt,
+			plain.updatedAt,
 		);
 	}
 
@@ -31,7 +32,12 @@ export class MediaItemMapper {
 		);
 	}
 
-	static fromUploadData(type: MediaItemType, name: string, key: string, role: MediaItemRole = MediaItemRole.NONE): MediaItem {
+	static fromUploadData(
+		type: MediaItemType,
+		name: string,
+		key: string,
+		role: MediaItemRole = MediaItemRole.NONE,
+	): MediaItem {
 		return new MediaItem(
 			new Types.ObjectId().toString(), // Generar ObjectId temporal como string
 			type,

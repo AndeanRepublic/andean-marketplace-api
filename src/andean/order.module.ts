@@ -19,6 +19,11 @@ import { SuperfoodModule } from './superfood.module';
 import { BoxModule } from './box.module';
 import { CreateOrderFromCartUseCase } from './app/use_cases/orders/CreateOrderFromCartUseCase';
 import { BoxProductInfoProvider } from './infra/services/products/BoxProductInfoProvider';
+import { PayPalClientService } from './infra/services/paypal/PayPalClientService';
+import { CreatePayPalOrderService } from './infra/services/paypal/CreatePayPalOrderService';
+import { CapturePayPalOrderService } from './infra/services/paypal/CapturePayPalOrderService';
+import { CreatePayPalOrderUseCase } from './app/use_cases/payments/CreatePayPalOrderUseCase';
+import { CapturePayPalOrderUseCase } from './app/use_cases/payments/CapturePayPalOrderUseCase';
 import { ReduceStockFromOrderUseCase } from './app/use_cases/orders/ReduceStockFromOrderUseCase';
 import { TextileStockReducer } from './infra/services/stock/TextileStockReducer';
 import { SuperfoodStockReducer } from './infra/services/stock/SuperfoodStockReducer';
@@ -55,6 +60,13 @@ import { StockReducerRegistry } from './infra/services/stock/StockReducerRegistr
 		SuperfoodProductInfoProvider,
 		BoxProductInfoProvider,
 		ProductInfoProviderRegistry,
+		// PayPal Services
+		PayPalClientService,
+		CreatePayPalOrderService,
+		CapturePayPalOrderService,
+		// PayPal Use Cases
+		CreatePayPalOrderUseCase,
+		CapturePayPalOrderUseCase,
 		TextileStockReducer,
 		SuperfoodStockReducer,
 		BoxStockReducer,
@@ -63,4 +75,4 @@ import { StockReducerRegistry } from './infra/services/stock/StockReducerRegistr
 	],
 	exports: [OrderRepository],
 })
-export class OrdersModule { }
+export class OrdersModule {}
