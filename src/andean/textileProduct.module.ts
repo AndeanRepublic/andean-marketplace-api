@@ -98,6 +98,8 @@ import { CommunitySchema } from './infra/persistence/community/community.schema'
 import { ReviewSchema } from './infra/persistence/Review.schema';
 import { ReviewRepository } from './app/datastore/Review.repo';
 import { ReviewRepositoryImpl } from './infra/datastore/Review.repo.impl';
+import { MediaItemRepository } from './app/datastore/MediaItem.repo';
+import { MediaItemRepoImpl } from './infra/datastore/mediaItem.repo.impl';
 import { CreateReviewUseCase } from './app/use_cases/CreateReviewUseCase';
 import { GetAllReviewsUseCase } from './app/use_cases/GetAllReviewsUseCase';
 import { GetByIdReviewUseCase } from './app/use_cases/GetByIdReviewUseCase';
@@ -110,6 +112,7 @@ import { DecrementDislikesUseCase } from './app/use_cases/DecrementDislikesUseCa
 import { SuperfoodModule } from './superfood.module';
 import { VariantModule } from './variant.module';
 import { VariantSchema } from './infra/persistence/variant.schema';
+import { MediaItemSchema } from './infra/persistence/mediaItem.schema';
 
 @Module({
 	imports: [
@@ -161,6 +164,10 @@ import { VariantSchema } from './infra/persistence/variant.schema';
 			{
 				name: 'Variant',
 				schema: VariantSchema,
+			},
+			{
+				name: 'MediaItem',
+				schema: MediaItemSchema,
 			},
 		]),
 		UsersModule,
@@ -285,6 +292,10 @@ import { VariantSchema } from './infra/persistence/variant.schema';
 			provide: ReviewRepository,
 			useClass: ReviewRepositoryImpl,
 		},
+		{
+			provide: MediaItemRepository,
+			useClass: MediaItemRepoImpl,
+		},
 	],
 	exports: [
 		TextileCategoryRepository,
@@ -297,6 +308,7 @@ import { VariantSchema } from './infra/persistence/variant.schema';
 		ColorOptionAlternativeRepository,
 		SizeOptionAlternativeRepository,
 		ReviewRepository,
+		MediaItemRepository,
 		MongooseModule,
 	],
 })
