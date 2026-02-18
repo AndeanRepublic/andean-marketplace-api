@@ -2,10 +2,16 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 // ── Media ────────────────────────────────────────────────────────────────
 export class MediaImageResponse {
-	@ApiProperty({ description: 'Nombre del archivo', example: 'quinua-principal.jpg' })
+	@ApiProperty({
+		description: 'Nombre del archivo',
+		example: 'quinua-principal.jpg',
+	})
 	name!: string;
 
-	@ApiProperty({ description: 'URL de la imagen', example: 'https://cdn.example.com/quinua.jpg' })
+	@ApiProperty({
+		description: 'URL de la imagen',
+		example: 'https://cdn.example.com/quinua.jpg',
+	})
 	url!: string;
 }
 
@@ -37,11 +43,13 @@ export class TraceabilityInfoResponse {
 export class HeroDetailResponse {
 	@ApiProperty() title!: string;
 	@ApiProperty() description!: string;
-	@ApiProperty({ type: [NutritionalFeatureInfo] }) nutritionalFeatures!: NutritionalFeatureInfo[];
+	@ApiProperty({ type: [NutritionalFeatureInfo] })
+	nutritionalFeatures!: NutritionalFeatureInfo[];
 	@ApiProperty() basePrice!: number;
 	@ApiProperty() totalStock!: number;
 	@ApiProperty() isDiscountActive!: boolean;
-	@ApiProperty({ type: TraceabilityInfoResponse }) traceabilityInfo!: TraceabilityInfoResponse;
+	@ApiProperty({ type: TraceabilityInfoResponse })
+	traceabilityInfo!: TraceabilityInfoResponse;
 }
 
 // ── Owner ────────────────────────────────────────────────────────────────
@@ -105,7 +113,8 @@ export class ReviewCommentResponse {
 
 export class ReviewsResponse {
 	@ApiProperty({ type: ReviewRatingResponse }) rating!: ReviewRatingResponse;
-	@ApiProperty({ type: [ReviewCommentResponse] }) comments!: ReviewCommentResponse[];
+	@ApiProperty({ type: [ReviewCommentResponse] })
+	comments!: ReviewCommentResponse[];
 }
 
 // ── Main response ────────────────────────────────────────────────────────
@@ -114,18 +123,24 @@ export class SuperfoodProductDetailResponse {
 
 	@ApiProperty({ type: MediaImageResponse }) mainImg!: MediaImageResponse;
 	@ApiProperty({ type: MediaImageResponse }) plateImg!: MediaImageResponse;
-	@ApiProperty({ type: MediaImageResponse }) sourceProductImg!: MediaImageResponse;
+	@ApiProperty({ type: MediaImageResponse })
+	sourceProductImg!: MediaImageResponse;
 
 	@ApiProperty({ type: HeroDetailResponse }) heroDetail!: HeroDetailResponse;
 	@ApiProperty({ type: OwnerInfoResponse }) owner!: OwnerInfoResponse;
 
-	@ApiProperty({ type: [BenefitInfoResponse] }) benefitsInfo!: BenefitInfoResponse[];
-	@ApiProperty({ type: SourceProductInfoResponse }) sourceProductInfo!: SourceProductInfoResponse;
+	@ApiProperty({ type: [BenefitInfoResponse] })
+	benefitsInfo!: BenefitInfoResponse[];
+	@ApiProperty({ type: SourceProductInfoResponse })
+	sourceProductInfo!: SourceProductInfoResponse;
 
-	@ApiProperty({ type: [StrikingNutritionalItemResponse] }) strikingNutritionalItems!: StrikingNutritionalItemResponse[];
-	@ApiProperty({ type: [NutritionalItemResponse] }) nutritionalInformation!: NutritionalItemResponse[];
+	@ApiProperty({ type: [StrikingNutritionalItemResponse] })
+	strikingNutritionalItems!: StrikingNutritionalItemResponse[];
+	@ApiProperty({ type: [NutritionalItemResponse] })
+	nutritionalInformation!: NutritionalItemResponse[];
 
-	@ApiProperty({ description: 'Productos similares (máximo 6)' }) moreProducts!: SuperfoodProductListItemCompact[];
+	@ApiProperty({ description: 'Productos similares (máximo 6)' })
+	moreProducts!: SuperfoodProductListItemCompact[];
 	@ApiProperty({ type: ReviewsResponse }) reviews!: ReviewsResponse;
 }
 
@@ -138,6 +153,7 @@ export class SuperfoodProductListItemCompact {
 	@ApiProperty() price!: number;
 	@ApiProperty() totalStock!: number;
 	@ApiProperty({ type: MediaImageResponse }) mainImage!: MediaImageResponse;
-	@ApiProperty({ type: MediaImageResponse }) sourceProductImage!: MediaImageResponse;
+	@ApiProperty({ type: MediaImageResponse })
+	sourceProductImage!: MediaImageResponse;
 	@ApiProperty({ type: [String] }) nutritionItems!: string[];
 }

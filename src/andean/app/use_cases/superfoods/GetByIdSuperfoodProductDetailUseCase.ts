@@ -46,16 +46,14 @@ export class GetByIdSuperfoodProductDetailUseCase {
 		private readonly mediaItemRepository: MediaItemRepository,
 		@Inject(DetailSourceProductRepository)
 		private readonly detailSourceProductRepository: DetailSourceProductRepository,
-	) { }
+	) {}
 
 	async handle(productId: string): Promise<SuperfoodProductDetailResponse> {
 		// 1. Obtener producto principal
 		const product =
 			await this.superfoodProductRepository.getSuperfoodProductById(productId);
 		if (!product) {
-			throw new NotFoundException(
-				`Producto con ID ${productId} no encontrado`,
-			);
+			throw new NotFoundException(`Producto con ID ${productId} no encontrado`);
 		}
 
 		// 2. Lanzar consultas independientes en paralelo para mejor rendimiento
@@ -74,8 +72,8 @@ export class GetByIdSuperfoodProductDetailUseCase {
 				),
 				product.detailSourceProductId
 					? this.detailSourceProductRepository.getById(
-						product.detailSourceProductId,
-					)
+							product.detailSourceProductId,
+						)
 					: Promise.resolve(null),
 			]);
 
@@ -145,10 +143,10 @@ export class GetByIdSuperfoodProductDetailUseCase {
 		// 11. Source product info
 		const sourceProductInfo = sourceProduct
 			? {
-				name: sourceProduct.name,
-				description: sourceProduct.description,
-				features: sourceProduct.features,
-			}
+					name: sourceProduct.name,
+					description: sourceProduct.description,
+					features: sourceProduct.features,
+				}
 			: { name: '', description: '', features: [] };
 
 		// 12. Construir respuesta
