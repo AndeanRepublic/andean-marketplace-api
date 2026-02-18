@@ -22,12 +22,14 @@ import { CreateExperienceUseCase } from 'src/andean/app/use_cases/experiences/Cr
 import { UpdateExperienceUseCase } from 'src/andean/app/use_cases/experiences/UpdateExperienceUseCase';
 import { DeleteExperienceUseCase } from 'src/andean/app/use_cases/experiences/DeleteExperienceUseCase';
 import { GetAllExperiencesUseCase } from 'src/andean/app/use_cases/experiences/GetAllExperiencesUseCase';
+import { GetByIdExperienceUseCase } from 'src/andean/app/use_cases/experiences/GetByIdExperienceUseCase';
 import { CreateExperienceDto } from '../dto/experiences/CreateExperienceDto';
 import { UpdateExperienceDto } from '../dto/experiences/UpdateExperienceDto';
 import { Experience } from 'src/andean/domain/entities/experiences/Experience';
 import {
 	PaginatedExperiencesResponse,
 } from 'src/andean/app/models/experiences/ExperienceListItemResponse';
+import { ExperienceDetailResponse } from 'src/andean/app/models/experiences/ExperienceDetailResponse';
 
 @ApiTags('Experiences')
 @Controller('experiences')
@@ -37,6 +39,7 @@ export class ExperienceController {
 		private readonly updateExperienceUseCase: UpdateExperienceUseCase,
 		private readonly deleteExperienceUseCase: DeleteExperienceUseCase,
 		private readonly getAllExperiencesUseCase: GetAllExperiencesUseCase,
+		private readonly getByIdExperienceUseCase: GetByIdExperienceUseCase,
 	) { }
 
 	@Post()
@@ -91,6 +94,30 @@ export class ExperienceController {
 		@Body() body: UpdateExperienceDto,
 	): Promise<Experience> {
 		return this.updateExperienceUseCase.handle(id, body);
+	}
+
+	@Get('/:id')
+	@ApiOperation({
+		summary: 'Obtener experiencia por ID',
+		description:
+			'Retorna la experiencia completa con toda su información (basicInfo, mediaInfo con URLs resueltas, detailInfo, prices, availability, itineraries). Los MediaItems se devuelven con su URL construida.',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID único de la experiencia',
+		example: '507f1f77bcf86cd799439011',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Experiencia encontrada con toda su información expandida',
+		type: ExperienceDetailResponse,
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Experiencia no encontrada',
+	})
+	async getById(@Param('id') id: string): Promise<ExperienceDetailResponse> {
+		return this.getByIdExperienceUseCase.handle(id);
 	}
 
 	@Get()

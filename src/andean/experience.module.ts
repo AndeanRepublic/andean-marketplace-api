@@ -47,6 +47,7 @@ import { CreateExperienceUseCase } from './app/use_cases/experiences/CreateExper
 import { UpdateExperienceUseCase } from './app/use_cases/experiences/UpdateExperienceUseCase';
 import { DeleteExperienceUseCase } from './app/use_cases/experiences/DeleteExperienceUseCase';
 import { GetAllExperiencesUseCase } from './app/use_cases/experiences/GetAllExperiencesUseCase';
+import { GetByIdExperienceUseCase } from './app/use_cases/experiences/GetByIdExperienceUseCase';
 
 // Strategy
 import { OwnerStrategyResolver } from './infra/services/experiences/OwnerStrategyResolver';
@@ -129,6 +130,7 @@ import { MediaItemModule } from './mediaItem.module';
 		UpdateExperienceUseCase,
 		DeleteExperienceUseCase,
 		GetAllExperiencesUseCase,
+		GetByIdExperienceUseCase,
 	],
 	exports: [
 		ExperienceBasicInfoRepository,
