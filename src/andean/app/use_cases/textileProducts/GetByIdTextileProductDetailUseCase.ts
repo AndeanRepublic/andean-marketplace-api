@@ -62,7 +62,7 @@ export class GetByIdTextileProductDetailUseCase {
 		const images = mediaItems.map((mediaItem) => ({
 			name: mediaItem.name,
 			role: mediaItem.role,
-			url: `${process.env.AWS_S3_BASE_URL}/${mediaItem.key}`, // TODO: Usar el storage base url
+			url: `${process.env.STORAGE_BASE_URL}/${mediaItem.key}`,
 		}));
 
 		// -- Obtener reviews del producto
