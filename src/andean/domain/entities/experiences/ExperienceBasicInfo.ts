@@ -13,5 +13,6 @@ export class ExperienceBasicInfo {
 		public languages: ExperienceLanguage[],
 		public ownerType: OwnerType,
 		public ownerId: string,
+		public category?: string,
 	) { }
 }

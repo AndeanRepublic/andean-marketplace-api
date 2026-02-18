@@ -20,6 +20,7 @@ export const ExperienceBasicInfoSchema = new Schema({
 		required: true,
 	},
 	ownerId: { type: String, required: true },
+	category: { type: String, required: false },
 });
 
 export interface ExperienceBasicInfoDocument extends Document {
@@ -32,4 +33,5 @@ export interface ExperienceBasicInfoDocument extends Document {
 	languages: ExperienceLanguage[];
 	ownerType: OwnerType;
 	ownerId: string;
+	category?: string;
 }
