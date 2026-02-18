@@ -16,6 +16,7 @@ import { VariantRepository } from '../../datastore/Variant.repo';
 import { AccountRepository } from '../../datastore/Account.repo';
 import { Review } from 'src/andean/domain/entities/Review';
 import { Variant } from 'src/andean/domain/entities/Variant';
+import { MediaItemRepository } from '../../datastore/MediaItem.repo';
 
 @Injectable()
 export class GetByIdTextileProductDetailUseCase {
@@ -42,37 +43,51 @@ export class GetByIdTextileProductDetailUseCase {
 		private readonly variantRepository: VariantRepository,
 		@Inject(AccountRepository)
 		private readonly accountRepository: AccountRepository,
-	) { }
+		@Inject(MediaItemRepository)
+		private readonly mediaItemRepository: MediaItemRepository,
+	) {}
 
 	async handle(id: string): Promise<TextileProductDetailResponse> {
-		// 1. Obtener el producto principal
+		// -- Obtener el producto principal
 		const product =
 			await this.textileProductRepository.getTextileProductById(id);
 		if (!product) {
 			throw new NotFoundException('Textile product not found');
 		}
 
-		// 2. Obtener reviews del producto
+		// -- Obtener media items del producto
+		const mediaItems = await this.mediaItemRepository.getByIds(
+			product.baseInfo.mediaIds || [],
+		);
+		const images = mediaItems.map((mediaItem) => ({
+			name: mediaItem.name,
+			role: mediaItem.role,
+			url: `${process.env.AWS_S3_BASE_URL}/${mediaItem.key}`, // TODO: Usar el storage base url
+		}));
+
+		// -- Obtener reviews del producto
 		const reviews = await this.reviewRepository.getByProductIdAndType(
 			id,
 			ProductType.TEXTILE,
 		);
 
-		// 3. Obtener customers para las reviews y sus nombres de Account
+		// -- Obtener customers para las reviews y sus nombres de Account
 		const customerPromises = reviews.map((review) =>
 			this.customerProfileRepository.getCustomerById(review.customerId),
 		);
 		const customers = await Promise.all(customerPromises);
 
 		const accountPromises = customers.map((customer) =>
-			customer ? this.accountRepository.getAccountByUserId(customer.userId) : Promise.resolve(null),
+			customer
+				? this.accountRepository.getAccountByUserId(customer.userId)
+				: Promise.resolve(null),
 		);
 		const accounts = await Promise.all(accountPromises);
 
-		// 4. Calcular estadísticas de ratings
+		// -- Calcular estadísticas de ratings
 		const ratingStats = this.calculateRatingStats(reviews);
 
-		// 5. Mapear comments de reviews
+		// -- Mapear comments de reviews
 		const comments = reviews.map((review, index) => ({
 			idReview: review.id,
 			nameUser: accounts[index]?.name || 'Usuario Anónimo',
@@ -83,7 +98,7 @@ export class GetByIdTextileProductDetailUseCase {
 			dislikes: review.numberDislikes,
 		}));
 
-		// 6. Obtener sizes y colors de options
+		// -- Obtener sizes y colors de options
 		const sizeOption = product.options?.find(
 			(opt) => opt.name === TextileOptionName.SIZE,
 		);
@@ -94,7 +109,7 @@ export class GetByIdTextileProductDetailUseCase {
 			(opt) => opt.name === TextileOptionName.MATERIAL,
 		);
 
-		// 7. Obtener availableSizes
+		// -- Obtener availableSizes
 		const availableSizes: string[] = [];
 		if (sizeOption) {
 			for (const value of sizeOption.values) {
@@ -111,7 +126,7 @@ export class GetByIdTextileProductDetailUseCase {
 			}
 		}
 
-		// 8. Obtener availableColors
+		// -- Obtener availableColors
 		const availableColors: string[] = [];
 		if (colorOption) {
 			for (const value of colorOption.values) {
@@ -128,7 +143,7 @@ export class GetByIdTextileProductDetailUseCase {
 			}
 		}
 
-		// 9. Obtener availableMaterials
+		// -- Obtener availableMaterials
 		const availableMaterials: string[] = [];
 		if (materialOption) {
 			for (const value of materialOption.values) {
@@ -138,10 +153,10 @@ export class GetByIdTextileProductDetailUseCase {
 			}
 		}
 
-		// 10. Obtener variants del producto
+		// -- Obtener variants del producto
 		const variants = await this.variantRepository.getByProductId(product.id);
 
-		// 11. Construir variantInfo
+		// -- Construir variantInfo
 		const variantInfo = await this.buildVariantInfo(
 			variants,
 			sizeOption,
@@ -149,7 +164,7 @@ export class GetByIdTextileProductDetailUseCase {
 			materialOption,
 		);
 
-		// 12. Agrupar traceability epochs y agregar blockchainLink
+		// -- Agrupar traceability epochs y agregar blockchainLink
 		const groupedEpochs = this.groupTraceabilityEpochs(
 			product.productTraceability?.epochs || [],
 		);
@@ -160,19 +175,19 @@ export class GetByIdTextileProductDetailUseCase {
 			...groupedEpochs,
 		};
 
-		// 13. Obtener productos similares
+		// -- Obtener productos similares
 		const similarProducts = await this.getSimilarProducts(
 			product.id,
 			product.categoryId,
 		);
 
-		// 14. Obtener communityInfo si es COMMUNITY
+		// -- Obtener communityInfo si es COMMUNITY
 		let communityInfo:
 			| {
-				bannerImageId: string;
-				name: string;
-				seals: { title: string; description: string; logoMediaId: string }[];
-			}
+					bannerImageId: string;
+					name: string;
+					seals: { title: string; description: string; logoMediaId: string }[];
+			  }
 			| undefined = undefined;
 		if (product.baseInfo.ownerType === OwnerType.COMMUNITY) {
 			const community = await this.communityRepository.getById(
@@ -181,10 +196,10 @@ export class GetByIdTextileProductDetailUseCase {
 			if (community) {
 				const seals = community.seals
 					? await Promise.all(
-						community.seals.map((sealId) =>
-							this.sealRepository.getById(sealId),
-						),
-					)
+							community.seals.map((sealId) =>
+								this.sealRepository.getById(sealId),
+							),
+						)
 					: [];
 
 				communityInfo = {
@@ -201,7 +216,7 @@ export class GetByIdTextileProductDetailUseCase {
 			}
 		}
 
-		// 15. Obtener category name
+		// -- Obtener category name
 		let categoryName = '';
 		if (product.categoryId) {
 			const category = await this.textileCategoryRepository.getCategoryById(
@@ -210,9 +225,10 @@ export class GetByIdTextileProductDetailUseCase {
 			categoryName = category?.name || '';
 		}
 
-		// 16. Construir respuesta completa
+		// -- Construir respuesta completa
 		return {
 			name: product.baseInfo.title,
+			images,
 			availableSizes,
 			availableColors,
 			availableMaterials,
