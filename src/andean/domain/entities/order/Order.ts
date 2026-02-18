@@ -38,7 +38,6 @@ export interface ShippingInfo {
 	phone: string;
 	countryCode: string; // "PE", "US", "CA", etc
 	country: string;
-	city: string;
 	administrativeArea: AdministrativeArea;
 	addressLine1: string;
 	addressLine2?: string;
@@ -83,5 +82,5 @@ export class Order {
 		public deliveryOption: DeliveryOption | undefined,
 		public createdAt: Date,
 		public updatedAt: Date,
-	) { }
+	) {}
 }

@@ -56,7 +56,10 @@ export class ShippingInfoDto implements ShippingInfo {
 	@IsNotEmpty()
 	phone!: string;
 
-	@ApiProperty({ description: 'Código de país (PE, US, CA, etc)', example: 'PE' })
+	@ApiProperty({
+		description: 'Código de país (PE, US, CA, etc)',
+		example: 'PE',
+	})
 	@IsString()
 	@IsNotEmpty()
 	countryCode!: string;
@@ -65,11 +68,6 @@ export class ShippingInfoDto implements ShippingInfo {
 	@IsString()
 	@IsNotEmpty()
 	country!: string;
-
-	@ApiProperty({ description: 'Ciudad' })
-	@IsString()
-	@IsNotEmpty()
-	city!: string;
 
 	@ApiProperty({ type: AdministrativeAreaDto })
 	@ValidateNested()
@@ -147,7 +145,10 @@ export class OrderItemDto implements OrderItem {
 	@IsNotEmpty()
 	discount!: number;
 
-	@ApiProperty({ description: 'Precio total (unitPrice * quantity - discount)', minimum: 0 })
+	@ApiProperty({
+		description: 'Precio total (unitPrice * quantity - discount)',
+		minimum: 0,
+	})
 	@IsNumber()
 	@Min(0)
 	@IsNotEmpty()
