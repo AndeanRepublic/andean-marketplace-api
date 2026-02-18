@@ -44,7 +44,6 @@ const ShippingInfoSchema = new Schema(
 		phone: { type: String, required: true },
 		countryCode: { type: String, required: true },
 		country: { type: String, required: true },
-		city: { type: String, required: true },
 		administrativeArea: { type: AdministrativeAreaSchema, required: true },
 		addressLine1: { type: String, required: true },
 		addressLine2: { type: String, required: false },
@@ -138,7 +137,6 @@ export interface OrderDocument extends Document {
 		phone: string;
 		countryCode: string;
 		country: string;
-		city: string;
 		administrativeArea: {
 			level1?: string;
 			level2?: string;

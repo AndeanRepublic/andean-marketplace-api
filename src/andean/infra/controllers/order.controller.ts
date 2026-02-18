@@ -32,6 +32,7 @@ import { CreatePayPalOrderUseCase } from '../../app/use_cases/payments/CreatePay
 import { CapturePayPalOrderUseCase } from '../../app/use_cases/payments/CapturePayPalOrderUseCase';
 import { CreatePayPalOrderDto } from './dto/payment/CreatePayPalOrderDto';
 import { CapturePayPalOrderDto } from './dto/payment/CapturePayPalOrderDto';
+import { CapturePayPalOrderResponse } from 'src/andean/app/use_cases/payments/CapturePayPalOrderUseCase';
 
 @ApiTags('orders')
 @Controller('orders')
@@ -257,12 +258,9 @@ export class OrderController {
 		},
 	})
 	@ApiResponse({ status: 400, description: 'Datos inválidos' })
-	async capturePayPalOrder(@Body() body: CapturePayPalOrderDto): Promise<{
-		success: boolean;
-		orderId: string;
-		status: string;
-		transactionId?: string;
-	}> {
+	async capturePayPalOrder(
+		@Body() body: CapturePayPalOrderDto,
+	): Promise<CapturePayPalOrderResponse> {
 		return this.capturePayPalOrderUseCase.handle(body);
 	}
 }
