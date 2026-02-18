@@ -7,6 +7,7 @@ import { CreateExperienceUseCase } from '../src/andean/app/use_cases/experiences
 import { UpdateExperienceUseCase } from '../src/andean/app/use_cases/experiences/UpdateExperienceUseCase';
 import { DeleteExperienceUseCase } from '../src/andean/app/use_cases/experiences/DeleteExperienceUseCase';
 import { GetAllExperiencesUseCase } from '../src/andean/app/use_cases/experiences/GetAllExperiencesUseCase';
+import { GetByIdExperienceUseCase } from '../src/andean/app/use_cases/experiences/GetByIdExperienceUseCase';
 
 import { ExperienceStatus } from '../src/andean/domain/enums/ExperienceStatus';
 import { Experience } from '../src/andean/domain/entities/experiences/Experience';
@@ -19,6 +20,7 @@ describe('ExperienceController (e2e)', () => {
 	let getAllExperiencesUseCase: GetAllExperiencesUseCase;
 	let updateExperienceUseCase: UpdateExperienceUseCase;
 	let deleteExperienceUseCase: DeleteExperienceUseCase;
+	let getByIdExperienceUseCase: GetByIdExperienceUseCase;
 
 	// Load fixture data
 	const fixture = FixtureLoader.loadExperience();
@@ -27,6 +29,7 @@ describe('ExperienceController (e2e)', () => {
 	const updateDto = fixture.updateDto;
 	const mockPaginatedResponse = fixture.mockPaginatedResponse;
 	const mockListItem = fixture.mockListItem;
+	const mockDetailResponse = fixture.mockDetailResponse;
 
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -59,6 +62,12 @@ describe('ExperienceController (e2e)', () => {
 						handle: jest.fn().mockResolvedValue(undefined),
 					},
 				},
+				{
+					provide: GetByIdExperienceUseCase,
+					useValue: {
+						handle: jest.fn().mockResolvedValue(mockDetailResponse),
+					},
+				},
 			],
 		}).compile();
 
@@ -78,6 +87,7 @@ describe('ExperienceController (e2e)', () => {
 		getAllExperiencesUseCase = moduleFixture.get<GetAllExperiencesUseCase>(GetAllExperiencesUseCase);
 		updateExperienceUseCase = moduleFixture.get<UpdateExperienceUseCase>(UpdateExperienceUseCase);
 		deleteExperienceUseCase = moduleFixture.get<DeleteExperienceUseCase>(DeleteExperienceUseCase);
+		getByIdExperienceUseCase = moduleFixture.get<GetByIdExperienceUseCase>(GetByIdExperienceUseCase);
 	});
 
 	afterAll(async () => {
@@ -409,6 +419,130 @@ describe('ExperienceController (e2e)', () => {
 
 			expect(response.body.experiences).toHaveLength(0);
 			expect(response.body.pagination.total).toBe(0);
+		});
+	});
+
+	// ─── GET /experiences/:id ───────────────────────────────────────
+
+	describe('GET /experiences/:id', () => {
+		const experienceId = 'exp-uuid-001';
+
+		it('should return a full experience with resolved media', async () => {
+			jest.spyOn(getByIdExperienceUseCase, 'handle').mockResolvedValueOnce(mockDetailResponse);
+
+			const response = await request(app.getHttpServer())
+				.get(`/experiences/${experienceId}`)
+				.expect(HttpStatus.OK);
+
+			// Main structure
+			expect(response.body).toHaveProperty('id');
+			expect(response.body).toHaveProperty('status');
+			expect(response.body).toHaveProperty('basicInfo');
+			expect(response.body).toHaveProperty('mediaInfo');
+			expect(response.body).toHaveProperty('detailInfo');
+			expect(response.body).toHaveProperty('prices');
+			expect(response.body).toHaveProperty('availability');
+			expect(response.body).toHaveProperty('itineraries');
+			expect(response.body).toHaveProperty('createdAt');
+			expect(response.body).toHaveProperty('updatedAt');
+		});
+
+		it('should return basicInfo with correct structure', async () => {
+			jest.spyOn(getByIdExperienceUseCase, 'handle').mockResolvedValueOnce(mockDetailResponse);
+
+			const response = await request(app.getHttpServer())
+				.get(`/experiences/${experienceId}`)
+				.expect(HttpStatus.OK);
+
+			const { basicInfo } = response.body;
+			expect(basicInfo).toHaveProperty('title');
+			expect(basicInfo).toHaveProperty('ubication');
+			expect(basicInfo).toHaveProperty('days');
+			expect(basicInfo).toHaveProperty('nights');
+			expect(basicInfo).toHaveProperty('languages');
+			expect(basicInfo).toHaveProperty('ownerType');
+			expect(basicInfo).toHaveProperty('ownerId');
+		});
+
+		it('should return mediaInfo with resolved MediaItems (not IDs)', async () => {
+			jest.spyOn(getByIdExperienceUseCase, 'handle').mockResolvedValueOnce(mockDetailResponse);
+
+			const response = await request(app.getHttpServer())
+				.get(`/experiences/${experienceId}`)
+				.expect(HttpStatus.OK);
+
+			const { mediaInfo } = response.body;
+
+			// landscapeImg should be an object with url, not a string ID
+			expect(typeof mediaInfo.landscapeImg).toBe('object');
+			expect(mediaInfo.landscapeImg).toHaveProperty('id');
+			expect(mediaInfo.landscapeImg).toHaveProperty('name');
+			expect(mediaInfo.landscapeImg).toHaveProperty('url');
+			expect(mediaInfo.landscapeImg).toHaveProperty('type');
+			expect(mediaInfo.landscapeImg).toHaveProperty('role');
+
+			// thumbnailImg should be resolved too
+			expect(typeof mediaInfo.thumbnailImg).toBe('object');
+			expect(mediaInfo.thumbnailImg).toHaveProperty('url');
+
+			// photos should be array of resolved objects
+			expect(Array.isArray(mediaInfo.photos)).toBe(true);
+			if (mediaInfo.photos.length > 0) {
+				expect(mediaInfo.photos[0]).toHaveProperty('id');
+				expect(mediaInfo.photos[0]).toHaveProperty('url');
+			}
+		});
+
+		it('should return itineraries with resolved photos', async () => {
+			jest.spyOn(getByIdExperienceUseCase, 'handle').mockResolvedValueOnce(mockDetailResponse);
+
+			const response = await request(app.getHttpServer())
+				.get(`/experiences/${experienceId}`)
+				.expect(HttpStatus.OK);
+
+			const { itineraries } = response.body;
+			expect(Array.isArray(itineraries)).toBe(true);
+			expect(itineraries.length).toBeGreaterThan(0);
+
+			const firstDay = itineraries[0];
+			expect(firstDay).toHaveProperty('numberDay');
+			expect(firstDay).toHaveProperty('nameDay');
+			expect(firstDay).toHaveProperty('descriptionDay');
+			expect(firstDay).toHaveProperty('schedule');
+			expect(Array.isArray(firstDay.photos)).toBe(true);
+
+			// Photos should be resolved objects, not string IDs
+			if (firstDay.photos.length > 0) {
+				expect(firstDay.photos[0]).toHaveProperty('id');
+				expect(firstDay.photos[0]).toHaveProperty('url');
+				expect(firstDay.photos[0]).toHaveProperty('name');
+			}
+		});
+
+		it('should call the use case with correct id', async () => {
+			const spy = jest.spyOn(getByIdExperienceUseCase, 'handle');
+
+			await request(app.getHttpServer())
+				.get(`/experiences/${experienceId}`)
+				.expect(HttpStatus.OK);
+
+			expect(spy).toHaveBeenCalledWith(experienceId);
+		});
+
+		it('should return prices with ageGroups', async () => {
+			jest.spyOn(getByIdExperienceUseCase, 'handle').mockResolvedValueOnce(mockDetailResponse);
+
+			const response = await request(app.getHttpServer())
+				.get(`/experiences/${experienceId}`)
+				.expect(HttpStatus.OK);
+
+			const { prices } = response.body;
+			expect(prices).toHaveProperty('useAgeBasedPricing');
+			expect(prices).toHaveProperty('currency');
+			expect(prices).toHaveProperty('ageGroups');
+			expect(Array.isArray(prices.ageGroups)).toBe(true);
+			expect(prices.ageGroups[0]).toHaveProperty('code');
+			expect(prices.ageGroups[0]).toHaveProperty('price');
 		});
 	});
 

@@ -278,5 +278,130 @@
 			"page": 1,
 			"per_page": 20
 		}
+	},
+	"mockDetailResponse": {
+		"id": "exp-uuid-001",
+		"status": "PUBLISHED",
+		"basicInfo": {
+			"title": "Trekking al Valle Sagrado",
+			"ubication": "Cusco, Perú",
+			"days": 3,
+			"nights": 2,
+			"minNumberGroup": 2,
+			"maxNumberGroup": 15,
+			"languages": [
+				"ESPAÑOL",
+				"ENGLISH"
+			],
+			"ownerType": "COMMUNITY",
+			"ownerId": "community-001",
+			"category": "trekking"
+		},
+		"mediaInfo": {
+			"landscapeImg": {
+				"id": "media-landscape-001",
+				"type": "IMAGE",
+				"name": "landscape-valle-sagrado.jpg",
+				"url": "https://storage.example.com/experiences/landscape-valle-sagrado.jpg",
+				"role": "NONE"
+			},
+			"thumbnailImg": {
+				"id": "media-thumbnail-001",
+				"type": "IMAGE",
+				"name": "thumbnail-valle-sagrado.jpg",
+				"url": "https://storage.example.com/experiences/thumbnail-valle-sagrado.jpg",
+				"role": "NONE"
+			},
+			"photos": [
+				{
+					"id": "media-photo-001",
+					"type": "IMAGE",
+					"name": "foto-paisaje-01.jpg",
+					"url": "https://storage.example.com/experiences/foto-paisaje-01.jpg",
+					"role": "NONE"
+				}
+			],
+			"videos": []
+		},
+		"detailInfo": {
+			"shortDescription": "Una experiencia única en los Andes peruanos",
+			"largeDescription": "Recorre senderos milenarios a través de comunidades quechuas...",
+			"includes": [
+				"Transporte desde Cusco",
+				"Almuerzo tradicional",
+				"Guía bilingüe"
+			],
+			"notIncludes": [
+				"Seguro de viaje",
+				"Propinas"
+			],
+			"pickupDetail": "Hotel en Cusco a las 6:00 AM",
+			"returnDetail": "Retorno al hotel a las 6:00 PM del último día",
+			"accommodationDetail": "Hospedaje en casa comunal con servicios básicos",
+			"accessibilityDetail": "Nivel de dificultad moderado, requiere buena condición física",
+			"cancellationPolicy": "Cancelación gratuita hasta 48 horas antes del inicio",
+			"shouldCarry": [
+				"Protector solar",
+				"Agua"
+			],
+			"contactNumber": "+51 984 123 456"
+		},
+		"prices": {
+			"useAgeBasedPricing": true,
+			"currency": "USD",
+			"ageGroups": [
+				{
+					"code": "ADULTS",
+					"label": "Adultos",
+					"price": 120,
+					"minAge": 18,
+					"maxAge": 65
+				},
+				{
+					"code": "YOUNG",
+					"label": "Jóvenes",
+					"price": 80,
+					"minAge": 12,
+					"maxAge": 17
+				}
+			]
+		},
+		"availability": {
+			"weeklyStartDays": [
+				1,
+				3,
+				5
+			],
+			"specificAvailableDates": [],
+			"excludedDates": []
+		},
+		"itineraries": [
+			{
+				"numberDay": 1,
+				"nameDay": "Día de llegada - Cusco a Ollantaytambo",
+				"descriptionDay": "Viaje desde Cusco hasta Ollantaytambo.",
+				"photos": [
+					{
+						"id": "media-itin-001",
+						"type": "IMAGE",
+						"name": "itinerary-day1.jpg",
+						"url": "https://storage.example.com/experiences/itinerary-day1.jpg",
+						"role": "NONE"
+					}
+				],
+				"schedule": [
+					{
+						"time": "06:00",
+						"activity": "Recogida del hotel"
+					},
+					{
+						"time": "08:00",
+						"activity": "Visita al mercado de Pisac"
+					}
+				]
+			}
+		],
+		"createdAt": "2026-01-15T00:00:00.000Z",
+		"updatedAt": "2026-01-15T00:00:00.000Z"
 	}
 }
