@@ -35,7 +35,6 @@ const PriceInventarySchema = new Schema(
 
 const AtributeSchema = new Schema({
 	textileTypeId: { type: String, required: false },
-	subcategoryId: { type: String, required: false },
 	gender: {
 		type: String,
 		enum: Object.values(Gender),
@@ -152,7 +151,6 @@ export interface TextileProductDocument extends Document {
 	};
 	atribute?: {
 		textileTypeId?: string;
-		subcategoryId?: string;
 		gender?: Gender;
 		textileStyleId?: string;
 		season?: Season;
