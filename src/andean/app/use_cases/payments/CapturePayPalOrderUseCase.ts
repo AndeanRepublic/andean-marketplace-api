@@ -1,18 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CapturePayPalOrderService } from '../../../infra/services/paypal/CapturePayPalOrderService';
 import { CapturePayPalOrderDto } from '../../../infra/controllers/dto/payment/CapturePayPalOrderDto';
+import { CreateOrderFromCartUseCase } from '../orders/CreateOrderFromCartUseCase';
+import { PaymentMethod } from '../../../domain/enums/PaymentMethod';
+import { PaymentProvider } from '../../../domain/enums/PaymentProvider';
+import { CreateOrderFromCartDto } from 'src/andean/infra/controllers/dto/order/CreateOrderFromCartDto';
 
 export interface CapturePayPalOrderResponse {
 	success: boolean;
 	orderId: string;
 	status: string;
 	transactionId?: string;
+	order?: any;
 }
 
 @Injectable()
 export class CapturePayPalOrderUseCase {
 	constructor(
 		private readonly capturePayPalOrderService: CapturePayPalOrderService,
+		private readonly createOrderFromCartUseCase: CreateOrderFromCartUseCase,
 	) {}
 
 	async handle(
@@ -20,11 +26,47 @@ export class CapturePayPalOrderUseCase {
 	): Promise<CapturePayPalOrderResponse> {
 		const result = await this.capturePayPalOrderService.execute(dto.orderId);
 
-		return {
-			success: result.status === 'COMPLETED',
-			orderId: result.orderId,
-			status: result.status,
-			transactionId: result.transactionId,
-		};
+		if (result.status !== 'COMPLETED') {
+			return {
+				success: false,
+				orderId: result.orderId,
+				status: result.status,
+				transactionId: result.transactionId,
+			};
+		}
+
+		// If the payment was successful, create the order from the cart
+		try {
+			const orderDto = {
+				shippingInfo: dto.shippingInfo,
+				payment: {
+					method: PaymentMethod.PAYPAL,
+					provider: PaymentProvider.PAYPAL,
+					transactionId: result.transactionId ?? undefined,
+					paidAt: new Date(),
+				},
+				currency: dto.currency,
+				deliveryOption: dto.deliveryOption,
+			};
+
+			const order = await this.createOrderFromCartUseCase.handle(
+				dto.customerId,
+				dto.customerEmail,
+				orderDto,
+			);
+
+			return {
+				success: true,
+				orderId: result.orderId,
+				status: result.status,
+				transactionId: result.transactionId,
+				order,
+			};
+		} catch (error) {
+			if (error instanceof BadRequestException) {
+				throw error;
+			}
+			throw new BadRequestException('Failed to create order from cart');
+		}
 	}
 }

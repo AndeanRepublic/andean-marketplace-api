@@ -6,18 +6,27 @@ import { ProductType } from '../../../domain/enums/ProductType';
 import { DeliveryOption } from '../../../domain/enums/DeliveryOption';
 
 export class AdministrativeAreaResponse {
-	@ApiPropertyOptional({ description: 'Nivel 1 (departamento/estado)', example: 'Lima' })
+	@ApiPropertyOptional({
+		description: 'Nivel 1 (departamento/estado)',
+		example: 'Lima',
+	})
 	level1?: string;
 
 	@ApiPropertyOptional({ description: 'Nivel 2 (provincia)', example: 'Lima' })
 	level2?: string;
 
-	@ApiPropertyOptional({ description: 'Nivel 3 (distrito)', example: 'Miraflores' })
+	@ApiPropertyOptional({
+		description: 'Nivel 3 (distrito)',
+		example: 'Miraflores',
+	})
 	level3?: string;
 }
 
 export class ShippingInfoResponse {
-	@ApiProperty({ description: 'Nombre del destinatario', example: 'Juan Pérez' })
+	@ApiProperty({
+		description: 'Nombre del destinatario',
+		example: 'Juan Pérez',
+	})
 	recipientName!: string;
 
 	@ApiProperty({ description: 'Teléfono', example: '+51987654321' })
@@ -29,16 +38,19 @@ export class ShippingInfoResponse {
 	@ApiProperty({ description: 'País', example: 'Perú' })
 	country!: string;
 
-	@ApiProperty({ description: 'Ciudad', example: 'Lima' })
-	city!: string;
-
-	@ApiProperty({ description: 'Área administrativa', type: AdministrativeAreaResponse })
+	@ApiProperty({
+		description: 'Área administrativa',
+		type: AdministrativeAreaResponse,
+	})
 	administrativeArea!: AdministrativeAreaResponse;
 
 	@ApiProperty({ description: 'Dirección línea 1', example: 'Av. Larco 1234' })
 	addressLine1!: string;
 
-	@ApiPropertyOptional({ description: 'Dirección línea 2', example: 'Dpto 302' })
+	@ApiPropertyOptional({
+		description: 'Dirección línea 2',
+		example: 'Dpto 302',
+	})
 	addressLine2?: string;
 
 	@ApiPropertyOptional({ description: 'Código postal', example: '15074' })
@@ -46,7 +58,10 @@ export class ShippingInfoResponse {
 }
 
 export class OrderItemResponse {
-	@ApiProperty({ description: 'ID del producto', example: '507f1f77bcf86cd799439012' })
+	@ApiProperty({
+		description: 'ID del producto',
+		example: '507f1f77bcf86cd799439012',
+	})
 	productId!: string;
 
 	@ApiPropertyOptional({ description: 'Color', example: 'Azul' })
@@ -58,7 +73,11 @@ export class OrderItemResponse {
 	@ApiPropertyOptional({ description: 'Material', example: 'Alpaca' })
 	material?: string;
 
-	@ApiProperty({ description: 'Tipo de producto', enum: ProductType, example: ProductType.TEXTILE })
+	@ApiProperty({
+		description: 'Tipo de producto',
+		enum: ProductType,
+		example: ProductType.TEXTILE,
+	})
 	productType!: ProductType;
 
 	@ApiProperty({ description: 'Nombre del producto', example: 'Poncho Andino' })
@@ -70,30 +89,30 @@ export class OrderItemResponse {
 	@ApiProperty({ description: 'Cantidad', example: 2 })
 	quantity!: number;
 
-	@ApiProperty({ description: 'Precio unitario', example: 50.00 })
+	@ApiProperty({ description: 'Precio unitario', example: 50.0 })
 	unitPrice!: number;
 
-	@ApiProperty({ description: 'Descuento', example: 5.00 })
+	@ApiProperty({ description: 'Descuento', example: 5.0 })
 	discount!: number;
 
-	@ApiProperty({ description: 'Precio total', example: 95.00 })
+	@ApiProperty({ description: 'Precio total', example: 95.0 })
 	totalPrice!: number;
 }
 
 export class OrderPricingResponse {
-	@ApiProperty({ description: 'Subtotal', example: 100.00 })
+	@ApiProperty({ description: 'Subtotal', example: 100.0 })
 	subtotal!: number;
 
-	@ApiProperty({ description: 'Descuento total', example: 5.00 })
+	@ApiProperty({ description: 'Descuento total', example: 5.0 })
 	discount!: number;
 
-	@ApiProperty({ description: 'Costo de envío', example: 15.00 })
+	@ApiProperty({ description: 'Costo de envío', example: 15.0 })
 	deliveryCost!: number;
 
-	@ApiProperty({ description: 'Impuestos o tarifas', example: 10.00 })
+	@ApiProperty({ description: 'Impuestos o tarifas', example: 10.0 })
 	taxOrFee!: number;
 
-	@ApiProperty({ description: 'Monto total', example: 120.00 })
+	@ApiProperty({ description: 'Monto total', example: 120.0 })
 	totalAmount!: number;
 
 	@ApiProperty({ description: 'Moneda', example: 'USD' })
@@ -101,50 +120,96 @@ export class OrderPricingResponse {
 }
 
 export class PaymentInfoResponse {
-	@ApiProperty({ description: 'Método de pago', enum: PaymentMethod, example: PaymentMethod.PAYPAL })
+	@ApiProperty({
+		description: 'Método de pago',
+		enum: PaymentMethod,
+		example: PaymentMethod.PAYPAL,
+	})
 	method!: PaymentMethod;
 
-	@ApiPropertyOptional({ description: 'Proveedor de pago', enum: PaymentProvider, example: PaymentProvider.PAYPAL })
+	@ApiPropertyOptional({
+		description: 'Proveedor de pago',
+		enum: PaymentProvider,
+		example: PaymentProvider.PAYPAL,
+	})
 	provider?: PaymentProvider;
 
-	@ApiPropertyOptional({ description: 'ID de transacción', example: 'TXN123456789' })
+	@ApiPropertyOptional({
+		description: 'ID de transacción',
+		example: 'TXN123456789',
+	})
 	transactionId?: string;
 
-	@ApiPropertyOptional({ description: 'Fecha de pago', example: '2026-02-10T10:30:00Z' })
+	@ApiPropertyOptional({
+		description: 'Fecha de pago',
+		example: '2026-02-10T10:30:00Z',
+	})
 	paidAt?: Date;
 }
 
 export class OrderResponse {
-	@ApiProperty({ description: 'ID de la orden', example: '507f1f77bcf86cd799439011' })
+	@ApiProperty({
+		description: 'ID de la orden',
+		example: '507f1f77bcf86cd799439011',
+	})
 	id!: string;
 
-	@ApiPropertyOptional({ description: 'ID del cliente', example: '507f191e810c19729de860ea' })
+	@ApiPropertyOptional({
+		description: 'ID del cliente',
+		example: '507f191e810c19729de860ea',
+	})
 	customerId?: string;
 
-	@ApiPropertyOptional({ description: 'Email del cliente', example: 'customer@example.com' })
+	@ApiPropertyOptional({
+		description: 'Email del cliente',
+		example: 'customer@example.com',
+	})
 	customerEmail?: string;
 
-	@ApiProperty({ description: 'Estado de la orden', enum: OrderStatus, example: OrderStatus.PROCESSING })
+	@ApiProperty({
+		description: 'Estado de la orden',
+		enum: OrderStatus,
+		example: OrderStatus.PROCESSING,
+	})
 	status!: OrderStatus;
 
 	@ApiProperty({ description: 'Items de la orden', type: [OrderItemResponse] })
 	items!: OrderItemResponse[];
 
-	@ApiProperty({ description: 'Información de precios', type: OrderPricingResponse })
+	@ApiProperty({
+		description: 'Información de precios',
+		type: OrderPricingResponse,
+	})
 	pricing!: OrderPricingResponse;
 
-	@ApiProperty({ description: 'Información de envío', type: ShippingInfoResponse })
+	@ApiProperty({
+		description: 'Información de envío',
+		type: ShippingInfoResponse,
+	})
 	shippingInfo!: ShippingInfoResponse;
 
-	@ApiProperty({ description: 'Información de pago', type: PaymentInfoResponse })
+	@ApiProperty({
+		description: 'Información de pago',
+		type: PaymentInfoResponse,
+	})
 	payment!: PaymentInfoResponse;
 
-	@ApiPropertyOptional({ description: 'Opción de entrega', enum: DeliveryOption, example: DeliveryOption.DHL })
+	@ApiPropertyOptional({
+		description: 'Opción de entrega',
+		enum: DeliveryOption,
+		example: DeliveryOption.DHL,
+	})
 	deliveryOption?: DeliveryOption;
 
-	@ApiProperty({ description: 'Fecha de creación', example: '2026-02-10T10:00:00Z' })
+	@ApiProperty({
+		description: 'Fecha de creación',
+		example: '2026-02-10T10:00:00Z',
+	})
 	createdAt!: Date;
 
-	@ApiProperty({ description: 'Fecha de actualización', example: '2026-02-10T10:30:00Z' })
+	@ApiProperty({
+		description: 'Fecha de actualización',
+		example: '2026-02-10T10:30:00Z',
+	})
 	updatedAt!: Date;
 }
