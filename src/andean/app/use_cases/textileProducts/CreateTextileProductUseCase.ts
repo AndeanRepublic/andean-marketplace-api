@@ -52,7 +52,7 @@ export class CreateTextileProductUseCase {
 	) {}
 
 	async handle(dto: CreateTextileProductDto): Promise<TextileProduct> {
-		// Validar categoryId solo si existe
+		// Validate categoryId if it exists
 		if (dto.categoryId) {
 			const categoryFound =
 				await this.textileCategoryRepository.getCategoryById(dto.categoryId);
@@ -61,7 +61,7 @@ export class CreateTextileProductUseCase {
 			}
 		}
 
-		// Validar ownerId según ownerType
+		// Validate ownerId according to ownerType
 		if (dto.baseInfo.ownerType === OwnerType.SHOP) {
 			const shopFound = await this.shopRepository.getById(dto.baseInfo.ownerId);
 			if (!shopFound) {
@@ -79,9 +79,9 @@ export class CreateTextileProductUseCase {
 			}
 		}
 
-		// Validar detailTraceability solo si existe
+		// Validate detailTraceability if it exists
 		if (dto.detailTraceability) {
-			// Validar originProductCommunityId solo si existe
+			// Validate originProductCommunityId if it exists
 			if (dto.detailTraceability.originProductCommunityId) {
 				const originCommunityFound =
 					await this.originProductCommunityRepository.getById(
@@ -92,7 +92,7 @@ export class CreateTextileProductUseCase {
 				}
 			}
 
-			// Validar craftTechniqueId solo si existe
+			// Validate craftTechniqueId if it exists
 			if (dto.detailTraceability.craftTechniqueId) {
 				const craftTechniqueFound =
 					await this.textileCraftTechniqueRepository.getTextileCraftTechniqueById(
@@ -103,7 +103,7 @@ export class CreateTextileProductUseCase {
 				}
 			}
 
-			// Validar certificationId solo si existe
+			// Validate certificationId if it exists
 			if (dto.detailTraceability.certificationId) {
 				const certificationFound =
 					await this.textileCertificationRepository.getTextileCertificationById(
@@ -115,9 +115,9 @@ export class CreateTextileProductUseCase {
 			}
 		}
 
-		// Validar atributos si existen
+		// Validate attributes if they exist
 		if (dto.atribute) {
-			// Validar textileTypeId solo si existe
+			// Validate textileTypeId if it exists
 			if (dto.atribute.textileTypeId) {
 				const typeFound = await this.textileTypeRepository.getTextileTypeById(
 					dto.atribute.textileTypeId,
@@ -127,7 +127,7 @@ export class CreateTextileProductUseCase {
 				}
 			}
 
-			// Validar textileStyleId solo si existe
+			// Validate textileStyleId if it exists
 			if (dto.atribute.textileStyleId) {
 				const styleFound =
 					await this.textileStyleRepository.getTextileStyleById(
@@ -138,7 +138,7 @@ export class CreateTextileProductUseCase {
 				}
 			}
 
-			// Validar principalUse (array) solo si existe y tiene elementos
+			// Validate principalUse (array) if it exists and has elements
 			if (dto.atribute.principalUse && dto.atribute.principalUse.length > 0) {
 				for (const principalUseId of dto.atribute.principalUse) {
 					const principalUseFound =
@@ -154,9 +154,9 @@ export class CreateTextileProductUseCase {
 			}
 		}
 
-		// Validar options si existen
+		// Validate options if they exist
 		if (dto.options && dto.options.length > 0) {
-			// Validar que no haya opciones duplicadas por name
+			// Validate that there are no duplicate options by name
 			const optionNames = dto.options.map((opt) => opt.name);
 			const uniqueOptionNames = new Set(optionNames);
 			if (optionNames.length !== uniqueOptionNames.size) {
@@ -164,7 +164,7 @@ export class CreateTextileProductUseCase {
 			}
 
 			for (const option of dto.options) {
-				// Validar idOpcionAlternative en cada value según el name de la opción
+				// Validate idOpcionAlternative in each value according to the name of the option
 				if (option.values && option.values.length > 0) {
 					// Validar que no haya labels duplicados en la misma opción
 					const labels = option.values.map((v) => v.label);
