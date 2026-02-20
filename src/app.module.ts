@@ -22,6 +22,7 @@ import { TextileProductModule } from './andean/textileProduct.module';
 import { VariantModule } from './andean/variant.module';
 import { BoxModule } from './andean/box.module';
 import { BoxSealModule } from './andean/boxSeal.module';
+import { ExperienceModule } from './andean/experience.module';
 
 @Module({
 	imports: [
@@ -60,6 +61,7 @@ import { BoxSealModule } from './andean/boxSeal.module';
 		VariantModule,
 		BoxModule,
 		BoxSealModule,
+		ExperienceModule,
 	],
 	controllers: [],
 	providers: [],
