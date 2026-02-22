@@ -1,9 +1,9 @@
 import { ExperienceLanguage } from '../../enums/ExperienceLanguage';
 import { OwnerType } from '../../enums/OwnerType';
 
+// Value Object — no tiene identidad propia, vive embebido en Experience
 export class ExperienceBasicInfo {
 	constructor(
-		public id: string,
 		public title: string,
 		public ubication: string,
 		public days: number,
