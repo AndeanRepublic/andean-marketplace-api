@@ -63,33 +63,15 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 		const perPage = filters.perPage || 20;
 
 		const pipeline: any[] = [
-			// 1. Lookup BasicInfo
-			{
-				$addFields: {
-					basicInfoOid: { $toObjectId: '$basicInfoId' },
-				},
-			},
-			{
-				$lookup: {
-					from: 'experiencebasicinfos',
-					localField: 'basicInfoOid',
-					foreignField: '_id',
-					as: 'basicInfo',
-				},
-			},
-			{ $unwind: '$basicInfo' },
-
-			// 2. Apply category filter
+			// 1. basicInfo ya está embebido — apply category / ownerId filters directamente
 			...(filters.category
 				? [{ $match: { 'basicInfo.category': filters.category } }]
 				: []),
-
-			// 3. Apply ownerId filter
 			...(filters.ownerId
 				? [{ $match: { 'basicInfo.ownerId': filters.ownerId } }]
 				: []),
 
-			// 4. Lookup Prices
+			// 2. Lookup Prices (sigue siendo colección separada)
 			{
 				$addFields: {
 					pricesOid: { $toObjectId: '$pricesId' },
@@ -105,7 +87,7 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 			},
 			{ $unwind: '$prices' },
 
-			// 5. Extract ADULTS price
+			// 3. Extract ADULTS price
 			{
 				$addFields: {
 					adultsPrice: {
@@ -132,7 +114,7 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 				},
 			},
 
-			// 6. Apply price filters
+			// 4. Apply price filters
 			...(filters.minPrice !== undefined
 				? [{ $match: { adultsPrice: { $gte: filters.minPrice } } }]
 				: []),
@@ -140,23 +122,7 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 				? [{ $match: { adultsPrice: { $lte: filters.maxPrice } } }]
 				: []),
 
-			// 7. Lookup MediaInfo
-			{
-				$addFields: {
-					mediaInfoOid: { $toObjectId: '$mediaInfoId' },
-				},
-			},
-			{
-				$lookup: {
-					from: 'experiencemediainfos',
-					localField: 'mediaInfoOid',
-					foreignField: '_id',
-					as: 'mediaInfo',
-				},
-			},
-			{ $unwind: '$mediaInfo' },
-
-			// 8. Lookup MediaItem for landscapeImg
+			// 5. Lookup MediaItem for landscapeImg (mediaInfo ya está embebido)
 			{
 				$addFields: {
 					landscapeImgOid: { $toObjectId: '$mediaInfo.landscapeImg' },
@@ -177,7 +143,7 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 				},
 			},
 
-			// 9. Lookup Community for ownerName
+			// 6. Lookup Community for ownerName
 			{
 				$addFields: {
 					ownerOid: { $toObjectId: '$basicInfo.ownerId' },
@@ -198,10 +164,10 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 				},
 			},
 
-			// 10. Sort by most recent
+			// 7. Sort by most recent
 			{ $sort: { createdAt: -1 as const } },
 
-			// 11. Facet for pagination
+			// 8. Facet for pagination
 			{
 				$facet: {
 					metadata: [{ $count: 'total' }],
