@@ -6,18 +6,21 @@ import { ExperiencePricesSchema } from './infra/persistence/experiences/experien
 import { ExperienceAvailabilitySchema } from './infra/persistence/experiences/experienceAvailability.schema';
 import { ExperienceItinerarySchema } from './infra/persistence/experiences/experienceItinerary.schema';
 import { ExperienceSchema } from './infra/persistence/experiences/experience.schema';
+import { ReviewSchema } from './infra/persistence/Review.schema';
 
 // Abstract Repositories
 import { ExperiencePricesRepository } from './app/datastore/experiences/ExperiencePrices.repo';
 import { ExperienceAvailabilityRepository } from './app/datastore/experiences/ExperienceAvailability.repo';
 import { ExperienceItineraryRepository } from './app/datastore/experiences/ExperienceItinerary.repo';
 import { ExperienceRepository } from './app/datastore/experiences/Experience.repo';
+import { ReviewRepository } from './app/datastore/Review.repo';
 
 // Repository Implementations
 import { ExperiencePricesRepositoryImpl } from './infra/datastore/experiences/experiencePrices.repo.impl';
 import { ExperienceAvailabilityRepositoryImpl } from './infra/datastore/experiences/experienceAvailability.repo.impl';
 import { ExperienceItineraryRepositoryImpl } from './infra/datastore/experiences/experienceItinerary.repo.impl';
 import { ExperienceRepositoryImpl } from './infra/datastore/experiences/experience.repo.impl';
+import { ReviewRepositoryImpl } from './infra/datastore/Review.repo.impl';
 
 // Sub-table Use Cases (solo prices, availability e itinerary siguen siendo colecciones separadas)
 import { CreateExperiencePricesUseCase } from './app/use_cases/experiences/prices/CreateExperiencePricesUseCase';
@@ -43,6 +46,8 @@ import { ExperienceController } from './infra/controllers/experienceControllers/
 // External Modules
 import { CommunityModule } from './community.module';
 import { MediaItemModule } from './mediaItem.module';
+import { UsersModule } from './users.module';
+import { ShopsModule } from './shop.module';
 
 @Module({
 	imports: [
@@ -51,9 +56,12 @@ import { MediaItemModule } from './mediaItem.module';
 			{ name: 'ExperienceAvailability', schema: ExperienceAvailabilitySchema },
 			{ name: 'ExperienceItinerary', schema: ExperienceItinerarySchema },
 			{ name: 'Experience', schema: ExperienceSchema },
+			{ name: 'Review', schema: ReviewSchema },
 		]),
 		CommunityModule,
 		MediaItemModule,
+		UsersModule,
+		ShopsModule,
 	],
 	controllers: [ExperienceController],
 	providers: [
@@ -73,6 +81,10 @@ import { MediaItemModule } from './mediaItem.module';
 		{
 			provide: ExperienceRepository,
 			useClass: ExperienceRepositoryImpl,
+		},
+		{
+			provide: ReviewRepository,
+			useClass: ReviewRepositoryImpl,
 		},
 
 		// Strategy
@@ -98,6 +110,7 @@ import { MediaItemModule } from './mediaItem.module';
 		ExperienceAvailabilityRepository,
 		ExperienceItineraryRepository,
 		ExperienceRepository,
+		ReviewRepository,
 	],
 })
-export class ExperienceModule { }
+export class ExperienceModule {}
