@@ -1,7 +1,8 @@
-import { Document, Schema } from 'mongoose';
+import { Schema } from 'mongoose';
 import { ExperienceLanguage } from 'src/andean/domain/enums/ExperienceLanguage';
 import { OwnerType } from 'src/andean/domain/enums/OwnerType';
 
+// Sub-schema embebido — { _id: false } porque no es una colección propia
 export const ExperienceBasicInfoSchema = new Schema({
 	title: { type: String, required: true },
 	ubication: { type: String, required: true },
@@ -21,17 +22,4 @@ export const ExperienceBasicInfoSchema = new Schema({
 	},
 	ownerId: { type: String, required: true },
 	category: { type: String, required: false },
-});
-
-export interface ExperienceBasicInfoDocument extends Document {
-	title: string;
-	ubication: string;
-	days: number;
-	nights: number;
-	minNumberGroup: number;
-	maxNumberGroup: number;
-	languages: ExperienceLanguage[];
-	ownerType: OwnerType;
-	ownerId: string;
-	category?: string;
-}
+}, { _id: false });

@@ -1,6 +1,6 @@
+// Value Object — no tiene identidad propia, vive embebido en Experience
 export class ExperienceDetailInfo {
 	constructor(
-		public id: string,
 		public shortDescription: string,
 		public largeDescription: string,
 		public includes: string[],

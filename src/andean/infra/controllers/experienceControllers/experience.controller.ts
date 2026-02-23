@@ -26,9 +26,7 @@ import { GetByIdExperienceUseCase } from 'src/andean/app/use_cases/experiences/G
 import { CreateExperienceDto } from '../dto/experiences/CreateExperienceDto';
 import { UpdateExperienceDto } from '../dto/experiences/UpdateExperienceDto';
 import { Experience } from 'src/andean/domain/entities/experiences/Experience';
-import {
-	PaginatedExperiencesResponse,
-} from 'src/andean/app/models/experiences/ExperienceListItemResponse';
+import { PaginatedExperiencesResponse } from 'src/andean/app/models/experiences/ExperienceListItemResponse';
 import { ExperienceDetailResponse } from 'src/andean/app/models/experiences/ExperienceDetailResponse';
 
 @ApiTags('Experiences')
@@ -60,12 +58,9 @@ export class ExperienceController {
 	})
 	@ApiResponse({
 		status: 404,
-		description:
-			'Comunidad, MediaItem o referencia no encontrada',
+		description: 'Comunidad, MediaItem o referencia no encontrada',
 	})
-	async create(
-		@Body() body: CreateExperienceDto,
-	): Promise<Experience> {
+	async create(@Body() body: CreateExperienceDto): Promise<Experience> {
 		return this.createExperienceUseCase.handle(body);
 	}
 
@@ -100,7 +95,7 @@ export class ExperienceController {
 	@ApiOperation({
 		summary: 'Obtener experiencia por ID',
 		description:
-			'Retorna la experiencia completa con toda su información (basicInfo, mediaInfo con URLs resueltas, detailInfo, prices, availability, itineraries). Los MediaItems se devuelven con su URL construida.',
+			'Retorna la experiencia completa con toda su información en el nuevo formato: heroDetail, information, questionSection, itinerary, moreExperiences y reviews.',
 	})
 	@ApiParam({
 		name: 'id',
@@ -170,8 +165,7 @@ export class ExperienceController {
 	})
 	@ApiResponse({
 		status: 200,
-		description:
-			'Lista paginada de experiencias con información resumida',
+		description: 'Lista paginada de experiencias con información resumida',
 		type: PaginatedExperiencesResponse,
 	})
 	async getAll(

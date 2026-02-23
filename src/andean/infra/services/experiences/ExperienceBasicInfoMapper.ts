@@ -1,38 +1,27 @@
 import { ExperienceBasicInfo } from 'src/andean/domain/entities/experiences/ExperienceBasicInfo';
-import { ExperienceBasicInfoDocument } from '../../persistence/experiences/experienceBasicInfo.schema';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
-import { Types } from 'mongoose';
 
+// Value Object mapper — sin fromDocument ya que no es una colección propia
 export class ExperienceBasicInfoMapper {
-	static fromDocument(doc: ExperienceBasicInfoDocument): ExperienceBasicInfo {
-		const plain = doc.toObject();
-		return plainToInstance(ExperienceBasicInfo, {
-			id: plain._id.toString(),
-			...plain,
-		});
-	}
-
-	static fromCreateDto(dto: any): ExperienceBasicInfo {
-		const plain = {
-			id: new Types.ObjectId().toString(),
-			...dto,
-		};
+	/**
+	 * Desde el subdocumento embebido del documento padre (MongoDB plain object)
+	 */
+	static fromPlain(plain: any): ExperienceBasicInfo {
 		return plainToInstance(ExperienceBasicInfo, plain);
 	}
 
-	static fromUpdateDto(id: string, dto: any): ExperienceBasicInfo {
-		const plain = {
-			id,
-			...dto,
-		};
-		return plainToInstance(ExperienceBasicInfo, plain);
+	/**
+	 * Desde el DTO de creación/actualización
+	 */
+	static fromDto(dto: any): ExperienceBasicInfo {
+		return plainToInstance(ExperienceBasicInfo, dto);
 	}
 
-	static toPersistence(
-		entity: ExperienceBasicInfo | Partial<ExperienceBasicInfo>,
-	) {
-		const plain = instanceToPlain(entity);
-		const { id, _id, __v, ...dataForDB } = plain;
-		return dataForDB;
+	/**
+	 * Para persistencia embebida — serializa como objeto plano (sin excluir nada,
+	 * ya que es un sub-documento sin _id)
+	 */
+	static toPersistence(entity: ExperienceBasicInfo | Partial<ExperienceBasicInfo>) {
+		return instanceToPlain(entity);
 	}
 }
