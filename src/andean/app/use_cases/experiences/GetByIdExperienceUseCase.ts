@@ -100,6 +100,9 @@ export class GetByIdExperienceUseCase {
 		// -- Construir respuesta usando el mapper
 		const price = ExperienceDetailMapper.resolvePrice(prices?.ageGroups);
 		const ages = ExperienceDetailMapper.resolveAges(prices?.ageGroups);
+		const agePricingInfo = ExperienceDetailMapper.resolveAgePricingInfo(
+			prices ?? undefined,
+		);
 		const landscapeImgUrl =
 			ExperienceDetailMapper.toMediaFullDetailFromMap(
 				experience.mediaInfo.landscapeImg,
@@ -120,6 +123,7 @@ export class GetByIdExperienceUseCase {
 			photos,
 			ownerInfo,
 			availability,
+			agePricingInfo,
 			itinerary: ExperienceDetailMapper.toItineraryResponse(
 				itineraries,
 				mediaMap,

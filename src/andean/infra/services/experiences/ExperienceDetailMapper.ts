@@ -18,7 +18,9 @@ import {
 	InformationResponse,
 	QuestionSectionResponse,
 	ExperienceAvailabilityResponse,
+	AgePricingInfoResponse,
 } from 'src/andean/app/models/experiences/ExperienceDetailResponse';
+import { ExperiencePrices } from 'src/andean/domain/entities/experiences/ExperiencePrices';
 
 interface OwnerInfo {
 	title: string;
@@ -101,6 +103,28 @@ export class ExperienceDetailMapper {
 		return {
 			min: minAges.length > 0 ? Math.min(...minAges) : 0,
 			max: maxAges.length > 0 ? Math.max(...maxAges) : 100,
+		};
+	}
+
+	static resolveAgePricingInfo(
+		prices?: ExperiencePrices,
+	): AgePricingInfoResponse {
+		if (!prices)
+			return {
+				useAgeBasedPricing: false,
+				currency: 'USD',
+				ageGroups: [],
+			};
+		return {
+			useAgeBasedPricing: prices?.useAgeBasedPricing || false,
+			currency: prices?.currency || 'USD',
+			ageGroups:
+				prices?.ageGroups?.map((ag) => ({
+					label: ag.label,
+					price: ag.price,
+					minAge: ag.minAge,
+					maxAge: ag.maxAge,
+				})) || [],
 		};
 	}
 
@@ -258,6 +282,7 @@ export class ExperienceDetailMapper {
 		photos: MediaItemFullDetail[];
 		ownerInfo: OwnerInfo;
 		availability: ExperienceAvailabilityResponse;
+		agePricingInfo: AgePricingInfoResponse;
 		itinerary: ItineraryItemResponse[];
 		moreExperiences: MoreExperienceItemResponse[];
 		review: ReviewsResponse;
@@ -272,6 +297,7 @@ export class ExperienceDetailMapper {
 			),
 			information: this.toInformation(params.experience, params.ages),
 			availability: params.availability,
+			agePricingInfo: params.agePricingInfo,
 			questionSection: this.toQuestionSection(params.experience),
 			itinerary: params.itinerary,
 			moreExperiences: params.moreExperiences,
