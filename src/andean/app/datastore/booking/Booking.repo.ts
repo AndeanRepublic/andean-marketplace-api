@@ -14,4 +14,9 @@ export abstract class BookingRepository {
 		id: string,
 		status: BookingStatus,
 	): Promise<Booking>;
+	abstract getOverlappingBookings(
+		experienceId: string,
+		startDate: Date,
+		endDate: Date,
+	): Promise<Booking[]>;
 }

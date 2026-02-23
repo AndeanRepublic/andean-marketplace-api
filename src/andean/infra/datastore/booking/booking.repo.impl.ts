@@ -72,4 +72,38 @@ export class BookingRepositoryImpl extends BookingRepository {
 		}
 		return BookingMapper.fromDocument(updated);
 	}
+
+	async getOverlappingBookings(
+		experienceId: string,
+		startDate: Date,
+		endDate: Date,
+	): Promise<Booking[]> {
+		const docs = await this.bookingModel
+			.find({
+				'experience.experienceId': experienceId,
+				status: { $in: [BookingStatus.PENDING, BookingStatus.CONFIRMED] },
+			})
+			.exec();
+
+		const bookings = docs.map((doc) => BookingMapper.fromDocument(doc));
+		const overlapping: Booking[] = [];
+
+		for (const booking of bookings) {
+			const existingStart = new Date(booking.experienceDate);
+			const days = booking.experience.experienceSnapshot.days;
+			const existingEnd = new Date(existingStart);
+			existingEnd.setDate(existingEnd.getDate() + days - 1);
+
+			const startA = existingStart.getTime();
+			const endA = existingEnd.getTime();
+			const startB = startDate.getTime();
+			const endB = endDate.getTime();
+
+			if (startA <= endB && endA >= startB) {
+				overlapping.push(booking);
+			}
+		}
+
+		return overlapping;
+	}
 }

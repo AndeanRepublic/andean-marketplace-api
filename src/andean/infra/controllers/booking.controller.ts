@@ -52,6 +52,12 @@ export class BookingController {
 		type: BookingResponse,
 	})
 	@ApiResponse({ status: 400, description: 'Datos inválidos' })
+	@ApiResponse({
+		status: 409,
+		description:
+			'Las fechas seleccionadas no están disponibles. Ya existe una reserva para esta experiencia en ese período.',
+		type: BookingErrorResponse,
+	})
 	async createBooking(@Body() body: CreateBookingDto): Promise<Booking> {
 		return this.createBookingUseCase.handle(body);
 	}
