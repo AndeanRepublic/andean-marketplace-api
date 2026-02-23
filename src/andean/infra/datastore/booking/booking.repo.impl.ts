@@ -106,4 +106,17 @@ export class BookingRepositoryImpl extends BookingRepository {
 
 		return overlapping;
 	}
+
+	async getFutureBookings(experienceId: string): Promise<Date[]> {
+		// get future bookings
+		const now = new Date();
+		const docs = await this.bookingModel
+			.find({
+				experienceDate: { $gte: now },
+				status: { $in: [BookingStatus.PENDING, BookingStatus.CONFIRMED] },
+			})
+			.exec();
+
+		return docs.map((doc: BookingDocument) => doc.experienceDate);
+	}
 }

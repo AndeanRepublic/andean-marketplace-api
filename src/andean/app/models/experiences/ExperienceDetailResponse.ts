@@ -3,6 +3,7 @@ import { MediaItemType } from 'src/andean/domain/enums/MediaItemType';
 import { MediaItemRole } from 'src/andean/domain/enums/MediaItemRole';
 import { OwnerType } from 'src/andean/domain/enums/OwnerType';
 import { ExperienceLanguage } from 'src/andean/domain/enums/ExperienceLanguage';
+import { WeekDay } from 'src/andean/domain/enums/WeekDay';
 
 // ─── MediaItem Detail (full info) ───────────────────────────────────────
 
@@ -163,6 +164,32 @@ export class InformationResponse {
 		example: [ExperienceLanguage.ESPAÑOL, ExperienceLanguage.ENGLISH],
 	})
 	languages!: ExperienceLanguage[];
+}
+
+// ─── Availability ───────────────────────────────────────────────────────────
+export class ExperienceAvailabilityResponse {
+	@ApiProperty({
+		description:
+			'Días de la semana en que inicia (0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday)',
+		enum: WeekDay,
+		isArray: true,
+		example: [WeekDay.MONDAY, WeekDay.WEDNESDAY, WeekDay.FRIDAY],
+	})
+	weeklyStartDays!: WeekDay[];
+
+	@ApiProperty({
+		description: 'Fechas específicas disponibles',
+		type: [Date],
+		example: ['2026-03-15', '2026-04-01'],
+	})
+	specificAvailableDates!: Date[];
+
+	@ApiProperty({
+		description: 'Fechas excluidas',
+		type: [Date],
+		example: ['2026-03-20'],
+	})
+	excludedDates!: Date[];
 }
 
 // ─── QuestionSection ───────────────────────────────────────────────────────
@@ -421,6 +448,12 @@ export class ExperienceDetailResponse {
 		type: InformationResponse,
 	})
 	information!: InformationResponse;
+
+	@ApiProperty({
+		description: 'Disponibilidad de la experiencia',
+		type: ExperienceAvailabilityResponse,
+	})
+	availability!: ExperienceAvailabilityResponse;
 
 	@ApiProperty({
 		description:

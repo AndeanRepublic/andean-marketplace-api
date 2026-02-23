@@ -6,5 +6,5 @@ export class ExperienceAvailability {
 		public weeklyStartDays: WeekDay[],
 		public specificAvailableDates: Date[],
 		public excludedDates: Date[],
-	) { }
+	) {}
 }

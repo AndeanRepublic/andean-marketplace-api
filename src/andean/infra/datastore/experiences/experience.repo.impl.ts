@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
@@ -11,12 +11,19 @@ import { ExperienceDocument } from '../../persistence/experiences/experience.sch
 import { ExperienceMapper } from '../../services/experiences/ExperienceMapper';
 import { MongoIdUtils } from '../../utils/MongoIdUtils';
 import { AgeGroupCode } from 'src/andean/domain/enums/AgeGroupCode';
+import { ExperienceAvailabilityDocument } from '../../persistence/experiences/experienceAvailability.schema';
+import { ExperienceAvailabilityRepository } from 'src/andean/app/datastore/experiences/ExperienceAvailability.repo';
+import { WeekDay } from 'src/andean/domain/enums/WeekDay';
 
 @Injectable()
 export class ExperienceRepositoryImpl extends ExperienceRepository {
 	constructor(
 		@InjectModel('Experience')
 		private readonly model: Model<ExperienceDocument>,
+		@InjectModel('ExperienceAvailability')
+		private readonly experienceModel: Model<ExperienceAvailabilityDocument>,
+		@Inject(ExperienceAvailabilityRepository)
+		private readonly availabilityRepo: ExperienceAvailabilityRepository,
 	) {
 		super();
 	}
@@ -39,10 +46,7 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 		return ExperienceMapper.fromDocument(saved);
 	}
 
-	async update(
-		id: string,
-		entity: Partial<Experience>,
-	): Promise<Experience> {
+	async update(id: string, entity: Partial<Experience>): Promise<Experience> {
 		const plain = ExperienceMapper.toPersistence(entity);
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		const updated = await this.model
@@ -212,5 +216,48 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 		}));
 
 		return { items, total };
+	}
+
+	async getWeeklyStartDays(experienceId: string): Promise<WeekDay[]> {
+		const experience = await this.getById(experienceId);
+		if (!experience) return [];
+		const availability = await this.availabilityRepo.getById(
+			experience.availabilityId,
+		);
+		return availability?.weeklyStartDays || [];
+	}
+
+	async getFutureAvailableDates(experienceId: string): Promise<Date[]> {
+		const experience = await this.getById(experienceId);
+		if (!experience) return [];
+		const availability = await this.availabilityRepo.getById(
+			experience.availabilityId,
+		);
+		if (!availability || !availability.specificAvailableDates.length) return [];
+
+		const now = new Date();
+		now.setHours(0, 0, 0, 0);
+
+		return [...availability.specificAvailableDates]
+			.map((date) => new Date(date))
+			.filter((date) => date >= now)
+			.sort((a, b) => a.getTime() - b.getTime());
+	}
+
+	async getFutureUnavailableDates(experienceId: string): Promise<Date[]> {
+		const experience = await this.getById(experienceId);
+		if (!experience) return [];
+		const availability = await this.availabilityRepo.getById(
+			experience.availabilityId,
+		);
+		if (!availability || !availability?.excludedDates?.length) return [];
+
+		const now = new Date();
+		now.setHours(0, 0, 0, 0);
+
+		return [...availability.excludedDates]
+			.map((date) => new Date(date))
+			.filter((date) => date >= now)
+			.sort((a, b) => a.getTime() - b.getTime());
 	}
 }

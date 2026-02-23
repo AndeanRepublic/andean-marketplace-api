@@ -17,6 +17,7 @@ import {
 	HeroDetailResponse,
 	InformationResponse,
 	QuestionSectionResponse,
+	ExperienceAvailabilityResponse,
 } from 'src/andean/app/models/experiences/ExperienceDetailResponse';
 
 interface OwnerInfo {
@@ -256,6 +257,7 @@ export class ExperienceDetailMapper {
 		landscapeImgUrl: string;
 		photos: MediaItemFullDetail[];
 		ownerInfo: OwnerInfo;
+		availability: ExperienceAvailabilityResponse;
 		itinerary: ItineraryItemResponse[];
 		moreExperiences: MoreExperienceItemResponse[];
 		review: ReviewsResponse;
@@ -269,6 +271,7 @@ export class ExperienceDetailMapper {
 				params.ownerInfo,
 			),
 			information: this.toInformation(params.experience, params.ages),
+			availability: params.availability,
 			questionSection: this.toQuestionSection(params.experience),
 			itinerary: params.itinerary,
 			moreExperiences: params.moreExperiences,

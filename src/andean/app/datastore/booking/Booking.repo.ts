@@ -19,4 +19,5 @@ export abstract class BookingRepository {
 		startDate: Date,
 		endDate: Date,
 	): Promise<Booking[]>;
+	abstract getFutureBookings(experienceId: string): Promise<Date[]>;
 }

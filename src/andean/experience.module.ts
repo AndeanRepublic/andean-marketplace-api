@@ -48,6 +48,7 @@ import { CommunityModule } from './community.module';
 import { MediaItemModule } from './mediaItem.module';
 import { UsersModule } from './users.module';
 import { ShopsModule } from './shop.module';
+import { BookingModule } from './booking.module';
 
 @Module({
 	imports: [
@@ -62,6 +63,7 @@ import { ShopsModule } from './shop.module';
 		MediaItemModule,
 		UsersModule,
 		ShopsModule,
+		BookingModule,
 	],
 	controllers: [ExperienceController],
 	providers: [
