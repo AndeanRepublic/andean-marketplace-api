@@ -179,11 +179,11 @@ export class ExperienceAvailabilityResponse {
 	weeklyStartDays!: WeekDay[];
 
 	@ApiProperty({
-		description: 'Fechas específicas disponibles',
+		description: 'Fechas de inicio específicas disponibles',
 		type: [Date],
 		example: ['2026-03-15', '2026-04-01'],
 	})
-	specificAvailableDates!: Date[];
+	specificAvailableStartDates!: Date[];
 
 	@ApiProperty({
 		description: 'Fechas excluidas',

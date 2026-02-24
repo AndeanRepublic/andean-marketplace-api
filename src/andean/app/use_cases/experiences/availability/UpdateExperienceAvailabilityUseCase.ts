@@ -22,7 +22,7 @@ export class UpdateExperienceAvailabilityUseCase {
 		const updatedData: Partial<ExperienceAvailability> = {
 			...existing,
 			...dto,
-			specificAvailableDates: (dto.specificAvailableDates || []).map(
+			specificAvailableStartDates: (dto.specificAvailableStartDates || []).map(
 				(d) => new Date(d),
 			),
 			excludedDates: (dto.excludedDates || []).map((d) => new Date(d)),

@@ -219,7 +219,7 @@ export class GetByIdExperienceUseCase {
 
 		return {
 			weeklyStartDays,
-			specificAvailableDates: availableDates,
+			specificAvailableStartDates: availableDates,
 			excludedDates,
 		};
 	}

@@ -233,12 +233,12 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 		const availability = await this.availabilityRepo.getById(
 			experience.availabilityId,
 		);
-		if (!availability || !availability.specificAvailableDates.length) return [];
+		if (!availability || !availability.specificAvailableStartDates?.length) return [];
 
 		const now = new Date();
 		now.setHours(0, 0, 0, 0);
 
-		return [...availability.specificAvailableDates]
+		return [...(availability.specificAvailableStartDates ?? [])]
 			.map((date) => new Date(date))
 			.filter((date) => date >= now)
 			.sort((a, b) => a.getTime() - b.getTime());

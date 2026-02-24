@@ -4,7 +4,7 @@ export class ExperienceAvailability {
 	constructor(
 		public id: string,
 		public weeklyStartDays: WeekDay[],
-		public specificAvailableDates: Date[],
+		public specificAvailableStartDates: Date[],
 		public excludedDates: Date[],
 	) {}
 }

@@ -11,7 +11,7 @@ export class ExperienceAvailabilityMapper {
 		return plainToInstance(ExperienceAvailability, {
 			id: plain._id.toString(),
 			weeklyStartDays: plain.weeklyStartDays,
-			specificAvailableDates: plain.specificAvailableDates,
+			specificAvailableStartDates: plain.specificAvailableStartDates,
 			excludedDates: plain.excludedDates,
 		});
 	}

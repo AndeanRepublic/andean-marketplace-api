@@ -7,12 +7,12 @@ export const ExperienceAvailabilitySchema = new Schema({
 		enum: Object.values(WeekDay).filter((v) => typeof v === 'number'),
 		required: true,
 	},
-	specificAvailableDates: { type: [Date], default: [] },
+	specificAvailableStartDates: { type: [Date], default: [] },
 	excludedDates: { type: [Date], default: [] },
 });
 
 export interface ExperienceAvailabilityDocument extends Document {
 	weeklyStartDays: WeekDay[];
-	specificAvailableDates: Date[];
+	specificAvailableStartDates: Date[];
 	excludedDates: Date[];
 }

@@ -16,7 +16,7 @@ export class CreateExperienceAvailabilityUseCase {
 	): Promise<ExperienceAvailability> {
 		const entity = ExperienceAvailabilityMapper.fromCreateDto({
 			...dto,
-			specificAvailableDates: (dto.specificAvailableDates || []).map(
+			specificAvailableStartDates: (dto.specificAvailableStartDates || []).map(
 				(d) => new Date(d),
 			),
 			excludedDates: (dto.excludedDates || []).map((d) => new Date(d)),

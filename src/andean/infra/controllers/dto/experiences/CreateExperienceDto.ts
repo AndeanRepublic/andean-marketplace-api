@@ -248,7 +248,7 @@ export class ExperienceAvailabilityDto {
 	@IsArray()
 	@IsDateString({}, { each: true })
 	@IsOptional()
-	specificAvailableDates?: string[];
+	specificAvailableStartDates?: string[];
 
 	@ApiPropertyOptional({
 		description: 'Fechas excluidas',
