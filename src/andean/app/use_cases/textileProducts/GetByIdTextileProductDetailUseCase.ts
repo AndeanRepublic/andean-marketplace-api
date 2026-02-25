@@ -227,6 +227,7 @@ export class GetByIdTextileProductDetailUseCase {
 
 		// -- Construir respuesta completa
 		return {
+			id: product.id,
 			name: product.baseInfo.title,
 			images,
 			availableSizes,
@@ -429,6 +430,7 @@ export class GetByIdTextileProductDetailUseCase {
 		categoryId?: string,
 	): Promise<
 		{
+			id: string;
 			title: string;
 			categoryName: string;
 			productorName: string;
@@ -519,6 +521,7 @@ export class GetByIdTextileProductDetailUseCase {
 				}
 
 				return {
+					id: product.id,
 					title: product.baseInfo.title,
 					categoryName: category?.name || '',
 					productorName,
