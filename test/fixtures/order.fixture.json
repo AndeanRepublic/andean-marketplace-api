@@ -14,26 +14,26 @@
 				"name": "Poncho Andino Premium",
 				"sku": "PON-ALP-RED-M",
 				"quantity": 2,
-				"unitPrice": 150.00,
+				"unitPrice": 150.0,
 				"discount": 0,
-				"totalPrice": 300.00
+				"totalPrice": 300.0
 			},
 			{
 				"productId": "superfood-uuid-123",
 				"productType": "SUPERFOOD",
 				"name": "Quinua Premium",
 				"quantity": 1,
-				"unitPrice": 25.50,
+				"unitPrice": 25.5,
 				"discount": 0,
-				"totalPrice": 25.50
+				"totalPrice": 25.5
 			}
 		],
 		"pricing": {
-			"subtotal": 325.50,
+			"subtotal": 325.5,
 			"discount": 0,
-			"deliveryCost": 15.00,
-			"taxOrFee": 10.00,
-			"totalAmount": 350.50,
+			"deliveryCost": 15.0,
+			"taxOrFee": 10.0,
+			"totalAmount": 350.5,
 			"currency": "USD"
 		},
 		"shippingInfo": {
@@ -74,26 +74,26 @@
 				"name": "Poncho Andino Premium",
 				"sku": "PON-ALP-RED-M",
 				"quantity": 2,
-				"unitPrice": 150.00,
+				"unitPrice": 150.0,
 				"discount": 0,
-				"totalPrice": 300.00
+				"totalPrice": 300.0
 			},
 			{
 				"productId": "superfood-uuid-123",
 				"productType": "SUPERFOOD",
 				"name": "Quinua Premium",
 				"quantity": 1,
-				"unitPrice": 25.50,
+				"unitPrice": 25.5,
 				"discount": 0,
-				"totalPrice": 25.50
+				"totalPrice": 25.5
 			}
 		],
 		"pricing": {
-			"subtotal": 325.50,
+			"subtotal": 325.5,
 			"discount": 0,
-			"deliveryCost": 15.00,
-			"taxOrFee": 10.00,
-			"totalAmount": 350.50,
+			"deliveryCost": 15.0,
+			"taxOrFee": 10.0,
+			"totalAmount": 350.5,
 			"currency": "USD"
 		},
 		"shippingInfo": {
@@ -101,7 +101,6 @@
 			"phone": "+51987654321",
 			"countryCode": "PE",
 			"country": "Perú",
-			"city": "Lima",
 			"administrativeArea": {
 				"level1": "Lima",
 				"level2": "Lima",
@@ -123,7 +122,6 @@
 			"phone": "+51987654321",
 			"countryCode": "PE",
 			"country": "Perú",
-			"city": "Lima",
 			"administrativeArea": {
 				"level1": "Lima",
 				"level2": "Lima",
@@ -164,17 +162,17 @@
 					"productType": "TEXTILE",
 					"name": "Poncho Andino Premium",
 					"quantity": 2,
-					"unitPrice": 150.00,
+					"unitPrice": 150.0,
 					"discount": 0,
-					"totalPrice": 300.00
+					"totalPrice": 300.0
 				}
 			],
 			"pricing": {
-				"subtotal": 300.00,
+				"subtotal": 300.0,
 				"discount": 0,
-				"deliveryCost": 15.00,
-				"taxOrFee": 10.00,
-				"totalAmount": 325.00,
+				"deliveryCost": 15.0,
+				"taxOrFee": 10.0,
+				"totalAmount": 325.0,
 				"currency": "USD"
 			},
 			"shippingInfo": {
@@ -211,26 +209,26 @@
 				"name": "Poncho Andino Premium",
 				"sku": "PON-ALP-RED-M",
 				"quantity": 2,
-				"unitPrice": 150.00,
+				"unitPrice": 150.0,
 				"discount": 0,
-				"totalPrice": 300.00
+				"totalPrice": 300.0
 			},
 			{
 				"productId": "superfood-uuid-123",
 				"productType": "SUPERFOOD",
 				"name": "Quinua Premium",
 				"quantity": 1,
-				"unitPrice": 25.50,
+				"unitPrice": 25.5,
 				"discount": 0,
-				"totalPrice": 25.50
+				"totalPrice": 25.5
 			}
 		],
 		"pricing": {
-			"subtotal": 325.50,
+			"subtotal": 325.5,
 			"discount": 0,
-			"deliveryCost": 15.00,
-			"taxOrFee": 10.00,
-			"totalAmount": 350.50,
+			"deliveryCost": 15.0,
+			"taxOrFee": 10.0,
+			"totalAmount": 350.5,
 			"currency": "USD"
 		},
 		"shippingInfo": {
