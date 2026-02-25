@@ -92,7 +92,7 @@ describe('TextileProductController (e2e)', () => {
 	};
 
 	const mockPriceInventary: PriceInventary = {
-		basePrice: 150.00,
+		basePrice: 150.0,
 		totalStock: 50,
 		SKU: 'PONCHO-AND-001',
 	};
@@ -134,7 +134,7 @@ describe('TextileProductController (e2e)', () => {
 			ownerId: 'shop-123',
 		},
 		priceInventary: {
-			basePrice: 150.00,
+			basePrice: 150.0,
 			totalStock: 50,
 			SKU: 'PONCHO-AND-001',
 		},
@@ -146,12 +146,13 @@ describe('TextileProductController (e2e)', () => {
 		baseInfo: {
 			title: 'Poncho Andino Premium Actualizado',
 			mediaIds: [],
-			description: 'Poncho tejido a mano por artesanos andinos - Edición especial',
+			description:
+				'Poncho tejido a mano por artesanos andinos - Edición especial',
 			ownerType: OwnerType.SHOP,
 			ownerId: 'shop-123',
 		},
 		priceInventary: {
-			basePrice: 180.00,
+			basePrice: 180.0,
 			totalStock: 75,
 			SKU: 'PONCHO-AND-001',
 		},
@@ -169,7 +170,59 @@ describe('TextileProductController (e2e)', () => {
 		],
 		tallas: ['M', 'L'],
 		principalImgUrl: 'https://example.com/poncho.jpg',
-		price: 150.00,
+		price: 150.0,
+	};
+
+	const mockDetailResponse = {
+		id: 'textile-uuid-123',
+		name: 'Poncho Andino Premium',
+		images: [
+			{
+				name: 'poncho-rojo.jpg',
+				role: 'principal',
+				url: 'https://cdn.example.com/poncho-rojo.jpg',
+			},
+		],
+		availableSizes: ['M', 'L'],
+		availableColors: ['Rojo', 'Azul'],
+		availableMaterials: [],
+		variantInfo: [
+			{ size: 'M', color: 'Rojo', material: '', price: 150, stock: 10 },
+			{ size: 'L', color: 'Azul', material: '', price: 150, stock: 15 },
+		],
+		generalStock: 50,
+		information: '',
+		description: 'Poncho tejido a mano por artesanos andinos',
+		traceabilityInfo: {
+			origen: [],
+			processing: [],
+			development: [],
+			merchandising: [],
+		},
+		reviews: {
+			rating: {
+				count5stars: 0,
+				count4stars: 0,
+				count3stars: 0,
+				count2stars: 0,
+				count1star: 0,
+				totalReviews: 0,
+				averagePunctuation: 0,
+			},
+			comments: [],
+		},
+		similarProducts: [
+			{
+				id: 'similar-uuid-456',
+				title: 'Manta Andina Tradicional',
+				categoryName: 'Ponchos',
+				productorName: 'Artesanos del Sur',
+				colors: [{ colorName: 'Verde', colorHexCode: '#00FF00' }],
+				sizes: ['S', 'M'],
+				principalImgUrl: 'https://cdn.example.com/manta.jpg',
+				price: 120,
+			},
+		],
 	};
 
 	const mockPaginatedResponse = {
@@ -236,8 +289,15 @@ describe('TextileProductController (e2e)', () => {
 					useValue: {
 						handle: jest.fn().mockResolvedValue({
 							...mockTextileProduct,
-							baseInfo: { ...mockBaseInfo, title: 'Poncho Andino Premium Actualizado' },
-							priceInventary: { ...mockPriceInventary, basePrice: 180.00, totalStock: 75 },
+							baseInfo: {
+								...mockBaseInfo,
+								title: 'Poncho Andino Premium Actualizado',
+							},
+							priceInventary: {
+								...mockPriceInventary,
+								basePrice: 180.0,
+								totalStock: 75,
+							},
 						}),
 					},
 				},
@@ -250,15 +310,30 @@ describe('TextileProductController (e2e)', () => {
 				{
 					provide: GetByIdTextileProductDetailUseCase,
 					useValue: {
-						handle: jest.fn().mockResolvedValue(mockTextileProduct),
+						handle: jest.fn().mockResolvedValue(mockDetailResponse),
 					},
 				},
 				// Mocks para Category use cases
-				{ provide: CreateTextileCategoryUseCase, useValue: createMockUseCase() },
-				{ provide: UpdateTextileCategoryUseCase, useValue: createMockUseCase() },
-				{ provide: GetAllTextileCategoriesUseCase, useValue: createMockUseCase() },
-				{ provide: GetByIdTextileCategoryUseCase, useValue: createMockUseCase() },
-				{ provide: DeleteTextileCategoryUseCase, useValue: createMockUseCase() },
+				{
+					provide: CreateTextileCategoryUseCase,
+					useValue: createMockUseCase(),
+				},
+				{
+					provide: UpdateTextileCategoryUseCase,
+					useValue: createMockUseCase(),
+				},
+				{
+					provide: GetAllTextileCategoriesUseCase,
+					useValue: createMockUseCase(),
+				},
+				{
+					provide: GetByIdTextileCategoryUseCase,
+					useValue: createMockUseCase(),
+				},
+				{
+					provide: DeleteTextileCategoryUseCase,
+					useValue: createMockUseCase(),
+				},
 				// Mocks para Type use cases
 				{ provide: CreateTextileTypeUseCase, useValue: createMockUseCase() },
 				{ provide: UpdateTextileTypeUseCase, useValue: createMockUseCase() },
@@ -272,36 +347,114 @@ describe('TextileProductController (e2e)', () => {
 				{ provide: GetByIdTextileStyleUseCase, useValue: createMockUseCase() },
 				{ provide: DeleteTextileStyleUseCase, useValue: createMockUseCase() },
 				// Mocks para Subcategory use cases
-				{ provide: CreateTextileSubcategoryUseCase, useValue: createMockUseCase() },
-				{ provide: UpdateTextileSubcategoryUseCase, useValue: createMockUseCase() },
-				{ provide: GetAllTextileSubcategoriesUseCase, useValue: createMockUseCase() },
-				{ provide: GetByIdTextileSubcategoryUseCase, useValue: createMockUseCase() },
-				{ provide: DeleteTextileSubcategoryUseCase, useValue: createMockUseCase() },
+				{
+					provide: CreateTextileSubcategoryUseCase,
+					useValue: createMockUseCase(),
+				},
+				{
+					provide: UpdateTextileSubcategoryUseCase,
+					useValue: createMockUseCase(),
+				},
+				{
+					provide: GetAllTextileSubcategoriesUseCase,
+					useValue: createMockUseCase(),
+				},
+				{
+					provide: GetByIdTextileSubcategoryUseCase,
+					useValue: createMockUseCase(),
+				},
+				{
+					provide: DeleteTextileSubcategoryUseCase,
+					useValue: createMockUseCase(),
+				},
 				// Mocks para CraftTechnique use cases
-				{ provide: CreateTextileCraftTechniqueUseCase, useValue: createMockUseCase() },
-				{ provide: UpdateTextileCraftTechniqueUseCase, useValue: createMockUseCase() },
-				{ provide: GetAllTextileCraftTechniquesUseCase, useValue: createMockUseCase() },
-				{ provide: GetByIdTextileCraftTechniqueUseCase, useValue: createMockUseCase() },
-				{ provide: DeleteTextileCraftTechniqueUseCase, useValue: createMockUseCase() },
+				{
+					provide: CreateTextileCraftTechniqueUseCase,
+					useValue: createMockUseCase(),
+				},
+				{
+					provide: UpdateTextileCraftTechniqueUseCase,
+					useValue: createMockUseCase(),
+				},
+				{
+					provide: GetAllTextileCraftTechniquesUseCase,
+					useValue: createMockUseCase(),
+				},
+				{
+					provide: GetByIdTextileCraftTechniqueUseCase,
+					useValue: createMockUseCase(),
+				},
+				{
+					provide: DeleteTextileCraftTechniqueUseCase,
+					useValue: createMockUseCase(),
+				},
 				// Mocks para PrincipalUse use cases
-				{ provide: CreateTextilePrincipalUseUseCase, useValue: createMockUseCase() },
-				{ provide: UpdateTextilePrincipalUseUseCase, useValue: createMockUseCase() },
-				{ provide: GetAllTextilePrincipalUsesUseCase, useValue: createMockUseCase() },
-				{ provide: GetByIdTextilePrincipalUseUseCase, useValue: createMockUseCase() },
-				{ provide: DeleteTextilePrincipalUseUseCase, useValue: createMockUseCase() },
+				{
+					provide: CreateTextilePrincipalUseUseCase,
+					useValue: createMockUseCase(),
+				},
+				{
+					provide: UpdateTextilePrincipalUseUseCase,
+					useValue: createMockUseCase(),
+				},
+				{
+					provide: GetAllTextilePrincipalUsesUseCase,
+					useValue: createMockUseCase(),
+				},
+				{
+					provide: GetByIdTextilePrincipalUseUseCase,
+					useValue: createMockUseCase(),
+				},
+				{
+					provide: DeleteTextilePrincipalUseUseCase,
+					useValue: createMockUseCase(),
+				},
 				// Mocks para Certification use cases
-				{ provide: CreateTextileCertificationUseCase, useValue: createMockUseCase() },
-				{ provide: UpdateTextileCertificationUseCase, useValue: createMockUseCase() },
-				{ provide: GetAllTextileCertificationsUseCase, useValue: createMockUseCase() },
-				{ provide: GetByIdTextileCertificationUseCase, useValue: createMockUseCase() },
-				{ provide: DeleteTextileCertificationUseCase, useValue: createMockUseCase() },
+				{
+					provide: CreateTextileCertificationUseCase,
+					useValue: createMockUseCase(),
+				},
+				{
+					provide: UpdateTextileCertificationUseCase,
+					useValue: createMockUseCase(),
+				},
+				{
+					provide: GetAllTextileCertificationsUseCase,
+					useValue: createMockUseCase(),
+				},
+				{
+					provide: GetByIdTextileCertificationUseCase,
+					useValue: createMockUseCase(),
+				},
+				{
+					provide: DeleteTextileCertificationUseCase,
+					useValue: createMockUseCase(),
+				},
 				// Mocks para ColorOptionAlternative use cases
-				{ provide: CreateColorOptionAlternativeUseCase, useValue: createMockUseCase() },
-				{ provide: UpdateColorOptionAlternativeUseCase, useValue: createMockUseCase() },
-				{ provide: GetAllColorOptionAlternativesUseCase, useValue: createMockUseCase() },
-				{ provide: GetByIdColorOptionAlternativeUseCase, useValue: createMockUseCase() },
-				{ provide: DeleteColorOptionAlternativeUseCase, useValue: createMockUseCase() },
-				{ provide: CreateManyColorOptionAlternativesUseCase, useValue: createMockUseCase() },
+				{
+					provide: CreateColorOptionAlternativeUseCase,
+					useValue: createMockUseCase(),
+				},
+				{
+					provide: UpdateColorOptionAlternativeUseCase,
+					useValue: createMockUseCase(),
+				},
+				{
+					provide: GetAllColorOptionAlternativesUseCase,
+					useValue: createMockUseCase(),
+				},
+				{
+					provide: GetByIdColorOptionAlternativeUseCase,
+					useValue: createMockUseCase(),
+				},
+				{
+					provide: DeleteColorOptionAlternativeUseCase,
+					useValue: createMockUseCase(),
+				},
+				{
+					provide: CreateManyColorOptionAlternativesUseCase,
+					useValue: createMockUseCase(),
+				},
 			],
 		}).compile();
 
@@ -318,21 +471,26 @@ describe('TextileProductController (e2e)', () => {
 
 		await app.init();
 
-		createTextileProductUseCase = moduleFixture.get<CreateTextileProductUseCase>(
-			CreateTextileProductUseCase,
-		);
-		getAllTextileProductsUseCase = moduleFixture.get<GetAllTextileProductsUseCase>(
-			GetAllTextileProductsUseCase,
-		);
-		getByIdTextileProductUseCase = moduleFixture.get<GetByIdTextileProductUseCase>(
-			GetByIdTextileProductUseCase,
-		);
-		updateTextileProductUseCase = moduleFixture.get<UpdateTextileProductUseCase>(
-			UpdateTextileProductUseCase,
-		);
-		deleteTextileProductUseCase = moduleFixture.get<DeleteTextileProductUseCase>(
-			DeleteTextileProductUseCase,
-		);
+		createTextileProductUseCase =
+			moduleFixture.get<CreateTextileProductUseCase>(
+				CreateTextileProductUseCase,
+			);
+		getAllTextileProductsUseCase =
+			moduleFixture.get<GetAllTextileProductsUseCase>(
+				GetAllTextileProductsUseCase,
+			);
+		getByIdTextileProductUseCase =
+			moduleFixture.get<GetByIdTextileProductUseCase>(
+				GetByIdTextileProductUseCase,
+			);
+		updateTextileProductUseCase =
+			moduleFixture.get<UpdateTextileProductUseCase>(
+				UpdateTextileProductUseCase,
+			);
+		deleteTextileProductUseCase =
+			moduleFixture.get<DeleteTextileProductUseCase>(
+				DeleteTextileProductUseCase,
+			);
 	});
 
 	afterAll(async () => {
@@ -345,7 +503,9 @@ describe('TextileProductController (e2e)', () => {
 
 	describe('POST /textile-products', () => {
 		it('should create a new textile product', () => {
-			jest.spyOn(createTextileProductUseCase, 'handle').mockResolvedValueOnce(mockTextileProduct);
+			jest
+				.spyOn(createTextileProductUseCase, 'handle')
+				.mockResolvedValueOnce(mockTextileProduct);
 
 			return request(app.getHttpServer())
 				.post('/textile-products')
@@ -435,13 +595,13 @@ describe('TextileProductController (e2e)', () => {
 				.send(invalidDto)
 				.expect(HttpStatus.BAD_REQUEST);
 		});
-
-
 	});
 
 	describe('GET /textile-products', () => {
 		it('should get all textile products without pagination', async () => {
-			jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(mockPaginatedResponse);
+			jest
+				.spyOn(getAllTextileProductsUseCase, 'handle')
+				.mockResolvedValueOnce(mockPaginatedResponse);
 
 			const response = await request(app.getHttpServer())
 				.get('/textile-products')
@@ -456,7 +616,9 @@ describe('TextileProductController (e2e)', () => {
 		});
 
 		it('should return filterCount with all products', async () => {
-			jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(mockPaginatedResponse);
+			jest
+				.spyOn(getAllTextileProductsUseCase, 'handle')
+				.mockResolvedValueOnce(mockPaginatedResponse);
 
 			const response = await request(app.getHttpServer())
 				.get('/textile-products')
@@ -474,7 +636,9 @@ describe('TextileProductController (e2e)', () => {
 		});
 
 		it('should return filterCount items with label and count properties', async () => {
-			jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(mockPaginatedResponse);
+			jest
+				.spyOn(getAllTextileProductsUseCase, 'handle')
+				.mockResolvedValueOnce(mockPaginatedResponse);
 
 			const response = await request(app.getHttpServer())
 				.get('/textile-products')
@@ -496,8 +660,12 @@ describe('TextileProductController (e2e)', () => {
 
 			// Verificar estructura de communities
 			if (response.body.filterCount.communities.length > 0) {
-				expect(response.body.filterCount.communities[0]).toHaveProperty('label');
-				expect(response.body.filterCount.communities[0]).toHaveProperty('count');
+				expect(response.body.filterCount.communities[0]).toHaveProperty(
+					'label',
+				);
+				expect(response.body.filterCount.communities[0]).toHaveProperty(
+					'count',
+				);
 			}
 
 			// Verificar estructura de categories
@@ -518,7 +686,9 @@ describe('TextileProductController (e2e)', () => {
 				filterCount: mockPaginatedResponse.filterCount,
 			};
 
-			jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(paginatedResponse);
+			jest
+				.spyOn(getAllTextileProductsUseCase, 'handle')
+				.mockResolvedValueOnce(paginatedResponse);
 
 			const response = await request(app.getHttpServer())
 				.get('/textile-products?page=2&per_page=20')
@@ -548,13 +718,18 @@ describe('TextileProductController (e2e)', () => {
 				pagination: { total: 1, page: 1, per_page: 10 },
 				filterCount: {
 					colors: [{ label: 'rojo', count: 15 }],
-					sizes: [{ label: 'm', count: 5 }, { label: 'l', count: 10 }],
+					sizes: [
+						{ label: 'm', count: 5 },
+						{ label: 'l', count: 10 },
+					],
 					communities: [],
 					categories: [{ label: 'Ponchos', count: 15 }],
 				},
 			};
 
-			jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(filteredResponse);
+			jest
+				.spyOn(getAllTextileProductsUseCase, 'handle')
+				.mockResolvedValueOnce(filteredResponse);
 
 			const response = await request(app.getHttpServer())
 				.get('/textile-products?color=rojo')
@@ -570,14 +745,19 @@ describe('TextileProductController (e2e)', () => {
 				products: [mockTextileProductListItem],
 				pagination: { total: 1, page: 1, per_page: 10 },
 				filterCount: {
-					colors: [{ label: 'rojo', count: 5 }, { label: 'azul', count: 3 }],
+					colors: [
+						{ label: 'rojo', count: 5 },
+						{ label: 'azul', count: 3 },
+					],
 					sizes: [{ label: 'm', count: 8 }],
 					communities: [],
 					categories: [],
 				},
 			};
 
-			jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(filteredResponse);
+			jest
+				.spyOn(getAllTextileProductsUseCase, 'handle')
+				.mockResolvedValueOnce(filteredResponse);
 
 			const response = await request(app.getHttpServer())
 				.get('/textile-products?size=M')
@@ -599,7 +779,9 @@ describe('TextileProductController (e2e)', () => {
 				},
 			};
 
-			jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(filteredResponse);
+			jest
+				.spyOn(getAllTextileProductsUseCase, 'handle')
+				.mockResolvedValueOnce(filteredResponse);
 
 			const response = await request(app.getHttpServer())
 				.get('/textile-products?min_price=100&max_price=200')
@@ -624,7 +806,9 @@ describe('TextileProductController (e2e)', () => {
 				},
 			};
 
-			const spy = jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(filteredResponse);
+			const spy = jest
+				.spyOn(getAllTextileProductsUseCase, 'handle')
+				.mockResolvedValueOnce(filteredResponse);
 
 			const response = await request(app.getHttpServer())
 				.get('/textile-products?color=rojo&size=L')
@@ -646,7 +830,9 @@ describe('TextileProductController (e2e)', () => {
 				},
 			};
 
-			const spy = jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(filteredResponse);
+			const spy = jest
+				.spyOn(getAllTextileProductsUseCase, 'handle')
+				.mockResolvedValueOnce(filteredResponse);
 
 			const response = await request(app.getHttpServer())
 				.get('/textile-products?category_id=category-poncho-001')
@@ -668,7 +854,9 @@ describe('TextileProductController (e2e)', () => {
 				},
 			};
 
-			const spy = jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(filteredResponse);
+			const spy = jest
+				.spyOn(getAllTextileProductsUseCase, 'handle')
+				.mockResolvedValueOnce(filteredResponse);
 
 			const response = await request(app.getHttpServer())
 				.get('/textile-products?owner_id=shop-123')
@@ -690,10 +878,14 @@ describe('TextileProductController (e2e)', () => {
 				},
 			};
 
-			const spy = jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(filteredResponse);
+			const spy = jest
+				.spyOn(getAllTextileProductsUseCase, 'handle')
+				.mockResolvedValueOnce(filteredResponse);
 
 			const response = await request(app.getHttpServer())
-				.get('/textile-products?category_id=category-poncho-001&color=rojo&size=L&min_price=100&max_price=200&page=2&per_page=20')
+				.get(
+					'/textile-products?category_id=category-poncho-001&color=rojo&size=L&min_price=100&max_price=200&page=2&per_page=20',
+				)
 				.expect(HttpStatus.OK);
 
 			expect(spy).toHaveBeenCalledWith({
@@ -731,7 +923,9 @@ describe('TextileProductController (e2e)', () => {
 				},
 			};
 
-			jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(filteredResponse);
+			jest
+				.spyOn(getAllTextileProductsUseCase, 'handle')
+				.mockResolvedValueOnce(filteredResponse);
 
 			const response = await request(app.getHttpServer())
 				.get('/textile-products')
@@ -753,9 +947,14 @@ describe('TextileProductController (e2e)', () => {
 				},
 			};
 
-			jest.spyOn(getAllTextileProductsUseCase, 'handle').mockImplementationOnce(() => {
-				throw { statusCode: 404, message: 'No textile products found with the specified filters' };
-			});
+			jest
+				.spyOn(getAllTextileProductsUseCase, 'handle')
+				.mockImplementationOnce(() => {
+					throw {
+						statusCode: 404,
+						message: 'No textile products found with the specified filters',
+					};
+				});
 
 			await request(app.getHttpServer())
 				.get('/textile-products?color=nonexistent')
@@ -769,7 +968,9 @@ describe('TextileProductController (e2e)', () => {
 				filterCount: mockPaginatedResponse.filterCount,
 			};
 
-			const spy = jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(sortedResponse);
+			const spy = jest
+				.spyOn(getAllTextileProductsUseCase, 'handle')
+				.mockResolvedValueOnce(sortedResponse);
 
 			const response = await request(app.getHttpServer())
 				.get('/textile-products?sort_by=latest')
@@ -787,7 +988,9 @@ describe('TextileProductController (e2e)', () => {
 				filterCount: mockPaginatedResponse.filterCount,
 			};
 
-			const spy = jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(sortedResponse);
+			const spy = jest
+				.spyOn(getAllTextileProductsUseCase, 'handle')
+				.mockResolvedValueOnce(sortedResponse);
 
 			const response = await request(app.getHttpServer())
 				.get('/textile-products?sort_by=popular')
@@ -805,10 +1008,14 @@ describe('TextileProductController (e2e)', () => {
 				filterCount: mockPaginatedResponse.filterCount,
 			};
 
-			const spy = jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(sortedFilteredResponse);
+			const spy = jest
+				.spyOn(getAllTextileProductsUseCase, 'handle')
+				.mockResolvedValueOnce(sortedFilteredResponse);
 
 			const response = await request(app.getHttpServer())
-				.get('/textile-products?sort_by=popular&category_id=category-poncho-001&page=1&per_page=20')
+				.get(
+					'/textile-products?sort_by=popular&category_id=category-poncho-001&page=1&per_page=20',
+				)
 				.expect(HttpStatus.OK);
 
 			expect(spy).toHaveBeenCalledWith({
@@ -827,10 +1034,14 @@ describe('TextileProductController (e2e)', () => {
 				filterCount: mockPaginatedResponse.filterCount,
 			};
 
-			const spy = jest.spyOn(getAllTextileProductsUseCase, 'handle').mockResolvedValueOnce(sortedFilteredResponse);
+			const spy = jest
+				.spyOn(getAllTextileProductsUseCase, 'handle')
+				.mockResolvedValueOnce(sortedFilteredResponse);
 
 			const response = await request(app.getHttpServer())
-				.get('/textile-products?sort_by=latest&color=rojo&min_price=50&max_price=200')
+				.get(
+					'/textile-products?sort_by=latest&color=rojo&min_price=50&max_price=200',
+				)
 				.expect(HttpStatus.OK);
 
 			expect(spy).toHaveBeenCalledWith({
@@ -848,7 +1059,9 @@ describe('TextileProductController (e2e)', () => {
 		const productId = 'textile-uuid-123';
 
 		it('should get a textile product by id', () => {
-			jest.spyOn(getByIdTextileProductUseCase, 'handle').mockResolvedValueOnce(mockTextileProduct);
+			jest
+				.spyOn(getByIdTextileProductUseCase, 'handle')
+				.mockResolvedValueOnce(mockTextileProduct);
 
 			return request(app.getHttpServer())
 				.get(`/textile-products/${productId}`)
@@ -858,7 +1071,10 @@ describe('TextileProductController (e2e)', () => {
 						id: mockTextileProduct.id,
 						status: TextileProductStatus.PUBLISHED,
 						baseInfo: expect.objectContaining({ title: mockBaseInfo.title }),
-						priceInventary: expect.objectContaining({ basePrice: mockPriceInventary.basePrice, totalStock: mockPriceInventary.totalStock }),
+						priceInventary: expect.objectContaining({
+							basePrice: mockPriceInventary.basePrice,
+							totalStock: mockPriceInventary.totalStock,
+						}),
 					});
 				});
 		});
@@ -874,16 +1090,126 @@ describe('TextileProductController (e2e)', () => {
 		});
 	});
 
+	describe('GET /textile-products/:id/details', () => {
+		const productId = 'textile-uuid-123';
+		let getByIdTextileProductDetailUseCase: GetByIdTextileProductDetailUseCase;
+
+		beforeEach(() => {
+			getByIdTextileProductDetailUseCase =
+				app.get<GetByIdTextileProductDetailUseCase>(
+					GetByIdTextileProductDetailUseCase,
+				);
+		});
+
+		it('should return the full detail response with id', () => {
+			jest
+				.spyOn(getByIdTextileProductDetailUseCase, 'handle')
+				.mockResolvedValueOnce(mockDetailResponse as any);
+
+			return request(app.getHttpServer())
+				.get(`/textile-products/${productId}/details`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					expect(res.body).toHaveProperty('id', 'textile-uuid-123');
+					expect(res.body).toHaveProperty('name', 'Poncho Andino Premium');
+				});
+		});
+
+		it('should call the use case with the correct id', async () => {
+			const spy = jest
+				.spyOn(getByIdTextileProductDetailUseCase, 'handle')
+				.mockResolvedValueOnce(mockDetailResponse as any);
+
+			await request(app.getHttpServer())
+				.get(`/textile-products/${productId}/details`)
+				.expect(HttpStatus.OK);
+
+			expect(spy).toHaveBeenCalledWith(productId);
+		});
+
+		it('should include availableSizes, availableColors and variantInfo', () => {
+			jest
+				.spyOn(getByIdTextileProductDetailUseCase, 'handle')
+				.mockResolvedValueOnce(mockDetailResponse as any);
+
+			return request(app.getHttpServer())
+				.get(`/textile-products/${productId}/details`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					expect(Array.isArray(res.body.availableSizes)).toBe(true);
+					expect(Array.isArray(res.body.availableColors)).toBe(true);
+					expect(Array.isArray(res.body.variantInfo)).toBe(true);
+				});
+		});
+
+		it('should include reviews with rating and comments', () => {
+			jest
+				.spyOn(getByIdTextileProductDetailUseCase, 'handle')
+				.mockResolvedValueOnce(mockDetailResponse as any);
+
+			return request(app.getHttpServer())
+				.get(`/textile-products/${productId}/details`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					expect(res.body).toHaveProperty('reviews');
+					expect(res.body.reviews).toHaveProperty('rating');
+					expect(res.body.reviews).toHaveProperty('comments');
+					expect(Array.isArray(res.body.reviews.comments)).toBe(true);
+				});
+		});
+
+		it('should include similarProducts with id on each item', () => {
+			jest
+				.spyOn(getByIdTextileProductDetailUseCase, 'handle')
+				.mockResolvedValueOnce(mockDetailResponse as any);
+
+			return request(app.getHttpServer())
+				.get(`/textile-products/${productId}/details`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					expect(Array.isArray(res.body.similarProducts)).toBe(true);
+					if (res.body.similarProducts.length > 0) {
+						expect(res.body.similarProducts[0]).toHaveProperty('id');
+						expect(res.body.similarProducts[0]).toHaveProperty('title');
+						expect(res.body.similarProducts[0]).toHaveProperty('price');
+					}
+				});
+		});
+
+		it('should include traceabilityInfo with correct structure', () => {
+			jest
+				.spyOn(getByIdTextileProductDetailUseCase, 'handle')
+				.mockResolvedValueOnce(mockDetailResponse as any);
+
+			return request(app.getHttpServer())
+				.get(`/textile-products/${productId}/details`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					expect(res.body).toHaveProperty('traceabilityInfo');
+					expect(res.body.traceabilityInfo).toHaveProperty('origen');
+					expect(res.body.traceabilityInfo).toHaveProperty('processing');
+					expect(res.body.traceabilityInfo).toHaveProperty('development');
+					expect(res.body.traceabilityInfo).toHaveProperty('merchandising');
+				});
+		});
+	});
+
 	describe('PUT /textile-products/:id', () => {
 		const productId = 'textile-uuid-123';
 		const updatedProduct = {
 			...mockTextileProduct,
 			baseInfo: { ...mockBaseInfo, title: 'Poncho Andino Premium Actualizado' },
-			priceInventary: { ...mockPriceInventary, basePrice: 180.00, totalStock: 75 },
+			priceInventary: {
+				...mockPriceInventary,
+				basePrice: 180.0,
+				totalStock: 75,
+			},
 		};
 
 		it('should update a textile product', () => {
-			jest.spyOn(updateTextileProductUseCase, 'handle').mockResolvedValueOnce(updatedProduct);
+			jest
+				.spyOn(updateTextileProductUseCase, 'handle')
+				.mockResolvedValueOnce(updatedProduct);
 
 			return request(app.getHttpServer())
 				.put(`/textile-products/${productId}`)
@@ -892,8 +1218,13 @@ describe('TextileProductController (e2e)', () => {
 				.expect((res) => {
 					expect(res.body).toMatchObject({
 						id: productId,
-						baseInfo: expect.objectContaining({ title: 'Poncho Andino Premium Actualizado' }),
-						priceInventary: expect.objectContaining({ basePrice: 180.00, totalStock: 75 }),
+						baseInfo: expect.objectContaining({
+							title: 'Poncho Andino Premium Actualizado',
+						}),
+						priceInventary: expect.objectContaining({
+							basePrice: 180.0,
+							totalStock: 75,
+						}),
 					});
 				});
 		});
@@ -906,12 +1237,15 @@ describe('TextileProductController (e2e)', () => {
 				.send(updateDto)
 				.expect(HttpStatus.OK);
 
-			expect(spy).toHaveBeenCalledWith(productId, expect.objectContaining({
-				status: updateDto.status,
-				baseInfo: expect.objectContaining({
-					title: updateDto.baseInfo.title,
+			expect(spy).toHaveBeenCalledWith(
+				productId,
+				expect.objectContaining({
+					status: updateDto.status,
+					baseInfo: expect.objectContaining({
+						title: updateDto.baseInfo.title,
+					}),
 				}),
-			}));
+			);
 		});
 
 		it('should return 400 when updating with invalid basePrice', () => {
@@ -949,7 +1283,9 @@ describe('TextileProductController (e2e)', () => {
 		const productId = 'textile-uuid-123';
 
 		it('should delete a textile product', () => {
-			jest.spyOn(deleteTextileProductUseCase, 'handle').mockResolvedValueOnce(undefined);
+			jest
+				.spyOn(deleteTextileProductUseCase, 'handle')
+				.mockResolvedValueOnce(undefined);
 
 			return request(app.getHttpServer())
 				.delete(`/textile-products/${productId}`)
