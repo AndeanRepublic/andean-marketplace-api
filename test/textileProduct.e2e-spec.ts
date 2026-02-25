@@ -9,12 +9,7 @@ import { UpdateTextileProductUseCase } from '../src/andean/app/use_cases/textile
 import { DeleteTextileProductUseCase } from '../src/andean/app/use_cases/textileProducts/DeleteTextileProductUseCase';
 import { TextileProduct } from '../src/andean/domain/entities/textileProducts/TextileProduct';
 import { TextileProductStatus } from '../src/andean/domain/enums/TextileProductStatus';
-import { TextileOptionName } from '../src/andean/domain/enums/TextileOptionName';
 import { ProductSortBy } from '../src/andean/domain/enums/ProductSortBy';
-import { BaseInfo } from '../src/andean/domain/entities/textileProducts/BaseInfo';
-import { PriceInventary } from '../src/andean/domain/entities/textileProducts/PriceInventary';
-import { OwnerType } from '../src/andean/domain/enums/OwnerType';
-// Importar todos los demás use cases del controlador
 import { CreateTextileCategoryUseCase } from '../src/andean/app/use_cases/textileProducts/CreateTextileCategoryUseCase';
 import { UpdateTextileCategoryUseCase } from '../src/andean/app/use_cases/textileProducts/UpdateTextileCategoryUseCase';
 import { GetAllTextileCategoriesUseCase } from '../src/andean/app/use_cases/textileProducts/GetAllTextileCategoriesUseCase';
@@ -57,7 +52,7 @@ import { GetByIdColorOptionAlternativeUseCase } from '../src/andean/app/use_case
 import { DeleteColorOptionAlternativeUseCase } from '../src/andean/app/use_cases/textileProducts/DeleteColorOptionAlternativeUseCase';
 import { CreateManyColorOptionAlternativesUseCase } from '../src/andean/app/use_cases/textileProducts/CreateManyColorOptionAlternativesUseCase';
 import { GetByIdTextileProductDetailUseCase } from '../src/andean/app/use_cases/textileProducts/GetByIdTextileProductDetailUseCase';
-import { TextileProductListItem } from '../src/andean/app/modules/TextileProductListItemResponse';
+import { FixtureLoader } from './helpers/fixture-loader';
 
 /**
  * ⚠️  ARCHITECTURAL NOTE (God Controller)
@@ -67,7 +62,6 @@ import { TextileProductListItem } from '../src/andean/app/modules/TextileProduct
  *
  * This results in:
  *  - 56 use-case mock providers just to create the test module
- *  - 950+ lines in a single test file
  *  - Coupling between unrelated concerns
  *
  * Recommended refactoring: split the controller into a Facade + dedicated
@@ -82,195 +76,34 @@ describe('TextileProductController (e2e)', () => {
 	let updateTextileProductUseCase: UpdateTextileProductUseCase;
 	let deleteTextileProductUseCase: DeleteTextileProductUseCase;
 
-	// Mock data
-	const mockBaseInfo: BaseInfo = {
-		title: 'Poncho Andino Premium',
-		mediaIds: [],
-		description: 'Poncho tejido a mano por artesanos andinos',
-		ownerType: OwnerType.SHOP,
-		ownerId: 'shop-123',
-	};
-
-	const mockPriceInventary: PriceInventary = {
-		basePrice: 150.0,
-		totalStock: 50,
-		SKU: 'PONCHO-AND-001',
-	};
-
-	const mockTextileProduct: TextileProduct = {
-		id: 'textile-uuid-123',
-		status: TextileProductStatus.PUBLISHED,
-		baseInfo: mockBaseInfo,
-		priceInventary: mockPriceInventary,
-		createdAt: new Date('2026-01-01'),
-		updatedAt: new Date('2026-01-01'),
-		isDiscountActive: false,
-		categoryId: 'category-poncho-001',
-		options: [
-			{
-				name: TextileOptionName.COLOR,
-				values: [
-					{ label: 'Rojo', mediaIds: [] },
-					{ label: 'Azul', mediaIds: [] },
-				],
-			},
-			{
-				name: TextileOptionName.SIZE,
-				values: [
-					{ label: 'M', mediaIds: [] },
-					{ label: 'L', mediaIds: [] },
-				],
-			},
-		],
+	// Load all mock data from JSON fixture
+	const fixture = FixtureLoader.loadTextileProduct();
+	const mockBaseInfo = fixture.entity.baseInfo;
+	const mockPriceInventary = fixture.entity.priceInventary;
+	const mockTextileProduct = {
+		...fixture.entity,
+		createdAt: new Date(fixture.entity.createdAt),
+		updatedAt: new Date(fixture.entity.updatedAt),
 	} as TextileProduct;
+	const createDto = fixture.createDto;
+	const updateDto = fixture.updateDto;
+	const mockTextileProductListItem = fixture.listItem;
+	const mockPaginatedResponse = fixture.paginatedResponse;
+	const mockDetailResponse = fixture.detailResponse;
 
-	const createDto = {
-		status: TextileProductStatus.PUBLISHED,
-		baseInfo: {
-			title: 'Poncho Andino Premium',
-			mediaIds: [],
-			description: 'Poncho tejido a mano por artesanos andinos',
-			ownerType: OwnerType.SHOP,
-			ownerId: 'shop-123',
-		},
-		priceInventary: {
-			basePrice: 150.0,
-			totalStock: 50,
-			SKU: 'PONCHO-AND-001',
-		},
-		categoryId: 'category-poncho-001',
-	};
-
-	const updateDto = {
-		status: TextileProductStatus.PUBLISHED,
-		baseInfo: {
-			title: 'Poncho Andino Premium Actualizado',
-			mediaIds: [],
-			description:
-				'Poncho tejido a mano por artesanos andinos - Edición especial',
-			ownerType: OwnerType.SHOP,
-			ownerId: 'shop-123',
-		},
-		priceInventary: {
-			basePrice: 180.0,
-			totalStock: 75,
-			SKU: 'PONCHO-AND-001',
-		},
-		categoryId: 'category-poncho-001',
-	};
-
-	const mockTextileProductListItem: TextileProductListItem = {
-		id: 'textile-uuid-123',
-		titulo: 'Poncho Andino Premium',
-		categoryName: 'Ponchos',
-		productorName: 'Artesanos Andinos',
-		colors: [
-			{ name: 'Rojo', colorHexCode: '#FF0000' },
-			{ name: 'Azul', colorHexCode: '#0000FF' },
-		],
-		tallas: ['M', 'L'],
-		principalImgUrl: 'https://example.com/poncho.jpg',
-		price: 150.0,
-	};
-
-	const mockDetailResponse = {
-		id: 'textile-uuid-123',
-		name: 'Poncho Andino Premium',
-		images: [
-			{
-				name: 'poncho-rojo.jpg',
-				role: 'principal',
-				url: 'https://cdn.example.com/poncho-rojo.jpg',
-			},
-		],
-		availableSizes: ['M', 'L'],
-		availableColors: ['Rojo', 'Azul'],
-		availableMaterials: [],
-		variantInfo: [
-			{ size: 'M', color: 'Rojo', material: '', price: 150, stock: 10 },
-			{ size: 'L', color: 'Azul', material: '', price: 150, stock: 15 },
-		],
-		generalStock: 50,
-		information: '',
-		description: 'Poncho tejido a mano por artesanos andinos',
-		traceabilityInfo: {
-			origen: [],
-			processing: [],
-			development: [],
-			merchandising: [],
-		},
-		reviews: {
-			rating: {
-				count5stars: 0,
-				count4stars: 0,
-				count3stars: 0,
-				count2stars: 0,
-				count1star: 0,
-				totalReviews: 0,
-				averagePunctuation: 0,
-			},
-			comments: [],
-		},
-		similarProducts: [
-			{
-				id: 'similar-uuid-456',
-				title: 'Manta Andina Tradicional',
-				categoryName: 'Ponchos',
-				productorName: 'Artesanos del Sur',
-				colors: [{ colorName: 'Verde', colorHexCode: '#00FF00' }],
-				sizes: ['S', 'M'],
-				principalImgUrl: 'https://cdn.example.com/manta.jpg',
-				price: 120,
-			},
-		],
-	};
-
-	const mockPaginatedResponse = {
-		products: [mockTextileProductListItem],
-		pagination: {
-			total: 1,
-			page: 1,
-			per_page: 1,
-		},
-		filterCount: {
-			colors: [
-				{ label: 'rojo', count: 15 },
-				{ label: 'azul', count: 10 },
-				{ label: 'verde', count: 8 },
-			],
-			sizes: [
-				{ label: 'm', count: 12 },
-				{ label: 'l', count: 18 },
-				{ label: 'xl', count: 5 },
-			],
-			communities: [
-				{ label: 'Comunidad Andina Norte', count: 20 },
-				{ label: 'Comunidad Textil Sur', count: 13 },
-			],
-			categories: [
-				{ label: 'Ponchos', count: 25 },
-				{ label: 'Mantas', count: 8 },
-			],
-		},
-	};
-
-	// Helper para crear mock de use case
-	const createMockUseCase = () => ({
-		handle: jest.fn(),
-	});
+	// Helper para crear mock de use case secundario (categorías, tipos, estilos, etc.)
+	const createMockUseCase = () => ({ handle: jest.fn() });
 
 	beforeAll(async () => {
-		// Create testing module without database dependencies
-		// Following TESTING_GUIDE.md: mock use cases instead of importing full module
+		// Create testing module without database dependencies.
+		// Following TESTING_GUIDE.md: mock use cases instead of importing the full module.
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			controllers: [TextileProductController],
 			providers: [
-				// Mocks para TextileProduct use cases
+				// ── TextileProduct use cases ────────────────────────────────────
 				{
 					provide: CreateTextileProductUseCase,
-					useValue: {
-						handle: jest.fn().mockResolvedValue(mockTextileProduct),
-					},
+					useValue: { handle: jest.fn().mockResolvedValue(mockTextileProduct) },
 				},
 				{
 					provide: GetAllTextileProductsUseCase,
@@ -280,40 +113,31 @@ describe('TextileProductController (e2e)', () => {
 				},
 				{
 					provide: GetByIdTextileProductUseCase,
-					useValue: {
-						handle: jest.fn().mockResolvedValue(mockTextileProduct),
-					},
+					useValue: { handle: jest.fn().mockResolvedValue(mockTextileProduct) },
 				},
 				{
 					provide: UpdateTextileProductUseCase,
 					useValue: {
 						handle: jest.fn().mockResolvedValue({
 							...mockTextileProduct,
-							baseInfo: {
-								...mockBaseInfo,
-								title: 'Poncho Andino Premium Actualizado',
-							},
+							baseInfo: { ...mockBaseInfo, title: updateDto.baseInfo.title },
 							priceInventary: {
 								...mockPriceInventary,
-								basePrice: 180.0,
-								totalStock: 75,
+								basePrice: updateDto.priceInventary.basePrice,
+								totalStock: updateDto.priceInventary.totalStock,
 							},
 						}),
 					},
 				},
 				{
 					provide: DeleteTextileProductUseCase,
-					useValue: {
-						handle: jest.fn().mockResolvedValue(undefined),
-					},
+					useValue: { handle: jest.fn().mockResolvedValue(undefined) },
 				},
 				{
 					provide: GetByIdTextileProductDetailUseCase,
-					useValue: {
-						handle: jest.fn().mockResolvedValue(mockDetailResponse),
-					},
+					useValue: { handle: jest.fn().mockResolvedValue(mockDetailResponse) },
 				},
-				// Mocks para Category use cases
+				// ── Category use cases ──────────────────────────────────────────
 				{
 					provide: CreateTextileCategoryUseCase,
 					useValue: createMockUseCase(),
@@ -334,19 +158,19 @@ describe('TextileProductController (e2e)', () => {
 					provide: DeleteTextileCategoryUseCase,
 					useValue: createMockUseCase(),
 				},
-				// Mocks para Type use cases
+				// ── Type use cases ──────────────────────────────────────────────
 				{ provide: CreateTextileTypeUseCase, useValue: createMockUseCase() },
 				{ provide: UpdateTextileTypeUseCase, useValue: createMockUseCase() },
 				{ provide: GetAllTextileTypesUseCase, useValue: createMockUseCase() },
 				{ provide: GetByIdTextileTypeUseCase, useValue: createMockUseCase() },
 				{ provide: DeleteTextileTypeUseCase, useValue: createMockUseCase() },
-				// Mocks para Style use cases
+				// ── Style use cases ─────────────────────────────────────────────
 				{ provide: CreateTextileStyleUseCase, useValue: createMockUseCase() },
 				{ provide: UpdateTextileStyleUseCase, useValue: createMockUseCase() },
 				{ provide: GetAllTextileStylesUseCase, useValue: createMockUseCase() },
 				{ provide: GetByIdTextileStyleUseCase, useValue: createMockUseCase() },
 				{ provide: DeleteTextileStyleUseCase, useValue: createMockUseCase() },
-				// Mocks para Subcategory use cases
+				// ── Subcategory use cases ───────────────────────────────────────
 				{
 					provide: CreateTextileSubcategoryUseCase,
 					useValue: createMockUseCase(),
@@ -367,7 +191,7 @@ describe('TextileProductController (e2e)', () => {
 					provide: DeleteTextileSubcategoryUseCase,
 					useValue: createMockUseCase(),
 				},
-				// Mocks para CraftTechnique use cases
+				// ── CraftTechnique use cases ────────────────────────────────────
 				{
 					provide: CreateTextileCraftTechniqueUseCase,
 					useValue: createMockUseCase(),
@@ -388,7 +212,7 @@ describe('TextileProductController (e2e)', () => {
 					provide: DeleteTextileCraftTechniqueUseCase,
 					useValue: createMockUseCase(),
 				},
-				// Mocks para PrincipalUse use cases
+				// ── PrincipalUse use cases ──────────────────────────────────────
 				{
 					provide: CreateTextilePrincipalUseUseCase,
 					useValue: createMockUseCase(),
@@ -409,7 +233,7 @@ describe('TextileProductController (e2e)', () => {
 					provide: DeleteTextilePrincipalUseUseCase,
 					useValue: createMockUseCase(),
 				},
-				// Mocks para Certification use cases
+				// ── Certification use cases ─────────────────────────────────────
 				{
 					provide: CreateTextileCertificationUseCase,
 					useValue: createMockUseCase(),
@@ -430,7 +254,7 @@ describe('TextileProductController (e2e)', () => {
 					provide: DeleteTextileCertificationUseCase,
 					useValue: createMockUseCase(),
 				},
-				// Mocks para ColorOptionAlternative use cases
+				// ── ColorOptionAlternative use cases ────────────────────────────
 				{
 					provide: CreateColorOptionAlternativeUseCase,
 					useValue: createMockUseCase(),
@@ -459,8 +283,6 @@ describe('TextileProductController (e2e)', () => {
 		}).compile();
 
 		app = moduleFixture.createNestApplication();
-
-		// Apply global pipes for validation (like in main.ts)
 		app.useGlobalPipes(
 			new ValidationPipe({
 				whitelist: true,
@@ -468,39 +290,33 @@ describe('TextileProductController (e2e)', () => {
 				transform: true,
 			}),
 		);
-
 		await app.init();
 
-		createTextileProductUseCase =
-			moduleFixture.get<CreateTextileProductUseCase>(
-				CreateTextileProductUseCase,
-			);
-		getAllTextileProductsUseCase =
-			moduleFixture.get<GetAllTextileProductsUseCase>(
-				GetAllTextileProductsUseCase,
-			);
-		getByIdTextileProductUseCase =
-			moduleFixture.get<GetByIdTextileProductUseCase>(
-				GetByIdTextileProductUseCase,
-			);
-		updateTextileProductUseCase =
-			moduleFixture.get<UpdateTextileProductUseCase>(
-				UpdateTextileProductUseCase,
-			);
-		deleteTextileProductUseCase =
-			moduleFixture.get<DeleteTextileProductUseCase>(
-				DeleteTextileProductUseCase,
-			);
+		createTextileProductUseCase = moduleFixture.get(
+			CreateTextileProductUseCase,
+		);
+		getAllTextileProductsUseCase = moduleFixture.get(
+			GetAllTextileProductsUseCase,
+		);
+		getByIdTextileProductUseCase = moduleFixture.get(
+			GetByIdTextileProductUseCase,
+		);
+		updateTextileProductUseCase = moduleFixture.get(
+			UpdateTextileProductUseCase,
+		);
+		deleteTextileProductUseCase = moduleFixture.get(
+			DeleteTextileProductUseCase,
+		);
 	});
 
 	afterAll(async () => {
 		await app.close();
 	});
-
 	afterEach(() => {
 		jest.clearAllMocks();
 	});
 
+	// ─── POST /textile-products ────────────────────────────────────────────────
 	describe('POST /textile-products', () => {
 		it('should create a new textile product', () => {
 			jest
@@ -514,7 +330,7 @@ describe('TextileProductController (e2e)', () => {
 				.expect((res) => {
 					expect(res.body).toMatchObject({
 						id: expect.any(String),
-						status: TextileProductStatus.PUBLISHED,
+						status: mockTextileProduct.status,
 						baseInfo: expect.objectContaining({ title: mockBaseInfo.title }),
 						priceInventary: expect.objectContaining({
 							basePrice: mockPriceInventary.basePrice,
@@ -540,63 +356,44 @@ describe('TextileProductController (e2e)', () => {
 		});
 
 		it('should return 400 when baseInfo.title is missing', () => {
-			const invalidDto = {
-				...createDto,
-				baseInfo: {
-					...createDto.baseInfo,
-					title: undefined,
-				},
-			};
-
 			return request(app.getHttpServer())
 				.post('/textile-products')
-				.send(invalidDto)
+				.send({
+					...createDto,
+					baseInfo: { ...createDto.baseInfo, title: undefined },
+				})
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 
 		it('should return 400 when basePrice is less than 0', () => {
-			const invalidDto = {
-				...createDto,
-				priceInventary: {
-					...createDto.priceInventary,
-					basePrice: -1,
-				},
-			};
-
 			return request(app.getHttpServer())
 				.post('/textile-products')
-				.send(invalidDto)
+				.send({
+					...createDto,
+					priceInventary: { ...createDto.priceInventary, basePrice: -1 },
+				})
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 
 		it('should return 400 when totalStock is negative', () => {
-			const invalidDto = {
-				...createDto,
-				priceInventary: {
-					...createDto.priceInventary,
-					totalStock: -1,
-				},
-			};
-
 			return request(app.getHttpServer())
 				.post('/textile-products')
-				.send(invalidDto)
+				.send({
+					...createDto,
+					priceInventary: { ...createDto.priceInventary, totalStock: -1 },
+				})
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 
 		it('should return 400 when status is invalid', () => {
-			const invalidDto = {
-				...createDto,
-				status: 'INVALID_STATUS',
-			};
-
 			return request(app.getHttpServer())
 				.post('/textile-products')
-				.send(invalidDto)
+				.send({ ...createDto, status: 'INVALID_STATUS' })
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 	});
 
+	// ─── GET /textile-products ─────────────────────────────────────────────────
 	describe('GET /textile-products', () => {
 		it('should get all textile products without pagination', async () => {
 			jest
@@ -644,45 +441,33 @@ describe('TextileProductController (e2e)', () => {
 				.get('/textile-products')
 				.expect(HttpStatus.OK);
 
-			// Verificar estructura de colors
-			if (response.body.filterCount.colors.length > 0) {
-				expect(response.body.filterCount.colors[0]).toHaveProperty('label');
-				expect(response.body.filterCount.colors[0]).toHaveProperty('count');
-				expect(typeof response.body.filterCount.colors[0].label).toBe('string');
-				expect(typeof response.body.filterCount.colors[0].count).toBe('number');
-			}
+			const { colors, sizes, communities, categories } =
+				response.body.filterCount;
 
-			// Verificar estructura de sizes
-			if (response.body.filterCount.sizes.length > 0) {
-				expect(response.body.filterCount.sizes[0]).toHaveProperty('label');
-				expect(response.body.filterCount.sizes[0]).toHaveProperty('count');
+			if (colors.length > 0) {
+				expect(colors[0]).toHaveProperty('label');
+				expect(colors[0]).toHaveProperty('count');
+				expect(typeof colors[0].label).toBe('string');
+				expect(typeof colors[0].count).toBe('number');
 			}
-
-			// Verificar estructura de communities
-			if (response.body.filterCount.communities.length > 0) {
-				expect(response.body.filterCount.communities[0]).toHaveProperty(
-					'label',
-				);
-				expect(response.body.filterCount.communities[0]).toHaveProperty(
-					'count',
-				);
+			if (sizes.length > 0) {
+				expect(sizes[0]).toHaveProperty('label');
+				expect(sizes[0]).toHaveProperty('count');
 			}
-
-			// Verificar estructura de categories
-			if (response.body.filterCount.categories.length > 0) {
-				expect(response.body.filterCount.categories[0]).toHaveProperty('label');
-				expect(response.body.filterCount.categories[0]).toHaveProperty('count');
+			if (communities.length > 0) {
+				expect(communities[0]).toHaveProperty('label');
+				expect(communities[0]).toHaveProperty('count');
+			}
+			if (categories.length > 0) {
+				expect(categories[0]).toHaveProperty('label');
+				expect(categories[0]).toHaveProperty('count');
 			}
 		});
 
 		it('should get textile products with pagination', async () => {
 			const paginatedResponse = {
 				products: [mockTextileProductListItem],
-				pagination: {
-					total: 100,
-					page: 2,
-					per_page: 20,
-				},
+				pagination: { total: 100, page: 2, per_page: 20 },
 				filterCount: mockPaginatedResponse.filterCount,
 			};
 
@@ -695,7 +480,6 @@ describe('TextileProductController (e2e)', () => {
 				.expect(HttpStatus.OK);
 
 			expect(response.body).toHaveProperty('products');
-			expect(response.body).toHaveProperty('pagination');
 			expect(response.body.pagination).toHaveProperty('page');
 			expect(response.body.pagination).toHaveProperty('per_page');
 			expect(response.body.pagination).toHaveProperty('total');
@@ -790,7 +574,6 @@ describe('TextileProductController (e2e)', () => {
 			expect(response.body).toHaveProperty('products');
 			expect(response.body.pagination).toHaveProperty('total');
 			expect(response.body).toHaveProperty('filterCount');
-			// Los contadores no deberían estar vacíos al filtrar solo por precio
 			expect(response.body.filterCount.colors.length).toBeGreaterThan(0);
 		});
 
@@ -835,10 +618,10 @@ describe('TextileProductController (e2e)', () => {
 				.mockResolvedValueOnce(filteredResponse);
 
 			const response = await request(app.getHttpServer())
-				.get('/textile-products?category_id=category-poncho-001')
+				.get(`/textile-products?category_id=${createDto.categoryId}`)
 				.expect(HttpStatus.OK);
 
-			expect(spy).toHaveBeenCalledWith({ categoryId: 'category-poncho-001' });
+			expect(spy).toHaveBeenCalledWith({ categoryId: createDto.categoryId });
 			expect(response.body).toHaveProperty('filterCount');
 		});
 
@@ -859,10 +642,10 @@ describe('TextileProductController (e2e)', () => {
 				.mockResolvedValueOnce(filteredResponse);
 
 			const response = await request(app.getHttpServer())
-				.get('/textile-products?owner_id=shop-123')
+				.get(`/textile-products?owner_id=${mockBaseInfo.ownerId}`)
 				.expect(HttpStatus.OK);
 
-			expect(spy).toHaveBeenCalledWith({ ownerId: 'shop-123' });
+			expect(spy).toHaveBeenCalledWith({ ownerId: mockBaseInfo.ownerId });
 			expect(response.body).toHaveProperty('filterCount');
 		});
 
@@ -884,12 +667,12 @@ describe('TextileProductController (e2e)', () => {
 
 			const response = await request(app.getHttpServer())
 				.get(
-					'/textile-products?category_id=category-poncho-001&color=rojo&size=L&min_price=100&max_price=200&page=2&per_page=20',
+					`/textile-products?category_id=${createDto.categoryId}&color=rojo&size=L&min_price=100&max_price=200&page=2&per_page=20`,
 				)
 				.expect(HttpStatus.OK);
 
 			expect(spy).toHaveBeenCalledWith({
-				categoryId: 'category-poncho-001',
+				categoryId: createDto.categoryId,
 				color: 'rojo',
 				size: 'L',
 				minPrice: 100,
@@ -915,12 +698,7 @@ describe('TextileProductController (e2e)', () => {
 			const filteredResponse = {
 				products: [mockTextileProductListItem],
 				pagination: { total: 1, page: 1, per_page: 10 },
-				filterCount: {
-					colors: [{ label: 'rojo', count: 5 }],
-					sizes: [{ label: 'm', count: 5 }],
-					communities: [{ label: 'Comunidad Andina Norte', count: 5 }],
-					categories: [{ label: 'Ponchos', count: 5 }],
-				},
+				filterCount: mockPaginatedResponse.filterCount,
 			};
 
 			jest
@@ -935,18 +713,7 @@ describe('TextileProductController (e2e)', () => {
 			expect(Array.isArray(response.body.filterCount.communities)).toBe(true);
 		});
 
-		it('should return empty arrays in filterCount when no products match filters', async () => {
-			const emptyResponse = {
-				products: [],
-				pagination: { total: 0, page: 1, per_page: 10 },
-				filterCount: {
-					colors: [],
-					sizes: [],
-					communities: [],
-					categories: [],
-				},
-			};
-
+		it('should return 404 when no products match filters', async () => {
 			jest
 				.spyOn(getAllTextileProductsUseCase, 'handle')
 				.mockImplementationOnce(() => {
@@ -1002,25 +769,23 @@ describe('TextileProductController (e2e)', () => {
 		});
 
 		it('should combine sort_by with other filters', async () => {
-			const sortedFilteredResponse = {
-				products: [mockTextileProductListItem],
-				pagination: { total: 1, page: 1, per_page: 10 },
-				filterCount: mockPaginatedResponse.filterCount,
-			};
-
 			const spy = jest
 				.spyOn(getAllTextileProductsUseCase, 'handle')
-				.mockResolvedValueOnce(sortedFilteredResponse);
+				.mockResolvedValueOnce({
+					products: [mockTextileProductListItem],
+					pagination: { total: 1, page: 1, per_page: 10 },
+					filterCount: mockPaginatedResponse.filterCount,
+				});
 
 			const response = await request(app.getHttpServer())
 				.get(
-					'/textile-products?sort_by=popular&category_id=category-poncho-001&page=1&per_page=20',
+					`/textile-products?sort_by=popular&category_id=${createDto.categoryId}&page=1&per_page=20`,
 				)
 				.expect(HttpStatus.OK);
 
 			expect(spy).toHaveBeenCalledWith({
 				sortBy: ProductSortBy.POPULAR,
-				categoryId: 'category-poncho-001',
+				categoryId: createDto.categoryId,
 				page: 1,
 				perPage: 20,
 			});
@@ -1028,15 +793,13 @@ describe('TextileProductController (e2e)', () => {
 		});
 
 		it('should combine sort_by=latest with color and price filters', async () => {
-			const sortedFilteredResponse = {
-				products: [mockTextileProductListItem],
-				pagination: { total: 1, page: 1, per_page: 10 },
-				filterCount: mockPaginatedResponse.filterCount,
-			};
-
 			const spy = jest
 				.spyOn(getAllTextileProductsUseCase, 'handle')
-				.mockResolvedValueOnce(sortedFilteredResponse);
+				.mockResolvedValueOnce({
+					products: [mockTextileProductListItem],
+					pagination: { total: 1, page: 1, per_page: 10 },
+					filterCount: mockPaginatedResponse.filterCount,
+				});
 
 			const response = await request(app.getHttpServer())
 				.get(
@@ -1056,7 +819,7 @@ describe('TextileProductController (e2e)', () => {
 
 	// SKIPPED: Route GET /:id commented out in controller (only GET /:id/details is active)
 	describe.skip('GET /textile-products/:id', () => {
-		const productId = 'textile-uuid-123';
+		const productId = fixture.entity.id;
 
 		it('should get a textile product by id', () => {
 			jest
@@ -1069,7 +832,7 @@ describe('TextileProductController (e2e)', () => {
 				.expect((res) => {
 					expect(res.body).toMatchObject({
 						id: mockTextileProduct.id,
-						status: TextileProductStatus.PUBLISHED,
+						status: mockTextileProduct.status,
 						baseInfo: expect.objectContaining({ title: mockBaseInfo.title }),
 						priceInventary: expect.objectContaining({
 							basePrice: mockPriceInventary.basePrice,
@@ -1090,15 +853,15 @@ describe('TextileProductController (e2e)', () => {
 		});
 	});
 
+	// ─── GET /textile-products/:id/details ────────────────────────────────────
 	describe('GET /textile-products/:id/details', () => {
-		const productId = 'textile-uuid-123';
+		const productId = fixture.entity.id;
 		let getByIdTextileProductDetailUseCase: GetByIdTextileProductDetailUseCase;
 
 		beforeEach(() => {
-			getByIdTextileProductDetailUseCase =
-				app.get<GetByIdTextileProductDetailUseCase>(
-					GetByIdTextileProductDetailUseCase,
-				);
+			getByIdTextileProductDetailUseCase = app.get(
+				GetByIdTextileProductDetailUseCase,
+			);
 		});
 
 		it('should return the full detail response with id', () => {
@@ -1110,8 +873,8 @@ describe('TextileProductController (e2e)', () => {
 				.get(`/textile-products/${productId}/details`)
 				.expect(HttpStatus.OK)
 				.expect((res) => {
-					expect(res.body).toHaveProperty('id', 'textile-uuid-123');
-					expect(res.body).toHaveProperty('name', 'Poncho Andino Premium');
+					expect(res.body).toHaveProperty('id', mockDetailResponse.id);
+					expect(res.body).toHaveProperty('name', mockDetailResponse.name);
 				});
 		});
 
@@ -1194,15 +957,16 @@ describe('TextileProductController (e2e)', () => {
 		});
 	});
 
+	// ─── PUT /textile-products/:id ─────────────────────────────────────────────
 	describe('PUT /textile-products/:id', () => {
-		const productId = 'textile-uuid-123';
+		const productId = fixture.entity.id;
 		const updatedProduct = {
 			...mockTextileProduct,
-			baseInfo: { ...mockBaseInfo, title: 'Poncho Andino Premium Actualizado' },
+			baseInfo: { ...mockBaseInfo, title: updateDto.baseInfo.title },
 			priceInventary: {
 				...mockPriceInventary,
-				basePrice: 180.0,
-				totalStock: 75,
+				basePrice: updateDto.priceInventary.basePrice,
+				totalStock: updateDto.priceInventary.totalStock,
 			},
 		};
 
@@ -1219,11 +983,11 @@ describe('TextileProductController (e2e)', () => {
 					expect(res.body).toMatchObject({
 						id: productId,
 						baseInfo: expect.objectContaining({
-							title: 'Poncho Andino Premium Actualizado',
+							title: updateDto.baseInfo.title,
 						}),
 						priceInventary: expect.objectContaining({
-							basePrice: 180.0,
-							totalStock: 75,
+							basePrice: updateDto.priceInventary.basePrice,
+							totalStock: updateDto.priceInventary.totalStock,
 						}),
 					});
 				});
@@ -1249,38 +1013,29 @@ describe('TextileProductController (e2e)', () => {
 		});
 
 		it('should return 400 when updating with invalid basePrice', () => {
-			const invalidDto = {
-				...updateDto,
-				priceInventary: {
-					...updateDto.priceInventary,
-					basePrice: -10,
-				},
-			};
-
 			return request(app.getHttpServer())
 				.put(`/textile-products/${productId}`)
-				.send(invalidDto)
+				.send({
+					...updateDto,
+					priceInventary: { ...updateDto.priceInventary, basePrice: -10 },
+				})
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 
 		it('should return 400 when updating with invalid totalStock', () => {
-			const invalidDto = {
-				...updateDto,
-				priceInventary: {
-					...updateDto.priceInventary,
-					totalStock: -5,
-				},
-			};
-
 			return request(app.getHttpServer())
 				.put(`/textile-products/${productId}`)
-				.send(invalidDto)
+				.send({
+					...updateDto,
+					priceInventary: { ...updateDto.priceInventary, totalStock: -5 },
+				})
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 	});
 
+	// ─── DELETE /textile-products/:id ──────────────────────────────────────────
 	describe('DELETE /textile-products/:id', () => {
-		const productId = 'textile-uuid-123';
+		const productId = fixture.entity.id;
 
 		it('should delete a textile product', () => {
 			jest
