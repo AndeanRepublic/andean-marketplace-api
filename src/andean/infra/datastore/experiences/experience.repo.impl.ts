@@ -233,29 +233,13 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 		const availability = await this.availabilityRepo.getById(
 			experience.availabilityId,
 		);
-		if (!availability || !availability.specificAvailableStartDates?.length) return [];
+		if (!availability || !availability.specificAvailableStartDates?.length)
+			return [];
 
 		const now = new Date();
 		now.setHours(0, 0, 0, 0);
 
 		return [...(availability.specificAvailableStartDates ?? [])]
-			.map((date) => new Date(date))
-			.filter((date) => date >= now)
-			.sort((a, b) => a.getTime() - b.getTime());
-	}
-
-	async getFutureUnavailableDates(experienceId: string): Promise<Date[]> {
-		const experience = await this.getById(experienceId);
-		if (!experience) return [];
-		const availability = await this.availabilityRepo.getById(
-			experience.availabilityId,
-		);
-		if (!availability || !availability?.excludedDates?.length) return [];
-
-		const now = new Date();
-		now.setHours(0, 0, 0, 0);
-
-		return [...availability.excludedDates]
 			.map((date) => new Date(date))
 			.filter((date) => date >= now)
 			.sort((a, b) => a.getTime() - b.getTime());

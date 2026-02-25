@@ -24,6 +24,7 @@ import {
 	ExperienceDetailResponse,
 } from '../../models/experiences/ExperienceDetailResponse';
 import { ExperienceDetailMapper } from 'src/andean/infra/services/experiences/ExperienceDetailMapper';
+import { GetFutureUnavailableDatesUseCase } from './GetFutureUnavailableDatesUseCase';
 
 @Injectable()
 export class GetByIdExperienceUseCase {
@@ -53,6 +54,8 @@ export class GetByIdExperienceUseCase {
 		@Inject(BookingRepository)
 		private readonly bookingRepository: BookingRepository,
 		private readonly configService: ConfigService,
+		@Inject(GetFutureUnavailableDatesUseCase)
+		private readonly getFutureUnavailableDatesUseCase: GetFutureUnavailableDatesUseCase,
 	) {
 		this.storageBaseUrl = this.configService.get<string>(
 			'STORAGE_BASE_URL',
@@ -209,19 +212,16 @@ export class GetByIdExperienceUseCase {
 		availabilityId: string,
 	): Promise<ExperienceAvailabilityResponse> {
 		const availability = await this.availabilityRepo.getById(availabilityId);
-		const availableDates =
+		const availableStartDates =
 			await this.experienceRepo.getFutureAvailableDates(availabilityId);
-		const unavailableDates =
-			await this.experienceRepo.getFutureUnavailableDates(availabilityId);
-		const futureBookings =
-			await this.bookingRepository.getFutureBookings(availabilityId);
 		const weeklyStartDays =
 			await this.experienceRepo.getWeeklyStartDays(availabilityId);
-		const excludedDates = [...unavailableDates, ...futureBookings];
+		const excludedDates =
+			await this.getFutureUnavailableDatesUseCase.handle(availabilityId);
 
 		return {
 			weeklyStartDays,
-			specificAvailableStartDates: availableDates,
+			specificAvailableStartDates: availableStartDates,
 			excludedDates,
 		};
 	}

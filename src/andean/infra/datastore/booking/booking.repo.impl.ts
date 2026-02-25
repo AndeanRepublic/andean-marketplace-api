@@ -112,11 +112,28 @@ export class BookingRepositoryImpl extends BookingRepository {
 		const now = new Date();
 		const docs = await this.bookingModel
 			.find({
+				'experience.experienceId': experienceId,
 				experienceDate: { $gte: now },
 				status: { $in: [BookingStatus.PENDING, BookingStatus.CONFIRMED] },
 			})
+			.select({ experienceDate: 1, _id: 0 })
 			.exec();
 
 		return docs.map((doc: BookingDocument) => doc.experienceDate);
+	}
+
+	async getTotalGuestsReservedForDate(
+		experienceId: string,
+		date: Date,
+	): Promise<number> {
+		const docs = await this.bookingModel
+			.find({
+				'experience.experienceId': experienceId,
+				experienceDate: date,
+				status: { $in: [BookingStatus.PENDING, BookingStatus.CONFIRMED] },
+			})
+			.select({ guestsInfo: 1, _id: 0 })
+			.exec();
+		return docs.reduce((acc, doc) => acc + doc.guestsInfo.totalGuests, 0);
 	}
 }

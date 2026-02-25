@@ -62,79 +62,6 @@ export class CustomerInfoDto implements CustomerInfo {
 	phoneNumber!: string;
 }
 
-export class AgeGroupPricingDto implements AgeGroupPricing {
-	@ApiProperty({ enum: AgeGroupCode, description: 'Código del grupo etario' })
-	@IsEnum(AgeGroupCode)
-	@IsNotEmpty()
-	code!: AgeGroupCode;
-
-	@ApiProperty({ description: 'Etiqueta', example: 'Adultos' })
-	@IsString()
-	@IsNotEmpty()
-	label!: string;
-
-	@ApiPropertyOptional({ description: 'Edad mínima' })
-	@IsNumber()
-	@IsOptional()
-	minAge?: number;
-
-	@ApiPropertyOptional({ description: 'Edad máxima' })
-	@IsNumber()
-	@IsOptional()
-	maxAge?: number;
-
-	@ApiProperty({ description: 'Precio', minimum: 0 })
-	@IsNumber()
-	@Min(0)
-	@IsNotEmpty()
-	price!: number;
-}
-
-export class ExperienceSnapshotDto implements ExperienceSnapshot {
-	@ApiProperty({ description: 'Nombre de la experiencia' })
-	@IsString()
-	@IsNotEmpty()
-	name!: string;
-
-	@ApiProperty({ description: 'Días', minimum: 1 })
-	@IsNumber()
-	@Min(1)
-	@IsNotEmpty()
-	days!: number;
-
-	@ApiProperty({ description: 'Noches', minimum: 0 })
-	@IsNumber()
-	@Min(0)
-	@IsNotEmpty()
-	nights!: number;
-
-	@ApiProperty({
-		type: [AgeGroupPricingDto],
-		description: 'Precios por grupo etario',
-	})
-	@IsArray()
-	@ArrayNotEmpty()
-	@ValidateNested({ each: true })
-	@Type(() => AgeGroupPricingDto)
-	ageGroupPricing!: AgeGroupPricingDto[];
-}
-
-export class ExperienceInfoDto implements ExperienceInfo {
-	@ApiProperty({ description: 'ID de la experiencia' })
-	@IsString()
-	@IsNotEmpty()
-	experienceId!: string;
-
-	@ApiProperty({
-		type: ExperienceSnapshotDto,
-		description: 'Snapshot de la experiencia',
-	})
-	@ValidateNested()
-	@Type(() => ExperienceSnapshotDto)
-	@IsObject()
-	experienceSnapshot!: ExperienceSnapshotDto;
-}
-
 export class BookingPricingDto implements BookingPricing {
 	@ApiProperty({ description: 'Subtotal', minimum: 0 })
 	@IsNumber()
@@ -172,19 +99,6 @@ export class BookingPricingDto implements BookingPricing {
 	currency!: string;
 }
 
-export class AgeGroupInfoDto implements AgeGroupInfo {
-	@ApiProperty({ enum: AgeGroupCode, description: 'Código del grupo etario' })
-	@IsEnum(AgeGroupCode)
-	@IsNotEmpty()
-	code!: AgeGroupCode;
-
-	@ApiProperty({ description: 'Cantidad', minimum: 0 })
-	@IsNumber()
-	@Min(0)
-	@IsNotEmpty()
-	quantity!: number;
-}
-
 export class TravelerInfoDto implements TravelerInfo {
 	@ApiProperty({ description: 'Nombre', example: 'Juan' })
 	@IsString()
@@ -208,14 +122,7 @@ export class TravelerInfoDto implements TravelerInfo {
 	birthDate!: Date;
 }
 
-export class GuestsInfoDto implements GuestsInfo {
-	@ApiProperty({ type: [AgeGroupInfoDto], description: 'Grupos etarios' })
-	@IsArray()
-	@ArrayNotEmpty()
-	@ValidateNested({ each: true })
-	@Type(() => AgeGroupInfoDto)
-	ageGroups!: AgeGroupInfoDto[];
-
+export class GuestsInfoDto {
 	@ApiProperty({ description: 'Total de huéspedes', minimum: 1 })
 	@IsNumber()
 	@Min(1)
@@ -327,14 +234,10 @@ export class CreateBookingDto {
 	@IsNotEmpty()
 	experienceDate!: Date;
 
-	@ApiProperty({
-		type: ExperienceInfoDto,
-		description: 'Información de la experiencia',
-	})
-	@ValidateNested()
-	@Type(() => ExperienceInfoDto)
-	@IsObject()
-	experience!: ExperienceInfoDto;
+	@ApiProperty({ description: 'ID de la experiencia' })
+	@IsString()
+	@IsNotEmpty()
+	experienceId!: string;
 
 	@ApiProperty({
 		type: BookingPricingDto,

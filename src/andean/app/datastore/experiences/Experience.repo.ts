@@ -31,6 +31,5 @@ export abstract class ExperienceRepository {
 		filters: ExperienceFilters,
 	): Promise<{ items: ExperienceListRawItem[]; total: number }>;
 	abstract getWeeklyStartDays(experienceId: string): Promise<WeekDay[]>;
-	abstract getFutureUnavailableDates(experienceId: string): Promise<Date[]>;
 	abstract getFutureAvailableDates(experienceId: string): Promise<Date[]>;
 }
