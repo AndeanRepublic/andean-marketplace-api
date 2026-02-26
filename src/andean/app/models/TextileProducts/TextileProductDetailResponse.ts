@@ -155,6 +155,12 @@ export class ColorInfoResponse {
 }
 
 export class SimilarProductResponse {
+	@ApiProperty({
+		description: 'ID único del producto similar',
+		example: '6973d8ffddef7b59c2d4dcfb',
+	})
+	id!: string;
+
 	@ApiProperty({ description: 'Título del producto similar' })
 	title!: string;
 
@@ -208,6 +214,12 @@ export class CommunityInfoResponse {
 
 // ── Main response ────────────────────────────────────────────────────────
 export class TextileProductDetailResponse {
+	@ApiProperty({
+		description: 'ID único del producto textil',
+		example: '6973d8ffddef7b59c2d4dcfb',
+	})
+	id!: string;
+
 	@ApiProperty({ description: 'Nombre del producto textil' })
 	name!: string;
 

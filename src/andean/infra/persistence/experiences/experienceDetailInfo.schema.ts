@@ -1,5 +1,6 @@
-import { Document, Schema } from 'mongoose';
+import { Schema } from 'mongoose';
 
+// Sub-schema embebido — { _id: false } porque no es una colección propia
 export const ExperienceDetailInfoSchema = new Schema({
 	shortDescription: { type: String, required: true },
 	largeDescription: { type: String, required: true },
@@ -13,7 +14,7 @@ export const ExperienceDetailInfoSchema = new Schema({
 	shouldCarry: { type: [String], default: [] },
 	aditionalInformation: { type: [String], default: [] },
 	contactNumber: { type: String, required: false },
-});
+}, { _id: false });
 
 export interface ExperienceDetailInfoDocument extends Document {
 	shortDescription: string;

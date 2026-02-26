@@ -15,7 +15,7 @@ export class CreatePayPalOrderUseCase {
 			items: dto.items?.map((item) => ({
 				name: item.name,
 				quantity: item.quantity,
-				unit_amount: item.unit_amount,
+				unitAmount: item.unitAmount,
 			})),
 		});
 

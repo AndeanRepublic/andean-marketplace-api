@@ -12,6 +12,8 @@ import { CreateOrderFromCartUseCase } from '../src/andean/app/use_cases/orders/C
 import { GetOrderByIdUseCase } from '../src/andean/app/use_cases/orders/GetOrderByIdUseCase';
 import { GetOrdersByCustomerUseCase } from '../src/andean/app/use_cases/orders/GetOrdersByCustomerUseCase';
 import { UpdateOrderStatusUseCase } from '../src/andean/app/use_cases/orders/UpdateOrderStatusUseCase';
+import { CreatePayPalOrderUseCase } from '../src/andean/app/use_cases/payments/CreatePayPalOrderUseCase';
+import { CapturePayPalOrderUseCase } from '../src/andean/app/use_cases/payments/CapturePayPalOrderUseCase';
 
 // ─── Domain ─────────────────────────────────────────────────────────────────
 import { Order } from '../src/andean/domain/entities/order/Order';
@@ -69,12 +71,35 @@ describe('OrderController (e2e)', () => {
 					provide: UpdateOrderStatusUseCase,
 					useValue: { handle: jest.fn().mockResolvedValue(updatedOrder) },
 				},
+				{
+					provide: CreatePayPalOrderUseCase,
+					useValue: {
+						handle: jest
+							.fn()
+							.mockResolvedValue({ orderId: 'PAYPAL-ORDER-123' }),
+					},
+				},
+				{
+					provide: CapturePayPalOrderUseCase,
+					useValue: {
+						handle: jest.fn().mockResolvedValue({
+							success: true,
+							orderId: 'PAYPAL-ORDER-123',
+							status: 'COMPLETED',
+							transactionId: '8F148899LY528414L',
+						}),
+					},
+				},
 			],
 		}).compile();
 
 		app = moduleFixture.createNestApplication();
 		app.useGlobalPipes(
-			new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }),
+			new ValidationPipe({
+				whitelist: true,
+				forbidNonWhitelisted: true,
+				transform: true,
+			}),
 		);
 		await app.init();
 
@@ -279,7 +304,9 @@ describe('OrderController (e2e)', () => {
 	// ═══════════════════════════════════════════════════════════════════════════
 	describe('POST /orders/from-cart', () => {
 		it('should create an order from cart with customerId query', () => {
-			jest.spyOn(createOrderFromCartUseCase, 'handle').mockResolvedValueOnce(mockOrder);
+			jest
+				.spyOn(createOrderFromCartUseCase, 'handle')
+				.mockResolvedValueOnce(mockOrder);
 			return request(app.getHttpServer())
 				.post('/orders/from-cart?customerId=customer-uuid-789')
 				.send(createFromCartDto)
@@ -297,7 +324,9 @@ describe('OrderController (e2e)', () => {
 		});
 
 		it('should create an order from cart with customerEmail query', () => {
-			jest.spyOn(createOrderFromCartUseCase, 'handle').mockResolvedValueOnce(mockOrder);
+			jest
+				.spyOn(createOrderFromCartUseCase, 'handle')
+				.mockResolvedValueOnce(mockOrder);
 			return request(app.getHttpServer())
 				.post('/orders/from-cart?customerEmail=juan.perez@example.com')
 				.send(createFromCartDto)
@@ -305,7 +334,9 @@ describe('OrderController (e2e)', () => {
 		});
 
 		it('should call the use case with correct parameters', async () => {
-			jest.spyOn(createOrderFromCartUseCase, 'handle').mockResolvedValueOnce(mockOrder);
+			jest
+				.spyOn(createOrderFromCartUseCase, 'handle')
+				.mockResolvedValueOnce(mockOrder);
 			await request(app.getHttpServer())
 				.post('/orders/from-cart?customerId=customer-uuid-789')
 				.send(createFromCartDto)
@@ -344,9 +375,11 @@ describe('OrderController (e2e)', () => {
 		});
 
 		it('should return 404 when cart is not found', () => {
-			jest.spyOn(createOrderFromCartUseCase, 'handle').mockRejectedValueOnce(
-				new (require('@nestjs/common').NotFoundException)('Cart not found'),
-			);
+			jest
+				.spyOn(createOrderFromCartUseCase, 'handle')
+				.mockRejectedValueOnce(
+					new (require('@nestjs/common').NotFoundException)('Cart not found'),
+				);
 			return request(app.getHttpServer())
 				.post('/orders/from-cart?customerId=non-existent')
 				.send(createFromCartDto)
@@ -354,9 +387,11 @@ describe('OrderController (e2e)', () => {
 		});
 
 		it('should return 400 when cart is empty', () => {
-			jest.spyOn(createOrderFromCartUseCase, 'handle').mockRejectedValueOnce(
-				new (require('@nestjs/common').BadRequestException)('Cart is empty'),
-			);
+			jest
+				.spyOn(createOrderFromCartUseCase, 'handle')
+				.mockRejectedValueOnce(
+					new (require('@nestjs/common').BadRequestException)('Cart is empty'),
+				);
 			return request(app.getHttpServer())
 				.post('/orders/from-cart?customerId=customer-uuid-789')
 				.send(createFromCartDto)
@@ -371,7 +406,9 @@ describe('OrderController (e2e)', () => {
 		const orderId = mockOrder.id;
 
 		it('should return an order by id', () => {
-			jest.spyOn(getOrderByIdUseCase, 'handle').mockResolvedValueOnce(mockOrder);
+			jest
+				.spyOn(getOrderByIdUseCase, 'handle')
+				.mockResolvedValueOnce(mockOrder);
 			return request(app.getHttpServer())
 				.get(`/orders/${orderId}`)
 				.expect(HttpStatus.OK)
@@ -389,7 +426,9 @@ describe('OrderController (e2e)', () => {
 		});
 
 		it('should call the use case with the correct id', async () => {
-			jest.spyOn(getOrderByIdUseCase, 'handle').mockResolvedValueOnce(mockOrder);
+			jest
+				.spyOn(getOrderByIdUseCase, 'handle')
+				.mockResolvedValueOnce(mockOrder);
 			await request(app.getHttpServer())
 				.get(`/orders/${orderId}`)
 				.expect(HttpStatus.OK);
@@ -397,7 +436,9 @@ describe('OrderController (e2e)', () => {
 		});
 
 		it('should return correct item details', () => {
-			jest.spyOn(getOrderByIdUseCase, 'handle').mockResolvedValueOnce(mockOrder);
+			jest
+				.spyOn(getOrderByIdUseCase, 'handle')
+				.mockResolvedValueOnce(mockOrder);
 			return request(app.getHttpServer())
 				.get(`/orders/${orderId}`)
 				.expect(HttpStatus.OK)
@@ -407,8 +448,8 @@ describe('OrderController (e2e)', () => {
 					expect(textile.productType).toBe('TEXTILE');
 					expect(textile.name).toBe('Poncho Andino Premium');
 					expect(textile.quantity).toBe(2);
-					expect(textile.unitPrice).toBe(150.00);
-					expect(textile.totalPrice).toBe(300.00);
+					expect(textile.unitPrice).toBe(150.0);
+					expect(textile.totalPrice).toBe(300.0);
 
 					const superfood = res.body.items[1];
 					expect(superfood.productType).toBe('SUPERFOOD');
@@ -417,21 +458,25 @@ describe('OrderController (e2e)', () => {
 		});
 
 		it('should return correct pricing values', () => {
-			jest.spyOn(getOrderByIdUseCase, 'handle').mockResolvedValueOnce(mockOrder);
+			jest
+				.spyOn(getOrderByIdUseCase, 'handle')
+				.mockResolvedValueOnce(mockOrder);
 			return request(app.getHttpServer())
 				.get(`/orders/${orderId}`)
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					const pricing = res.body.pricing;
-					expect(pricing.subtotal).toBe(325.50);
-					expect(pricing.deliveryCost).toBe(15.00);
-					expect(pricing.totalAmount).toBe(350.50);
+					expect(pricing.subtotal).toBe(325.5);
+					expect(pricing.deliveryCost).toBe(15.0);
+					expect(pricing.totalAmount).toBe(350.5);
 					expect(pricing.currency).toBe('USD');
 				});
 		});
 
 		it('should return correct shipping info values', () => {
-			jest.spyOn(getOrderByIdUseCase, 'handle').mockResolvedValueOnce(mockOrder);
+			jest
+				.spyOn(getOrderByIdUseCase, 'handle')
+				.mockResolvedValueOnce(mockOrder);
 			return request(app.getHttpServer())
 				.get(`/orders/${orderId}`)
 				.expect(HttpStatus.OK)
@@ -445,7 +490,9 @@ describe('OrderController (e2e)', () => {
 		});
 
 		it('should return correct payment info', () => {
-			jest.spyOn(getOrderByIdUseCase, 'handle').mockResolvedValueOnce(mockOrder);
+			jest
+				.spyOn(getOrderByIdUseCase, 'handle')
+				.mockResolvedValueOnce(mockOrder);
 			return request(app.getHttpServer())
 				.get(`/orders/${orderId}`)
 				.expect(HttpStatus.OK)
@@ -458,18 +505,24 @@ describe('OrderController (e2e)', () => {
 		});
 
 		it('should return 404 when order is not found', () => {
-			jest.spyOn(getOrderByIdUseCase, 'handle').mockRejectedValueOnce(
-				new (require('@nestjs/common').NotFoundException)('Order not found'),
-			);
+			jest
+				.spyOn(getOrderByIdUseCase, 'handle')
+				.mockRejectedValueOnce(
+					new (require('@nestjs/common').NotFoundException)('Order not found'),
+				);
 			return request(app.getHttpServer())
 				.get('/orders/non-existent-id')
 				.expect(HttpStatus.NOT_FOUND);
 		});
 
 		it('should return 400 when order id is invalid', () => {
-			jest.spyOn(getOrderByIdUseCase, 'handle').mockRejectedValueOnce(
-				new (require('@nestjs/common').BadRequestException)('Invalid order ID'),
-			);
+			jest
+				.spyOn(getOrderByIdUseCase, 'handle')
+				.mockRejectedValueOnce(
+					new (require('@nestjs/common').BadRequestException)(
+						'Invalid order ID',
+					),
+				);
 			return request(app.getHttpServer())
 				.get('/orders/invalid-id')
 				.expect(HttpStatus.BAD_REQUEST);
@@ -483,7 +536,9 @@ describe('OrderController (e2e)', () => {
 		const customerId = 'customer-uuid-789';
 
 		it('should return orders for a customer', () => {
-			jest.spyOn(getOrdersByCustomerUseCase, 'handle').mockResolvedValueOnce(orderList);
+			jest
+				.spyOn(getOrdersByCustomerUseCase, 'handle')
+				.mockResolvedValueOnce(orderList);
 			return request(app.getHttpServer())
 				.get(`/orders/by-customer/${customerId}`)
 				.expect(HttpStatus.OK)
@@ -499,15 +554,21 @@ describe('OrderController (e2e)', () => {
 		});
 
 		it('should call the use case with the correct customerId', async () => {
-			jest.spyOn(getOrdersByCustomerUseCase, 'handle').mockResolvedValueOnce(orderList);
+			jest
+				.spyOn(getOrdersByCustomerUseCase, 'handle')
+				.mockResolvedValueOnce(orderList);
 			await request(app.getHttpServer())
 				.get(`/orders/by-customer/${customerId}`)
 				.expect(HttpStatus.OK);
-			expect(getOrdersByCustomerUseCase.handle).toHaveBeenCalledWith(customerId);
+			expect(getOrdersByCustomerUseCase.handle).toHaveBeenCalledWith(
+				customerId,
+			);
 		});
 
 		it('should return empty array when customer has no orders', () => {
-			jest.spyOn(getOrdersByCustomerUseCase, 'handle').mockResolvedValueOnce([]);
+			jest
+				.spyOn(getOrdersByCustomerUseCase, 'handle')
+				.mockResolvedValueOnce([]);
 			return request(app.getHttpServer())
 				.get(`/orders/by-customer/${customerId}`)
 				.expect(HttpStatus.OK)
@@ -517,18 +578,26 @@ describe('OrderController (e2e)', () => {
 		});
 
 		it('should return 404 when customer is not found', () => {
-			jest.spyOn(getOrdersByCustomerUseCase, 'handle').mockRejectedValueOnce(
-				new (require('@nestjs/common').NotFoundException)('Customer not found'),
-			);
+			jest
+				.spyOn(getOrdersByCustomerUseCase, 'handle')
+				.mockRejectedValueOnce(
+					new (require('@nestjs/common').NotFoundException)(
+						'Customer not found',
+					),
+				);
 			return request(app.getHttpServer())
 				.get('/orders/by-customer/non-existent-id')
 				.expect(HttpStatus.NOT_FOUND);
 		});
 
 		it('should return 400 when customerId is invalid', () => {
-			jest.spyOn(getOrdersByCustomerUseCase, 'handle').mockRejectedValueOnce(
-				new (require('@nestjs/common').BadRequestException)('Invalid customer ID'),
-			);
+			jest
+				.spyOn(getOrdersByCustomerUseCase, 'handle')
+				.mockRejectedValueOnce(
+					new (require('@nestjs/common').BadRequestException)(
+						'Invalid customer ID',
+					),
+				);
 			return request(app.getHttpServer())
 				.get('/orders/by-customer/invalid-id')
 				.expect(HttpStatus.BAD_REQUEST);
@@ -542,7 +611,9 @@ describe('OrderController (e2e)', () => {
 		const orderId = mockOrder.id;
 
 		it('should update order status', () => {
-			jest.spyOn(updateOrderStatusUseCase, 'handle').mockResolvedValueOnce(updatedOrder);
+			jest
+				.spyOn(updateOrderStatusUseCase, 'handle')
+				.mockResolvedValueOnce(updatedOrder);
 			return request(app.getHttpServer())
 				.put(`/orders/${orderId}/status`)
 				.send(updateDto)
@@ -556,7 +627,9 @@ describe('OrderController (e2e)', () => {
 		});
 
 		it('should call the use case with correct parameters', async () => {
-			jest.spyOn(updateOrderStatusUseCase, 'handle').mockResolvedValueOnce(updatedOrder);
+			jest
+				.spyOn(updateOrderStatusUseCase, 'handle')
+				.mockResolvedValueOnce(updatedOrder);
 			await request(app.getHttpServer())
 				.put(`/orders/${orderId}/status`)
 				.send(updateDto)
@@ -604,9 +677,11 @@ describe('OrderController (e2e)', () => {
 		});
 
 		it('should return 404 when order is not found', () => {
-			jest.spyOn(updateOrderStatusUseCase, 'handle').mockRejectedValueOnce(
-				new (require('@nestjs/common').NotFoundException)('Order not found'),
-			);
+			jest
+				.spyOn(updateOrderStatusUseCase, 'handle')
+				.mockRejectedValueOnce(
+					new (require('@nestjs/common').NotFoundException)('Order not found'),
+				);
 			return request(app.getHttpServer())
 				.put('/orders/non-existent-id/status')
 				.send(updateDto)
@@ -614,9 +689,13 @@ describe('OrderController (e2e)', () => {
 		});
 
 		it('should return 400 when order id is invalid', () => {
-			jest.spyOn(updateOrderStatusUseCase, 'handle').mockRejectedValueOnce(
-				new (require('@nestjs/common').BadRequestException)('Invalid order ID'),
-			);
+			jest
+				.spyOn(updateOrderStatusUseCase, 'handle')
+				.mockRejectedValueOnce(
+					new (require('@nestjs/common').BadRequestException)(
+						'Invalid order ID',
+					),
+				);
 			return request(app.getHttpServer())
 				.put('/orders/invalid-id/status')
 				.send(updateDto)
@@ -624,7 +703,9 @@ describe('OrderController (e2e)', () => {
 		});
 
 		it('should return updated order with new status and updatedAt', () => {
-			jest.spyOn(updateOrderStatusUseCase, 'handle').mockResolvedValueOnce(updatedOrder);
+			jest
+				.spyOn(updateOrderStatusUseCase, 'handle')
+				.mockResolvedValueOnce(updatedOrder);
 			return request(app.getHttpServer())
 				.put(`/orders/${orderId}/status`)
 				.send(updateDto)
@@ -634,7 +715,7 @@ describe('OrderController (e2e)', () => {
 					expect(res.body).toHaveProperty('updatedAt');
 					// Items and other data should remain unchanged
 					expect(res.body.items).toHaveLength(2);
-					expect(res.body.pricing.totalAmount).toBe(350.50);
+					expect(res.body.pricing.totalAmount).toBe(350.5);
 				});
 		});
 	});

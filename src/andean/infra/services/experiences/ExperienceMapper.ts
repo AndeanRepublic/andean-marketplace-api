@@ -1,23 +1,26 @@
 import { Experience } from 'src/andean/domain/entities/experiences/Experience';
 import { ExperienceDocument } from '../../persistence/experiences/experience.schema';
+import { ExperienceBasicInfoMapper } from './ExperienceBasicInfoMapper';
+import { ExperienceMediaInfoMapper } from './ExperienceMediaInfoMapper';
+import { ExperienceDetailInfoMapper } from './ExperienceDetailInfoMapper';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { Types } from 'mongoose';
 
 export class ExperienceMapper {
 	static fromDocument(doc: ExperienceDocument): Experience {
 		const plain = doc.toObject();
-		return plainToInstance(Experience, {
-			id: plain._id.toString(),
-			status: plain.status,
-			basicInfoId: plain.basicInfoId,
-			mediaInfoId: plain.mediaInfoId,
-			detailInfoId: plain.detailInfoId,
-			pricesId: plain.pricesId,
-			availabilityId: plain.availabilityId,
-			itineraryIds: plain.itineraryIds,
-			createdAt: plain.createdAt,
-			updatedAt: plain.updatedAt,
-		});
+		return new Experience(
+			plain._id.toString(),
+			plain.status,
+			ExperienceBasicInfoMapper.fromPlain(plain.basicInfo),
+			ExperienceMediaInfoMapper.fromPlain(plain.mediaInfo),
+			ExperienceDetailInfoMapper.fromPlain(plain.detailInfo),
+			plain.pricesId,
+			plain.availabilityId,
+			plain.itineraryIds,
+			plain.createdAt,
+			plain.updatedAt,
+		);
 	}
 
 	static fromCreateDto(dto: any): Experience {
@@ -25,15 +28,6 @@ export class ExperienceMapper {
 			id: new Types.ObjectId().toString(),
 			...dto,
 			createdAt: new Date(),
-			updatedAt: new Date(),
-		};
-		return plainToInstance(Experience, plain);
-	}
-
-	static fromUpdateDto(id: string, dto: any): Experience {
-		const plain = {
-			id,
-			...dto,
 			updatedAt: new Date(),
 		};
 		return plainToInstance(Experience, plain);
