@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { BookingSchema } from './infra/persistence/booking/booking.schema';
 import { ExperiencePricesSchema } from './infra/persistence/experiences/experiencePrices.schema';
@@ -31,7 +31,7 @@ import { BookingRepositoryImpl } from './infra/datastore/booking/booking.repo.im
 			{ name: 'ExperiencePrices', schema: ExperiencePricesSchema },
 		]),
 		UsersModule,
-		ExperienceModule,
+		forwardRef(() => ExperienceModule),
 	],
 	controllers: [BookingController],
 	providers: [
@@ -50,14 +50,14 @@ import { BookingRepositoryImpl } from './infra/datastore/booking/booking.repo.im
 			provide: BookingRepository,
 			useClass: BookingRepositoryImpl,
 		},
-		{
-			provide: ExperienceRepository,
-			useClass: ExperienceRepositoryImpl,
-		},
-		{
-			provide: ExperiencePricesRepository,
-			useClass: ExperiencePricesRepositoryImpl,
-		},
+		// {
+		// 	provide: ExperienceRepository,
+		// 	useClass: ExperienceRepositoryImpl,
+		// },
+		// {
+		// 	provide: ExperiencePricesRepository,
+		// 	useClass: ExperiencePricesRepositoryImpl,
+		// },
 	],
 	exports: [BookingRepository],
 })

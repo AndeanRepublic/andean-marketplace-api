@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 // Schemas
@@ -65,7 +65,7 @@ import { BookingModule } from './booking.module';
 		MediaItemModule,
 		UsersModule,
 		ShopsModule,
-		BookingModule,
+		forwardRef(() => BookingModule),
 	],
 	controllers: [ExperienceController],
 	providers: [
@@ -117,6 +117,7 @@ import { BookingModule } from './booking.module';
 		ExperienceItineraryRepository,
 		ExperienceRepository,
 		ReviewRepository,
+		GetAvailabilityModeByIdUseCase,
 	],
 })
 export class ExperienceModule {}

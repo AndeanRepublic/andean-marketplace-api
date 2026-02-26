@@ -8,9 +8,7 @@ export class CreatePayPalBookingOrderUseCase {
 		private readonly createPayPalOrderService: CreatePayPalOrderService,
 	) {}
 
-	async handle(
-		dto: CreatePayPalBookingOrderDto,
-	): Promise<{ orderId: string }> {
+	async handle(dto: CreatePayPalBookingOrderDto): Promise<{ orderId: string }> {
 		const orderId = await this.createPayPalOrderService.execute({
 			amount: dto.amount,
 			currency: dto.currency,
@@ -18,8 +16,8 @@ export class CreatePayPalBookingOrderUseCase {
 				name: item.name,
 				quantity: item.quantity,
 				unitAmount: {
-					value: item.unit_amount.value,
-					currencyCode: item.unit_amount.currency_code,
+					value: item.unitAmount.value,
+					currencyCode: item.unitAmount.currencyCode,
 				},
 			})),
 			returnPath: dto.returnPath ?? '/bookings/checkout/success',
