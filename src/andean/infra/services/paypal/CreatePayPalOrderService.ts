@@ -1,5 +1,6 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
-import * as paypal from '@paypal/checkout-server-sdk';
+// import * as paypal from '@paypal/checkout-server-sdk';
+import { OrdersController, CheckoutPaymentIntent, OrderRequest, OrderApplicationContextLandingPage, OrderApplicationContextUserAction } from '@paypal/paypal-server-sdk';
 import { PayPalClientService } from './PayPalClientService';
 
 export interface CreatePayPalOrderRequest {
@@ -8,9 +9,9 @@ export interface CreatePayPalOrderRequest {
 	items?: Array<{
 		name: string;
 		quantity: number;
-		unit_amount: {
+		unitAmount: {
 			value: string;
-			currency_code: string;
+			currencyCode: string;
 		};
 	}>;
 }
@@ -35,48 +36,60 @@ export class CreatePayPalOrderService {
 			const client = this.paypalClientService.getClient();
 
 			// Crear estructura de request
-			const paypalRequest = new paypal.orders.OrdersCreateRequest();
-			paypalRequest.prefer('return=representation');
-			paypalRequest.requestBody({
-				intent: 'CAPTURE',
-				purchase_units: [
-					{
-						amount: {
-							currency_code: requestData.currency,
-							value: requestData.amount.toFixed(2),
-							...(requestData.items && requestData.items.length > 0
-								? {
-										breakdown: {
-											item_total: {
-												currency_code: requestData.currency,
-												value: requestData.amount.toFixed(2),
-											},
-										},
-									}
-								: {}),
-						},
-						...(requestData.items && requestData.items.length > 0
-							? { items: requestData.items }
-							: {}),
-					},
-				],
-				application_context: {
-					brand_name: 'Andean Republic',
-					landing_page: 'NO_PREFERENCE',
-					user_action: 'PAY_NOW',
-					return_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/checkout/success`,
-					cancel_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/checkout`,
+			const ordersController = new OrdersController(client);
+			const items = requestData.items?.map((item) => ({
+				name: item.name,
+				quantity: item.quantity.toString(),
+				unitAmount: {
+					value: item.unitAmount.value.toString(),
+					currencyCode: item.unitAmount.currencyCode,
 				},
-			});
+			}));
+			const collect = {
+				body: {
+					intent: CheckoutPaymentIntent.Capture,
+					purchaseUnits: [
+						{
+							amount: {
+								currencyCode: requestData.currency,
+								value: requestData.amount.toFixed(2),
+								...(requestData.items && requestData.items.length > 0
+									? {
+											breakdown: {
+												itemTotal: {
+													currencyCode: requestData.currency,
+													value: requestData.amount.toFixed(2),
+												},
+											},
+										}
+									: {}),
+							},
+							...(items && items.length > 0 ? { items } : {}),
+						},
+					],
+					applicationContext: {
+						brandName: 'Andean Republic',
+						landingPage: OrderApplicationContextLandingPage.NoPreference,
+						userAction: OrderApplicationContextUserAction.PayNow,
+						returnUrl: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/checkout/success`,
+						cancelUrl: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/checkout`,
+					},
+				},
+				prefer: 'return=representation',
+			}
 
 			// Ejecutar la petición
-			const response = await client.execute(paypalRequest);
+			const response = await ordersController.createOrder(collect);
 
 			if (response.statusCode !== 201) {
 				throw new Error(`PayPal API returned status ${response.statusCode}`);
 			}
 
 			const orderId = response.result.id;
+			if (!orderId) {
+				throw new Error('Order ID is not found');
+			}
+
 			this.logger.log(`PayPal order created successfully: ${orderId}`);
 
 			return orderId;
