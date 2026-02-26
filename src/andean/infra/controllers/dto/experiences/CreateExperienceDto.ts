@@ -19,6 +19,7 @@ import { ExperienceLanguage } from 'src/andean/domain/enums/ExperienceLanguage';
 import { OwnerType } from 'src/andean/domain/enums/OwnerType';
 import { AgeGroupCode } from 'src/andean/domain/enums/AgeGroupCode';
 import { WeekDay } from 'src/andean/domain/enums/WeekDay';
+import { ExperienceAvailabilityMode } from 'src/andean/domain/enums/ExperienceAvailabilityMode';
 
 // ─── BasicInfo DTO ───
 
@@ -230,6 +231,15 @@ export class ExperiencePricesDto {
 // ─── Availability DTO ───
 
 export class ExperienceAvailabilityDto {
+	@ApiPropertyOptional({
+		description: 'Modo de disponibilidad: exclusiveGroup o sharedCapacity',
+		enum: ExperienceAvailabilityMode,
+		default: ExperienceAvailabilityMode.EXCLUSIVE_GROUP,
+	})
+	@IsEnum(ExperienceAvailabilityMode)
+	@IsOptional()
+	mode?: ExperienceAvailabilityMode;
+
 	@ApiProperty({
 		description: 'Días de la semana en que inicia (0=Domingo, 1=Lunes...)',
 		enum: WeekDay,
@@ -248,7 +258,7 @@ export class ExperienceAvailabilityDto {
 	@IsArray()
 	@IsDateString({}, { each: true })
 	@IsOptional()
-	specificAvailableDates?: string[];
+	specificAvailableStartDates?: string[];
 
 	@ApiPropertyOptional({
 		description: 'Fechas excluidas',

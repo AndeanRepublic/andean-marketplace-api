@@ -10,8 +10,9 @@ export class ExperienceAvailabilityMapper {
 		const plain = doc.toObject();
 		return plainToInstance(ExperienceAvailability, {
 			id: plain._id.toString(),
+			mode: plain.mode,
 			weeklyStartDays: plain.weeklyStartDays,
-			specificAvailableDates: plain.specificAvailableDates,
+			specificAvailableStartDates: plain.specificAvailableStartDates,
 			excludedDates: plain.excludedDates,
 		});
 	}

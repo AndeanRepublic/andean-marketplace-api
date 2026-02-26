@@ -1,6 +1,6 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
-import * as paypal from '@paypal/checkout-server-sdk';
 import { PayPalClientService } from './PayPalClientService';
+import { OrdersController } from '@paypal/paypal-server-sdk';
 
 export interface CapturePayPalOrderResponse {
 	orderId: string;
@@ -41,12 +41,14 @@ export class CapturePayPalOrderService {
 
 			const client = this.paypalClientService.getClient();
 
-			// Crear request de capture
-			const request = new paypal.orders.OrdersCaptureRequest(orderId);
-			request.requestBody({});
+			const ordersController = new OrdersController(client);
+			const collect = {
+				id: orderId,
+				prefer: "return=representation",
+			}
 
-			// Ejecutar la petición
-			const response = await client.execute(request);
+			// Crear request de capture
+			const response = await ordersController.captureOrder(collect);
 
 			if (response.statusCode !== 201) {
 				throw new Error(`PayPal API returned status ${response.statusCode}`);
@@ -63,18 +65,25 @@ export class CapturePayPalOrderService {
 
 			// Extraer transaction ID del primer capture
 			const transactionId =
-				result.purchase_units?.[0]?.payments?.captures?.[0]?.id;
+				result.purchaseUnits?.[0]?.payments?.captures?.[0]?.id;
 
 			this.logger.log(
 				`PayPal order captured successfully: ${orderId}, transaction: ${transactionId}`,
 			);
+
+			if (!result.id) {
+				throw new Error('Order ID is not found');
+			}
+			if (!result.status) {
+				throw new Error('Status is not found');
+			}
 
 			return {
 				orderId: result.id,
 				status: result.status,
 				transactionId,
 				payer: result.payer,
-				purchase_units: result.purchase_units,
+				purchase_units: result.purchaseUnits,
 			};
 		} catch (error) {
 			this.logger.error('Failed to capture PayPal order', error);
