@@ -280,6 +280,7 @@ export class GetByIdTextileProductDetailUseCase {
 		materialOption: any,
 	): Promise<
 		{
+			variantId: string;
 			size: string;
 			color: string;
 			material: string;
@@ -292,6 +293,7 @@ export class GetByIdTextileProductDetailUseCase {
 		}
 
 		const variantInfoArray: {
+			variantId: string;
 			size: string;
 			color: string;
 			material: string;
@@ -347,6 +349,7 @@ export class GetByIdTextileProductDetailUseCase {
 			}
 
 			variantInfoArray.push({
+				variantId: variant.id,
 				size,
 				color,
 				material,

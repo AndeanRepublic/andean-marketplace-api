@@ -21,6 +21,12 @@ export class MediaImageResponse {
 
 // ── Variant Info ──────────────────────────────────────────────────────────
 export class VariantInfoResponse {
+	@ApiProperty({
+		description: 'ID único de la variante',
+		example: '67c8f9e8a12b4f00234abcd1',
+	})
+	variantId!: string;
+
 	@ApiProperty({ description: 'Talla de la variante', example: 'M' })
 	size!: string;
 
