@@ -3,6 +3,8 @@ import { MediaItemType } from 'src/andean/domain/enums/MediaItemType';
 import { MediaItemRole } from 'src/andean/domain/enums/MediaItemRole';
 import { OwnerType } from 'src/andean/domain/enums/OwnerType';
 import { ExperienceLanguage } from 'src/andean/domain/enums/ExperienceLanguage';
+import { WeekDay } from 'src/andean/domain/enums/WeekDay';
+import { AgeGroupCode } from 'src/andean/domain/enums/AgeGroupCode';
 
 // ─── MediaItem Detail (full info) ───────────────────────────────────────
 
@@ -165,6 +167,86 @@ export class InformationResponse {
 	languages!: ExperienceLanguage[];
 }
 
+// ─── Availability ───────────────────────────────────────────────────────────
+export class ExperienceAvailabilityResponse {
+	@ApiProperty({
+		description:
+			'Días de la semana en que inicia (0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday)',
+		enum: WeekDay,
+		isArray: true,
+		example: [WeekDay.MONDAY, WeekDay.WEDNESDAY, WeekDay.FRIDAY],
+	})
+	weeklyStartDays!: WeekDay[];
+
+	@ApiProperty({
+		description: 'Fechas de inicio específicas disponibles',
+		type: [Date],
+		example: ['2026-03-15', '2026-04-01'],
+	})
+	specificAvailableStartDates!: Date[];
+
+	@ApiProperty({
+		description: 'Fechas excluidas',
+		type: [Date],
+		example: ['2026-03-20'],
+	})
+	excludedDates!: Date[];
+}
+
+export class AgeGroupPricingResponse {
+	@ApiProperty({
+		description: 'Código del grupo de edad',
+		enum: AgeGroupCode,
+		example: AgeGroupCode.ADULTS,
+	})
+	code!: AgeGroupCode;
+
+	@ApiProperty({
+		description: 'Etiqueta',
+		example: 'Adultos',
+	})
+	label!: string;
+
+	@ApiProperty({
+		description: 'Precio',
+		example: 100,
+	})
+	price!: number;
+
+	@ApiPropertyOptional({
+		description: 'Edad mínima',
+		example: 26,
+	})
+	minAge?: number;
+
+	@ApiPropertyOptional({
+		description: 'Edad máxima',
+		example: 60,
+	})
+	maxAge?: number;
+}
+
+// ─── AgePricingInfo ───────────────────────────────────────────────────────
+
+export class AgePricingInfoResponse {
+	@ApiProperty({
+		description: 'Usa precios basados en edad',
+		type: Boolean,
+	})
+	useAgeBasedPricing!: boolean;
+
+	@ApiProperty({
+		description: 'Moneda',
+		example: 'USD',
+	})
+	currency!: string;
+
+	@ApiProperty({
+		description: 'Grupos de edad con precios',
+		type: [AgeGroupPricingResponse],
+	})
+	ageGroups!: AgeGroupPricingResponse[];
+}
 // ─── QuestionSection ───────────────────────────────────────────────────────
 
 export class QuestionSectionResponse {
@@ -421,6 +503,18 @@ export class ExperienceDetailResponse {
 		type: InformationResponse,
 	})
 	information!: InformationResponse;
+
+	@ApiProperty({
+		description: 'Disponibilidad de la experiencia',
+		type: ExperienceAvailabilityResponse,
+	})
+	availability!: ExperienceAvailabilityResponse;
+
+	@ApiProperty({
+		description: 'Información de precios por edad',
+		type: AgePricingInfoResponse,
+	})
+	agePricingInfo!: AgePricingInfoResponse;
 
 	@ApiProperty({
 		description:

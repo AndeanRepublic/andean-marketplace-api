@@ -21,12 +21,17 @@ export class CartShopRepoImpl extends CartShopRepository {
 		return doc ? CartShopMapper.fromDocument(doc) : null;
 	}
 
-	async getCartByCustomerEmail(customerEmail: string): Promise<CartShop | null> {
+	async getCartByCustomerEmail(
+		customerEmail: string,
+	): Promise<CartShop | null> {
 		const doc = await this.cartShopModel.findOne({ customerEmail }).exec();
 		return doc ? CartShopMapper.fromDocument(doc) : null;
 	}
 
-	async getCartByIdentifier(customerId?: string, customerEmail?: string): Promise<CartShop | null> {
+	async getCartByIdentifier(
+		customerId?: string,
+		customerEmail?: string,
+	): Promise<CartShop | null> {
 		if (customerId) {
 			return this.getCartByCustomerId(customerId);
 		}

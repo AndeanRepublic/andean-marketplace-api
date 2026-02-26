@@ -21,7 +21,7 @@ export class CreateOrderFromCartUseCase {
 		@Inject(CartShopItemRepository)
 		private readonly cartItemRepository: CartShopItemRepository,
 		private readonly reduceStockUseCase: ReduceStockFromOrderUseCase,
-	) { }
+	) {}
 
 	async handle(
 		customerId: string | undefined,
@@ -30,11 +30,16 @@ export class CreateOrderFromCartUseCase {
 	): Promise<Order> {
 		// 1. Validar que al menos uno de los identificadores esté presente
 		if (!customerId && !customerEmail) {
-			throw new BadRequestException('Either customerId or customerEmail must be provided');
+			throw new BadRequestException(
+				'Either customerId or customerEmail must be provided',
+			);
 		}
 
 		// 2. Obtener el carrito del cliente
-		const cart = await this.cartShopRepository.getCartByIdentifier(customerId, customerEmail);
+		const cart = await this.cartShopRepository.getCartByIdentifier(
+			customerId,
+			customerEmail,
+		);
 		if (!cart) {
 			throw new NotFoundException('Cart not found');
 		}

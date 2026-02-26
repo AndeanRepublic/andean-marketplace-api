@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 // Schemas
@@ -36,6 +36,8 @@ import { UpdateExperienceUseCase } from './app/use_cases/experiences/UpdateExper
 import { DeleteExperienceUseCase } from './app/use_cases/experiences/DeleteExperienceUseCase';
 import { GetAllExperiencesUseCase } from './app/use_cases/experiences/GetAllExperiencesUseCase';
 import { GetByIdExperienceUseCase } from './app/use_cases/experiences/GetByIdExperienceUseCase';
+import { GetAvailabilityModeByIdUseCase } from './app/use_cases/experiences/GetAvailabilityModeByIdUseCase';
+import { GetFutureUnavailableDatesUseCase } from './app/use_cases/experiences/GetFutureUnavailableDatesUseCase';
 
 // Strategy
 import { OwnerStrategyResolver } from './infra/services/experiences/OwnerStrategyResolver';
@@ -48,6 +50,7 @@ import { CommunityModule } from './community.module';
 import { MediaItemModule } from './mediaItem.module';
 import { UsersModule } from './users.module';
 import { ShopsModule } from './shop.module';
+import { BookingModule } from './booking.module';
 
 @Module({
 	imports: [
@@ -62,6 +65,7 @@ import { ShopsModule } from './shop.module';
 		MediaItemModule,
 		UsersModule,
 		ShopsModule,
+		forwardRef(() => BookingModule),
 	],
 	controllers: [ExperienceController],
 	providers: [
@@ -104,6 +108,8 @@ import { ShopsModule } from './shop.module';
 		DeleteExperienceUseCase,
 		GetAllExperiencesUseCase,
 		GetByIdExperienceUseCase,
+		GetAvailabilityModeByIdUseCase,
+		GetFutureUnavailableDatesUseCase,
 	],
 	exports: [
 		ExperiencePricesRepository,
@@ -111,6 +117,7 @@ import { ShopsModule } from './shop.module';
 		ExperienceItineraryRepository,
 		ExperienceRepository,
 		ReviewRepository,
+		GetAvailabilityModeByIdUseCase,
 	],
 })
 export class ExperienceModule {}

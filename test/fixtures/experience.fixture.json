@@ -86,8 +86,9 @@
 			]
 		},
 		"availability": {
+			"mode": "exclusiveGroup",
 			"weeklyStartDays": [1, 3, 5],
-			"specificAvailableDates": ["2026-06-15", "2026-07-28"],
+			"specificAvailableStartDates": ["2026-06-15", "2026-07-28"],
 			"excludedDates": ["2026-12-25"]
 		},
 		"itineraries": [

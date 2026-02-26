@@ -19,7 +19,7 @@ export class UnitAmountDto {
 	@ApiProperty({ description: 'Código de moneda' })
 	@IsString()
 	@IsNotEmpty()
-	currency_code!: string;
+	currencyCode!: string;
 }
 
 export class PayPalOrderItemDto {
@@ -38,7 +38,7 @@ export class PayPalOrderItemDto {
 	@ValidateNested()
 	@Type(() => UnitAmountDto)
 	@IsNotEmpty()
-	unit_amount!: UnitAmountDto;
+	unitAmount!: UnitAmountDto;
 }
 
 export class CreatePayPalOrderDto {

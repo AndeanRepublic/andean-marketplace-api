@@ -31,7 +31,7 @@
 		"@nestjs/platform-express": "^11.1.8",
 		"@nestjs/serve-static": "^5.0.4",
 		"@nestjs/swagger": "^11.2.4",
-		"@paypal/checkout-server-sdk": "^1.0.3",
+		"@paypal/paypal-server-sdk": "2.2.0",
 		"argon2": "^0.44.0",
 		"axios": "^1.13.5",
 		"class-transformer": "^0.5.1",

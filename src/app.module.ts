@@ -23,6 +23,7 @@ import { VariantModule } from './andean/variant.module';
 import { BoxModule } from './andean/box.module';
 import { BoxSealModule } from './andean/boxSeal.module';
 import { ExperienceModule } from './andean/experience.module';
+import { BookingModule } from './andean/booking.module';
 
 @Module({
 	imports: [
@@ -62,8 +63,9 @@ import { ExperienceModule } from './andean/experience.module';
 		BoxModule,
 		BoxSealModule,
 		ExperienceModule,
+		BookingModule,
 	],
 	controllers: [],
 	providers: [],
 })
-export class AppModule { }
+export class AppModule {}

@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, forwardRef, Inject } from '@nestjs/common';
+import {
+	Injectable,
+	NotFoundException,
+	forwardRef,
+	Inject,
+} from '@nestjs/common';
 import { StockReductionItem } from '../../../domain/interfaces/StockReductionItem';
 import { StockReducerStrategy } from './StockReducerStrategy';
 import { TextileStockReducer } from './TextileStockReducer';

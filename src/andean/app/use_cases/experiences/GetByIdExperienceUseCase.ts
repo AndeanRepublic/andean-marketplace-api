@@ -11,14 +11,20 @@ import { CustomerProfileRepository } from '../../datastore/Customer.repo';
 import { AccountRepository } from '../../datastore/Account.repo';
 import { CommunityRepository } from '../../datastore/community/community.repo';
 import { ShopRepository } from '../../datastore/Shop.repo';
+import { BookingRepository } from '../../datastore/booking/Booking.repo';
 
 import { MediaItem } from 'src/andean/domain/entities/MediaItem';
 import { Review } from 'src/andean/domain/entities/Review';
 import { ProductType } from 'src/andean/domain/enums/ProductType';
 import { OwnerType } from 'src/andean/domain/enums/OwnerType';
+import { ExperienceAvailabilityMode } from 'src/andean/domain/enums/ExperienceAvailabilityMode';
 
-import { ExperienceDetailResponse } from '../../models/experiences/ExperienceDetailResponse';
+import {
+	ExperienceAvailabilityResponse,
+	ExperienceDetailResponse,
+} from '../../models/experiences/ExperienceDetailResponse';
 import { ExperienceDetailMapper } from 'src/andean/infra/services/experiences/ExperienceDetailMapper';
+import { GetFutureUnavailableDatesUseCase } from './GetFutureUnavailableDatesUseCase';
 
 @Injectable()
 export class GetByIdExperienceUseCase {
@@ -45,7 +51,11 @@ export class GetByIdExperienceUseCase {
 		private readonly communityRepository: CommunityRepository,
 		@Inject(ShopRepository)
 		private readonly shopRepository: ShopRepository,
+		@Inject(BookingRepository)
+		private readonly bookingRepository: BookingRepository,
 		private readonly configService: ConfigService,
+		@Inject(GetFutureUnavailableDatesUseCase)
+		private readonly getFutureUnavailableDatesUseCase: GetFutureUnavailableDatesUseCase,
 	) {
 		this.storageBaseUrl = this.configService.get<string>(
 			'STORAGE_BASE_URL',
@@ -54,13 +64,13 @@ export class GetByIdExperienceUseCase {
 	}
 
 	async handle(id: string): Promise<ExperienceDetailResponse> {
-		// 1. Fetch experience principal
+		// -- Fetch experience principal
 		const experience = await this.experienceRepo.getById(id);
 		if (!experience) {
 			throw new NotFoundException(`Experience with id ${id} not found`);
 		}
 
-		// 2. Fetch sub-tablas y reviews en paralelo
+		// -- Fetch sub-tablas y reviews en paralelo
 		const [prices, , itineraries, reviews, moreExperiences] = await Promise.all(
 			[
 				this.pricesRepo.getById(experience.pricesId),
@@ -74,10 +84,10 @@ export class GetByIdExperienceUseCase {
 			],
 		);
 
-		// 3. Batch-fetch de todos los media IDs únicos
+		// -- Batch-fetch de todos los media IDs únicos
 		const mediaMap = await this.buildMediaMap(experience, itineraries);
 
-		// 4. Resolver owner, reviews en paralelo
+		// -- Resolver owner, reviews en paralelo
 		const [ownerInfo, reviewResponse] = await Promise.all([
 			this.resolveOwner(
 				experience.basicInfo.ownerId,
@@ -86,9 +96,17 @@ export class GetByIdExperienceUseCase {
 			this.buildReviews(reviews),
 		]);
 
-		// 5. Construir respuesta usando el mapper
+		// -- Construir disponibilidad
+		const availability = await this.buildAvailability(
+			experience.availabilityId,
+		);
+
+		// -- Construir respuesta usando el mapper
 		const price = ExperienceDetailMapper.resolvePrice(prices?.ageGroups);
 		const ages = ExperienceDetailMapper.resolveAges(prices?.ageGroups);
+		const agePricingInfo = ExperienceDetailMapper.resolveAgePricingInfo(
+			prices ?? undefined,
+		);
 		const landscapeImgUrl =
 			ExperienceDetailMapper.toMediaFullDetailFromMap(
 				experience.mediaInfo.landscapeImg,
@@ -108,6 +126,8 @@ export class GetByIdExperienceUseCase {
 			landscapeImgUrl,
 			photos,
 			ownerInfo,
+			availability,
+			agePricingInfo,
 			itinerary: ExperienceDetailMapper.toItineraryResponse(
 				itineraries,
 				mediaMap,
@@ -186,5 +206,23 @@ export class GetByIdExperienceUseCase {
 		}));
 
 		return ExperienceDetailMapper.toReviewsResponse(reviews, userNames);
+	}
+
+	private async buildAvailability(
+		availabilityId: string,
+	): Promise<ExperienceAvailabilityResponse> {
+		const availability = await this.availabilityRepo.getById(availabilityId);
+		const availableStartDates =
+			await this.experienceRepo.getFutureAvailableDates(availabilityId);
+		const weeklyStartDays =
+			await this.experienceRepo.getWeeklyStartDays(availabilityId);
+		const excludedDates =
+			await this.getFutureUnavailableDatesUseCase.handle(availabilityId);
+
+		return {
+			weeklyStartDays,
+			specificAvailableStartDates: availableStartDates,
+			excludedDates,
+		};
 	}
 }
