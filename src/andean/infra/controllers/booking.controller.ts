@@ -18,6 +18,8 @@ import {
 	ApiQuery,
 } from '@nestjs/swagger';
 import { CreateBookingUseCase } from '../../app/use_cases/bookings/CreateBookingUseCase';
+import { CreatePayPalBookingOrderUseCase } from '../../app/use_cases/bookings/CreatePayPalBookingOrderUseCase';
+import { CapturePayPalBookingUseCase } from '../../app/use_cases/bookings/CapturePayPalBookingUseCase';
 import { GetBookingByIdUseCase } from '../../app/use_cases/bookings/GetBookingByIdUseCase';
 import { GetBookingsByCustomerUseCase } from '../../app/use_cases/bookings/GetBookingsByCustomerUseCase';
 import { GetBookingsByEmailUseCase } from '../../app/use_cases/bookings/GetBookingsByEmailUseCase';
@@ -27,12 +29,17 @@ import { UpdateBookingDto } from './dto/booking/UpdateBookingDto';
 import { Booking } from '../../domain/entities/booking/Booking';
 import { BookingResponse } from '../../app/models/booking/BookingResponse';
 import { BookingErrorResponse } from '../../app/models/booking/BookingErrorResponse';
+import { CreatePayPalBookingOrderDto } from './dto/booking/CreatePayPalBookingOrderDto';
+import { CapturePayPalBookingDto } from './dto/booking/CapturePayPalBookingDto';
+import { CapturePayPalBookingResponse } from '../../app/use_cases/bookings/CapturePayPalBookingUseCase';
 
 @ApiTags('bookings')
 @Controller('bookings')
 export class BookingController {
 	constructor(
 		private readonly createBookingUseCase: CreateBookingUseCase,
+		private readonly createPayPalBookingOrderUseCase: CreatePayPalBookingOrderUseCase,
+		private readonly capturePayPalBookingUseCase: CapturePayPalBookingUseCase,
 		private readonly getBookingByIdUseCase: GetBookingByIdUseCase,
 		private readonly getBookingsByCustomerUseCase: GetBookingsByCustomerUseCase,
 		private readonly getBookingsByEmailUseCase: GetBookingsByEmailUseCase,
@@ -60,6 +67,63 @@ export class BookingController {
 	})
 	async createBooking(@Body() body: CreateBookingDto): Promise<Booking> {
 		return this.createBookingUseCase.handle(body);
+	}
+
+	@Post('/paypal/create-order')
+	@HttpCode(HttpStatus.CREATED)
+	@ApiOperation({
+		summary: 'Crear orden PayPal para booking',
+		description: 'Crea una orden de pago en PayPal para un booking y retorna el orderId',
+	})
+	@ApiBody({ type: CreatePayPalBookingOrderDto })
+	@ApiResponse({
+		status: 201,
+		description: 'Orden de PayPal creada exitosamente',
+		schema: {
+			type: 'object',
+			properties: {
+				orderId: {
+					type: 'string',
+					example: '5O190127TN364715T',
+				},
+			},
+		},
+	})
+	@ApiResponse({ status: 400, description: 'Datos inválidos' })
+	async createPayPalBookingOrder(
+		@Body() body: CreatePayPalBookingOrderDto,
+	): Promise<{ orderId: string }> {
+		return this.createPayPalBookingOrderUseCase.handle(body);
+	}
+
+	@Post('/paypal/capture-order')
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		summary: 'Capturar orden PayPal y crear booking',
+		description:
+			'Captura una orden de PayPal después de que el usuario la aprueba y crea el booking',
+	})
+	@ApiBody({ type: CapturePayPalBookingDto })
+	@ApiResponse({
+		status: 200,
+		description: 'Orden capturada y booking creado exitosamente',
+		schema: {
+			type: 'object',
+			properties: {
+				success: { type: 'boolean', example: true },
+				orderId: { type: 'string', example: '5O190127TN364715T' },
+				status: { type: 'string', example: 'COMPLETED' },
+				transactionId: { type: 'string', example: '8F148899LY528414L' },
+				booking: { type: 'object' },
+			},
+		},
+	})
+	@ApiResponse({ status: 400, description: 'Datos inválidos' })
+	@ApiResponse({ status: 404, description: 'Experience not found' })
+	async capturePayPalBookingOrder(
+		@Body() body: CapturePayPalBookingDto,
+	): Promise<CapturePayPalBookingResponse> {
+		return this.capturePayPalBookingUseCase.handle(body);
 	}
 
 	@Get('/:id')

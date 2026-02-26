@@ -14,6 +14,8 @@ export interface CreatePayPalOrderRequest {
 			currencyCode: string;
 		};
 	}>;
+	returnPath?: string;
+	cancelPath?: string;
 }
 
 @Injectable()
@@ -71,8 +73,8 @@ export class CreatePayPalOrderService {
 						brandName: 'Andean Republic',
 						landingPage: OrderApplicationContextLandingPage.NoPreference,
 						userAction: OrderApplicationContextUserAction.PayNow,
-						returnUrl: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/checkout/success`,
-						cancelUrl: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/checkout`,
+						returnUrl: `${process.env.FRONTEND_URL || 'http://localhost:3000'}${requestData.returnPath ?? '/checkout/success'}`,
+						cancelUrl: `${process.env.FRONTEND_URL || 'http://localhost:3000'}${requestData.cancelPath ?? '/checkout'}`,
 					},
 				},
 				prefer: 'return=representation',
