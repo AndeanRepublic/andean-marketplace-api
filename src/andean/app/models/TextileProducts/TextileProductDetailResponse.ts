@@ -160,6 +160,23 @@ export class ColorInfoResponse {
 	colorHexCode!: string;
 }
 
+export class AvailableColorResponse {
+	@ApiProperty({ description: 'Nombre del color', example: 'Rojo' })
+	color!: string;
+
+	@ApiProperty({
+		description: 'Codigo hexadecimal del color',
+		example: '#FF0000',
+	})
+	hexCode!: string;
+
+	@ApiProperty({
+		description: 'URL de imagen asociada al color',
+		example: 'https://cdn.example.com/colors/rojo.jpg',
+	})
+	imgUrl?: string;
+}
+
 export class SimilarProductResponse {
 	@ApiProperty({
 		description: 'ID único del producto similar',
@@ -238,8 +255,11 @@ export class TextileProductDetailResponse {
 	@ApiProperty({ type: [String], description: 'Tallas disponibles' })
 	availableSizes!: string[];
 
-	@ApiProperty({ type: [String], description: 'Colores disponibles' })
-	availableColors!: string[];
+	@ApiProperty({
+		type: [AvailableColorResponse],
+		description: 'Colores disponibles con codigo hexadecimal e imagen',
+	})
+	availableColors!: AvailableColorResponse[];
 
 	@ApiProperty({ type: [String], description: 'Materiales disponibles' })
 	availableMaterials!: string[];
