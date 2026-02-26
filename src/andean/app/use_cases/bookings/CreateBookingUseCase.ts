@@ -13,6 +13,7 @@ import { GetAvailabilityModeByIdUseCase } from '../experiences/GetAvailabilityMo
 import { ExperienceAvailabilityMode } from 'src/andean/domain/enums/ExperienceAvailabilityMode';
 import { GetFutureUnavailableDatesUseCase } from '../experiences/GetFutureUnavailableDatesUseCase';
 import { ExperienceRepository } from '../../datastore/experiences/Experience.repo';
+import { ExperiencePricesRepository } from '../../datastore/experiences/ExperiencePrices.repo';
 import { Experience } from 'src/andean/domain/entities/experiences/Experience';
 
 @Injectable()
@@ -22,6 +23,8 @@ export class CreateBookingUseCase {
 		private readonly bookingRepository: BookingRepository,
 		@Inject(ExperienceRepository)
 		private readonly experienceRepository: ExperienceRepository,
+		@Inject(ExperiencePricesRepository)
+		private readonly pricesRepository: ExperiencePricesRepository,
 		@Inject(GetAvailabilityModeByIdUseCase)
 		private readonly getAvailabilityModeByIdUseCase: GetAvailabilityModeByIdUseCase,
 		@Inject(GetFutureUnavailableDatesUseCase)
@@ -60,7 +63,12 @@ export class CreateBookingUseCase {
 			await this.validateGuests(dto, experience);
 		}
 
-		const booking = BookingMapper.fromCreateDto(dto);
+		const prices = await this.pricesRepository.getById(experience.pricesId);
+		if (!prices) {
+			throw new NotFoundException('Experience prices not found');
+		}
+
+		const booking = BookingMapper.fromCreateDto(dto, experience, prices);
 		return this.bookingRepository.createBooking(booking);
 	}
 

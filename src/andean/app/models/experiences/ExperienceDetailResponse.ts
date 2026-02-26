@@ -195,6 +195,13 @@ export class ExperienceAvailabilityResponse {
 
 export class AgeGroupPricingResponse {
 	@ApiProperty({
+		description: 'Código del grupo de edad',
+		enum: AgeGroupCode,
+		example: AgeGroupCode.ADULTS,
+	})
+	code!: AgeGroupCode;
+
+	@ApiProperty({
 		description: 'Etiqueta',
 		example: 'Adultos',
 	})

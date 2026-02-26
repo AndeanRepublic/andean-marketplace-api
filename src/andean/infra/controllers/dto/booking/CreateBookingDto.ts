@@ -122,7 +122,37 @@ export class TravelerInfoDto implements TravelerInfo {
 	birthDate!: Date;
 }
 
+export class AgeGroupInfoDto implements AgeGroupInfo {
+	@ApiProperty({
+		enum: AgeGroupCode,
+		description: 'Código del grupo de edad',
+	})
+	@IsEnum(AgeGroupCode)
+	@IsNotEmpty()
+	code!: AgeGroupCode;
+
+	@ApiProperty({
+		description: 'Cantidad de personas en este grupo',
+		minimum: 0,
+		example: 2,
+	})
+	@IsNumber()
+	@Min(0)
+	@IsNotEmpty()
+	quantity!: number;
+}
+
 export class GuestsInfoDto {
+	@ApiProperty({
+		type: [AgeGroupInfoDto],
+		description: 'Cantidad de huéspedes por grupo de edad (ej: 2 adultos, 1 niño)',
+	})
+	@IsArray()
+	@ArrayNotEmpty()
+	@ValidateNested({ each: true })
+	@Type(() => AgeGroupInfoDto)
+	ageGroups!: AgeGroupInfoDto[];
+
 	@ApiProperty({ description: 'Total de huéspedes', minimum: 1 })
 	@IsNumber()
 	@Min(1)

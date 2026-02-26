@@ -120,6 +120,7 @@ export class ExperienceDetailMapper {
 			currency: prices?.currency || 'USD',
 			ageGroups:
 				prices?.ageGroups?.map((ag) => ({
+					code: ag.code,
 					label: ag.label,
 					price: ag.price,
 					minAge: ag.minAge,

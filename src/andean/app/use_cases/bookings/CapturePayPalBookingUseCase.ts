@@ -1,14 +1,11 @@
 import {
 	BadRequestException,
 	Injectable,
-	Inject,
 	NotFoundException,
 } from '@nestjs/common';
 import { CapturePayPalOrderService } from '../../../infra/services/paypal/CapturePayPalOrderService';
 import { CapturePayPalBookingDto } from '../../../infra/controllers/dto/booking/CapturePayPalBookingDto';
 import { CreateBookingUseCase } from './CreateBookingUseCase';
-import { ExperienceRepository } from '../../datastore/experiences/Experience.repo';
-import { ExperiencePricesRepository } from '../../datastore/experiences/ExperiencePrices.repo';
 import { PaymentMethod } from '../../../domain/enums/PaymentMethod';
 import { PaymentProvider } from '../../../domain/enums/PaymentProvider';
 import { PaymentStatus } from '../../../domain/enums/PaymentStatus';
@@ -28,10 +25,6 @@ export class CapturePayPalBookingUseCase {
 	constructor(
 		private readonly capturePayPalOrderService: CapturePayPalOrderService,
 		private readonly createBookingUseCase: CreateBookingUseCase,
-		@Inject(ExperienceRepository)
-		private readonly experienceRepository: ExperienceRepository,
-		@Inject(ExperiencePricesRepository)
-		private readonly pricesRepository: ExperiencePricesRepository,
 	) {}
 
 	async handle(
@@ -49,39 +42,11 @@ export class CapturePayPalBookingUseCase {
 		}
 
 		try {
-			const experience = await this.experienceRepository.getById(
-				dto.experienceId,
-			);
-			if (!experience) {
-				throw new NotFoundException('Experience not found');
-			}
-
-			const prices = await this.pricesRepository.getById(experience.pricesId);
-			if (!prices) {
-				throw new NotFoundException('Experience prices not found');
-			}
-
-			const experienceSnapshot = {
-				name: experience.basicInfo.title,
-				days: experience.basicInfo.days,
-				nights: experience.basicInfo.nights,
-				ageGroupPricing: prices.ageGroups.map((ag) => ({
-					code: ag.code,
-					label: ag.label,
-					minAge: ag.minAge,
-					maxAge: ag.maxAge,
-					price: ag.price,
-				})),
-			};
-
 			const bookingDto = {
 				...dto,
 				status: BookingStatus.CONFIRMED,
-				experience: {
-					experienceId: dto.experienceId,
-					experienceSnapshot,
-				},
 				payment: {
+					...dto.payment,
 					method: PaymentMethod.PAYPAL,
 					provider: PaymentProvider.PAYPAL,
 					status: PaymentStatus.PAID,
