@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
@@ -11,12 +11,19 @@ import { ExperienceDocument } from '../../persistence/experiences/experience.sch
 import { ExperienceMapper } from '../../services/experiences/ExperienceMapper';
 import { MongoIdUtils } from '../../utils/MongoIdUtils';
 import { AgeGroupCode } from 'src/andean/domain/enums/AgeGroupCode';
+import { ExperienceAvailabilityDocument } from '../../persistence/experiences/experienceAvailability.schema';
+import { ExperienceAvailabilityRepository } from 'src/andean/app/datastore/experiences/ExperienceAvailability.repo';
+import { WeekDay } from 'src/andean/domain/enums/WeekDay';
 
 @Injectable()
 export class ExperienceRepositoryImpl extends ExperienceRepository {
 	constructor(
 		@InjectModel('Experience')
 		private readonly model: Model<ExperienceDocument>,
+		@InjectModel('ExperienceAvailability')
+		private readonly experienceModel: Model<ExperienceAvailabilityDocument>,
+		@Inject(ExperienceAvailabilityRepository)
+		private readonly availabilityRepo: ExperienceAvailabilityRepository,
 	) {
 		super();
 	}
@@ -39,10 +46,7 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 		return ExperienceMapper.fromDocument(saved);
 	}
 
-	async update(
-		id: string,
-		entity: Partial<Experience>,
-	): Promise<Experience> {
+	async update(id: string, entity: Partial<Experience>): Promise<Experience> {
 		const plain = ExperienceMapper.toPersistence(entity);
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		const updated = await this.model
@@ -63,33 +67,15 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 		const perPage = filters.perPage || 20;
 
 		const pipeline: any[] = [
-			// 1. Lookup BasicInfo
-			{
-				$addFields: {
-					basicInfoOid: { $toObjectId: '$basicInfoId' },
-				},
-			},
-			{
-				$lookup: {
-					from: 'experiencebasicinfos',
-					localField: 'basicInfoOid',
-					foreignField: '_id',
-					as: 'basicInfo',
-				},
-			},
-			{ $unwind: '$basicInfo' },
-
-			// 2. Apply category filter
+			// 1. basicInfo ya está embebido — apply category / ownerId filters directamente
 			...(filters.category
 				? [{ $match: { 'basicInfo.category': filters.category } }]
 				: []),
-
-			// 3. Apply ownerId filter
 			...(filters.ownerId
 				? [{ $match: { 'basicInfo.ownerId': filters.ownerId } }]
 				: []),
 
-			// 4. Lookup Prices
+			// 2. Lookup Prices (sigue siendo colección separada)
 			{
 				$addFields: {
 					pricesOid: { $toObjectId: '$pricesId' },
@@ -105,7 +91,7 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 			},
 			{ $unwind: '$prices' },
 
-			// 5. Extract ADULTS price
+			// 3. Extract ADULTS price
 			{
 				$addFields: {
 					adultsPrice: {
@@ -132,7 +118,7 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 				},
 			},
 
-			// 6. Apply price filters
+			// 4. Apply price filters
 			...(filters.minPrice !== undefined
 				? [{ $match: { adultsPrice: { $gte: filters.minPrice } } }]
 				: []),
@@ -140,23 +126,7 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 				? [{ $match: { adultsPrice: { $lte: filters.maxPrice } } }]
 				: []),
 
-			// 7. Lookup MediaInfo
-			{
-				$addFields: {
-					mediaInfoOid: { $toObjectId: '$mediaInfoId' },
-				},
-			},
-			{
-				$lookup: {
-					from: 'experiencemediainfos',
-					localField: 'mediaInfoOid',
-					foreignField: '_id',
-					as: 'mediaInfo',
-				},
-			},
-			{ $unwind: '$mediaInfo' },
-
-			// 8. Lookup MediaItem for landscapeImg
+			// 5. Lookup MediaItem for landscapeImg (mediaInfo ya está embebido)
 			{
 				$addFields: {
 					landscapeImgOid: { $toObjectId: '$mediaInfo.landscapeImg' },
@@ -177,7 +147,7 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 				},
 			},
 
-			// 9. Lookup Community for ownerName
+			// 6. Lookup Community for ownerName
 			{
 				$addFields: {
 					ownerOid: { $toObjectId: '$basicInfo.ownerId' },
@@ -198,10 +168,10 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 				},
 			},
 
-			// 10. Sort by most recent
+			// 7. Sort by most recent
 			{ $sort: { createdAt: -1 as const } },
 
-			// 11. Facet for pagination
+			// 8. Facet for pagination
 			{
 				$facet: {
 					metadata: [{ $count: 'total' }],
@@ -246,5 +216,32 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 		}));
 
 		return { items, total };
+	}
+
+	async getWeeklyStartDays(experienceId: string): Promise<WeekDay[]> {
+		const experience = await this.getById(experienceId);
+		if (!experience) return [];
+		const availability = await this.availabilityRepo.getById(
+			experience.availabilityId,
+		);
+		return availability?.weeklyStartDays || [];
+	}
+
+	async getFutureAvailableDates(experienceId: string): Promise<Date[]> {
+		const experience = await this.getById(experienceId);
+		if (!experience) return [];
+		const availability = await this.availabilityRepo.getById(
+			experience.availabilityId,
+		);
+		if (!availability || !availability.specificAvailableStartDates?.length)
+			return [];
+
+		const now = new Date();
+		now.setHours(0, 0, 0, 0);
+
+		return [...(availability.specificAvailableStartDates ?? [])]
+			.map((date) => new Date(date))
+			.filter((date) => date >= now)
+			.sort((a, b) => a.getTime() - b.getTime());
 	}
 }

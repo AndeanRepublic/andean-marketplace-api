@@ -1,15 +1,12 @@
 {
-	"textileProduct": {
+	"entity": {
 		"id": "textile-uuid-123",
-		"status": "published",
+		"status": "PUBLISHED",
 		"baseInfo": {
 			"title": "Poncho Andino Premium",
-			"media": [
-				"media-id-1",
-				"media-id-2"
-			],
+			"mediaIds": [],
 			"description": "Poncho tejido a mano por artesanos andinos",
-			"ownerType": "shop",
+			"ownerType": "SHOP",
 			"ownerId": "shop-123"
 		},
 		"priceInventary": {
@@ -23,46 +20,177 @@
 			{
 				"name": "color",
 				"values": [
-					{
-						"label": "Rojo",
-						"mediaIds": [
-							"media-id-1"
-						]
-					},
-					{
-						"label": "Azul",
-						"mediaIds": [
-							"media-id-2"
-						]
-					}
+					{ "label": "Rojo", "mediaIds": [] },
+					{ "label": "Azul", "mediaIds": [] }
 				]
 			},
 			{
 				"name": "size",
 				"values": [
-					{
-						"label": "M",
-						"mediaIds": []
-					},
-					{
-						"label": "L",
-						"mediaIds": []
-					}
+					{ "label": "M", "mediaIds": [] },
+					{ "label": "L", "mediaIds": [] }
 				]
 			}
 		],
 		"createdAt": "2026-01-01T00:00:00.000Z",
 		"updatedAt": "2026-01-01T00:00:00.000Z"
 	},
+	"createDto": {
+		"status": "PUBLISHED",
+		"baseInfo": {
+			"title": "Poncho Andino Premium",
+			"mediaIds": [],
+			"description": "Poncho tejido a mano por artesanos andinos",
+			"ownerType": "SHOP",
+			"ownerId": "shop-123"
+		},
+		"priceInventary": {
+			"basePrice": 150.0,
+			"totalStock": 50,
+			"SKU": "PONCHO-AND-001"
+		},
+		"categoryId": "category-poncho-001"
+	},
+	"updateDto": {
+		"status": "PUBLISHED",
+		"baseInfo": {
+			"title": "Poncho Andino Premium Actualizado",
+			"mediaIds": [],
+			"description": "Poncho tejido a mano por artesanos andinos - Edición especial",
+			"ownerType": "SHOP",
+			"ownerId": "shop-123"
+		},
+		"priceInventary": {
+			"basePrice": 180.0,
+			"totalStock": 75,
+			"SKU": "PONCHO-AND-001"
+		},
+		"categoryId": "category-poncho-001"
+	},
+	"listItem": {
+		"id": "textile-uuid-123",
+		"titulo": "Poncho Andino Premium",
+		"categoryName": "Ponchos",
+		"productorName": "Artesanos Andinos",
+		"colors": [
+			{ "name": "Rojo", "colorHexCode": "#FF0000" },
+			{ "name": "Azul", "colorHexCode": "#0000FF" }
+		],
+		"tallas": ["M", "L"],
+		"principalImgUrl": "https://example.com/poncho.jpg",
+		"price": 150.0
+	},
+	"paginatedResponse": {
+		"products": [
+			{
+				"id": "textile-uuid-123",
+				"titulo": "Poncho Andino Premium",
+				"categoryName": "Ponchos",
+				"productorName": "Artesanos Andinos",
+				"colors": [
+					{ "name": "Rojo", "colorHexCode": "#FF0000" },
+					{ "name": "Azul", "colorHexCode": "#0000FF" }
+				],
+				"tallas": ["M", "L"],
+				"principalImgUrl": "https://example.com/poncho.jpg",
+				"price": 150.0
+			}
+		],
+		"pagination": {
+			"total": 1,
+			"page": 1,
+			"per_page": 1
+		},
+		"filterCount": {
+			"colors": [
+				{ "label": "rojo", "count": 15 },
+				{ "label": "azul", "count": 10 },
+				{ "label": "verde", "count": 8 }
+			],
+			"sizes": [
+				{ "label": "m", "count": 12 },
+				{ "label": "l", "count": 18 },
+				{ "label": "xl", "count": 5 }
+			],
+			"communities": [
+				{ "label": "Comunidad Andina Norte", "count": 20 },
+				{ "label": "Comunidad Textil Sur", "count": 13 }
+			],
+			"categories": [
+				{ "label": "Ponchos", "count": 25 },
+				{ "label": "Mantas", "count": 8 }
+			]
+		}
+	},
+	"detailResponse": {
+		"id": "textile-uuid-123",
+		"name": "Poncho Andino Premium",
+		"images": [
+			{
+				"name": "poncho-rojo.jpg",
+				"role": "principal",
+				"url": "https://cdn.example.com/poncho-rojo.jpg"
+			}
+		],
+		"availableSizes": ["M", "L"],
+		"availableColors": ["Rojo", "Azul"],
+		"availableMaterials": [],
+		"variantInfo": [
+			{
+				"size": "M",
+				"color": "Rojo",
+				"material": "",
+				"price": 150,
+				"stock": 10
+			},
+			{
+				"size": "L",
+				"color": "Azul",
+				"material": "",
+				"price": 150,
+				"stock": 15
+			}
+		],
+		"generalStock": 50,
+		"information": "",
+		"description": "Poncho tejido a mano por artesanos andinos",
+		"traceabilityInfo": {
+			"origen": [],
+			"processing": [],
+			"development": [],
+			"merchandising": []
+		},
+		"reviews": {
+			"rating": {
+				"count5stars": 0,
+				"count4stars": 0,
+				"count3stars": 0,
+				"count2stars": 0,
+				"count1star": 0,
+				"totalReviews": 0,
+				"averagePunctuation": 0
+			},
+			"comments": []
+		},
+		"similarProducts": [
+			{
+				"id": "similar-uuid-456",
+				"title": "Manta Andina Tradicional",
+				"categoryName": "Ponchos",
+				"productorName": "Artesanos del Sur",
+				"colors": [{ "colorName": "Verde", "colorHexCode": "#00FF00" }],
+				"sizes": ["S", "M"],
+				"principalImgUrl": "https://cdn.example.com/manta.jpg",
+				"price": 120
+			}
+		]
+	},
 	"variants": [
 		{
 			"id": "variant-uuid-1",
 			"productId": "textile-uuid-123",
 			"productType": "textile",
-			"combination": {
-				"color": "Rojo",
-				"size": "M"
-			},
+			"combination": { "color": "Rojo", "size": "M" },
 			"price": 150.0,
 			"stock": 10,
 			"SKU": "PONCHO-AND-001-RED-M",
@@ -74,10 +202,7 @@
 			"id": "variant-uuid-2",
 			"productId": "textile-uuid-123",
 			"productType": "textile",
-			"combination": {
-				"color": "Azul",
-				"size": "L"
-			},
+			"combination": { "color": "Azul", "size": "L" },
 			"price": 150.0,
 			"stock": 15,
 			"SKU": "PONCHO-AND-001-BLUE-L",

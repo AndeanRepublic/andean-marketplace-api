@@ -1,38 +1,27 @@
 import { ExperienceMediaInfo } from 'src/andean/domain/entities/experiences/ExperienceMediaInfo';
-import { ExperienceMediaInfoDocument } from '../../persistence/experiences/experienceMediaInfo.schema';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
-import { Types } from 'mongoose';
 
+// Value Object mapper — sin fromDocument ya que no es una colección propia
 export class ExperienceMediaInfoMapper {
-	static fromDocument(doc: ExperienceMediaInfoDocument): ExperienceMediaInfo {
-		const plain = doc.toObject();
-		return plainToInstance(ExperienceMediaInfo, {
-			id: plain._id.toString(),
-			...plain,
-		});
-	}
-
-	static fromCreateDto(dto: any): ExperienceMediaInfo {
-		const plain = {
-			id: new Types.ObjectId().toString(),
-			...dto,
-		};
+	/**
+	 * Desde el subdocumento embebido del documento padre (MongoDB plain object)
+	 */
+	static fromPlain(plain: any): ExperienceMediaInfo {
 		return plainToInstance(ExperienceMediaInfo, plain);
 	}
 
-	static fromUpdateDto(id: string, dto: any): ExperienceMediaInfo {
-		const plain = {
-			id,
-			...dto,
-		};
-		return plainToInstance(ExperienceMediaInfo, plain);
+	/**
+	 * Desde el DTO de creación/actualización
+	 */
+	static fromDto(dto: any): ExperienceMediaInfo {
+		return plainToInstance(ExperienceMediaInfo, dto);
 	}
 
-	static toPersistence(
-		entity: ExperienceMediaInfo | Partial<ExperienceMediaInfo>,
-	) {
-		const plain = instanceToPlain(entity);
-		const { id, _id, __v, ...dataForDB } = plain;
-		return dataForDB;
+	/**
+	 * Para persistencia embebida — serializa como objeto plano (sin excluir nada,
+	 * ya que es un sub-documento sin _id)
+	 */
+	static toPersistence(entity: ExperienceMediaInfo | Partial<ExperienceMediaInfo>) {
+		return instanceToPlain(entity);
 	}
 }
