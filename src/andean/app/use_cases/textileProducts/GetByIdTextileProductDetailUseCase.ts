@@ -17,6 +17,7 @@ import { AccountRepository } from '../../datastore/Account.repo';
 import { Review } from 'src/andean/domain/entities/Review';
 import { Variant } from 'src/andean/domain/entities/Variant';
 import { MediaItemRepository } from '../../datastore/MediaItem.repo';
+import { AvailableColorResponse } from '../../models/TextileProducts/TextileProductDetailResponse';
 
 @Injectable()
 export class GetByIdTextileProductDetailUseCase {
@@ -127,21 +128,7 @@ export class GetByIdTextileProductDetailUseCase {
 		}
 
 		// -- Obtener availableColors
-		const availableColors: string[] = [];
-		if (colorOption) {
-			for (const value of colorOption.values) {
-				if (value.idOpcionAlternative) {
-					const colorAlt = await this.colorOptionAlternativeRepository.getById(
-						value.idOpcionAlternative,
-					);
-					if (colorAlt && !availableColors.includes(colorAlt.nameLabel)) {
-						availableColors.push(colorAlt.nameLabel);
-					}
-				} else if (value.label && !availableColors.includes(value.label)) {
-					availableColors.push(value.label);
-				}
-			}
-		}
+		const availableColors = await this.buildAvailableColors(colorOption);
 
 		// -- Obtener availableMaterials
 		const availableMaterials: string[] = [];
@@ -273,6 +260,45 @@ export class GetByIdTextileProductDetailUseCase {
 		};
 	}
 
+	private async buildAvailableColors(
+		colorOption: any,
+	): Promise< AvailableColorResponse[]> {
+		if (!colorOption?.values?.length) {
+			return [];
+		}
+
+		const availableColors: AvailableColorResponse[] =
+			[];
+
+		for (const value of colorOption.values) {
+			let color = value.label || '';
+			let hexCode = '#000000';
+
+			if (value.idOpcionAlternative) {
+				const colorAlt = await this.colorOptionAlternativeRepository.getById(
+					value.idOpcionAlternative,
+				);
+				if (colorAlt) {
+					color = colorAlt.nameLabel || color;
+					hexCode = colorAlt.hexCode || hexCode;
+				}
+			}
+
+			let imgUrl = '';
+			const firstMediaId = value.mediaIds?.[0];
+			if (firstMediaId) {
+				const mediaItem = await this.mediaItemRepository.getById(firstMediaId);
+				imgUrl = mediaItem
+					? `${process.env.STORAGE_BASE_URL}/${mediaItem.key}`
+					: '';
+			}
+
+			availableColors.push({ color, hexCode, imgUrl });
+		}
+
+		return availableColors;
+	}
+
 	private async buildVariantInfo(
 		variants: Variant[],
 		sizeOption: any,
@@ -280,6 +306,7 @@ export class GetByIdTextileProductDetailUseCase {
 		materialOption: any,
 	): Promise<
 		{
+			variantId: string;
 			size: string;
 			color: string;
 			material: string;
@@ -292,6 +319,7 @@ export class GetByIdTextileProductDetailUseCase {
 		}
 
 		const variantInfoArray: {
+			variantId: string;
 			size: string;
 			color: string;
 			material: string;
@@ -347,6 +375,7 @@ export class GetByIdTextileProductDetailUseCase {
 			}
 
 			variantInfoArray.push({
+				variantId: variant.id,
 				size,
 				color,
 				material,
