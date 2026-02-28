@@ -101,7 +101,7 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 			.find(baseQuery)
 			.exec();
 		const productIds = matchingProducts.map((p) =>
-			(p as any).toObject()._id.toString(),
+			(p as TextileProductDocument).toObject()._id.toString(),
 		);
 
 		if (productIds.length === 0) {
@@ -692,7 +692,10 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 		return docs.map((doc) => TextileProductMapper.fromDocument(doc));
 	}
 
-	async reduceStock(id: string, quantity: number): Promise<TextileProduct | null> {
+	async reduceStock(
+		id: string,
+		quantity: number,
+	): Promise<TextileProduct | null> {
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		const updated = await this.textileProductModel
 			.findOneAndUpdate(

@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as paypal from '@paypal/checkout-server-sdk';
+import { Client, Environment, LogLevel } from '@paypal/paypal-server-sdk';
+
 
 interface AccessTokenCache {
 	token: string;
@@ -10,8 +11,7 @@ interface AccessTokenCache {
 @Injectable()
 export class PayPalClientService {
 	private readonly logger = new Logger(PayPalClientService.name);
-	private client: paypal.core.PayPalHttpClient | null = null;
-	private accessTokenCache: AccessTokenCache | null = null;
+	private client: Client | null = null;
 	private readonly clientId: string;
 	private readonly clientSecret: string;
 	private readonly environment: 'sandbox' | 'live';
@@ -30,19 +30,16 @@ export class PayPalClientService {
 		}
 	}
 
-	getClient(): paypal.core.PayPalHttpClient {
+	getClient(): Client {
 		if (!this.client) {
-			const environment =
-				this.environment === 'live'
-					? new paypal.core.LiveEnvironment(this.clientId, this.clientSecret)
-					: new paypal.core.SandboxEnvironment(
-							this.clientId,
-							this.clientSecret,
-						);
-
-			this.client = new paypal.core.PayPalHttpClient(environment);
+			this.client = new Client({
+				clientCredentialsAuthCredentials: {
+					oAuthClientId: this.clientId,
+					oAuthClientSecret: this.clientSecret,
+				},
+				environment: this.environment === 'live' ? Environment.Production : Environment.Sandbox,
+			});
 		}
-
 		return this.client;
 	}
 

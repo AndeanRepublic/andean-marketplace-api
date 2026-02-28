@@ -2,6 +2,7 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ExperienceAvailabilityRepository } from '../../../datastore/experiences/ExperienceAvailability.repo';
 import { ExperienceAvailability } from 'src/andean/domain/entities/experiences/ExperienceAvailability';
 import { ExperienceAvailabilityDto } from 'src/andean/infra/controllers/dto/experiences/CreateExperienceDto';
+import { ExperienceAvailabilityMode } from 'src/andean/domain/enums/ExperienceAvailabilityMode';
 
 @Injectable()
 export class UpdateExperienceAvailabilityUseCase {
@@ -22,7 +23,8 @@ export class UpdateExperienceAvailabilityUseCase {
 		const updatedData: Partial<ExperienceAvailability> = {
 			...existing,
 			...dto,
-			specificAvailableDates: (dto.specificAvailableDates || []).map(
+			mode: dto.mode ?? existing.mode ?? ExperienceAvailabilityMode.EXCLUSIVE_GROUP,
+			specificAvailableStartDates: (dto.specificAvailableStartDates || []).map(
 				(d) => new Date(d),
 			),
 			excludedDates: (dto.excludedDates || []).map((d) => new Date(d)),

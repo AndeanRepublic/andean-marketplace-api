@@ -24,6 +24,7 @@ import { BoxModule } from './andean/box.module';
 import { BoxSealModule } from './andean/boxSeal.module';
 import { ExperienceModule } from './andean/experience.module';
 import { TryOnModule } from './andean/tryOn.module';
+import { BookingModule } from './andean/booking.module';
 
 @Module({
 	imports: [
@@ -64,6 +65,7 @@ import { TryOnModule } from './andean/tryOn.module';
 		BoxSealModule,
 		ExperienceModule,
 		TryOnModule,
+		BookingModule,
 	],
 	controllers: [],
 	providers: [],
