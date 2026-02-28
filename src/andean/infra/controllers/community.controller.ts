@@ -1,16 +1,5 @@
-import {
-	Controller,
-	Get,
-	Post,
-	Put,
-	Delete,
-	Body,
-	Param,
-	HttpCode,
-	HttpStatus,
-	Inject,
-} from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateCommunityUseCase } from '../../app/use_cases/community/CreateCommunityUseCase';
 import { UpdateCommunityUseCase } from '../../app/use_cases/community/UpdateCommunityUseCase';
 import { GetCommunityByIdUseCase } from '../../app/use_cases/community/GetCommunityByIdUseCase';
@@ -22,14 +11,12 @@ import { GetByIdSealUseCase } from '../../app/use_cases/community/GetByIdSealUse
 import { UpdateSealUseCase } from '../../app/use_cases/community/UpdateSealUseCase';
 import { DeleteSealUseCase } from '../../app/use_cases/community/DeleteSealUseCase';
 import { CreateCommunityDto } from './dto/community/CreateCommunityDto';
-import { UpdateCommunityDto } from './dto/community/UpdateCommunityDto';
 import { CreateSealDto } from './dto/community/CreateSealDto';
 import { CommunityResponse } from '../../app/modules/CommunityResponse';
 import { Community } from '../../domain/entities/community/Community';
 import { Seal } from '../../domain/entities/community/Seal';
 
 const path_seals = '/seals';
-const path_seals_id = '/seals/:id';
 
 @ApiTags('Communities')
 @Controller('communities')

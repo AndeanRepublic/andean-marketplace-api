@@ -1,6 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { TextileStyleRepository } from '../../datastore/textileProducts/TextileStyle.repo';
-import { TextileStyle } from 'src/andean/domain/entities/textileProducts/TextileStyle';
 
 @Injectable()
 export class DeleteTextileStyleUseCase {

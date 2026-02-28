@@ -1,22 +1,11 @@
-import {
-	Controller,
-	Get,
-	Post,
-	Put,
-	Delete,
-	Body,
-	Param,
-	HttpCode,
-	HttpStatus,
-} from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateOriginProductRegionUseCase } from '../../app/use_cases/origin/CreateOriginProductRegionUseCase';
 import { UpdateOriginProductRegionUseCase } from '../../app/use_cases/origin/UpdateOriginProductRegionUseCase';
 import { GetOriginProductRegionByIdUseCase } from '../../app/use_cases/origin/GetOriginProductRegionByIdUseCase';
 import { ListOriginProductRegionUseCase } from '../../app/use_cases/origin/ListOriginProductRegionUseCase';
 import { DeleteOriginProductRegionUseCase } from '../../app/use_cases/origin/DeleteOriginProductRegionUseCase';
 import { CreateOriginProductRegionDto } from './dto/origin/CreateOriginProductRegionDto';
-import { UpdateOriginProductRegionDto } from './dto/origin/UpdateOriginProductRegionDto';
 import { OriginProductRegionResponse } from '../../app/modules/OriginProductRegionResponse';
 import { OriginProductRegion } from '../../domain/entities/origin/OriginProductRegion';
 

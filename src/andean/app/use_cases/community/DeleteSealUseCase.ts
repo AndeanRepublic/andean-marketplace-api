@@ -1,6 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { SealRepository } from '../../datastore/community/Seal.repo';
-import { Seal } from 'src/andean/domain/entities/community/Seal';
 
 @Injectable()
 export class DeleteSealUseCase {

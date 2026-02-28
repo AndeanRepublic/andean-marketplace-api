@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { SuperfoodCertificationRepository } from '../../../datastore/superfoods/SuperfoodCertification.repo';
-import { SuperfoodCertification } from '../../../../domain/entities/superfoods/SuperfoodCertification';
 import { CreateSuperfoodCertificationDto } from '../../../../infra/controllers/dto/superfoods/CreateSuperfoodCertificationDto';
 import { SuperfoodCertificationResponse } from '../../../modules/SuperfoodCertificationResponse';
 import { SuperfoodCertificationMapper } from '../../../../infra/services/superfood/SuperfoodCertificationMapper';

@@ -1,12 +1,10 @@
-import { Body, Controller, Get, Param, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Param, Put, UseGuards } from '@nestjs/common';
 import {
 	ApiTags,
 	ApiOperation,
 	ApiResponse,
 	ApiBearerAuth,
 } from '@nestjs/swagger';
-import { CustomerProfile } from '../../domain/entities/CustomerProfile';
-import { SellerProfile } from '../../domain/entities/SellerProfile';
 import { GetAllCustomerUseCase } from '../../app/use_cases/users/GetAllCustomerUseCase';
 import { GetAllSellersUseCase } from '../../app/use_cases/users/GetAllSellersUseCase';
 import { UpdateAccountStatusUseCase } from '../../app/use_cases/users/UpdateAccountStatusUseCase';

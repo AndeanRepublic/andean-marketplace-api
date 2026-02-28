@@ -1,11 +1,5 @@
-import { Body, Controller, Post, Get, Param, Put } from '@nestjs/common';
-import {
-	ApiTags,
-	ApiOperation,
-	ApiResponse,
-	ApiParam,
-	ApiBearerAuth,
-} from '@nestjs/swagger';
+import { Body, Controller, Post, Param, Put } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateCustomerUseCase } from '../../app/use_cases/users/CreateCustomerUseCase';
 import { GetAllCustomerUseCase } from '../../app/use_cases/users/GetAllCustomerUseCase';
 import { CreateCustomerDto } from './dto/CreateCustomerDto';

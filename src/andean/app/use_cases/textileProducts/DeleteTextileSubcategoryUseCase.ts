@@ -1,6 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { TextileSubcategoryRepository } from '../../datastore/textileProducts/TextileSubcategory.repo';
-import { TextileSubcategory } from 'src/andean/domain/entities/textileProducts/TextileSubcategory';
 
 @Injectable()
 export class DeleteTextileSubcategoryUseCase {

@@ -1,8 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ReviewRepository } from '../datastore/Review.repo';
 import { Review } from 'src/andean/domain/entities/Review';
-import { ReviewMapper } from 'src/andean/infra/services/ReviewMapper';
-import { CreateReviewDto } from 'src/andean/infra/controllers/dto/CreateReviewDto';
 import { CustomerProfileRepository } from '../datastore/Customer.repo';
 import { TextileProductRepository } from '../datastore/textileProducts/TextileProduct.repo';
 import { SuperfoodProductRepository } from '../datastore/superfoods/SuperfoodProduct.repo';
@@ -20,7 +18,7 @@ export class UpdateReviewUseCase {
 		private readonly textileProductRepository: TextileProductRepository,
 		@Inject(SuperfoodProductRepository)
 		private readonly superfoodProductRepository: SuperfoodProductRepository,
-	) { }
+	) {}
 
 	async handle(id: string, dto: UpdateReviewDto): Promise<Review> {
 		const reviewFound = await this.reviewRepository.getById(id);

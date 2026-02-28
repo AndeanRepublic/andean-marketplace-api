@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CustomerProfileRepository } from '../../datastore/Customer.repo';
 import { CartShopItemRepository } from '../../datastore/CartShopItem.repo';
 

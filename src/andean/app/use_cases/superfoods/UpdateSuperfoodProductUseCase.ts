@@ -5,14 +5,12 @@ import {
 	BadRequestException,
 } from '@nestjs/common';
 import { SuperfoodProductRepository } from '../../datastore/superfoods/SuperfoodProduct.repo';
-import { UpdateSuperfoodDto } from '../../../infra/controllers/dto/superfoods/UpdateSuperfoodDto';
 import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
 import { SuperfoodProductMapper } from '../../../infra/services/superfood/SuperfoodProductMapper';
 import { SuperfoodCategoryRepository } from '../../datastore/superfoods/SuperfoodCategory.repo';
 import { CommunityRepository } from '../../datastore/community/community.repo';
 import { ShopRepository } from '../../datastore/Shop.repo';
 import { SuperfoodOwnerType } from '../../../domain/enums/SuperfoodOwnerType';
-import { instanceToPlain } from 'class-transformer';
 import { CreateSuperfoodDto } from '../../../infra/controllers/dto/superfoods/CreateSuperfoodDto';
 import { CreateDetailSourceProductUseCase } from '../detailSourceProduct/CreateDetailSourceProductUseCase';
 import { UpdateDetailSourceProductUseCase } from '../detailSourceProduct/UpdateDetailSourceProductUseCase';
@@ -31,7 +29,7 @@ export class UpdateSuperfoodProductUseCase {
 
 		private readonly createDetailSourceProductUseCase: CreateDetailSourceProductUseCase,
 		private readonly updateDetailSourceProductUseCase: UpdateDetailSourceProductUseCase,
-	) { }
+	) {}
 
 	async handle(
 		productId: string,

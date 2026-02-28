@@ -4,7 +4,6 @@ import { CapturePayPalOrderDto } from '../../../infra/controllers/dto/payment/Ca
 import { CreateOrderFromCartUseCase } from '../orders/CreateOrderFromCartUseCase';
 import { PaymentMethod } from '../../../domain/enums/PaymentMethod';
 import { PaymentProvider } from '../../../domain/enums/PaymentProvider';
-import { CreateOrderFromCartDto } from 'src/andean/infra/controllers/dto/order/CreateOrderFromCartDto';
 
 export interface CapturePayPalOrderResponse {
 	success: boolean;

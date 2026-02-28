@@ -9,7 +9,6 @@ import { SealRepository } from '../../datastore/community/Seal.repo';
 import { MediaItemRepository } from '../../datastore/MediaItem.repo';
 import { Community } from '../../../domain/entities/community/Community';
 import { UpdateCommunityDto } from '../../../infra/controllers/dto/community/UpdateCommunityDto';
-import { CommunityMapper } from '../../../infra/services/community/CommunityMapper';
 
 @Injectable()
 export class UpdateCommunityUseCase {
@@ -19,7 +18,7 @@ export class UpdateCommunityUseCase {
 		private readonly sealRepository: SealRepository,
 		@Inject(MediaItemRepository)
 		private readonly mediaItemRepository: MediaItemRepository,
-	) { }
+	) {}
 
 	async execute(id: string, dto: UpdateCommunityDto): Promise<Community> {
 		// Verificar existencia

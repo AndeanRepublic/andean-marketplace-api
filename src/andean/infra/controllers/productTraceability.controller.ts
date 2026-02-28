@@ -1,24 +1,10 @@
-import {
-	Controller,
-	Get,
-	Post,
-	Put,
-	Delete,
-	Body,
-	Param,
-	HttpCode,
-	HttpStatus,
-} from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { Controller } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { CreateProductTraceabilityUseCase } from '../../app/use_cases/traceability/CreateProductTraceabilityUseCase';
 import { UpdateProductTraceabilityUseCase } from '../../app/use_cases/traceability/UpdateProductTraceabilityUseCase';
 import { GetProductTraceabilityByIdUseCase } from '../../app/use_cases/traceability/GetProductTraceabilityByIdUseCase';
 import { ListProductTraceabilityUseCase } from '../../app/use_cases/traceability/ListProductTraceabilityUseCase';
 import { DeleteProductTraceabilityUseCase } from '../../app/use_cases/traceability/DeleteProductTraceabilityUseCase';
-import { CreateProductTraceabilityDto } from './dto/traceability/CreateProductTraceabilityDto';
-import { UpdateProductTraceabilityDto } from './dto/traceability/UpdateProductTraceabilityDto';
-import { ProductTraceabilityResponse } from '../../app/modules/ProductTraceabilityResponse';
-import { ProductTraceability } from '../../domain/entities/ProductTraceability';
 
 @ApiTags('Product Traceability')
 @Controller('product-traceability')

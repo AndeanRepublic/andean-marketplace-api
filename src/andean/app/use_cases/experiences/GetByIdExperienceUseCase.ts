@@ -17,8 +17,6 @@ import { MediaItem } from 'src/andean/domain/entities/MediaItem';
 import { Review } from 'src/andean/domain/entities/Review';
 import { ProductType } from 'src/andean/domain/enums/ProductType';
 import { OwnerType } from 'src/andean/domain/enums/OwnerType';
-import { ExperienceAvailabilityMode } from 'src/andean/domain/enums/ExperienceAvailabilityMode';
-
 import {
 	ExperienceAvailabilityResponse,
 	ExperienceDetailResponse,
@@ -211,7 +209,7 @@ export class GetByIdExperienceUseCase {
 	private async buildAvailability(
 		availabilityId: string,
 	): Promise<ExperienceAvailabilityResponse> {
-		const availability = await this.availabilityRepo.getById(availabilityId);
+		await this.availabilityRepo.getById(availabilityId);
 		const availableStartDates =
 			await this.experienceRepo.getFutureAvailableDates(availabilityId);
 		const weeklyStartDays =

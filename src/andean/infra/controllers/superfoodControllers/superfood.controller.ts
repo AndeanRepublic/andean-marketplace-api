@@ -19,7 +19,6 @@ import {
 	ApiQuery,
 } from '@nestjs/swagger';
 import { CreateSuperfoodDto } from '../dto/superfoods/CreateSuperfoodDto';
-import { UpdateSuperfoodDto } from '../dto/superfoods/UpdateSuperfoodDto';
 import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
 import { CreateSuperfoodProductUseCase } from '../../../app/use_cases/superfoods/CreateSuperfoodProductUseCase';
 import { UpdateSuperfoodProductUseCase } from '../../../app/use_cases/superfoods/UpdateSuperfoodProductUseCase';
@@ -41,7 +40,7 @@ export class SuperfoodController {
 		private readonly updateSuperfoodProductUseCase: UpdateSuperfoodProductUseCase,
 		private readonly deleteSuperfoodProductUseCase: DeleteSuperfoodProductUseCase,
 		private readonly getByIdSuperfoodProductDetailUseCase: GetByIdSuperfoodProductDetailUseCase,
-	) { }
+	) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)

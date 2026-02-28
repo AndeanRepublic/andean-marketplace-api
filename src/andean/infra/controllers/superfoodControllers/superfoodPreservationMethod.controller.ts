@@ -1,14 +1,5 @@
-import {
-	Controller,
-	Get,
-	Post,
-	Delete,
-	Body,
-	Param,
-	HttpCode,
-	HttpStatus,
-} from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateSuperfoodPreservationMethodDto } from '../dto/superfoods/CreateSuperfoodPreservationMethodDto';
 import { SuperfoodPreservationMethodResponse } from '../../../app/modules/SuperfoodPreservationMethodResponse';
 import { CreateSuperfoodPreservationMethodUseCase } from '../../../app/use_cases/superfoods/preservationMethod/CreateSuperfoodPreservationMethodUseCase';

@@ -1,11 +1,4 @@
-import {
-	IsString,
-	IsNotEmpty,
-	IsNumber,
-	IsInt,
-	Min,
-	IsObject,
-} from 'class-validator';
+import { IsNotEmpty, IsNumber, IsInt, Min, IsObject } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 /**
@@ -20,7 +13,7 @@ export class SyncVariantItemDto {
 	})
 	@IsObject()
 	@IsNotEmpty()
-	combination: Record<string, string>;
+	combination!: Record<string, string>;
 
 	@ApiProperty({
 		description: 'Precio específico de esta variante',
@@ -30,7 +23,7 @@ export class SyncVariantItemDto {
 	@IsNumber()
 	@Min(0)
 	@IsNotEmpty()
-	price: number;
+	price!: number;
 
 	@ApiProperty({
 		description: 'Stock disponible de esta variante',
@@ -40,5 +33,5 @@ export class SyncVariantItemDto {
 	@IsInt()
 	@Min(0)
 	@IsNotEmpty()
-	stock: number;
+	stock!: number;
 }

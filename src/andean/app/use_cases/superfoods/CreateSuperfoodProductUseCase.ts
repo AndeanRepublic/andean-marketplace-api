@@ -1,9 +1,4 @@
-import {
-	Injectable,
-	Inject,
-	NotFoundException,
-	BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { SuperfoodProductRepository } from '../../datastore/superfoods/SuperfoodProduct.repo';
 import { ShopRepository } from '../../datastore/Shop.repo';
 import { SuperfoodCategoryRepository } from '../../datastore/superfoods/SuperfoodCategory.repo';
@@ -30,7 +25,7 @@ export class CreateSuperfoodProductUseCase {
 		private readonly communityRepository: CommunityRepository,
 
 		private readonly createDetailSourceProductUseCase: CreateDetailSourceProductUseCase,
-	) { }
+	) {}
 
 	async handle(dto: CreateSuperfoodDto): Promise<SuperfoodProduct> {
 		// 1. Validar que la categoría existe solo si se proporciona

@@ -21,7 +21,6 @@ import {
 	ReviewsResponse,
 	SuperfoodProductListItemCompact,
 } from '../../models/superfoods/SuperfoodProductDetailResponse';
-import { SuperfoodProductListItem } from '../../models/superfoods/SuperfoodProductListItem';
 
 @Injectable()
 export class GetByIdSuperfoodProductDetailUseCase {

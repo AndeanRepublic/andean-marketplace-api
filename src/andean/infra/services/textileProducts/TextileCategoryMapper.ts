@@ -1,10 +1,6 @@
 import { TextileCategory } from 'src/andean/domain/entities/textileProducts/TextileCategory';
 import { TextileCategoryDocument } from '../../persistence/textileProducts/textileCategory.schema';
-import {
-	instanceToPlain,
-	plainToInstance,
-	classToPlain,
-} from 'class-transformer';
+import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { CreateTextileCategoryDto } from '../../controllers/dto/textileProducts/CreateTextileCategory';
 import { Types } from 'mongoose';
 
@@ -40,7 +36,7 @@ export class TextileCategoryMapper {
 
 	static toPersistence(textileCategory: TextileCategory) {
 		const plain = instanceToPlain(textileCategory);
-		const { id, ...updateData } = plain;
+		const { id: _id, ...updateData } = plain;
 
 		return {
 			...updateData,

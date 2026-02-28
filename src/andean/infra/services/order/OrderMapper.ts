@@ -1,4 +1,10 @@
-import { Order, OrderItem, OrderPricing, ShippingInfo, PaymentInfo } from '../../../domain/entities/order/Order';
+import {
+	Order,
+	OrderItem,
+	OrderPricing,
+	ShippingInfo,
+	PaymentInfo,
+} from '../../../domain/entities/order/Order';
 import { OrderDocument } from '../../persistence/order/order.schema';
 import { OrderStatus } from '../../../domain/enums/OrderStatus';
 import { DeliveryOption } from '../../../domain/enums/DeliveryOption';
@@ -76,7 +82,7 @@ export class OrderMapper {
 
 	static toPersistence(order: Order | Partial<Order>) {
 		const plain = instanceToPlain(order);
-		const { id, _id, __v, ...updateData } = plain;
+		const { id: _id1, _id: _id2, __v: _v, ...updateData } = plain;
 		return {
 			...updateData,
 		};
@@ -85,9 +91,11 @@ export class OrderMapper {
 	/**
 	 * Extrae atributos de variant (color, size, material) desde variant.combination
 	 */
-	static extractVariantAttributes(
-		variant: Variant,
-	): { color?: string; size?: string; material?: string } {
+	static extractVariantAttributes(variant: Variant): {
+		color?: string;
+		size?: string;
+		material?: string;
+	} {
 		const combination = variant.combination || {};
 		return {
 			color:

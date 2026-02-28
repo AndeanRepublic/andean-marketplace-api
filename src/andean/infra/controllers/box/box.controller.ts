@@ -10,13 +10,7 @@ import {
 	Post,
 	Query,
 } from '@nestjs/common';
-import {
-	ApiTags,
-	ApiOperation,
-	ApiResponse,
-	ApiParam,
-	ApiQuery,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { CreateBoxUseCase } from '../../../app/use_cases/boxes/CreateBoxUseCase';
 import { GetAllBoxesUseCase } from '../../../app/use_cases/boxes/GetAllBoxesUseCase';
 import { GetBoxDetailUseCase } from '../../../app/use_cases/boxes/GetBoxDetailUseCase';
@@ -31,7 +25,7 @@ export class BoxController {
 		private readonly createBoxUseCase: CreateBoxUseCase,
 		private readonly getAllBoxesUseCase: GetAllBoxesUseCase,
 		private readonly getBoxDetailUseCase: GetBoxDetailUseCase,
-	) { }
+	) {}
 
 	@Post('')
 	@HttpCode(HttpStatus.CREATED)
@@ -106,7 +100,9 @@ export class BoxController {
 		status: 404,
 		description: 'Box no encontrado',
 	})
-	async getBoxDetail(@Param('boxId') boxId: string): Promise<BoxDetailResponse> {
+	async getBoxDetail(
+		@Param('boxId') boxId: string,
+	): Promise<BoxDetailResponse> {
 		return this.getBoxDetailUseCase.handle(boxId);
 	}
 }

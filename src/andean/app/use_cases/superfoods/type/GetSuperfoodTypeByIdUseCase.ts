@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { SuperfoodTypeRepository } from '../../../datastore/superfoods/SuperfoodType.repo';
-import { SuperfoodType } from '../../../../domain/entities/superfoods/SuperfoodType';
 import { SuperfoodTypeResponse } from '../../../modules/SuperfoodTypeResponse';
 import { SuperfoodTypeMapper } from '../../../../infra/services/superfood/SuperfoodTypeMapper';
 

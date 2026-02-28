@@ -1,29 +1,11 @@
-import {
-	Controller,
-	Get,
-	Post,
-	Put,
-	Delete,
-	Body,
-	Param,
-	Query,
-	HttpCode,
-	HttpStatus,
-} from '@nestjs/common';
-import {
-	ApiTags,
-	ApiOperation,
-	ApiResponse,
-	ApiParam,
-	ApiQuery,
-} from '@nestjs/swagger';
+import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateOriginProductCommunityUseCase } from '../../app/use_cases/origin/CreateOriginProductCommunityUseCase';
 import { UpdateOriginProductCommunityUseCase } from '../../app/use_cases/origin/UpdateOriginProductCommunityUseCase';
 import { GetOriginProductCommunityByIdUseCase } from '../../app/use_cases/origin/GetOriginProductCommunityByIdUseCase';
 import { ListOriginProductCommunityUseCase } from '../../app/use_cases/origin/ListOriginProductCommunityUseCase';
 import { DeleteOriginProductCommunityUseCase } from '../../app/use_cases/origin/DeleteOriginProductCommunityUseCase';
 import { CreateOriginProductCommunityDto } from './dto/origin/CreateOriginProductCommunityDto';
-import { UpdateOriginProductCommunityDto } from './dto/origin/UpdateOriginProductCommunityDto';
 import { OriginProductCommunityResponse } from '../../app/modules/OriginProductCommunityResponse';
 import { OriginProductCommunity } from '../../domain/entities/origin/OriginProductCommunity';
 

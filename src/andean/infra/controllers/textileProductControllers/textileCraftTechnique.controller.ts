@@ -1,15 +1,5 @@
-import {
-	Body,
-	Controller,
-	Post,
-	Get,
-	Param,
-	Put,
-	Delete,
-	HttpCode,
-	HttpStatus,
-} from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { Body, Controller, Post, HttpCode, HttpStatus } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateTextileCraftTechniqueUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileCraftTechniqueUseCase';
 import { TextileCraftTechnique } from 'src/andean/domain/entities/textileProducts/TextileCraftTechnique';
 import { CreateTextileCraftTechniqueDto } from '../dto/textileProducts/CreateTextileCraftTechniqueDto';

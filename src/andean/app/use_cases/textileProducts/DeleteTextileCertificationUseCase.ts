@@ -1,6 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { TextileCertificationRepository } from '../../datastore/textileProducts/TextileCertification.repo';
-import { TextileCertification } from 'src/andean/domain/entities/textileProducts/TextileCertification';
 
 @Injectable()
 export class DeleteTextileCertificationUseCase {

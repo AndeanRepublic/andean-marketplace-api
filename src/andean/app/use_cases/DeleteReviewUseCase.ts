@@ -1,6 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ReviewRepository } from '../datastore/Review.repo';
-import { Review } from 'src/andean/domain/entities/Review';
 
 @Injectable()
 export class DeleteReviewUseCase {

@@ -2,7 +2,6 @@ import { Injectable, Inject } from '@nestjs/common';
 import { VariantRepository } from '../../datastore/Variant.repo';
 import { Variant } from '../../../domain/entities/Variant';
 import { SyncVariantsDto } from '../../../infra/controllers/dto/variant/SyncVariantsDto';
-import { SyncVariantItemDto } from '../../../infra/controllers/dto/variant/SyncVariantItemDto';
 import { VariantMapper } from '../../../infra/services/VariantMapper';
 
 /**

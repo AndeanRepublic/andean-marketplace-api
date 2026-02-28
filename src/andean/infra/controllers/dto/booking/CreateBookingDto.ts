@@ -22,13 +22,9 @@ import { PaymentStatus } from 'src/andean/domain/enums/PaymentStatus';
 import { BookingStatus } from 'src/andean/domain/enums/BookingStatus';
 import {
 	CustomerInfo,
-	AgeGroupPricing,
-	ExperienceSnapshot,
-	ExperienceInfo,
 	BookingPricing,
 	AgeGroupInfo,
 	TravelerInfo,
-	GuestsInfo,
 	BookingPaymentInfo,
 } from 'src/andean/domain/entities/booking/Booking';
 
@@ -145,7 +141,8 @@ export class AgeGroupInfoDto implements AgeGroupInfo {
 export class GuestsInfoDto {
 	@ApiProperty({
 		type: [AgeGroupInfoDto],
-		description: 'Cantidad de huéspedes por grupo de edad (ej: 2 adultos, 1 niño)',
+		description:
+			'Cantidad de huéspedes por grupo de edad (ej: 2 adultos, 1 niño)',
 	})
 	@IsArray()
 	@ArrayNotEmpty()

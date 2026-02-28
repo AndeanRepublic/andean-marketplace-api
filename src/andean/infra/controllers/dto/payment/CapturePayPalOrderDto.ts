@@ -8,10 +8,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-	ShippingInfoDto,
-	AdministrativeAreaDto,
-} from '../order/CreateOrderDto';
+import { ShippingInfoDto } from '../order/CreateOrderDto';
 import { DeliveryOption } from 'src/andean/domain/enums/DeliveryOption';
 
 export class CapturePayPalOrderDto {

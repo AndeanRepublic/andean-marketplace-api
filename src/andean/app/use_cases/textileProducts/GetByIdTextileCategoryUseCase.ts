@@ -1,7 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { TextileCategoryRepository } from '../../datastore/textileProducts/TextileCategory.repo';
 import { TextileCategory } from 'src/andean/domain/entities/textileProducts/TextileCategory';
-import { TextileCategoryMapper } from 'src/andean/infra/services/textileProducts/TextileCategoryMapper';
 
 @Injectable()
 export class GetByIdTextileCategoryUseCase {
