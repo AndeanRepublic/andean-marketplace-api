@@ -15,7 +15,7 @@ export class DeleteExperienceUseCase {
 		private readonly availabilityRepository: ExperienceAvailabilityRepository,
 		@Inject(ExperienceItineraryRepository)
 		private readonly itineraryRepository: ExperienceItineraryRepository,
-	) { }
+	) {}
 
 	async handle(id: string): Promise<void> {
 		const experience = await this.experienceRepository.getById(id);

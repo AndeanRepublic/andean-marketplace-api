@@ -1,4 +1,10 @@
-import { IsEnum, IsMongoId, IsNotEmpty, IsOptional, IsString, IsDateString } from 'class-validator';
+import {
+	IsEnum,
+	IsMongoId,
+	IsOptional,
+	IsString,
+	IsDateString,
+} from 'class-validator';
 import { CoinType } from '../../../domain/enums/CoinType';
 
 export class UpdateCustomerProfileDto {

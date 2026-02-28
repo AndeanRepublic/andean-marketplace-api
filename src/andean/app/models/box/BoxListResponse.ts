@@ -5,16 +5,29 @@ import { ProductType } from '../../../domain/enums/ProductType';
 export type BoxProductType = ProductType.SUPERFOOD | ProductType.TEXTILE;
 
 export class BoxProductResponse {
-	@ApiProperty({ description: 'Nombre del producto', example: 'Quinua Real Orgánica' })
+	@ApiProperty({
+		description: 'Nombre del producto',
+		example: 'Quinua Real Orgánica',
+	})
 	name!: string;
 
-	@ApiProperty({ description: 'Nombre de la comunidad productora', example: 'Comunidad de Chinchero' })
+	@ApiProperty({
+		description: 'Nombre de la comunidad productora',
+		example: 'Comunidad de Chinchero',
+	})
 	community!: string;
 
-	@ApiProperty({ description: 'Tipo de producto', enum: [ProductType.SUPERFOOD, ProductType.TEXTILE], example: ProductType.SUPERFOOD })
+	@ApiProperty({
+		description: 'Tipo de producto',
+		enum: [ProductType.SUPERFOOD, ProductType.TEXTILE],
+		example: ProductType.SUPERFOOD,
+	})
 	type!: BoxProductType;
 
-	@ApiProperty({ description: 'Imagen miniatura del producto', type: BoxImageResponse })
+	@ApiProperty({
+		description: 'Imagen miniatura del producto',
+		type: BoxImageResponse,
+	})
 	thumbnailImage!: BoxImageResponse;
 }
 
@@ -27,19 +40,31 @@ export class BoxItemCountResponse {
 }
 
 export class BoxListItemResponse {
-	@ApiProperty({ description: 'ID único del box', example: '6973d8ffddef7b59c2d4dcfb' })
+	@ApiProperty({
+		description: 'ID único del box',
+		example: '6973d8ffddef7b59c2d4dcfb',
+	})
 	id!: string;
 
 	@ApiProperty({ description: 'Título del box', example: 'Box Andino Premium' })
 	title!: string;
 
-	@ApiProperty({ description: 'Subtítulo del box', example: 'Lo mejor de los Andes' })
+	@ApiProperty({
+		description: 'Subtítulo del box',
+		example: 'Lo mejor de los Andes',
+	})
 	subtitle!: string;
 
-	@ApiProperty({ description: 'Conteo de productos por tipo', type: BoxItemCountResponse })
+	@ApiProperty({
+		description: 'Conteo de productos por tipo',
+		type: BoxItemCountResponse,
+	})
 	itemCount!: BoxItemCountResponse;
 
-	@ApiProperty({ description: 'Precio original (antes de descuento)', example: 199.99 })
+	@ApiProperty({
+		description: 'Precio original (antes de descuento)',
+		example: 199.99,
+	})
 	discartedPrice!: number;
 
 	@ApiProperty({ description: 'Precio final del box', example: 149.99 })
@@ -48,10 +73,16 @@ export class BoxListItemResponse {
 	@ApiProperty({ description: 'Porcentaje de descuento aplicado', example: 25 })
 	porcentageDiscount!: number;
 
-	@ApiProperty({ description: 'Imagen miniatura del box', type: BoxImageResponse })
+	@ApiProperty({
+		description: 'Imagen miniatura del box',
+		type: BoxImageResponse,
+	})
 	thumbnailImage!: BoxImageResponse;
 
-	@ApiProperty({ description: 'Lista de productos incluidos en el box', type: [BoxProductResponse] })
+	@ApiProperty({
+		description: 'Lista de productos incluidos en el box',
+		type: [BoxProductResponse],
+	})
 	products!: BoxProductResponse[];
 }
 
@@ -70,6 +101,9 @@ export class BoxListPaginatedResponse {
 	@ApiProperty({ description: 'Lista de boxes', type: [BoxListItemResponse] })
 	data!: BoxListItemResponse[];
 
-	@ApiProperty({ description: 'Información de paginación', type: BoxPaginationResponse })
+	@ApiProperty({
+		description: 'Información de paginación',
+		type: BoxPaginationResponse,
+	})
 	pagination!: BoxPaginationResponse;
 }

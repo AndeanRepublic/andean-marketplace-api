@@ -12,8 +12,7 @@ export class CreateDetailSourceProductDto {
 
 	@ApiProperty({
 		description: 'Descripción del detalle de origen del producto',
-		example:
-			'Producto cultivado en las altas montañas de los Andes peruanos',
+		example: 'Producto cultivado en las altas montañas de los Andes peruanos',
 	})
 	@IsString()
 	@IsNotEmpty()

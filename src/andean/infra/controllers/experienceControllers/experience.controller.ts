@@ -38,7 +38,7 @@ export class ExperienceController {
 		private readonly deleteExperienceUseCase: DeleteExperienceUseCase,
 		private readonly getAllExperiencesUseCase: GetAllExperiencesUseCase,
 		private readonly getByIdExperienceUseCase: GetByIdExperienceUseCase,
-	) { }
+	) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)

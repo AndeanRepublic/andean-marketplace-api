@@ -9,7 +9,7 @@ export class UpdateExperienceItineraryUseCase {
 	constructor(
 		@Inject(ExperienceItineraryRepository)
 		private readonly repo: ExperienceItineraryRepository,
-	) { }
+	) {}
 
 	async handle(
 		existingIds: string[],

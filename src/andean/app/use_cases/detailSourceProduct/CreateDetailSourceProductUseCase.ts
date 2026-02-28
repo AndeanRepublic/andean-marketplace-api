@@ -8,15 +8,12 @@ import { DetailSourceProductMapper } from '../../../infra/services/superfood/Det
 export class CreateDetailSourceProductUseCase {
 	constructor(
 		private readonly detailSourceProductRepository: DetailSourceProductRepository,
-	) { }
+	) {}
 
 	async handle(
 		dto: CreateDetailSourceProductDto,
 	): Promise<DetailSourceProduct> {
-		const detailSourceProduct =
-			DetailSourceProductMapper.fromCreateDto(dto);
-		return await this.detailSourceProductRepository.create(
-			detailSourceProduct,
-		);
+		const detailSourceProduct = DetailSourceProductMapper.fromCreateDto(dto);
+		return await this.detailSourceProductRepository.create(detailSourceProduct);
 	}
 }

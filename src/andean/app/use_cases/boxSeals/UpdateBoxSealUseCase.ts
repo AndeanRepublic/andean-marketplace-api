@@ -5,7 +5,7 @@ import { UpdateBoxSealDto } from '../../../infra/controllers/dto/box/UpdateBoxSe
 
 @Injectable()
 export class UpdateBoxSealUseCase {
-	constructor(private readonly boxSealRepository: BoxSealRepository) { }
+	constructor(private readonly boxSealRepository: BoxSealRepository) {}
 
 	async handle(id: string, dto: UpdateBoxSealDto): Promise<BoxSeal> {
 		const existing = await this.boxSealRepository.getById(id);

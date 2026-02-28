@@ -40,7 +40,7 @@ export class SizeOptionAlternativeMapper {
 
 	static toPersistence(sizeOptionAlternative: SizeOptionAlternative) {
 		const plain = instanceToPlain(sizeOptionAlternative);
-		const { id, ...updateData } = plain;
+		const { id: _id, ...updateData } = plain;
 
 		return {
 			...updateData,

@@ -36,9 +36,7 @@ export class ApplyDiscountCodeUseCase {
 		);
 
 		// 3. Validar que ningún CartItem tenga discount > 0 (incluso el actual)
-		const hasExistingDiscount = allCartItems.some(
-			(item) => item.discount > 0,
-		);
+		const hasExistingDiscount = allCartItems.some((item) => item.discount > 0);
 
 		if (hasExistingDiscount) {
 			throw new BadRequestException(
@@ -56,12 +54,16 @@ export class ApplyDiscountCodeUseCase {
 
 		// Validar que el carrito tenga un identificador válido
 		if (!cartShop.customerId && !cartShop.customerEmail) {
-			throw new BadRequestException('CartShop must have either customerId or customerEmail');
+			throw new BadRequestException(
+				'CartShop must have either customerId or customerEmail',
+			);
 		}
 
 		// 5. Validar el código con la API externa (solo si hay customerId)
 		if (!cartShop.customerId) {
-			throw new BadRequestException('Discount codes can only be applied to carts with a registered customer');
+			throw new BadRequestException(
+				'Discount codes can only be applied to carts with a registered customer',
+			);
 		}
 
 		const validationResult =

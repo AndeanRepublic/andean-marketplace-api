@@ -31,38 +31,41 @@ export class CreateShippingAddressDto {
 	@ApiProperty({ description: 'Nombre del destinatario' })
 	@IsString()
 	@IsNotEmpty()
-	recipientName: string;
+	recipientName!: string;
 
 	@ApiProperty({ description: 'Teléfono del destinatario' })
 	@IsString()
 	@IsNotEmpty()
-	phone: string;
+	phone!: string;
 
-	@ApiProperty({ description: 'Código de país (PE, US, CA, etc)', example: 'PE' })
+	@ApiProperty({
+		description: 'Código de país (PE, US, CA, etc)',
+		example: 'PE',
+	})
 	@IsString()
 	@IsNotEmpty()
-	countryCode: string;
+	countryCode!: string;
 
 	@ApiProperty({ description: 'Nombre del país' })
 	@IsString()
 	@IsNotEmpty()
-	country: string;
+	country!: string;
 
 	@ApiProperty({ description: 'Ciudad' })
 	@IsString()
 	@IsNotEmpty()
-	city: string;
+	city!: string;
 
 	@ApiProperty({ type: AdministrativeAreaDto })
 	@ValidateNested()
 	@Type(() => AdministrativeAreaDto)
 	@IsObject()
-	administrativeArea: AdministrativeAreaDto;
+	administrativeArea!: AdministrativeAreaDto;
 
 	@ApiProperty({ description: 'Dirección línea 1' })
 	@IsString()
 	@IsNotEmpty()
-	addressLine1: string;
+	addressLine1!: string;
 
 	@ApiPropertyOptional({ description: 'Dirección línea 2' })
 	@IsString()

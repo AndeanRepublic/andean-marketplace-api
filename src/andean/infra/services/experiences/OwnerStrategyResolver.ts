@@ -14,9 +14,7 @@ export interface OwnerResolverStrategy {
 }
 
 export class CommunityOwnerStrategy implements OwnerResolverStrategy {
-	constructor(
-		private readonly communityRepository: CommunityRepository,
-	) { }
+	constructor(private readonly communityRepository: CommunityRepository) {}
 
 	async validate(ownerId: string): Promise<void> {
 		const community = await this.communityRepository.getById(ownerId);
@@ -56,9 +54,7 @@ export class OwnerStrategyResolver {
 	resolve(ownerType: OwnerType): OwnerResolverStrategy {
 		const strategy = this.strategies.get(ownerType);
 		if (!strategy) {
-			throw new BadRequestException(
-				`Unsupported owner type: ${ownerType}`,
-			);
+			throw new BadRequestException(`Unsupported owner type: ${ownerType}`);
 		}
 		return strategy;
 	}

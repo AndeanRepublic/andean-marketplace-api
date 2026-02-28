@@ -3,4 +3,4 @@ import { CreateDetailSourceProductDto } from './CreateDetailSourceProductDto';
 
 export class UpdateDetailSourceProductDto extends PartialType(
 	CreateDetailSourceProductDto,
-) { }
+) {}

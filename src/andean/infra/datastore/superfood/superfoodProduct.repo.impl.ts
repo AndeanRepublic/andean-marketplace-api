@@ -17,7 +17,7 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 	constructor(
 		@InjectModel('SuperfoodProduct')
 		private readonly model: Model<SuperfoodProductDocument>,
-	) { }
+	) {}
 
 	async getSuperfoodProductById(id: string): Promise<SuperfoodProduct | null> {
 		const doc = await this.model.findOne({ id }).exec();
@@ -68,7 +68,10 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 		return docs.map((doc) => SuperfoodProductMapper.fromDocument(doc));
 	}
 
-	async reduceStock(id: string, quantity: number): Promise<SuperfoodProduct | null> {
+	async reduceStock(
+		id: string,
+		quantity: number,
+	): Promise<SuperfoodProduct | null> {
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		const updated = await this.model
 			.findOneAndUpdate(

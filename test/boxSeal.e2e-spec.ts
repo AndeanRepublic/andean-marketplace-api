@@ -45,7 +45,11 @@ describe('BoxSealController (e2e)', () => {
 				},
 				{
 					provide: GetAllBoxSealsUseCase,
-					useValue: { handle: jest.fn().mockResolvedValue([mockBoxSeal, ...additionalEntities]) },
+					useValue: {
+						handle: jest
+							.fn()
+							.mockResolvedValue([mockBoxSeal, ...additionalEntities]),
+					},
 				},
 				{
 					provide: GetBoxSealByIdUseCase,
@@ -70,7 +74,11 @@ describe('BoxSealController (e2e)', () => {
 
 		app = moduleFixture.createNestApplication();
 		app.useGlobalPipes(
-			new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }),
+			new ValidationPipe({
+				whitelist: true,
+				forbidNonWhitelisted: true,
+				transform: true,
+			}),
 		);
 		await app.init();
 
@@ -93,7 +101,9 @@ describe('BoxSealController (e2e)', () => {
 	// ═══════════════════════════════════════════════════════════════════════════
 	describe('POST /box-seals', () => {
 		it('should create a new box seal', () => {
-			jest.spyOn(createBoxSealUseCase, 'handle').mockResolvedValueOnce(mockBoxSeal);
+			jest
+				.spyOn(createBoxSealUseCase, 'handle')
+				.mockResolvedValueOnce(mockBoxSeal);
 			return request(app.getHttpServer())
 				.post('/box-seals')
 				.send(createDto)
@@ -111,7 +121,9 @@ describe('BoxSealController (e2e)', () => {
 		});
 
 		it('should call the use case with the correct DTO', async () => {
-			jest.spyOn(createBoxSealUseCase, 'handle').mockResolvedValueOnce(mockBoxSeal);
+			jest
+				.spyOn(createBoxSealUseCase, 'handle')
+				.mockResolvedValueOnce(mockBoxSeal);
 			await request(app.getHttpServer())
 				.post('/box-seals')
 				.send(createDto)
@@ -155,7 +167,9 @@ describe('BoxSealController (e2e)', () => {
 	// ═══════════════════════════════════════════════════════════════════════════
 	describe.skip('GET /box-seals', () => {
 		it('should return an array of box seals', () => {
-			jest.spyOn(getAllBoxSealsUseCase, 'handle').mockResolvedValueOnce([mockBoxSeal, ...additionalEntities]);
+			jest
+				.spyOn(getAllBoxSealsUseCase, 'handle')
+				.mockResolvedValueOnce([mockBoxSeal, ...additionalEntities]);
 			return request(app.getHttpServer())
 				.get('/box-seals')
 				.expect(HttpStatus.OK)
@@ -185,7 +199,9 @@ describe('BoxSealController (e2e)', () => {
 	// ═══════════════════════════════════════════════════════════════════════════
 	describe.skip('GET /box-seals/:id', () => {
 		it('should return a box seal by id', () => {
-			jest.spyOn(getBoxSealByIdUseCase, 'handle').mockResolvedValueOnce(mockBoxSeal);
+			jest
+				.spyOn(getBoxSealByIdUseCase, 'handle')
+				.mockResolvedValueOnce(mockBoxSeal);
 			return request(app.getHttpServer())
 				.get(`/box-seals/${mockBoxSeal.id}`)
 				.expect(HttpStatus.OK)
@@ -213,8 +229,14 @@ describe('BoxSealController (e2e)', () => {
 	// ═══════════════════════════════════════════════════════════════════════════
 	describe.skip('PUT /box-seals/:id', () => {
 		it('should update a box seal', () => {
-			const updatedSeal = { ...mockBoxSeal, name: updateDto.name, description: updateDto.description };
-			jest.spyOn(updateBoxSealUseCase, 'handle').mockResolvedValueOnce(updatedSeal as BoxSeal);
+			const updatedSeal = {
+				...mockBoxSeal,
+				name: updateDto.name,
+				description: updateDto.description,
+			};
+			jest
+				.spyOn(updateBoxSealUseCase, 'handle')
+				.mockResolvedValueOnce(updatedSeal as BoxSeal);
 			return request(app.getHttpServer())
 				.put(`/box-seals/${mockBoxSeal.id}`)
 				.send(updateDto)
@@ -229,8 +251,14 @@ describe('BoxSealController (e2e)', () => {
 		});
 
 		it('should call the use case with id and update data', async () => {
-			const updatedSeal = { ...mockBoxSeal, name: updateDto.name, description: updateDto.description };
-			jest.spyOn(updateBoxSealUseCase, 'handle').mockResolvedValueOnce(updatedSeal as BoxSeal);
+			const updatedSeal = {
+				...mockBoxSeal,
+				name: updateDto.name,
+				description: updateDto.description,
+			};
+			jest
+				.spyOn(updateBoxSealUseCase, 'handle')
+				.mockResolvedValueOnce(updatedSeal as BoxSeal);
 			await request(app.getHttpServer())
 				.put(`/box-seals/${mockBoxSeal.id}`)
 				.send(updateDto)
@@ -246,7 +274,9 @@ describe('BoxSealController (e2e)', () => {
 
 		it('should allow partial update (only name)', () => {
 			const updatedSeal = { ...mockBoxSeal, name: 'Solo Nombre Nuevo' };
-			jest.spyOn(updateBoxSealUseCase, 'handle').mockResolvedValueOnce(updatedSeal as BoxSeal);
+			jest
+				.spyOn(updateBoxSealUseCase, 'handle')
+				.mockResolvedValueOnce(updatedSeal as BoxSeal);
 			return request(app.getHttpServer())
 				.put(`/box-seals/${mockBoxSeal.id}`)
 				.send({ name: 'Solo Nombre Nuevo' })
@@ -259,7 +289,9 @@ describe('BoxSealController (e2e)', () => {
 	// ═══════════════════════════════════════════════════════════════════════════
 	describe.skip('DELETE /box-seals/:id', () => {
 		it('should delete a box seal', () => {
-			jest.spyOn(deleteBoxSealUseCase, 'handle').mockResolvedValueOnce(undefined);
+			jest
+				.spyOn(deleteBoxSealUseCase, 'handle')
+				.mockResolvedValueOnce(undefined);
 			return request(app.getHttpServer())
 				.delete(`/box-seals/${mockBoxSeal.id}`)
 				.expect(HttpStatus.OK);

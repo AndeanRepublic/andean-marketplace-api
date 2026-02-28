@@ -1,4 +1,10 @@
-import { IsString, IsNotEmpty, IsEnum, IsOptional, IsDateString } from 'class-validator';
+import {
+	IsString,
+	IsNotEmpty,
+	IsEnum,
+	IsOptional,
+	IsDateString,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { CoinType } from '../../../domain/enums/CoinType';
 
@@ -8,7 +14,10 @@ export class CreateCustomerDto {
 	@IsOptional()
 	country?: string;
 
-	@ApiPropertyOptional({ description: 'Número de teléfono', example: '+51987654321' })
+	@ApiPropertyOptional({
+		description: 'Número de teléfono',
+		example: '+51987654321',
+	})
 	@IsString()
 	@IsOptional()
 	phoneNumber?: string;

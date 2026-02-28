@@ -49,7 +49,7 @@ export class VariantMapper {
 	 */
 	static toPersistence(variant: Variant) {
 		const plain = instanceToPlain(variant);
-		const { id, ...dataForDB } = plain;
+		const { id: _id, ...dataForDB } = plain;
 		return dataForDB;
 	}
 }

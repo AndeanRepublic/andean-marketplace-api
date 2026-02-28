@@ -44,8 +44,8 @@ export class CapturePayPalOrderService {
 			const ordersController = new OrdersController(client);
 			const collect = {
 				id: orderId,
-				prefer: "return=representation",
-			}
+				prefer: 'return=representation',
+			};
 
 			// Crear request de capture
 			const response = await ordersController.captureOrder(collect);

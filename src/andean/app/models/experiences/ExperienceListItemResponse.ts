@@ -27,12 +27,18 @@ export class ExperienceListItem {
 	@ApiProperty({ description: 'Número de días' })
 	days!: number;
 
-	@ApiProperty({ description: 'Imagen principal', type: ExperienceMainImageResponse })
+	@ApiProperty({
+		description: 'Imagen principal',
+		type: ExperienceMainImageResponse,
+	})
 	mainImage!: ExperienceMainImageResponse;
 }
 
 export class ExperiencePaginationInfo {
-	@ApiProperty({ description: 'Total de experiencias encontradas', example: 150 })
+	@ApiProperty({
+		description: 'Total de experiencias encontradas',
+		example: 150,
+	})
 	total!: number;
 
 	@ApiProperty({ description: 'Página actual', example: 1 })
@@ -43,9 +49,15 @@ export class ExperiencePaginationInfo {
 }
 
 export class PaginatedExperiencesResponse {
-	@ApiProperty({ description: 'Lista de experiencias', type: [ExperienceListItem] })
+	@ApiProperty({
+		description: 'Lista de experiencias',
+		type: [ExperienceListItem],
+	})
 	experiences!: ExperienceListItem[];
 
-	@ApiProperty({ description: 'Información de paginación', type: ExperiencePaginationInfo })
+	@ApiProperty({
+		description: 'Información de paginación',
+		type: ExperiencePaginationInfo,
+	})
 	pagination!: ExperiencePaginationInfo;
 }

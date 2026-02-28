@@ -7,5 +7,5 @@ export class AgeGroup {
 		public price: number,
 		public minAge?: number,
 		public maxAge?: number,
-	) { }
+	) {}
 }

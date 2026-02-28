@@ -43,7 +43,9 @@ export interface SubResourceTestConfig {
  * createSuperfoodSubResourceTests({ name: '...', endpoint: '...', ... });
  * ```
  */
-export function createSuperfoodSubResourceTests(config: SubResourceTestConfig): void {
+export function createSuperfoodSubResourceTests(
+	config: SubResourceTestConfig,
+): void {
 	const fixture = FixtureLoader.load(config.fixtureName);
 	const { entity, createDto, optionalFieldName, additionalEntities } = fixture;
 
@@ -146,8 +148,13 @@ export function createSuperfoodSubResourceTests(config: SubResourceTestConfig): 
 
 			if (optionalFieldName) {
 				it(`should create ${config.name} without ${optionalFieldName} (optional field)`, () => {
-					const withoutOptional = { ...mockResponse, [optionalFieldName]: undefined };
-					jest.spyOn(createUseCase, 'handle').mockResolvedValueOnce(withoutOptional);
+					const withoutOptional = {
+						...mockResponse,
+						[optionalFieldName]: undefined,
+					};
+					jest
+						.spyOn(createUseCase, 'handle')
+						.mockResolvedValueOnce(withoutOptional);
 
 					const dtoWithoutOptional = { ...createDto };
 					delete dtoWithoutOptional[optionalFieldName];
@@ -157,7 +164,10 @@ export function createSuperfoodSubResourceTests(config: SubResourceTestConfig): 
 						.send(dtoWithoutOptional)
 						.expect(HttpStatus.CREATED)
 						.expect((res) => {
-							expect(res.body).toMatchObject({ id: expect.any(String), name: expect.any(String) });
+							expect(res.body).toMatchObject({
+								id: expect.any(String),
+								name: expect.any(String),
+							});
 						});
 				});
 			}
@@ -188,7 +198,9 @@ export function createSuperfoodSubResourceTests(config: SubResourceTestConfig): 
 		// SKIPPED: Route commented out in controller (only POST is active)
 		describe.skip(`GET ${config.endpoint}/:id`, () => {
 			it(`should return a ${config.name} by id`, () => {
-				jest.spyOn(getByIdUseCase, 'handle').mockResolvedValueOnce(mockResponse);
+				jest
+					.spyOn(getByIdUseCase, 'handle')
+					.mockResolvedValueOnce(mockResponse);
 
 				return request(app.getHttpServer())
 					.get(`${config.endpoint}/${mockResponse.id}`)
@@ -230,7 +242,10 @@ export function createSuperfoodSubResourceTests(config: SubResourceTestConfig): 
 						expect(Array.isArray(res.body)).toBe(true);
 						expect(res.body).toHaveLength(items.length);
 						res.body.forEach((item: any) => {
-							expect(item).toMatchObject({ id: expect.any(String), name: expect.any(String) });
+							expect(item).toMatchObject({
+								id: expect.any(String),
+								name: expect.any(String),
+							});
 						});
 					});
 			});

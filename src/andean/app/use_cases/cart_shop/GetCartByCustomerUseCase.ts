@@ -28,12 +28,17 @@ export class GetCartByCustomerUseCase {
 		private readonly productInfoRegistry: ProductInfoProviderRegistry,
 		private readonly ownerNameResolver: OwnerNameResolver,
 		private readonly boxCartContentResolver: BoxCartContentResolver,
-	) { }
+	) {}
 
-	async handle(customerId?: string, customerEmail?: string): Promise<GetCartResponse> {
+	async handle(
+		customerId?: string,
+		customerEmail?: string,
+	): Promise<GetCartResponse> {
 		// 1. Validar que al menos uno de los identificadores esté presente
 		if (!customerId && !customerEmail) {
-			throw new NotFoundException('Either customerId or customerEmail must be provided');
+			throw new NotFoundException(
+				'Either customerId or customerEmail must be provided',
+			);
 		}
 
 		// 2. Si hay customerId, validar que el customer existe
@@ -46,7 +51,10 @@ export class GetCartByCustomerUseCase {
 		}
 
 		// 3. Obtener o crear el carrito
-		let cart = await this.cartShopRepository.getCartByIdentifier(customerId, customerEmail);
+		let cart = await this.cartShopRepository.getCartByIdentifier(
+			customerId,
+			customerEmail,
+		);
 		if (!cart) {
 			cart = new CartShop(
 				new Types.ObjectId().toString(),
@@ -103,8 +111,14 @@ export class GetCartByCustomerUseCase {
 
 		// Flujo especial para BOX: sin variante, sin owner, con contenido de caja
 		if (item.productType === ProductType.BOX) {
-			const boxContent = await this.boxCartContentResolver.resolve(item.productId);
-			return ShoppingCartItemMapper.toBoxResponse(item, productInfo, boxContent);
+			const boxContent = await this.boxCartContentResolver.resolve(
+				item.productId,
+			);
+			return ShoppingCartItemMapper.toBoxResponse(
+				item,
+				productInfo,
+				boxContent,
+			);
 		}
 
 		// Flujo estándar para TEXTILE/SUPERFOOD
@@ -117,6 +131,11 @@ export class GetCartByCustomerUseCase {
 			productInfo.ownerId,
 		);
 
-		return ShoppingCartItemMapper.toResponse(item, variant, productInfo, ownerName);
+		return ShoppingCartItemMapper.toResponse(
+			item,
+			variant,
+			productInfo,
+			ownerName,
+		);
 	}
 }

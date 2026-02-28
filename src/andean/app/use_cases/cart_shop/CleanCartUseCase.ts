@@ -17,7 +17,9 @@ export class CleanCartUseCase {
 	async handle(customerId?: string, customerEmail?: string): Promise<void> {
 		// Validar que al menos uno de los identificadores esté presente
 		if (!customerId && !customerEmail) {
-			throw new NotFoundException('Either customerId or customerEmail must be provided');
+			throw new NotFoundException(
+				'Either customerId or customerEmail must be provided',
+			);
 		}
 
 		// Si hay customerId, validar que el customer existe
@@ -29,8 +31,10 @@ export class CleanCartUseCase {
 			}
 		}
 
-		const cartFound =
-			await this.cartShopRepository.getCartByIdentifier(customerId, customerEmail);
+		const cartFound = await this.cartShopRepository.getCartByIdentifier(
+			customerId,
+			customerEmail,
+		);
 		if (cartFound) {
 			await this.cartItemRepository.deleteItemsByCartShopId(cartFound.id);
 		}

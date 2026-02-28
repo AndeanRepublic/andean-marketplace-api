@@ -14,10 +14,6 @@ import { UpdateBookingStatusUseCase } from './app/use_cases/bookings/UpdateBooki
 import { UsersModule } from './users.module';
 import { ExperienceModule } from './experience.module';
 import { GetFutureUnavailableDatesUseCase } from './app/use_cases/experiences/GetFutureUnavailableDatesUseCase';
-import { ExperienceRepository } from './app/datastore/experiences/Experience.repo';
-import { ExperienceRepositoryImpl } from './infra/datastore/experiences/experience.repo.impl';
-import { ExperiencePricesRepository } from './app/datastore/experiences/ExperiencePrices.repo';
-import { ExperiencePricesRepositoryImpl } from './infra/datastore/experiences/experiencePrices.repo.impl';
 import { PayPalClientService } from './infra/services/paypal/PayPalClientService';
 import { CreatePayPalOrderService } from './infra/services/paypal/CreatePayPalOrderService';
 import { CapturePayPalOrderService } from './infra/services/paypal/CapturePayPalOrderService';

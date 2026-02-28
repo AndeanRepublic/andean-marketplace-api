@@ -11,7 +11,7 @@ export class GetAllSuperfoodProductsUseCase {
 	constructor(
 		@Inject(SuperfoodProductRepository)
 		private readonly superfoodProductRepository: SuperfoodProductRepository,
-	) { }
+	) {}
 
 	async handle(
 		filters?: SuperfoodProductFilters,

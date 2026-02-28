@@ -1,6 +1,11 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 // import * as paypal from '@paypal/checkout-server-sdk';
-import { OrdersController, CheckoutPaymentIntent, OrderRequest, OrderApplicationContextLandingPage, OrderApplicationContextUserAction } from '@paypal/paypal-server-sdk';
+import {
+	OrdersController,
+	CheckoutPaymentIntent,
+	OrderApplicationContextLandingPage,
+	OrderApplicationContextUserAction,
+} from '@paypal/paypal-server-sdk';
 import { PayPalClientService } from './PayPalClientService';
 
 export interface CreatePayPalOrderRequest {
@@ -78,7 +83,7 @@ export class CreatePayPalOrderService {
 					},
 				},
 				prefer: 'return=representation',
-			}
+			};
 
 			// Ejecutar la petición
 			const response = await ordersController.createOrder(collect);

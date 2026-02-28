@@ -18,7 +18,7 @@ export class UploadMediaItemUseCase {
 	constructor(
 		private readonly mediaItemRepository: MediaItemRepository,
 		private readonly storageRepository: StorageRepository,
-	) { }
+	) {}
 
 	async execute(input: UploadMediaItemInput): Promise<MediaItem> {
 		const { file, type, name, role } = input;

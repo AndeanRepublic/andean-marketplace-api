@@ -42,7 +42,7 @@ export class ReviewController {
 		private readonly incrementDislikesUseCase: IncrementDislikesUseCase,
 		private readonly decrementLikesUseCase: DecrementLikesUseCase,
 		private readonly decrementDislikesUseCase: DecrementDislikesUseCase,
-	) { }
+	) {}
 
 	@Post(path_reviews)
 	@UseInterceptors(FileInterceptor('file'))

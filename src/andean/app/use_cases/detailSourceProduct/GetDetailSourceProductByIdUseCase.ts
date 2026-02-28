@@ -6,7 +6,7 @@ import { DetailSourceProduct } from '../../../domain/entities/superfoods/DetailS
 export class GetDetailSourceProductByIdUseCase {
 	constructor(
 		private readonly detailSourceProductRepository: DetailSourceProductRepository,
-	) { }
+	) {}
 
 	async handle(id: string): Promise<DetailSourceProduct> {
 		const detailSourceProduct =

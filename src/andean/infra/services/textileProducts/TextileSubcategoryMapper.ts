@@ -36,7 +36,7 @@ export class TextileSubcategoryMapper {
 
 	static toPersistence(textileSubcategory: TextileSubcategory) {
 		const plain = instanceToPlain(textileSubcategory);
-		const { id, ...updateData } = plain;
+		const { id: _id, ...updateData } = plain;
 
 		return {
 			...updateData,

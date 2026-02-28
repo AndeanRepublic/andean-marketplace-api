@@ -8,5 +8,5 @@ export class ExperienceItinerary {
 		public descriptionDay: string,
 		public photos: string[],
 		public schedule: ItinerarySchedule[],
-	) { }
+	) {}
 }

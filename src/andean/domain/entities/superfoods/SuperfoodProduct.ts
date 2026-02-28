@@ -26,5 +26,5 @@ export class SuperfoodProduct {
 		public detailTraceability?: SuperfoodDetailTraceability,
 		public productTraceability?: ProductTraceability,
 		public options?: SuperfoodOptions[], // Product options (e.g., color, size)
-	) { }
+	) {}
 }

@@ -9,7 +9,7 @@ export class UpdateExperienceAvailabilityUseCase {
 	constructor(
 		@Inject(ExperienceAvailabilityRepository)
 		private readonly repo: ExperienceAvailabilityRepository,
-	) { }
+	) {}
 
 	async handle(
 		id: string,
@@ -23,7 +23,8 @@ export class UpdateExperienceAvailabilityUseCase {
 		const updatedData: Partial<ExperienceAvailability> = {
 			...existing,
 			...dto,
-			mode: dto.mode ?? existing.mode ?? ExperienceAvailabilityMode.EXCLUSIVE_GROUP,
+			mode:
+				dto.mode ?? existing.mode ?? ExperienceAvailabilityMode.EXCLUSIVE_GROUP,
 			specificAvailableStartDates: (dto.specificAvailableStartDates || []).map(
 				(d) => new Date(d),
 			),

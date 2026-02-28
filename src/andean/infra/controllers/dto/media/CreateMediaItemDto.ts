@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsString, IsUrl, IsEnum, IsOptional } from 'class-validator';
+import {
+	IsNotEmpty,
+	IsString,
+	IsUrl,
+	IsEnum,
+	IsOptional,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { MediaItemType } from '../../../../domain/enums/MediaItemType';
 import { MediaItemRole } from '../../../../domain/enums/MediaItemRole';

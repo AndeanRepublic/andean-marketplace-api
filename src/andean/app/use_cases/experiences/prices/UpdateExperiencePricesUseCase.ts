@@ -8,7 +8,7 @@ export class UpdateExperiencePricesUseCase {
 	constructor(
 		@Inject(ExperiencePricesRepository)
 		private readonly repo: ExperiencePricesRepository,
-	) { }
+	) {}
 
 	async handle(
 		id: string,

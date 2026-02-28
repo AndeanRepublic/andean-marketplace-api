@@ -6,7 +6,7 @@ import { BoxSealMapper } from '../../../infra/services/box/BoxSealMapper';
 
 @Injectable()
 export class CreateBoxSealUseCase {
-	constructor(private readonly boxSealRepository: BoxSealRepository) { }
+	constructor(private readonly boxSealRepository: BoxSealRepository) {}
 
 	async handle(dto: CreateBoxSealDto): Promise<BoxSeal> {
 		const boxSealToSave = BoxSealMapper.fromCreateDto(dto);

@@ -22,7 +22,7 @@ export class UpdateExperienceUseCase {
 		private readonly updatePricesUseCase: UpdateExperiencePricesUseCase,
 		private readonly updateAvailabilityUseCase: UpdateExperienceAvailabilityUseCase,
 		private readonly updateItineraryUseCase: UpdateExperienceItineraryUseCase,
-	) { }
+	) {}
 
 	async handle(id: string, dto: UpdateExperienceDto): Promise<Experience> {
 		const existing = await this.experienceRepository.getById(id);
@@ -35,7 +35,9 @@ export class UpdateExperienceUseCase {
 		// ── Value Objects embebidos ───────────────────────────────────────────
 		if (dto.basicInfo) {
 			if (dto.basicInfo.ownerType && dto.basicInfo.ownerId) {
-				const strategy = this.ownerStrategyResolver.resolve(dto.basicInfo.ownerType);
+				const strategy = this.ownerStrategyResolver.resolve(
+					dto.basicInfo.ownerType,
+				);
 				await strategy.validate(dto.basicInfo.ownerId);
 			}
 			experienceUpdate.basicInfo = ExperienceBasicInfoMapper.fromDto({
@@ -64,13 +66,17 @@ export class UpdateExperienceUseCase {
 
 		if (dto.prices) {
 			separateUpdates.push(
-				this.updatePricesUseCase.handle(existing.pricesId, dto.prices).then(() => undefined),
+				this.updatePricesUseCase
+					.handle(existing.pricesId, dto.prices)
+					.then(() => undefined),
 			);
 		}
 
 		if (dto.availability) {
 			separateUpdates.push(
-				this.updateAvailabilityUseCase.handle(existing.availabilityId, dto.availability).then(() => undefined),
+				this.updateAvailabilityUseCase
+					.handle(existing.availabilityId, dto.availability)
+					.then(() => undefined),
 			);
 		}
 
@@ -108,7 +114,7 @@ export class UpdateExperienceUseCase {
 			dto.mediaInfo.thumbnailImg,
 			...(dto.mediaInfo.photos || []),
 			...(dto.mediaInfo.videos || []),
-		].filter(Boolean) as string[];
+		].filter(Boolean);
 
 		const uniqueIds = [...new Set(allIds)];
 		if (uniqueIds.length === 0) return;

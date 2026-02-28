@@ -5,7 +5,7 @@ import { DetailSourceProductRepository } from '../../datastore/DetailSourceProdu
 export class DeleteDetailSourceProductUseCase {
 	constructor(
 		private readonly detailSourceProductRepository: DetailSourceProductRepository,
-	) { }
+	) {}
 
 	async handle(id: string): Promise<void> {
 		const existing = await this.detailSourceProductRepository.getById(id);

@@ -13,5 +13,5 @@ export class ExperienceDetailInfo {
 		public shouldCarry?: string[],
 		public aditionalInformation?: string[],
 		public contactNumber?: string,
-	) { }
+	) {}
 }

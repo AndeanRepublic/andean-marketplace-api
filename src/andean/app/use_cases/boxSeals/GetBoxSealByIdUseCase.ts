@@ -4,7 +4,7 @@ import { BoxSeal } from '../../../domain/entities/box/BoxSeal';
 
 @Injectable()
 export class GetBoxSealByIdUseCase {
-	constructor(private readonly boxSealRepository: BoxSealRepository) { }
+	constructor(private readonly boxSealRepository: BoxSealRepository) {}
 
 	async handle(id: string): Promise<BoxSeal> {
 		const boxSeal = await this.boxSealRepository.getById(id);

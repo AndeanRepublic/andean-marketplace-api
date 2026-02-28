@@ -1,10 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { GetBankAccountByIdUseCase } from '../../app/use_cases/bank_accounts/GetBankAccountByIdUseCase';
 import { GetBankAccountsBySellerUseCase } from '../../app/use_cases/bank_accounts/GetBankAccountsBySellerUseCase';
 import { CreateBankAccountUseCase } from '../../app/use_cases/bank_accounts/CreateBankAccountUseCase';
 import { DeleteBankAccountUseCase } from '../../app/use_cases/bank_accounts/DeleteBankAccountUseCase';
-import { CreateBankAccountDto } from './dto/CreateBankAccountDto';
-import { SellerBankAccount } from '../../domain/entities/SellerBankAccount';
 
 @Controller('bank-accounts')
 export class BankAccountController {

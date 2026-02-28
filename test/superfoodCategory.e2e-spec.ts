@@ -17,22 +17,44 @@ describe('SuperfoodCategoryController (e2e)', () => {
 
 	// Load mock data from JSON fixture
 	const fixture = FixtureLoader.loadSuperfoodCategory();
-	const mockResponse = { ...fixture.entity, createdAt: new Date(fixture.entity.createdAt), updatedAt: new Date(fixture.entity.updatedAt) };
+	const mockResponse = {
+		...fixture.entity,
+		createdAt: new Date(fixture.entity.createdAt),
+		updatedAt: new Date(fixture.entity.updatedAt),
+	};
 	const createDto = fixture.createDto;
 
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			controllers: [SuperfoodCategoryController],
 			providers: [
-				{ provide: CreateSuperfoodCategoryUseCase, useValue: { handle: jest.fn().mockResolvedValue(mockResponse) } },
-				{ provide: GetSuperfoodCategoryByIdUseCase, useValue: { handle: jest.fn().mockResolvedValue(mockResponse) } },
-				{ provide: ListSuperfoodCategoriesUseCase, useValue: { handle: jest.fn().mockResolvedValue([mockResponse]) } },
-				{ provide: DeleteSuperfoodCategoryUseCase, useValue: { handle: jest.fn().mockResolvedValue(undefined) } },
+				{
+					provide: CreateSuperfoodCategoryUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue(mockResponse) },
+				},
+				{
+					provide: GetSuperfoodCategoryByIdUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue(mockResponse) },
+				},
+				{
+					provide: ListSuperfoodCategoriesUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue([mockResponse]) },
+				},
+				{
+					provide: DeleteSuperfoodCategoryUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue(undefined) },
+				},
 			],
 		}).compile();
 
 		app = moduleFixture.createNestApplication();
-		app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
+		app.useGlobalPipes(
+			new ValidationPipe({
+				whitelist: true,
+				forbidNonWhitelisted: true,
+				transform: true,
+			}),
+		);
 		await app.init();
 
 		createUseCase = moduleFixture.get(CreateSuperfoodCategoryUseCase);
@@ -41,8 +63,12 @@ describe('SuperfoodCategoryController (e2e)', () => {
 		deleteUseCase = moduleFixture.get(DeleteSuperfoodCategoryUseCase);
 	});
 
-	afterAll(async () => { await app.close(); });
-	afterEach(() => { jest.clearAllMocks(); });
+	afterAll(async () => {
+		await app.close();
+	});
+	afterEach(() => {
+		jest.clearAllMocks();
+	});
 
 	describe('POST /superfood-categories', () => {
 		it('should create a new category with ENABLED status', () => {
@@ -52,7 +78,11 @@ describe('SuperfoodCategoryController (e2e)', () => {
 				.send(createDto)
 				.expect(HttpStatus.CREATED)
 				.expect((res) => {
-					expect(res.body).toMatchObject({ id: expect.any(String), name: expect.any(String), status: 'ENABLED' });
+					expect(res.body).toMatchObject({
+						id: expect.any(String),
+						name: expect.any(String),
+						status: 'ENABLED',
+					});
 					expect(res.body).toHaveProperty('createdAt');
 					expect(res.body).toHaveProperty('updatedAt');
 				});
@@ -64,29 +94,44 @@ describe('SuperfoodCategoryController (e2e)', () => {
 				.post('/superfood-categories')
 				.send({ name: 'Cacao' })
 				.expect(HttpStatus.CREATED)
-				.expect((res) => { expect(res.body).toMatchObject({ status: 'ENABLED' }); });
+				.expect((res) => {
+					expect(res.body).toMatchObject({ status: 'ENABLED' });
+				});
 		});
 
 		it('should create category with DISABLED status', () => {
 			const disabledCategory = { ...mockResponse, status: 'DISABLED' };
-			jest.spyOn(createUseCase, 'handle').mockResolvedValueOnce(disabledCategory);
+			jest
+				.spyOn(createUseCase, 'handle')
+				.mockResolvedValueOnce(disabledCategory);
 			return request(app.getHttpServer())
 				.post('/superfood-categories')
 				.send({ name: 'Kiwicha', status: 'DISABLED' })
 				.expect(HttpStatus.CREATED)
-				.expect((res) => { expect(res.body).toMatchObject({ status: 'DISABLED' }); });
+				.expect((res) => {
+					expect(res.body).toMatchObject({ status: 'DISABLED' });
+				});
 		});
 
 		it('should return 400 when name is missing', () => {
-			return request(app.getHttpServer()).post('/superfood-categories').send({ status: 'ENABLED' }).expect(HttpStatus.BAD_REQUEST);
+			return request(app.getHttpServer())
+				.post('/superfood-categories')
+				.send({ status: 'ENABLED' })
+				.expect(HttpStatus.BAD_REQUEST);
 		});
 
 		it('should return 400 when name is empty string', () => {
-			return request(app.getHttpServer()).post('/superfood-categories').send({ name: '', status: 'ENABLED' }).expect(HttpStatus.BAD_REQUEST);
+			return request(app.getHttpServer())
+				.post('/superfood-categories')
+				.send({ name: '', status: 'ENABLED' })
+				.expect(HttpStatus.BAD_REQUEST);
 		});
 
 		it('should return 400 when status is invalid', () => {
-			return request(app.getHttpServer()).post('/superfood-categories').send({ name: 'Test', status: 'INVALID_STATUS' }).expect(HttpStatus.BAD_REQUEST);
+			return request(app.getHttpServer())
+				.post('/superfood-categories')
+				.send({ name: 'Test', status: 'INVALID_STATUS' })
+				.expect(HttpStatus.BAD_REQUEST);
 		});
 	});
 
@@ -98,20 +143,31 @@ describe('SuperfoodCategoryController (e2e)', () => {
 				.get(`/superfood-categories/${mockResponse.id}`)
 				.expect(HttpStatus.OK)
 				.expect((res) => {
-					expect(res.body).toMatchObject({ id: mockResponse.id, name: mockResponse.name, status: mockResponse.status });
+					expect(res.body).toMatchObject({
+						id: mockResponse.id,
+						name: mockResponse.name,
+						status: mockResponse.status,
+					});
 				});
 		});
 
 		it('should return 500 when category not found', () => {
-			jest.spyOn(getByIdUseCase, 'handle').mockRejectedValueOnce(new Error('Not found'));
-			return request(app.getHttpServer()).get('/superfood-categories/non-existent-id').expect(HttpStatus.INTERNAL_SERVER_ERROR);
+			jest
+				.spyOn(getByIdUseCase, 'handle')
+				.mockRejectedValueOnce(new Error('Not found'));
+			return request(app.getHttpServer())
+				.get('/superfood-categories/non-existent-id')
+				.expect(HttpStatus.INTERNAL_SERVER_ERROR);
 		});
 	});
 
 	// SKIPPED: Route commented out in controller (only POST is active)
 	describe.skip('GET /superfood-categories', () => {
 		it('should return all categories', () => {
-			const items = [mockResponse, ...fixture.additionalEntities.map((e) => ({ ...mockResponse, ...e }))];
+			const items = [
+				mockResponse,
+				...fixture.additionalEntities.map((e) => ({ ...mockResponse, ...e })),
+			];
 			jest.spyOn(listUseCase, 'handle').mockResolvedValueOnce(items);
 			return request(app.getHttpServer())
 				.get('/superfood-categories')
@@ -120,7 +176,11 @@ describe('SuperfoodCategoryController (e2e)', () => {
 					expect(Array.isArray(res.body)).toBe(true);
 					expect(res.body).toHaveLength(items.length);
 					res.body.forEach((item) => {
-						expect(item).toMatchObject({ id: expect.any(String), name: expect.any(String), status: expect.any(String) });
+						expect(item).toMatchObject({
+							id: expect.any(String),
+							name: expect.any(String),
+							status: expect.any(String),
+						});
 					});
 				});
 		});
@@ -130,7 +190,9 @@ describe('SuperfoodCategoryController (e2e)', () => {
 			return request(app.getHttpServer())
 				.get('/superfood-categories')
 				.expect(HttpStatus.OK)
-				.expect((res) => { expect(res.body).toEqual([]); });
+				.expect((res) => {
+					expect(res.body).toEqual([]);
+				});
 		});
 	});
 
@@ -138,12 +200,18 @@ describe('SuperfoodCategoryController (e2e)', () => {
 	describe.skip('DELETE /superfood-categories/:id', () => {
 		it('should delete a category', () => {
 			jest.spyOn(deleteUseCase, 'handle').mockResolvedValueOnce(undefined);
-			return request(app.getHttpServer()).delete(`/superfood-categories/${mockResponse.id}`).expect(HttpStatus.NO_CONTENT);
+			return request(app.getHttpServer())
+				.delete(`/superfood-categories/${mockResponse.id}`)
+				.expect(HttpStatus.NO_CONTENT);
 		});
 
 		it('should return 500 when trying to delete non-existent category', () => {
-			jest.spyOn(deleteUseCase, 'handle').mockRejectedValueOnce(new Error('Not found'));
-			return request(app.getHttpServer()).delete('/superfood-categories/non-existent-id').expect(HttpStatus.INTERNAL_SERVER_ERROR);
+			jest
+				.spyOn(deleteUseCase, 'handle')
+				.mockRejectedValueOnce(new Error('Not found'));
+			return request(app.getHttpServer())
+				.delete('/superfood-categories/non-existent-id')
+				.expect(HttpStatus.INTERNAL_SERVER_ERROR);
 		});
 	});
 });

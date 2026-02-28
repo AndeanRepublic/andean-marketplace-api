@@ -40,7 +40,7 @@ export class TextileCraftTechniqueMapper {
 
 	static toPersistence(textileCraftTechnique: TextileCraftTechnique) {
 		const plain = instanceToPlain(textileCraftTechnique);
-		const { id, ...updateData } = plain;
+		const { id: _id, ...updateData } = plain;
 
 		return {
 			...updateData,

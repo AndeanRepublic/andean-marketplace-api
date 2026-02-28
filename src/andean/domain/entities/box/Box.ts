@@ -5,7 +5,7 @@ export class BoxProduct {
 		public productType?: BoxProductType,
 		public productId?: string,
 		public variantId?: string,
-	) { }
+	) {}
 }
 
 export class Box {
@@ -21,5 +21,5 @@ export class Box {
 		public sealIds: string[],
 		public createdAt: Date,
 		public updatedAt: Date,
-	) { }
+	) {}
 }

@@ -30,7 +30,7 @@ export class AddItemToCartUseCase {
 		private readonly cartItemRepository: CartShopItemRepository,
 		private readonly productInfoRegistry: ProductInfoProviderRegistry,
 		private readonly ownerNameResolver: OwnerNameResolver,
-	) { }
+	) {}
 
 	async handle(
 		customerId: string | undefined,
@@ -39,7 +39,9 @@ export class AddItemToCartUseCase {
 	): Promise<ShoppingCartItemResponse> {
 		// 1. Validar que al menos uno de los identificadores esté presente
 		if (!customerId && !customerEmail) {
-			throw new NotFoundException('Either customerId or customerEmail must be provided');
+			throw new NotFoundException(
+				'Either customerId or customerEmail must be provided',
+			);
 		}
 
 		// 2. Si hay customerId, validar que el customer existe
@@ -77,7 +79,10 @@ export class AddItemToCartUseCase {
 		);
 
 		// 5. Obtener o crear el carrito del customer
-		let cart = await this.cartShopRepository.getCartByIdentifier(customerId, customerEmail);
+		let cart = await this.cartShopRepository.getCartByIdentifier(
+			customerId,
+			customerEmail,
+		);
 		if (!cart) {
 			cart = new CartShop(
 				new Types.ObjectId().toString(),

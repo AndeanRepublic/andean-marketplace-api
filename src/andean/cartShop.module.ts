@@ -49,7 +49,8 @@ import { BoxModule } from './box.module';
 		SuperfoodModule,
 		CommunityModule,
 		BoxModule,
-	], controllers: [CartShopController],
+	],
+	controllers: [CartShopController],
 	providers: [
 		AddItemToCartUseCase,
 		CleanCartUseCase,
@@ -77,9 +78,6 @@ import { BoxModule } from './box.module';
 		OwnerNameResolver,
 		BoxCartContentResolver,
 	],
-	exports: [
-		CartShopRepository,
-		CartShopItemRepository,
-	],
+	exports: [CartShopRepository, CartShopItemRepository],
 })
-export class CartShopModule { }
+export class CartShopModule {}

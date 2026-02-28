@@ -4,23 +4,12 @@ import {
 	IsObject,
 	ValidateNested,
 	IsOptional,
-	IsDate,
 	IsNotEmpty,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { PaymentMethod } from 'src/andean/domain/enums/PaymentMethod';
 import { DeliveryOption } from 'src/andean/domain/enums/DeliveryOption';
-import {
-	ShippingInfo,
-	PaymentInfo,
-	AdministrativeArea,
-} from 'src/andean/domain/entities/order/Order';
-import {
-	ShippingInfoDto,
-	PaymentInfoDto,
-	AdministrativeAreaDto,
-} from './CreateOrderDto';
+import { ShippingInfoDto, PaymentInfoDto } from './CreateOrderDto';
 
 export class CreateOrderFromCartDto {
 	@ApiProperty({ type: ShippingInfoDto, description: 'Información de envío' })

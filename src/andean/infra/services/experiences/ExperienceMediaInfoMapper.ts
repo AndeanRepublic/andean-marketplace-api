@@ -21,7 +21,9 @@ export class ExperienceMediaInfoMapper {
 	 * Para persistencia embebida — serializa como objeto plano (sin excluir nada,
 	 * ya que es un sub-documento sin _id)
 	 */
-	static toPersistence(entity: ExperienceMediaInfo | Partial<ExperienceMediaInfo>) {
+	static toPersistence(
+		entity: ExperienceMediaInfo | Partial<ExperienceMediaInfo>,
+	) {
 		return instanceToPlain(entity);
 	}
 }

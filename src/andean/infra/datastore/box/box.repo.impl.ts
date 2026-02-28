@@ -32,7 +32,10 @@ export class BoxRepoImpl extends BoxRepository {
 		}
 	}
 
-	async getAll(page: number, perPage: number): Promise<{ data: Box[]; total: number }> {
+	async getAll(
+		page: number,
+		perPage: number,
+	): Promise<{ data: Box[]; total: number }> {
 		const skip = (page - 1) * perPage;
 		const [docs, total] = await Promise.all([
 			this.boxModel.find().skip(skip).limit(perPage).exec(),

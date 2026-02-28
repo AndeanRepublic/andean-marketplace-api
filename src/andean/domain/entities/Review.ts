@@ -13,5 +13,5 @@ export class Review {
 		public createdAt: Date,
 		public updatedAt: Date,
 		public mediaId?: string,
-	) { }
+	) {}
 }

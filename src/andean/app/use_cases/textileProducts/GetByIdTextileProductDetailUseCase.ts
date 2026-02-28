@@ -203,13 +203,9 @@ export class GetByIdTextileProductDetailUseCase {
 			}
 		}
 
-		// -- Obtener category name
-		let categoryName = '';
+		// -- Obtener category name (used in similarProducts)
 		if (product.categoryId) {
-			const category = await this.textileCategoryRepository.getCategoryById(
-				product.categoryId,
-			);
-			categoryName = category?.name || '';
+			await this.textileCategoryRepository.getCategoryById(product.categoryId);
 		}
 
 		// -- Construir respuesta completa
@@ -262,13 +258,12 @@ export class GetByIdTextileProductDetailUseCase {
 
 	private async buildAvailableColors(
 		colorOption: any,
-	): Promise< AvailableColorResponse[]> {
+	): Promise<AvailableColorResponse[]> {
 		if (!colorOption?.values?.length) {
 			return [];
 		}
 
-		const availableColors: AvailableColorResponse[] =
-			[];
+		const availableColors: AvailableColorResponse[] = [];
 
 		for (const value of colorOption.values) {
 			let color = value.label || '';

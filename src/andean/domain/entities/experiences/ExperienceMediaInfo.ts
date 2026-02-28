@@ -5,5 +5,5 @@ export class ExperienceMediaInfo {
 		public thumbnailImg: string,
 		public photos?: string[],
 		public videos?: string[],
-	) { }
+	) {}
 }

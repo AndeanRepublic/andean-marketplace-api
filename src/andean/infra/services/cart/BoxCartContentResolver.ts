@@ -22,7 +22,7 @@ export class BoxCartContentResolver {
 		private readonly textileProductRepository: TextileProductRepository,
 		@Inject(VariantRepository)
 		private readonly variantRepository: VariantRepository,
-	) { }
+	) {}
 
 	/**
 	 * Dado un boxId, resuelve los productos contenidos en la caja.
@@ -37,7 +37,10 @@ export class BoxCartContentResolver {
 
 		for (const boxProduct of box.products) {
 			if (boxProduct.productId) {
-				const superfood = await this.superfoodProductRepository.getSuperfoodProductById(boxProduct.productId);
+				const superfood =
+					await this.superfoodProductRepository.getSuperfoodProductById(
+						boxProduct.productId,
+					);
 				if (superfood) {
 					items.push({
 						title: superfood.baseInfo?.title || '',
@@ -45,9 +48,14 @@ export class BoxCartContentResolver {
 					});
 				}
 			} else if (boxProduct.variantId) {
-				const variant = await this.variantRepository.getById(boxProduct.variantId);
+				const variant = await this.variantRepository.getById(
+					boxProduct.variantId,
+				);
 				if (variant) {
-					const textile = await this.textileProductRepository.getTextileProductById(variant.productId);
+					const textile =
+						await this.textileProductRepository.getTextileProductById(
+							variant.productId,
+						);
 					if (textile) {
 						items.push({
 							title: textile.baseInfo?.title || '',

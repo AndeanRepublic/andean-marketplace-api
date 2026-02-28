@@ -8,5 +8,5 @@ export class BaseInfo {
 		public ownerType: OwnerType,
 		public ownerId: string,
 		public information?: string,
-	) { }
+	) {}
 }

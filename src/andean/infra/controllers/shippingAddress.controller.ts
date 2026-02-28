@@ -153,7 +153,8 @@ export class ShippingAddressController {
 	@Put('/:id/set-default')
 	@ApiOperation({
 		summary: 'Marcar dirección como predeterminada',
-		description: 'Marca una dirección de envío como predeterminada para el cliente',
+		description:
+			'Marca una dirección de envío como predeterminada para el cliente',
 	})
 	@ApiParam({
 		name: 'id',

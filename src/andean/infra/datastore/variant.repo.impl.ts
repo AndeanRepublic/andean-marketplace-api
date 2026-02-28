@@ -75,7 +75,9 @@ export class VariantRepositoryImpl extends VariantRepositoryBase {
 	async getByIds(ids: string[]): Promise<Variant[]> {
 		if (!ids.length) return [];
 		const objectIds = ids.map((id) => MongoIdUtils.stringToObjectId(id));
-		const docs = await this.variantModel.find({ _id: { $in: objectIds } }).exec();
+		const docs = await this.variantModel
+			.find({ _id: { $in: objectIds } })
+			.exec();
 		return docs.map((doc) => VariantMapper.fromDocument(doc));
 	}
 

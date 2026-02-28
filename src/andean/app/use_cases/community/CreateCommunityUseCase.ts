@@ -19,7 +19,7 @@ export class CreateCommunityUseCase {
 		private readonly sealRepository: SealRepository,
 		@Inject(MediaItemRepository)
 		private readonly mediaItemRepository: MediaItemRepository,
-	) { }
+	) {}
 
 	async execute(dto: CreateCommunityDto): Promise<Community> {
 		// Validar que no exista una comunidad con el mismo nombre

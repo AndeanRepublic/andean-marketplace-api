@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { BoxRepository } from '../../datastore/box/Box.repo';
-import { BoxListPaginatedResponse, BoxListItemResponse, BoxProductResponse } from '../../models/box/BoxListResponse';
+import {
+	BoxListPaginatedResponse,
+	BoxListItemResponse,
+	BoxProductResponse,
+} from '../../models/box/BoxListResponse';
 import { BoxImageResponse } from '../../models/box/BoxImageResponse';
 import { ProductType } from '../../../domain/enums/ProductType';
 import { BoxProductResolutionService } from '../../../infra/services/box/BoxProductResolutionService';
@@ -10,13 +14,20 @@ export class GetAllBoxesUseCase {
 	constructor(
 		private readonly boxRepository: BoxRepository,
 		private readonly boxResolutionService: BoxProductResolutionService,
-	) { }
+	) {}
 
-	async handle(page: number = 1, perPage: number = 10): Promise<BoxListPaginatedResponse> {
-		const { data: boxes, total } = await this.boxRepository.getAll(page, perPage);
+	async handle(
+		page: number = 1,
+		perPage: number = 10,
+	): Promise<BoxListPaginatedResponse> {
+		const { data: boxes, total } = await this.boxRepository.getAll(
+			page,
+			perPage,
+		);
 
 		// Bulk fetch all dependencies in optimized parallel queries
-		const dependencies = await this.boxResolutionService.bulkFetchBoxDependencies(boxes);
+		const dependencies =
+			await this.boxResolutionService.bulkFetchBoxDependencies(boxes);
 
 		// Assemble response using maps (zero additional queries)
 		const enrichedBoxes: BoxListItemResponse[] = boxes.map((box) => {
@@ -30,13 +41,15 @@ export class GetAllBoxesUseCase {
 					superfoodCount++;
 					const superfood = dependencies.superfoodMap.get(product.productId);
 					if (superfood) {
-						const price = this.boxResolutionService.getSuperfoodPrice(superfood);
+						const price =
+							this.boxResolutionService.getSuperfoodPrice(superfood);
 						discartedPrice += price;
 
-						const communityName = this.boxResolutionService.resolveCommunityName(
-							superfood.baseInfo?.ownerId,
-							dependencies.communityMap,
-						);
+						const communityName =
+							this.boxResolutionService.resolveCommunityName(
+								superfood.baseInfo?.ownerId,
+								dependencies.communityMap,
+							);
 
 						const thumbnailImage = this.boxResolutionService.resolveImage(
 							superfood.baseInfo?.mediaIds?.[0],
@@ -86,9 +99,10 @@ export class GetAllBoxesUseCase {
 				box.thumbnailImageId,
 				dependencies.mediaMap,
 			);
-			const porcentageDiscount = discartedPrice > 0
-				? Math.round((1 - box.price / discartedPrice) * 100)
-				: 0;
+			const porcentageDiscount =
+				discartedPrice > 0
+					? Math.round((1 - box.price / discartedPrice) * 100)
+					: 0;
 
 			return {
 				id: box.id,

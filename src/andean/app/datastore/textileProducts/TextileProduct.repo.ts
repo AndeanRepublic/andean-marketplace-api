@@ -33,5 +33,8 @@ export abstract class TextileProductRepository {
 	): Promise<TextileProduct>;
 	abstract deleteTextileProduct(id: string): Promise<void>;
 	abstract getByIds(ids: string[]): Promise<TextileProduct[]>;
-	abstract reduceStock(id: string, quantity: number): Promise<TextileProduct | null>;
+	abstract reduceStock(
+		id: string,
+		quantity: number,
+	): Promise<TextileProduct | null>;
 }

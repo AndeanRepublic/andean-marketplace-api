@@ -27,9 +27,7 @@ export class ExperienceAvailabilityRepositoryImpl extends ExperienceAvailability
 		return doc ? ExperienceAvailabilityMapper.fromDocument(doc) : null;
 	}
 
-	async save(
-		entity: ExperienceAvailability,
-	): Promise<ExperienceAvailability> {
+	async save(entity: ExperienceAvailability): Promise<ExperienceAvailability> {
 		const plain = ExperienceAvailabilityMapper.toPersistence(entity);
 		const created = new this.model(plain);
 		const saved = await created.save();

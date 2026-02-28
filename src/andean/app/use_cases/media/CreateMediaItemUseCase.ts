@@ -6,7 +6,7 @@ import { MediaItemMapper } from '../../../infra/services/MediaItemMapper';
 
 @Injectable()
 export class CreateMediaItemUseCase {
-	constructor(private readonly mediaItemRepository: MediaItemRepository) { }
+	constructor(private readonly mediaItemRepository: MediaItemRepository) {}
 
 	async execute(dto: CreateMediaItemDto): Promise<MediaItem> {
 		try {

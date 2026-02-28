@@ -9,7 +9,7 @@ export class CreateExperiencePricesUseCase {
 	constructor(
 		@Inject(ExperiencePricesRepository)
 		private readonly repo: ExperiencePricesRepository,
-	) { }
+	) {}
 
 	async handle(dto: ExperiencePricesDto): Promise<ExperiencePrices> {
 		const entity = ExperiencePricesMapper.fromCreateDto(dto);

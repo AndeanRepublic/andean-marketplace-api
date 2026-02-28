@@ -69,7 +69,8 @@ export class ShoppingCartItemResponse {
 	productType!: ProductType;
 
 	@ApiPropertyOptional({
-		description: 'Contenido de la caja (solo presente cuando el item es de tipo BOX)',
+		description:
+			'Contenido de la caja (solo presente cuando el item es de tipo BOX)',
 		type: [BoxContentItemResponse],
 	})
 	boxContent?: BoxContentItemResponse[];

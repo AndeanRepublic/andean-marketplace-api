@@ -13,7 +13,7 @@ export class OwnerNameResolver {
 		private readonly sellerRepository: SellerProfileRepository,
 		@Inject(CommunityRepository)
 		private readonly communityRepository: CommunityRepository,
-	) { }
+	) {}
 
 	/**
 	 * Obtiene el nombre comercial del propietario según su tipo.

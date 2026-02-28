@@ -12,7 +12,7 @@ export class SuperfoodBenefitRepoImpl implements SuperfoodBenefitRepository {
 	constructor(
 		@InjectModel('SuperfoodBenefit')
 		private readonly model: Model<SuperfoodBenefitDocument>,
-	) { }
+	) {}
 
 	async getById(id: string): Promise<SuperfoodBenefit | null> {
 		// Convertir string a ObjectId

@@ -33,7 +33,7 @@ export class TextileStyleMapper {
 
 	static toPersistence(textileStyle: TextileStyle) {
 		const plain = instanceToPlain(textileStyle);
-		const { id, ...updateData } = plain;
+		const { id: _id, ...updateData } = plain;
 
 		return {
 			...updateData,

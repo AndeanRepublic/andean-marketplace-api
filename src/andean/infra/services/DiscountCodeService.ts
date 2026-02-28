@@ -22,7 +22,8 @@ export class DiscountCodeService {
 		this.apiUrl =
 			this.configService.get<string>('DISCOUNT_API_URL') ||
 			'http://localhost:3001';
-		this.timeout = this.configService.get<number>('DISCOUNT_API_TIMEOUT') || 5000;
+		this.timeout =
+			this.configService.get<number>('DISCOUNT_API_TIMEOUT') || 5000;
 	}
 
 	async validateDiscountCode(

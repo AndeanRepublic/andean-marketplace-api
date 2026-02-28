@@ -48,7 +48,8 @@ export class CreateShippingAddressUseCase {
 			now,
 		);
 
-		const created = await this.shippingAddressRepository.create(shippingAddress);
+		const created =
+			await this.shippingAddressRepository.create(shippingAddress);
 
 		// Si se marcó como default y hay otras direcciones, quitar default de las otras
 		if (isDefault && existingAddresses.length > 0) {

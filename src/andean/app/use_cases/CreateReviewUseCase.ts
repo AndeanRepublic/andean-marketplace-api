@@ -10,7 +10,6 @@ import { CustomerProfileRepository } from '../datastore/Customer.repo';
 import { TextileProductRepository } from '../datastore/textileProducts/TextileProduct.repo';
 import { SuperfoodProductRepository } from '../datastore/superfoods/SuperfoodProduct.repo';
 import { ProductType } from 'src/andean/domain/enums/ProductType';
-import { MediaItemType } from 'src/andean/domain/enums/MediaItemType';
 import { MediaItemRole } from 'src/andean/domain/enums/MediaItemRole';
 
 @Injectable()
@@ -28,9 +27,12 @@ export class CreateReviewUseCase {
 		private readonly mediaItemRepository: MediaItemRepository,
 		@Inject(StorageRepository)
 		private readonly storageRepository: StorageRepository,
-	) { }
+	) {}
 
-	async handle(dto: CreateReviewDto, file?: Express.Multer.File): Promise<Review> {
+	async handle(
+		dto: CreateReviewDto,
+		file?: Express.Multer.File,
+	): Promise<Review> {
 		// Validar customerId
 		const customerFound = await this.customerProfileRepository.getCustomerById(
 			dto.customerId,

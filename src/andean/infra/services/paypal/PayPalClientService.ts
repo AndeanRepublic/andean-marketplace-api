@@ -1,12 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Client, Environment, LogLevel } from '@paypal/paypal-server-sdk';
-
-
-interface AccessTokenCache {
-	token: string;
-	expiresAt: number;
-}
+import { Client, Environment } from '@paypal/paypal-server-sdk';
 
 @Injectable()
 export class PayPalClientService {
@@ -37,7 +31,10 @@ export class PayPalClientService {
 					oAuthClientId: this.clientId,
 					oAuthClientSecret: this.clientSecret,
 				},
-				environment: this.environment === 'live' ? Environment.Production : Environment.Sandbox,
+				environment:
+					this.environment === 'live'
+						? Environment.Production
+						: Environment.Sandbox,
 			});
 		}
 		return this.client;

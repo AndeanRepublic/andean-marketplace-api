@@ -12,7 +12,7 @@ export class CreateBoxUseCase {
 		private readonly boxRepository: BoxRepository,
 		private readonly variantRepository: VariantRepository,
 		private readonly superfoodProductRepository: SuperfoodProductRepository,
-	) { }
+	) {}
 
 	async handle(dto: CreateBoxDto): Promise<Box> {
 		await this.validateStock(dto);

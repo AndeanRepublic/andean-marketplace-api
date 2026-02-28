@@ -21,7 +21,9 @@ export class ExperienceDetailInfoMapper {
 	 * Para persistencia embebida — serializa como objeto plano (sin excluir nada,
 	 * ya que es un sub-documento sin _id)
 	 */
-	static toPersistence(entity: ExperienceDetailInfo | Partial<ExperienceDetailInfo>) {
+	static toPersistence(
+		entity: ExperienceDetailInfo | Partial<ExperienceDetailInfo>,
+	) {
 		return instanceToPlain(entity);
 	}
 }

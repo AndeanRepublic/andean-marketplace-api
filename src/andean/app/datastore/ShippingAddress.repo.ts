@@ -9,5 +9,8 @@ export abstract class ShippingAddressRepository {
 		shippingAddress: Partial<ShippingAddress>,
 	): Promise<ShippingAddress>;
 	abstract delete(id: string): Promise<void>;
-	abstract setAsDefault(id: string, customerId: string): Promise<ShippingAddress>;
+	abstract setAsDefault(
+		id: string,
+		customerId: string,
+	): Promise<ShippingAddress>;
 }

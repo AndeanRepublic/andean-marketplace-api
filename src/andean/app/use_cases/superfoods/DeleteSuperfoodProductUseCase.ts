@@ -9,7 +9,7 @@ export class DeleteSuperfoodProductUseCase {
 		private readonly superfoodProductRepository: SuperfoodProductRepository,
 
 		private readonly deleteDetailSourceProductUseCase: DeleteDetailSourceProductUseCase,
-	) { }
+	) {}
 
 	async handle(productId: string): Promise<void> {
 		// 1. Validar que el producto existe antes de eliminar
@@ -25,7 +25,7 @@ export class DeleteSuperfoodProductUseCase {
 				await this.deleteDetailSourceProductUseCase.handle(
 					productFound.detailSourceProductId,
 				);
-			} catch (error) {
+			} catch {
 				// Si el DetailSourceProduct no existe, continuar con la eliminación del superfood
 				console.warn(
 					`DetailSourceProduct ${productFound.detailSourceProductId} not found, continuing with superfood deletion`,

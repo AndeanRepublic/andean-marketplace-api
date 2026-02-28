@@ -23,11 +23,13 @@ export class CreateExperienceUseCase {
 		private readonly createPricesUseCase: CreateExperiencePricesUseCase,
 		private readonly createAvailabilityUseCase: CreateExperienceAvailabilityUseCase,
 		private readonly createItineraryUseCase: CreateExperienceItineraryUseCase,
-	) { }
+	) {}
 
 	async handle(dto: CreateExperienceDto): Promise<Experience> {
 		// 1. Validar owner (basicInfo)
-		const ownerStrategy = this.ownerStrategyResolver.resolve(dto.basicInfo.ownerType);
+		const ownerStrategy = this.ownerStrategyResolver.resolve(
+			dto.basicInfo.ownerType,
+		);
 		await ownerStrategy.validate(dto.basicInfo.ownerId);
 
 		// 2. Validar que todos los MediaItem IDs existen
@@ -44,7 +46,9 @@ export class CreateExperienceUseCase {
 			this.createAvailabilityUseCase.handle(dto.availability),
 		]);
 
-		const itineraries = await this.createItineraryUseCase.handle(dto.itineraries);
+		const itineraries = await this.createItineraryUseCase.handle(
+			dto.itineraries,
+		);
 
 		// 5. Crear el documento principal con todo embebido
 		const experienceEntity = ExperienceMapper.fromCreateDto({

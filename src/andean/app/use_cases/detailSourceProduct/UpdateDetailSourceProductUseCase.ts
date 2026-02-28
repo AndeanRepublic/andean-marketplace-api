@@ -7,7 +7,7 @@ import { UpdateDetailSourceProductDto } from '../../../infra/controllers/dto/det
 export class UpdateDetailSourceProductUseCase {
 	constructor(
 		private readonly detailSourceProductRepository: DetailSourceProductRepository,
-	) { }
+	) {}
 
 	async handle(
 		id: string,

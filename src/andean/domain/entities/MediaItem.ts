@@ -10,5 +10,5 @@ export class MediaItem {
 		public readonly role: MediaItemRole = MediaItemRole.NONE,
 		public readonly createdAt?: Date,
 		public readonly updatedAt?: Date,
-	) { }
+	) {}
 }

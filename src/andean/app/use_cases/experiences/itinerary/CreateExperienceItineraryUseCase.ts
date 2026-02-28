@@ -9,11 +9,9 @@ export class CreateExperienceItineraryUseCase {
 	constructor(
 		@Inject(ExperienceItineraryRepository)
 		private readonly repo: ExperienceItineraryRepository,
-	) { }
+	) {}
 
-	async handle(
-		dtos: ExperienceItineraryDto[],
-	): Promise<ExperienceItinerary[]> {
+	async handle(dtos: ExperienceItineraryDto[]): Promise<ExperienceItinerary[]> {
 		const entities = dtos.map((dto) =>
 			ExperienceItineraryMapper.fromCreateDto({
 				...dto,

@@ -6,5 +6,5 @@ export class ExperiencePrices {
 		public useAgeBasedPricing: boolean,
 		public currency: string,
 		public ageGroups: AgeGroup[],
-	) { }
+	) {}
 }

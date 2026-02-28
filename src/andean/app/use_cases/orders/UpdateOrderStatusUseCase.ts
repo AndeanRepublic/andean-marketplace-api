@@ -1,4 +1,9 @@
-import { Inject, Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+	Inject,
+	Injectable,
+	NotFoundException,
+	BadRequestException,
+} from '@nestjs/common';
 import { OrderRepository } from '../../datastore/order/Order.repo';
 import { UpdateOrderDto } from '../../../infra/controllers/dto/order/UpdateOrderDto';
 import { Order } from '../../../domain/entities/order/Order';
@@ -10,7 +15,7 @@ export class UpdateOrderStatusUseCase {
 	constructor(
 		@Inject(OrderRepository)
 		private readonly orderRepository: OrderRepository,
-	) { }
+	) {}
 
 	async handle(orderId: string, dto: UpdateOrderDto): Promise<Order> {
 		// Validar formato de ID

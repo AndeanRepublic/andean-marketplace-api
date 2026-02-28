@@ -38,7 +38,7 @@ export class VariantController {
 		private readonly deleteVariantUseCase: DeleteVariantUseCase,
 		private readonly deleteVariantsByProductIdUseCase: DeleteVariantsByProductIdUseCase,
 		private readonly syncVariantsUseCase: SyncVariantsUseCase,
-	) { }
+	) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
@@ -51,7 +51,11 @@ export class VariantController {
 	@Post('/many')
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({ summary: 'Create many variants' })
-	@ApiResponse({ status: 201, description: 'Variants created', type: [Variant] })
+	@ApiResponse({
+		status: 201,
+		description: 'Variants created',
+		type: [Variant],
+	})
 	async createMany(@Body() body: CreateManyVariantsDto): Promise<Variant[]> {
 		return this.createManyVariantsUseCase.execute(body);
 	}
@@ -66,7 +70,11 @@ export class VariantController {
 
 	@Get()
 	@ApiOperation({ summary: 'Get all variants' })
-	@ApiResponse({ status: 200, description: 'List of variants', type: [Variant] })
+	@ApiResponse({
+		status: 200,
+		description: 'List of variants',
+		type: [Variant],
+	})
 	async getAll(): Promise<Variant[]> {
 		return this.getAllVariantsUseCase.execute();
 	}
@@ -74,8 +82,14 @@ export class VariantController {
 	@Get('/product/:productId')
 	@ApiOperation({ summary: 'Get variants by product id' })
 	@ApiParam({ name: 'productId', description: 'Product id' })
-	@ApiResponse({ status: 200, description: 'Variants for product', type: [Variant] })
-	async getByProductId(@Param('productId') productId: string): Promise<Variant[]> {
+	@ApiResponse({
+		status: 200,
+		description: 'Variants for product',
+		type: [Variant],
+	})
+	async getByProductId(
+		@Param('productId') productId: string,
+	): Promise<Variant[]> {
 		return this.getVariantsByProductIdUseCase.execute(productId);
 	}
 
@@ -91,7 +105,10 @@ export class VariantController {
 	@ApiOperation({ summary: 'Update variant' })
 	@ApiParam({ name: 'id', description: 'Variant id' })
 	@ApiResponse({ status: 200, description: 'Updated variant', type: Variant })
-	async update(@Param('id') id: string, @Body() body: UpdateVariantDto): Promise<Variant> {
+	async update(
+		@Param('id') id: string,
+		@Body() body: UpdateVariantDto,
+	): Promise<Variant> {
 		return this.updateVariantUseCase.execute(id, body);
 	}
 
@@ -109,7 +126,9 @@ export class VariantController {
 	@ApiOperation({ summary: 'Delete variants by product id' })
 	@ApiParam({ name: 'productId', description: 'Product id' })
 	@ApiResponse({ status: 204, description: 'Variants deleted for product' })
-	async deleteByProductId(@Param('productId') productId: string): Promise<void> {
+	async deleteByProductId(
+		@Param('productId') productId: string,
+	): Promise<void> {
 		await this.deleteVariantsByProductIdUseCase.execute(productId);
 	}
 }

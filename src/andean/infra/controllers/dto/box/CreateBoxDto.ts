@@ -59,7 +59,8 @@ export class CreateBoxDto {
 
 	@ApiProperty({
 		description: 'Descripción detallada del box',
-		example: 'Una selección curada de productos andinos tradicionales que incluye superfoods y textiles artesanales.',
+		example:
+			'Una selección curada de productos andinos tradicionales que incluye superfoods y textiles artesanales.',
 	})
 	@IsString()
 	@IsNotEmpty()
@@ -82,7 +83,8 @@ export class CreateBoxDto {
 	mainImageId!: string;
 
 	@ApiProperty({
-		description: 'Lista de productos incluidos en el box. Cada producto debe tener productId (superfood) o variantId (textil)',
+		description:
+			'Lista de productos incluidos en el box. Cada producto debe tener productId (superfood) o variantId (textil)',
 		type: [BoxProductDto],
 	})
 	@IsArray()

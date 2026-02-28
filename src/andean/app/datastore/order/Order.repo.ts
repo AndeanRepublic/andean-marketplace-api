@@ -2,7 +2,10 @@ import { Order } from '../../../domain/entities/order/Order';
 import { OrderStatus } from '../../../domain/enums/OrderStatus';
 import { CartShop } from '../../../domain/entities/CartShop';
 import { CartItem } from '../../../domain/entities/CartItem';
-import { ShippingInfo, PaymentInfo } from '../../../domain/entities/order/Order';
+import {
+	ShippingInfo,
+	PaymentInfo,
+} from '../../../domain/entities/order/Order';
 
 export abstract class OrderRepository {
 	abstract getOrderById(id: string): Promise<Order | null>;
@@ -18,4 +21,3 @@ export abstract class OrderRepository {
 		currency: string,
 	): Promise<Order>;
 }
-

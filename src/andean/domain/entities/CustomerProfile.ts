@@ -10,5 +10,5 @@ export class CustomerProfile {
 		public coin?: CoinType,
 		public birthDate?: Date,
 		public profilePictureMediaId?: string,
-	) { }
+	) {}
 }

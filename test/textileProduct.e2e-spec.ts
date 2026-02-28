@@ -867,7 +867,7 @@ describe('TextileProductController (e2e)', () => {
 		it('should return the full detail response with id', () => {
 			jest
 				.spyOn(getByIdTextileProductDetailUseCase, 'handle')
-				.mockResolvedValueOnce(mockDetailResponse as any);
+				.mockResolvedValueOnce(mockDetailResponse);
 
 			return request(app.getHttpServer())
 				.get(`/textile-products/${productId}/details`)
@@ -881,7 +881,7 @@ describe('TextileProductController (e2e)', () => {
 		it('should call the use case with the correct id', async () => {
 			const spy = jest
 				.spyOn(getByIdTextileProductDetailUseCase, 'handle')
-				.mockResolvedValueOnce(mockDetailResponse as any);
+				.mockResolvedValueOnce(mockDetailResponse);
 
 			await request(app.getHttpServer())
 				.get(`/textile-products/${productId}/details`)
@@ -893,7 +893,7 @@ describe('TextileProductController (e2e)', () => {
 		it('should include availableSizes, availableColors and variantInfo', () => {
 			jest
 				.spyOn(getByIdTextileProductDetailUseCase, 'handle')
-				.mockResolvedValueOnce(mockDetailResponse as any);
+				.mockResolvedValueOnce(mockDetailResponse);
 
 			return request(app.getHttpServer())
 				.get(`/textile-products/${productId}/details`)
@@ -908,7 +908,7 @@ describe('TextileProductController (e2e)', () => {
 		it('should include reviews with rating and comments', () => {
 			jest
 				.spyOn(getByIdTextileProductDetailUseCase, 'handle')
-				.mockResolvedValueOnce(mockDetailResponse as any);
+				.mockResolvedValueOnce(mockDetailResponse);
 
 			return request(app.getHttpServer())
 				.get(`/textile-products/${productId}/details`)
@@ -924,7 +924,7 @@ describe('TextileProductController (e2e)', () => {
 		it('should include similarProducts with id on each item', () => {
 			jest
 				.spyOn(getByIdTextileProductDetailUseCase, 'handle')
-				.mockResolvedValueOnce(mockDetailResponse as any);
+				.mockResolvedValueOnce(mockDetailResponse);
 
 			return request(app.getHttpServer())
 				.get(`/textile-products/${productId}/details`)
@@ -942,7 +942,7 @@ describe('TextileProductController (e2e)', () => {
 		it('should include traceabilityInfo with correct structure', () => {
 			jest
 				.spyOn(getByIdTextileProductDetailUseCase, 'handle')
-				.mockResolvedValueOnce(mockDetailResponse as any);
+				.mockResolvedValueOnce(mockDetailResponse);
 
 			return request(app.getHttpServer())
 				.get(`/textile-products/${productId}/details`)

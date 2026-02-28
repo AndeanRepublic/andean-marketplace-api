@@ -2,7 +2,13 @@ import { Injectable, Inject } from '@nestjs/common';
 import { OrderRepository } from '../../../app/datastore/order/Order.repo';
 import { InjectModel } from '@nestjs/mongoose';
 import { OrderDocument } from '../../persistence/order/order.schema';
-import { Order, OrderItem, OrderPricing, ShippingInfo, PaymentInfo } from '../../../domain/entities/order/Order';
+import {
+	Order,
+	OrderItem,
+	OrderPricing,
+	ShippingInfo,
+	PaymentInfo,
+} from '../../../domain/entities/order/Order';
 import { Model } from 'mongoose';
 import { OrderMapper } from '../../services/order/OrderMapper';
 import { MongoIdUtils } from '../../utils/MongoIdUtils';
@@ -131,8 +137,7 @@ export class OrderRepositoryImpl extends OrderRepository {
 			0,
 		);
 		const totalDiscount =
-			cart.discount +
-			orderItems.reduce((sum, item) => sum + item.discount, 0);
+			cart.discount + orderItems.reduce((sum, item) => sum + item.discount, 0);
 		const totalAmount =
 			subtotal - totalDiscount + cart.deliveryCost + cart.taxOrFee;
 

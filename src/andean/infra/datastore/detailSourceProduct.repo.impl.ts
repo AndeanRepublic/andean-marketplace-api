@@ -8,12 +8,11 @@ import { DetailSourceProductMapper } from '../services/superfood/DetailSourcePro
 import { MongoIdUtils } from '../utils/MongoIdUtils';
 
 @Injectable()
-export class DetailSourceProductRepoImpl
-	implements DetailSourceProductRepository {
+export class DetailSourceProductRepoImpl implements DetailSourceProductRepository {
 	constructor(
 		@InjectModel('DetailSourceProduct')
 		private readonly model: Model<DetailSourceProductDocument>,
-	) { }
+	) {}
 
 	async create(
 		detailSourceProduct: DetailSourceProduct,

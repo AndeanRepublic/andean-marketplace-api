@@ -38,7 +38,7 @@ export class TextileCertificationMapper {
 
 	static toPersistence(textileCertification: TextileCertification) {
 		const plain = instanceToPlain(textileCertification);
-		const { id, ...updateData } = plain;
+		const { id: _id, ...updateData } = plain;
 
 		return {
 			...updateData,

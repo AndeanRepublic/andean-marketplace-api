@@ -36,7 +36,7 @@ export class TextilePrincipalUseMapper {
 
 	static toPersistence(textilePrincipalUse: TextilePrincipalUse) {
 		const plain = instanceToPlain(textilePrincipalUse);
-		const { id, ...updateData } = plain;
+		const { id: _id, ...updateData } = plain;
 
 		return {
 			...updateData,

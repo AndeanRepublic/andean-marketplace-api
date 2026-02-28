@@ -68,7 +68,9 @@ export class CommunityRepositoryImpl extends CommunityRepositoryBase {
 	async getByIds(ids: string[]): Promise<Community[]> {
 		if (!ids.length) return [];
 		const objectIds = ids.map((id) => MongoIdUtils.stringToObjectId(id));
-		const docs = await this.communityModel.find({ _id: { $in: objectIds } }).exec();
+		const docs = await this.communityModel
+			.find({ _id: { $in: objectIds } })
+			.exec();
 		return docs.map((doc) => CommunityMapper.fromDocument(doc));
 	}
 }

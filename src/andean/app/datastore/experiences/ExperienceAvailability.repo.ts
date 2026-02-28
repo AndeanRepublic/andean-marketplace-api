@@ -3,7 +3,9 @@ import { ExperienceAvailability } from '../../../domain/entities/experiences/Exp
 export abstract class ExperienceAvailabilityRepository {
 	abstract getAll(): Promise<ExperienceAvailability[]>;
 	abstract getById(id: string): Promise<ExperienceAvailability | null>;
-	abstract save(entity: ExperienceAvailability): Promise<ExperienceAvailability>;
+	abstract save(
+		entity: ExperienceAvailability,
+	): Promise<ExperienceAvailability>;
 	abstract update(
 		id: string,
 		entity: Partial<ExperienceAvailability>,

@@ -1,9 +1,4 @@
-import {
-	IsString,
-	IsInt,
-	IsEnum,
-	IsOptional,
-} from 'class-validator';
+import { IsString, IsInt, IsEnum, IsOptional } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ProductType } from 'src/andean/domain/enums/ProductType';
 
@@ -12,7 +7,7 @@ export class UpdateReviewDto {
 	@IsOptional()
 	content?: string;
 
-	@Transform(({ value }) => value ? parseInt(value) : value)
+	@Transform(({ value }) => (value ? parseInt(value) : value))
 	@IsInt()
 	@IsOptional()
 	numberStarts?: number;

@@ -40,7 +40,7 @@ export class ColorOptionAlternativeMapper {
 
 	static toPersistence(colorOptionAlternative: ColorOptionAlternative) {
 		const plain = instanceToPlain(colorOptionAlternative);
-		const { id, ...updateData } = plain;
+		const { id: _id, ...updateData } = plain;
 
 		return {
 			...updateData,

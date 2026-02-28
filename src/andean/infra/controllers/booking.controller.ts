@@ -73,7 +73,8 @@ export class BookingController {
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
 		summary: 'Crear orden PayPal para booking',
-		description: 'Crea una orden de pago en PayPal para un booking y retorna el orderId',
+		description:
+			'Crea una orden de pago en PayPal para un booking y retorna el orderId',
 	})
 	@ApiBody({ type: CreatePayPalBookingOrderDto })
 	@ApiResponse({
@@ -191,7 +192,8 @@ export class BookingController {
 	@Get('/by-email')
 	@ApiOperation({
 		summary: 'Obtener bookings por email',
-		description: 'Recupera todos los bookings de un cliente por su email (para guest bookings)',
+		description:
+			'Recupera todos los bookings de un cliente por su email (para guest bookings)',
 	})
 	@ApiQuery({
 		name: 'email',

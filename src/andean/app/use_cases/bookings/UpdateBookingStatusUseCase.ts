@@ -22,8 +22,7 @@ export class UpdateBookingStatusUseCase {
 			throw new BadRequestException('Invalid booking ID');
 		}
 
-		const bookingFound =
-			await this.bookingRepository.getBookingById(bookingId);
+		const bookingFound = await this.bookingRepository.getBookingById(bookingId);
 		if (!bookingFound) {
 			throw new NotFoundException('Booking not found');
 		}

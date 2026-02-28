@@ -15,9 +15,6 @@ export class SetDefaultShippingAddressUseCase {
 			throw new NotFoundException('ShippingAddress not found');
 		}
 
-		return this.shippingAddressRepository.setAsDefault(
-			id,
-			existing.customerId,
-		);
+		return this.shippingAddressRepository.setAsDefault(id, existing.customerId);
 	}
 }

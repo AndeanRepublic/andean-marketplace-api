@@ -52,7 +52,11 @@ describe('BoxController (e2e)', () => {
 
 		app = moduleFixture.createNestApplication();
 		app.useGlobalPipes(
-			new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }),
+			new ValidationPipe({
+				whitelist: true,
+				forbidNonWhitelisted: true,
+				transform: true,
+			}),
 		);
 		await app.init();
 
@@ -167,7 +171,9 @@ describe('BoxController (e2e)', () => {
 				.post('/boxes')
 				.send({
 					...createDto,
-					products: [{ productType: 'SUPERFOOD', productId: 'superfood-uuid-123' }],
+					products: [
+						{ productType: 'SUPERFOOD', productId: 'superfood-uuid-123' },
+					],
 				})
 				.expect(HttpStatus.CREATED);
 		});
@@ -178,7 +184,9 @@ describe('BoxController (e2e)', () => {
 				.post('/boxes')
 				.send({
 					...createDto,
-					products: [{ productType: 'TEXTILE', variantId: 'variant-textile-001' }],
+					products: [
+						{ productType: 'TEXTILE', variantId: 'variant-textile-001' },
+					],
 				})
 				.expect(HttpStatus.CREATED);
 		});
@@ -188,7 +196,9 @@ describe('BoxController (e2e)', () => {
 				.post('/boxes')
 				.send({
 					...createDto,
-					products: [{ productType: 'INVALID', productId: 'superfood-uuid-123' }],
+					products: [
+						{ productType: 'INVALID', productId: 'superfood-uuid-123' },
+					],
 				})
 				.expect(HttpStatus.BAD_REQUEST);
 		});
@@ -209,7 +219,9 @@ describe('BoxController (e2e)', () => {
 	// ═══════════════════════════════════════════════════════════════════════════
 	describe('GET /boxes', () => {
 		it('should return paginated list of boxes with default pagination', () => {
-			jest.spyOn(getAllBoxesUseCase, 'handle').mockResolvedValueOnce(listResponse);
+			jest
+				.spyOn(getAllBoxesUseCase, 'handle')
+				.mockResolvedValueOnce(listResponse);
 			return request(app.getHttpServer())
 				.get('/boxes')
 				.expect(HttpStatus.OK)
@@ -231,10 +243,10 @@ describe('BoxController (e2e)', () => {
 		});
 
 		it('should call use case with default pagination when no query params', async () => {
-			jest.spyOn(getAllBoxesUseCase, 'handle').mockResolvedValueOnce(listResponse);
-			await request(app.getHttpServer())
-				.get('/boxes')
-				.expect(HttpStatus.OK);
+			jest
+				.spyOn(getAllBoxesUseCase, 'handle')
+				.mockResolvedValueOnce(listResponse);
+			await request(app.getHttpServer()).get('/boxes').expect(HttpStatus.OK);
 			expect(getAllBoxesUseCase.handle).toHaveBeenCalledWith(1, 10);
 		});
 
@@ -250,7 +262,9 @@ describe('BoxController (e2e)', () => {
 		});
 
 		it('should return correct data shape for each box in list', () => {
-			jest.spyOn(getAllBoxesUseCase, 'handle').mockResolvedValueOnce(listResponse);
+			jest
+				.spyOn(getAllBoxesUseCase, 'handle')
+				.mockResolvedValueOnce(listResponse);
 			return request(app.getHttpServer())
 				.get('/boxes')
 				.expect(HttpStatus.OK)
@@ -274,7 +288,9 @@ describe('BoxController (e2e)', () => {
 		});
 
 		it('should return correct product shape within each box', () => {
-			jest.spyOn(getAllBoxesUseCase, 'handle').mockResolvedValueOnce(listResponse);
+			jest
+				.spyOn(getAllBoxesUseCase, 'handle')
+				.mockResolvedValueOnce(listResponse);
 			return request(app.getHttpServer())
 				.get('/boxes')
 				.expect(HttpStatus.OK)
@@ -290,7 +306,9 @@ describe('BoxController (e2e)', () => {
 		});
 
 		it('should return correct itemCount based on products', () => {
-			jest.spyOn(getAllBoxesUseCase, 'handle').mockResolvedValueOnce(listResponse);
+			jest
+				.spyOn(getAllBoxesUseCase, 'handle')
+				.mockResolvedValueOnce(listResponse);
 			return request(app.getHttpServer())
 				.get('/boxes')
 				.expect(HttpStatus.OK)
@@ -303,16 +321,18 @@ describe('BoxController (e2e)', () => {
 		});
 
 		it('should return correct price calculations', () => {
-			jest.spyOn(getAllBoxesUseCase, 'handle').mockResolvedValueOnce(listResponse);
+			jest
+				.spyOn(getAllBoxesUseCase, 'handle')
+				.mockResolvedValueOnce(listResponse);
 			return request(app.getHttpServer())
 				.get('/boxes')
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					const box = res.body.data[0];
 					// discartedPrice = sum of individual product prices (25.50 + 30.00 + 150.00 = 205.50)
-					expect(box.discartedPrice).toBe(205.50);
+					expect(box.discartedPrice).toBe(205.5);
 					// price is the box price
-					expect(box.price).toBe(89.90);
+					expect(box.price).toBe(89.9);
 					// porcentageDiscount = Math.round((1 - price/discartedPrice) * 100)
 					expect(box.porcentageDiscount).toBe(56);
 				});
@@ -333,13 +353,17 @@ describe('BoxController (e2e)', () => {
 		});
 
 		it('should differentiate superfood and textile products by type field', () => {
-			jest.spyOn(getAllBoxesUseCase, 'handle').mockResolvedValueOnce(listResponse);
+			jest
+				.spyOn(getAllBoxesUseCase, 'handle')
+				.mockResolvedValueOnce(listResponse);
 			return request(app.getHttpServer())
 				.get('/boxes')
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					const products = res.body.data[0].products;
-					const superfoods = products.filter((p: any) => p.type === 'SUPERFOOD');
+					const superfoods = products.filter(
+						(p: any) => p.type === 'SUPERFOOD',
+					);
 					const textiles = products.filter((p: any) => p.type === 'TEXTILE');
 					expect(superfoods).toHaveLength(2);
 					expect(textiles).toHaveLength(1);
@@ -354,7 +378,9 @@ describe('BoxController (e2e)', () => {
 		const boxId = mockBox.id;
 
 		it('should return the full box detail by id', () => {
-			jest.spyOn(getBoxDetailUseCase, 'handle').mockResolvedValueOnce(detailResponse);
+			jest
+				.spyOn(getBoxDetailUseCase, 'handle')
+				.mockResolvedValueOnce(detailResponse);
 			return request(app.getHttpServer())
 				.get(`/boxes/${boxId}`)
 				.expect(HttpStatus.OK)
@@ -378,7 +404,9 @@ describe('BoxController (e2e)', () => {
 
 		// ── heroDetail ────────────────────────────────────────────────────
 		it('should return correct heroDetail shape', () => {
-			jest.spyOn(getBoxDetailUseCase, 'handle').mockResolvedValueOnce(detailResponse);
+			jest
+				.spyOn(getBoxDetailUseCase, 'handle')
+				.mockResolvedValueOnce(detailResponse);
 			return request(app.getHttpServer())
 				.get(`/boxes/${boxId}`)
 				.expect(HttpStatus.OK)
@@ -396,7 +424,9 @@ describe('BoxController (e2e)', () => {
 		});
 
 		it('should return correct heroDetail values from fixture', () => {
-			jest.spyOn(getBoxDetailUseCase, 'handle').mockResolvedValueOnce(detailResponse);
+			jest
+				.spyOn(getBoxDetailUseCase, 'handle')
+				.mockResolvedValueOnce(detailResponse);
 			return request(app.getHttpServer())
 				.get(`/boxes/${boxId}`)
 				.expect(HttpStatus.OK)
@@ -411,7 +441,9 @@ describe('BoxController (e2e)', () => {
 
 		// ── detail ─────────────────────────────────────────────────────────
 		it('should return correct detail shape', () => {
-			jest.spyOn(getBoxDetailUseCase, 'handle').mockResolvedValueOnce(detailResponse);
+			jest
+				.spyOn(getBoxDetailUseCase, 'handle')
+				.mockResolvedValueOnce(detailResponse);
 			return request(app.getHttpServer())
 				.get(`/boxes/${boxId}`)
 				.expect(HttpStatus.OK)
@@ -429,7 +461,9 @@ describe('BoxController (e2e)', () => {
 
 		// ── containedProducts ──────────────────────────────────────────────
 		it('should return correct containedProducts shape', () => {
-			jest.spyOn(getBoxDetailUseCase, 'handle').mockResolvedValueOnce(detailResponse);
+			jest
+				.spyOn(getBoxDetailUseCase, 'handle')
+				.mockResolvedValueOnce(detailResponse);
 			return request(app.getHttpServer())
 				.get(`/boxes/${boxId}`)
 				.expect(HttpStatus.OK)
@@ -453,13 +487,17 @@ describe('BoxController (e2e)', () => {
 		});
 
 		it('should contain both superfood and textile products', () => {
-			jest.spyOn(getBoxDetailUseCase, 'handle').mockResolvedValueOnce(detailResponse);
+			jest
+				.spyOn(getBoxDetailUseCase, 'handle')
+				.mockResolvedValueOnce(detailResponse);
 			return request(app.getHttpServer())
 				.get(`/boxes/${boxId}`)
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					const products = res.body.containedProducts;
-					const superfoods = products.filter((p: any) => p.type === 'SUPERFOOD');
+					const superfoods = products.filter(
+						(p: any) => p.type === 'SUPERFOOD',
+					);
 					const textiles = products.filter((p: any) => p.type === 'TEXTILE');
 					expect(superfoods).toHaveLength(2);
 					expect(textiles).toHaveLength(1);
@@ -467,22 +505,26 @@ describe('BoxController (e2e)', () => {
 		});
 
 		it('should return correct product prices in containedProducts', () => {
-			jest.spyOn(getBoxDetailUseCase, 'handle').mockResolvedValueOnce(detailResponse);
+			jest
+				.spyOn(getBoxDetailUseCase, 'handle')
+				.mockResolvedValueOnce(detailResponse);
 			return request(app.getHttpServer())
 				.get(`/boxes/${boxId}`)
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					const products = res.body.containedProducts;
 					// Quinua = 25.50, Maca = 30.00, Poncho variant = 150.00
-					expect(products[0].price).toBe(25.50);
-					expect(products[1].price).toBe(30.00);
-					expect(products[2].price).toBe(150.00);
+					expect(products[0].price).toBe(25.5);
+					expect(products[1].price).toBe(30.0);
+					expect(products[2].price).toBe(150.0);
 				});
 		});
 
 		// ── priceDetail ────────────────────────────────────────────────────
 		it('should return correct priceDetail shape and values', () => {
-			jest.spyOn(getBoxDetailUseCase, 'handle').mockResolvedValueOnce(detailResponse);
+			jest
+				.spyOn(getBoxDetailUseCase, 'handle')
+				.mockResolvedValueOnce(detailResponse);
 			return request(app.getHttpServer())
 				.get(`/boxes/${boxId}`)
 				.expect(HttpStatus.OK)
@@ -492,9 +534,9 @@ describe('BoxController (e2e)', () => {
 					expect(price).toHaveProperty('totalPrice');
 					expect(price).toHaveProperty('discountPorcentage');
 					// discartedPrice = 25.50 + 30.00 + 150.00 = 205.50
-					expect(price.discartedPrice).toBe(205.50);
+					expect(price.discartedPrice).toBe(205.5);
 					// totalPrice = box price
-					expect(price.totalPrice).toBe(89.90);
+					expect(price.totalPrice).toBe(89.9);
 					// discountPorcentage = Math.round((1 - 89.90/205.50) * 100) = 56
 					expect(price.discountPorcentage).toBe(56);
 				});
@@ -502,7 +544,9 @@ describe('BoxController (e2e)', () => {
 
 		// ── boxSeals ───────────────────────────────────────────────────────
 		it('should return correct boxSeals shape', () => {
-			jest.spyOn(getBoxDetailUseCase, 'handle').mockResolvedValueOnce(detailResponse);
+			jest
+				.spyOn(getBoxDetailUseCase, 'handle')
+				.mockResolvedValueOnce(detailResponse);
 			return request(app.getHttpServer())
 				.get(`/boxes/${boxId}`)
 				.expect(HttpStatus.OK)
@@ -521,7 +565,9 @@ describe('BoxController (e2e)', () => {
 		});
 
 		it('should return correct seal values from fixture', () => {
-			jest.spyOn(getBoxDetailUseCase, 'handle').mockResolvedValueOnce(detailResponse);
+			jest
+				.spyOn(getBoxDetailUseCase, 'handle')
+				.mockResolvedValueOnce(detailResponse);
 			return request(app.getHttpServer())
 				.get(`/boxes/${boxId}`)
 				.expect(HttpStatus.OK)
@@ -534,9 +580,11 @@ describe('BoxController (e2e)', () => {
 
 		// ── error cases ────────────────────────────────────────────────────
 		it('should return 404 when box is not found', () => {
-			jest.spyOn(getBoxDetailUseCase, 'handle').mockRejectedValueOnce(
-				new (require('@nestjs/common').NotFoundException)('Box not found'),
-			);
+			jest
+				.spyOn(getBoxDetailUseCase, 'handle')
+				.mockRejectedValueOnce(
+					new (require('@nestjs/common').NotFoundException)('Box not found'),
+				);
 			return request(app.getHttpServer())
 				.get('/boxes/non-existent-id')
 				.expect(HttpStatus.NOT_FOUND);

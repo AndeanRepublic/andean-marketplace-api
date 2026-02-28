@@ -14,5 +14,5 @@ export class ExperienceBasicInfo {
 		public ownerType: OwnerType,
 		public ownerId: string,
 		public category?: string,
-	) { }
+	) {}
 }

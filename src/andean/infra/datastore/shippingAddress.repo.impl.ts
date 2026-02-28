@@ -61,18 +61,12 @@ export class ShippingAddressRepositoryImpl extends ShippingAddressRepository {
 		await this.shippingAddressModel.findByIdAndDelete(objectId).exec();
 	}
 
-	async setAsDefault(
-		id: string,
-		customerId: string,
-	): Promise<ShippingAddress> {
+	async setAsDefault(id: string, customerId: string): Promise<ShippingAddress> {
 		const objectId = MongoIdUtils.stringToObjectId(id);
-		
+
 		// Primero, quitar isDefault de todas las direcciones del cliente
 		await this.shippingAddressModel
-			.updateMany(
-				{ customerId },
-				{ $set: { isDefault: false } },
-			)
+			.updateMany({ customerId }, { $set: { isDefault: false } })
 			.exec();
 
 		// Luego, marcar la dirección especificada como default
