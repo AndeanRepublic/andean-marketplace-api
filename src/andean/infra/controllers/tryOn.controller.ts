@@ -32,27 +32,22 @@ export class TryOnController {
 	@ApiOperation({
 		summary: 'Probar una prenda virtualmente usando IDM-VTON',
 		description:
-			'Recibe una foto del usuario y el ID de un MediaItem (prenda) para generar una imagen del usuario vistiéndola.',
+			'Recibe una foto del usuario y el ID de un producto textil. La descripción de la prenda se obtiene automáticamente de baseInfo.description y la imagen del MediaItem con role PRODUCT.',
 	})
 	@ApiBody({
 		schema: {
 			type: 'object',
-			required: ['file', 'mediaItemId', 'garmentDescription'],
+			required: ['file', 'textileProductId'],
 			properties: {
 				file: {
 					type: 'string',
 					format: 'binary',
 					description: 'Foto del usuario (jpeg, png o webp, máx 5MB)',
 				},
-				mediaItemId: {
+				textileProductId: {
 					type: 'string',
-					description: 'ID del MediaItem que representa la prenda',
+					description: 'ID del producto textil a probar virtualmente',
 					example: '507f1f77bcf86cd799439011',
-				},
-				garmentDescription: {
-					type: 'string',
-					description: 'Descripción de la prenda para el modelo IDM-VTON',
-					example: 'Green colour semi Formal Blazer',
 				},
 			},
 		},
@@ -64,7 +59,8 @@ export class TryOnController {
 	})
 	@ApiResponse({
 		status: HttpStatus.NOT_FOUND,
-		description: 'MediaItem no encontrado',
+		description:
+			'Producto textil no encontrado o sin MediaItem con role PRODUCT',
 	})
 	@ApiResponse({
 		status: HttpStatus.BAD_REQUEST,
@@ -88,8 +84,7 @@ export class TryOnController {
 	): Promise<TryOnResponse> {
 		return this.tryOnUseCase.execute({
 			humanImageFile: file,
-			mediaItemId: dto.mediaItemId,
-			garmentDescription: dto.garmentDescription,
+			textileProductId: dto.textileProductId,
 		});
 	}
 }

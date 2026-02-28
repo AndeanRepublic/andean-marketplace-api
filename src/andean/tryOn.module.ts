@@ -10,14 +10,14 @@ import { TryOnUseCase } from './app/use_cases/tryOn/TryOnUseCase';
 // Controller
 import { TryOnController } from './infra/controllers/tryOn.controller';
 
-// MediaItem (necesitamos MediaItemRepository para buscar la prenda)
+// MediaItem (necesitamos MediaItemRepository para buscar los media de la prenda)
 import { MediaItemModule } from './mediaItem.module';
 
+// TextileProduct (necesitamos TextileProductRepository para buscar el producto y su baseInfo)
+import { TextileProductModule } from './textileProduct.module';
+
 @Module({
-	imports: [
-		// Importamos MediaItemModule para acceder a MediaItemRepository
-		MediaItemModule,
-	],
+	imports: [MediaItemModule, TextileProductModule],
 	controllers: [TryOnController],
 	providers: [
 		{
