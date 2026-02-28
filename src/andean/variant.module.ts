@@ -57,4 +57,4 @@ import { VariantController } from './infra/controllers/variantControllers/varian
 		SyncVariantsUseCase,
 	],
 })
-export class VariantModule { }
+export class VariantModule {}

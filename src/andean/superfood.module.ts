@@ -286,4 +286,4 @@ import { TextileProductModule } from './textileProduct.module';
 		MongooseModule,
 	],
 })
-export class SuperfoodModule { }
+export class SuperfoodModule {}
