@@ -21,9 +21,9 @@ import { Box } from '../src/andean/domain/entities/box/Box';
 
 describe('BoxController (e2e)', () => {
 	let app: INestApplication;
-	let createBoxUseCase: CreateBoxUseCase;
-	let getAllBoxesUseCase: GetAllBoxesUseCase;
-	let getBoxDetailUseCase: GetBoxDetailUseCase;
+	let createBoxUseCase: jest.Mocked<CreateBoxUseCase>;
+	let getAllBoxesUseCase: jest.Mocked<GetAllBoxesUseCase>;
+	let getBoxDetailUseCase: jest.Mocked<GetBoxDetailUseCase>;
 
 	// Load mock data from JSON fixture
 	const fixture = FixtureLoader.loadBox();
@@ -65,9 +65,12 @@ describe('BoxController (e2e)', () => {
 		);
 		await app.init();
 
-		createBoxUseCase = moduleFixture.get(CreateBoxUseCase);
-		getAllBoxesUseCase = moduleFixture.get(GetAllBoxesUseCase);
-		getBoxDetailUseCase = moduleFixture.get(GetBoxDetailUseCase);
+		createBoxUseCase =
+			moduleFixture.get<jest.Mocked<CreateBoxUseCase>>(CreateBoxUseCase);
+		getAllBoxesUseCase =
+			moduleFixture.get<jest.Mocked<GetAllBoxesUseCase>>(GetAllBoxesUseCase);
+		getBoxDetailUseCase =
+			moduleFixture.get<jest.Mocked<GetBoxDetailUseCase>>(GetBoxDetailUseCase);
 	});
 
 	afterAll(async () => {

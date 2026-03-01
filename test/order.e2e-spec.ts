@@ -26,11 +26,11 @@ import { Order } from '../src/andean/domain/entities/order/Order';
 
 describe('OrderController (e2e)', () => {
 	let app: INestApplication;
-	let createOrderUseCase: CreateOrderUseCase;
-	let createOrderFromCartUseCase: CreateOrderFromCartUseCase;
-	let getOrderByIdUseCase: GetOrderByIdUseCase;
-	let getOrdersByCustomerUseCase: GetOrdersByCustomerUseCase;
-	let updateOrderStatusUseCase: UpdateOrderStatusUseCase;
+	let createOrderUseCase: jest.Mocked<CreateOrderUseCase>;
+	let createOrderFromCartUseCase: jest.Mocked<CreateOrderFromCartUseCase>;
+	let getOrderByIdUseCase: jest.Mocked<GetOrderByIdUseCase>;
+	let getOrdersByCustomerUseCase: jest.Mocked<GetOrdersByCustomerUseCase>;
+	let updateOrderStatusUseCase: jest.Mocked<UpdateOrderStatusUseCase>;
 
 	// Load mock data from JSON fixture
 	const fixture = FixtureLoader.loadOrder();
@@ -109,11 +109,19 @@ describe('OrderController (e2e)', () => {
 		);
 		await app.init();
 
-		createOrderUseCase = moduleFixture.get(CreateOrderUseCase);
-		createOrderFromCartUseCase = moduleFixture.get(CreateOrderFromCartUseCase);
-		getOrderByIdUseCase = moduleFixture.get(GetOrderByIdUseCase);
-		getOrdersByCustomerUseCase = moduleFixture.get(GetOrdersByCustomerUseCase);
-		updateOrderStatusUseCase = moduleFixture.get(UpdateOrderStatusUseCase);
+		createOrderUseCase =
+			moduleFixture.get<jest.Mocked<CreateOrderUseCase>>(CreateOrderUseCase);
+		createOrderFromCartUseCase = moduleFixture.get<
+			jest.Mocked<CreateOrderFromCartUseCase>
+		>(CreateOrderFromCartUseCase);
+		getOrderByIdUseCase =
+			moduleFixture.get<jest.Mocked<GetOrderByIdUseCase>>(GetOrderByIdUseCase);
+		getOrdersByCustomerUseCase = moduleFixture.get<
+			jest.Mocked<GetOrdersByCustomerUseCase>
+		>(GetOrdersByCustomerUseCase);
+		updateOrderStatusUseCase = moduleFixture.get<
+			jest.Mocked<UpdateOrderStatusUseCase>
+		>(UpdateOrderStatusUseCase);
 	});
 
 	afterAll(async () => {

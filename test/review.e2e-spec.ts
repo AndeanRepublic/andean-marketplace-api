@@ -18,15 +18,15 @@ import { FixtureLoader } from './helpers/fixture-loader';
 
 describe('ReviewController (e2e)', () => {
 	let app: INestApplication;
-	let createReviewUseCase: CreateReviewUseCase;
-	let getAllReviewsUseCase: GetAllReviewsUseCase;
-	let getByIdReviewUseCase: GetByIdReviewUseCase;
-	let updateReviewUseCase: UpdateReviewUseCase;
-	let deleteReviewUseCase: DeleteReviewUseCase;
-	let incrementLikesUseCase: IncrementLikesUseCase;
-	let incrementDislikesUseCase: IncrementDislikesUseCase;
-	let decrementLikesUseCase: DecrementLikesUseCase;
-	let decrementDislikesUseCase: DecrementDislikesUseCase;
+	let createReviewUseCase: jest.Mocked<CreateReviewUseCase>;
+	let getAllReviewsUseCase: jest.Mocked<GetAllReviewsUseCase>;
+	let getByIdReviewUseCase: jest.Mocked<GetByIdReviewUseCase>;
+	let updateReviewUseCase: jest.Mocked<UpdateReviewUseCase>;
+	let deleteReviewUseCase: jest.Mocked<DeleteReviewUseCase>;
+	let incrementLikesUseCase: jest.Mocked<IncrementLikesUseCase>;
+	let incrementDislikesUseCase: jest.Mocked<IncrementDislikesUseCase>;
+	let decrementLikesUseCase: jest.Mocked<DecrementLikesUseCase>;
+	let decrementDislikesUseCase: jest.Mocked<DecrementDislikesUseCase>;
 
 	// Load mock data from JSON fixture
 	const fixture = FixtureLoader.loadReview();
@@ -103,15 +103,32 @@ describe('ReviewController (e2e)', () => {
 		);
 		await app.init();
 
-		createReviewUseCase = moduleFixture.get(CreateReviewUseCase);
-		getAllReviewsUseCase = moduleFixture.get(GetAllReviewsUseCase);
-		getByIdReviewUseCase = moduleFixture.get(GetByIdReviewUseCase);
-		updateReviewUseCase = moduleFixture.get(UpdateReviewUseCase);
-		deleteReviewUseCase = moduleFixture.get(DeleteReviewUseCase);
-		incrementLikesUseCase = moduleFixture.get(IncrementLikesUseCase);
-		incrementDislikesUseCase = moduleFixture.get(IncrementDislikesUseCase);
-		decrementLikesUseCase = moduleFixture.get(DecrementLikesUseCase);
-		decrementDislikesUseCase = moduleFixture.get(DecrementDislikesUseCase);
+		createReviewUseCase =
+			moduleFixture.get<jest.Mocked<CreateReviewUseCase>>(CreateReviewUseCase);
+		getAllReviewsUseCase =
+			moduleFixture.get<jest.Mocked<GetAllReviewsUseCase>>(
+				GetAllReviewsUseCase,
+			);
+		getByIdReviewUseCase =
+			moduleFixture.get<jest.Mocked<GetByIdReviewUseCase>>(
+				GetByIdReviewUseCase,
+			);
+		updateReviewUseCase =
+			moduleFixture.get<jest.Mocked<UpdateReviewUseCase>>(UpdateReviewUseCase);
+		deleteReviewUseCase =
+			moduleFixture.get<jest.Mocked<DeleteReviewUseCase>>(DeleteReviewUseCase);
+		incrementLikesUseCase = moduleFixture.get<
+			jest.Mocked<IncrementLikesUseCase>
+		>(IncrementLikesUseCase);
+		incrementDislikesUseCase = moduleFixture.get<
+			jest.Mocked<IncrementDislikesUseCase>
+		>(IncrementDislikesUseCase);
+		decrementLikesUseCase = moduleFixture.get<
+			jest.Mocked<DecrementLikesUseCase>
+		>(DecrementLikesUseCase);
+		decrementDislikesUseCase = moduleFixture.get<
+			jest.Mocked<DecrementDislikesUseCase>
+		>(DecrementDislikesUseCase);
 	});
 
 	afterAll(async () => {

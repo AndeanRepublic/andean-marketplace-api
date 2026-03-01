@@ -18,11 +18,11 @@ import { BoxSeal } from '../src/andean/domain/entities/box/BoxSeal';
 
 describe('BoxSealController (e2e)', () => {
 	let app: INestApplication;
-	let createBoxSealUseCase: CreateBoxSealUseCase;
-	let getAllBoxSealsUseCase: GetAllBoxSealsUseCase;
-	let getBoxSealByIdUseCase: GetBoxSealByIdUseCase;
-	let updateBoxSealUseCase: UpdateBoxSealUseCase;
-	let deleteBoxSealUseCase: DeleteBoxSealUseCase;
+	let createBoxSealUseCase: jest.Mocked<CreateBoxSealUseCase>;
+	let getAllBoxSealsUseCase: jest.Mocked<GetAllBoxSealsUseCase>;
+	let getBoxSealByIdUseCase: jest.Mocked<GetBoxSealByIdUseCase>;
+	let updateBoxSealUseCase: jest.Mocked<UpdateBoxSealUseCase>;
+	let deleteBoxSealUseCase: jest.Mocked<DeleteBoxSealUseCase>;
 
 	// Load mock data from JSON fixture
 	const fixture = FixtureLoader.loadBoxSeal();
@@ -82,11 +82,24 @@ describe('BoxSealController (e2e)', () => {
 		);
 		await app.init();
 
-		createBoxSealUseCase = moduleFixture.get(CreateBoxSealUseCase);
-		getAllBoxSealsUseCase = moduleFixture.get(GetAllBoxSealsUseCase);
-		getBoxSealByIdUseCase = moduleFixture.get(GetBoxSealByIdUseCase);
-		updateBoxSealUseCase = moduleFixture.get(UpdateBoxSealUseCase);
-		deleteBoxSealUseCase = moduleFixture.get(DeleteBoxSealUseCase);
+		createBoxSealUseCase =
+			moduleFixture.get<jest.Mocked<CreateBoxSealUseCase>>(
+				CreateBoxSealUseCase,
+			);
+		getAllBoxSealsUseCase = moduleFixture.get<
+			jest.Mocked<GetAllBoxSealsUseCase>
+		>(GetAllBoxSealsUseCase);
+		getBoxSealByIdUseCase = moduleFixture.get<
+			jest.Mocked<GetBoxSealByIdUseCase>
+		>(GetBoxSealByIdUseCase);
+		updateBoxSealUseCase =
+			moduleFixture.get<jest.Mocked<UpdateBoxSealUseCase>>(
+				UpdateBoxSealUseCase,
+			);
+		deleteBoxSealUseCase =
+			moduleFixture.get<jest.Mocked<DeleteBoxSealUseCase>>(
+				DeleteBoxSealUseCase,
+			);
 	});
 
 	afterAll(async () => {
