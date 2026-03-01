@@ -7,15 +7,14 @@ import { AgeGroup } from 'src/andean/domain/entities/experiences/AgeGroup';
 export class ExperiencePricesMapper {
 	static fromDocument(doc: ExperiencePricesDocument): ExperiencePrices {
 		const plain = doc.toObject();
-		const ageGroups = (plain.ageGroups || []).map(
-			(ag: any) =>
-				plainToInstance(AgeGroup, {
-					code: ag.code,
-					label: ag.label,
-					price: ag.price,
-					minAge: ag.minAge,
-					maxAge: ag.maxAge,
-				}),
+		const ageGroups = (plain.ageGroups || []).map((ag: any) =>
+			plainToInstance(AgeGroup, {
+				code: ag.code,
+				label: ag.label,
+				price: ag.price,
+				minAge: ag.minAge,
+				maxAge: ag.maxAge,
+			}),
 		);
 
 		return plainToInstance(ExperiencePrices, {
@@ -54,11 +53,9 @@ export class ExperiencePricesMapper {
 		return plainToInstance(ExperiencePrices, plain);
 	}
 
-	static toPersistence(
-		entity: ExperiencePrices | Partial<ExperiencePrices>,
-	) {
+	static toPersistence(entity: ExperiencePrices | Partial<ExperiencePrices>) {
 		const plain = instanceToPlain(entity);
-		const { id, _id, __v, ...dataForDB } = plain;
+		const { id: _id1, _id: _id2, __v: _v, ...dataForDB } = plain;
 		return dataForDB;
 	}
 }

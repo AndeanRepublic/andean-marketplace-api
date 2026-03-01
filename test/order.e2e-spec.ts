@@ -228,7 +228,7 @@ describe('OrderController (e2e)', () => {
 		});
 
 		it('should return 400 when items is not provided', () => {
-			const { items, ...dtoWithoutItems } = createDto;
+			const { items: _items, ...dtoWithoutItems } = createDto;
 			return request(app.getHttpServer())
 				.post('/orders')
 				.send(dtoWithoutItems)
@@ -236,7 +236,7 @@ describe('OrderController (e2e)', () => {
 		});
 
 		it('should return 400 when pricing is missing', () => {
-			const { pricing, ...dtoWithout } = createDto;
+			const { pricing: _pricing, ...dtoWithout } = createDto;
 			return request(app.getHttpServer())
 				.post('/orders')
 				.send(dtoWithout)
@@ -244,7 +244,7 @@ describe('OrderController (e2e)', () => {
 		});
 
 		it('should return 400 when shippingInfo is missing', () => {
-			const { shippingInfo, ...dtoWithout } = createDto;
+			const { shippingInfo: _shippingInfo, ...dtoWithout } = createDto;
 			return request(app.getHttpServer())
 				.post('/orders')
 				.send(dtoWithout)
@@ -252,7 +252,7 @@ describe('OrderController (e2e)', () => {
 		});
 
 		it('should return 400 when payment is missing', () => {
-			const { payment, ...dtoWithout } = createDto;
+			const { payment: _payment, ...dtoWithout } = createDto;
 			return request(app.getHttpServer())
 				.post('/orders')
 				.send(dtoWithout)
@@ -291,7 +291,7 @@ describe('OrderController (e2e)', () => {
 
 		it('should accept order without customerId (guest checkout with email)', () => {
 			jest.spyOn(createOrderUseCase, 'handle').mockResolvedValueOnce(mockOrder);
-			const { customerId, ...guestDto } = createDto;
+			const { customerId: _customerId, ...guestDto } = createDto;
 			return request(app.getHttpServer())
 				.post('/orders')
 				.send({ ...guestDto, customerEmail: 'guest@example.com' })
@@ -351,7 +351,7 @@ describe('OrderController (e2e)', () => {
 		});
 
 		it('should return 400 when shippingInfo is missing from cart order', () => {
-			const { shippingInfo, ...dtoWithout } = createFromCartDto;
+			const { shippingInfo: _shippingInfo2, ...dtoWithout } = createFromCartDto;
 			return request(app.getHttpServer())
 				.post('/orders/from-cart?customerId=customer-uuid-789')
 				.send(dtoWithout)
@@ -359,7 +359,7 @@ describe('OrderController (e2e)', () => {
 		});
 
 		it('should return 400 when payment is missing from cart order', () => {
-			const { payment, ...dtoWithout } = createFromCartDto;
+			const { payment: _payment2, ...dtoWithout } = createFromCartDto;
 			return request(app.getHttpServer())
 				.post('/orders/from-cart?customerId=customer-uuid-789')
 				.send(dtoWithout)
@@ -367,7 +367,7 @@ describe('OrderController (e2e)', () => {
 		});
 
 		it('should return 400 when currency is missing from cart order', () => {
-			const { currency, ...dtoWithout } = createFromCartDto;
+			const { currency: _currency, ...dtoWithout } = createFromCartDto;
 			return request(app.getHttpServer())
 				.post('/orders/from-cart?customerId=customer-uuid-789')
 				.send(dtoWithout)

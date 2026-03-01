@@ -13,7 +13,7 @@ import { DecrementLikesUseCase } from '../src/andean/app/use_cases/DecrementLike
 import { DecrementDislikesUseCase } from '../src/andean/app/use_cases/DecrementDislikesUseCase';
 import { ProductType } from '../src/andean/domain/enums/ProductType';
 import { MediaItemType } from '../src/andean/domain/enums/MediaItemType';
-import { MediaItemRole } from '../src/andean/domain/enums/MediaItemRole';
+
 import { FixtureLoader } from './helpers/fixture-loader';
 
 describe('ReviewController (e2e)', () => {

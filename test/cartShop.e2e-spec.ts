@@ -637,9 +637,9 @@ describe('CartShopController (e2e)', () => {
 	});
 
 	describe('PATCH /cart/items/:itemId/quantity/:quantityDelta', () => {
-		const customerId = customerFixtures.customer.id;
+		const _customerId = customerFixtures.customer.id;
 		const cartItemId = cartFixtures.cartItems[0].id;
-		const updateDto = {
+		const _updateDto = {
 			quantity: 5,
 		};
 
@@ -682,7 +682,7 @@ describe('CartShopController (e2e)', () => {
 	});
 
 	describe('DELETE /cart/items/:itemId', () => {
-		const customerId = customerFixtures.customer.id;
+		const _customerId = customerFixtures.customer.id;
 		const cartItemId = cartFixtures.cartItems[0].id;
 
 		it('should remove item from cart', () => {

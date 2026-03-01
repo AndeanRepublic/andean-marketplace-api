@@ -7,7 +7,7 @@ import { UpdateCustomerProfileDto } from '../controllers/dto/UpdateCustomerProfi
 export class CustomerProfileMapper {
 	static fromDocument(doc: CustomerProfileDocument): CustomerProfile {
 		const plain = doc.toObject();
-		const { _id, ...rest } = plain;
+		const { _id: _docId, ...rest } = plain;
 		return plainToInstance<CustomerProfile, Record<string, any>>(
 			CustomerProfile,
 			rest,
@@ -19,7 +19,13 @@ export class CustomerProfileMapper {
 		userId: string,
 		dto: CreateCustomerDto,
 	): CustomerProfile {
-		const { email, password, name, birthDate, ...customerData } = dto;
+		const {
+			email: _email,
+			password: _password,
+			name: _name,
+			birthDate,
+			...customerData
+		} = dto;
 
 		const plain = {
 			id: crypto.randomUUID(),

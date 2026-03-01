@@ -36,4 +36,4 @@ import { DeleteDetailSourceProductUseCase } from './app/use_cases/detailSourcePr
 		DeleteDetailSourceProductUseCase,
 	],
 })
-export class DetailSourceProductModule { }
+export class DetailSourceProductModule {}

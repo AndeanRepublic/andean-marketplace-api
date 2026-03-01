@@ -138,7 +138,7 @@ describe('BoxSealController (e2e)', () => {
 		});
 
 		it('should return 400 when name is missing', () => {
-			const { name, ...dtoWithoutName } = createDto;
+			const { name: _name, ...dtoWithoutName } = createDto;
 			return request(app.getHttpServer())
 				.post('/box-seals')
 				.send(dtoWithoutName)
@@ -146,7 +146,7 @@ describe('BoxSealController (e2e)', () => {
 		});
 
 		it('should return 400 when description is missing', () => {
-			const { description, ...dtoWithout } = createDto;
+			const { description: _description, ...dtoWithout } = createDto;
 			return request(app.getHttpServer())
 				.post('/box-seals')
 				.send(dtoWithout)
@@ -154,7 +154,7 @@ describe('BoxSealController (e2e)', () => {
 		});
 
 		it('should return 400 when logoMediaId is missing', () => {
-			const { logoMediaId, ...dtoWithout } = createDto;
+			const { logoMediaId: _logoMediaId, ...dtoWithout } = createDto;
 			return request(app.getHttpServer())
 				.post('/box-seals')
 				.send(dtoWithout)

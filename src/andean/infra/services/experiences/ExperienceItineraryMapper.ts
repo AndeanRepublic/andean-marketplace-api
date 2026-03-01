@@ -5,9 +5,7 @@ import { Types } from 'mongoose';
 import { ItinerarySchedule } from 'src/andean/domain/entities/experiences/ItinerarySchedule';
 
 export class ExperienceItineraryMapper {
-	static fromDocument(
-		doc: ExperienceItineraryDocument,
-	): ExperienceItinerary {
+	static fromDocument(doc: ExperienceItineraryDocument): ExperienceItinerary {
 		const plain = doc.toObject();
 		const schedule = (plain.schedule || []).map((s: any) =>
 			plainToInstance(ItinerarySchedule, {
@@ -62,7 +60,7 @@ export class ExperienceItineraryMapper {
 		entity: ExperienceItinerary | Partial<ExperienceItinerary>,
 	) {
 		const plain = instanceToPlain(entity);
-		const { id, _id, __v, ...dataForDB } = plain;
+		const { id: _id1, _id: _id2, __v: _v, ...dataForDB } = plain;
 		return dataForDB;
 	}
 }

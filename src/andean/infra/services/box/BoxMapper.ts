@@ -1,4 +1,4 @@
-import { plainToInstance, instanceToPlain } from 'class-transformer';
+import { instanceToPlain } from 'class-transformer';
 import { Types } from 'mongoose';
 import { Box, BoxProduct } from '../../../domain/entities/box/Box';
 import { BoxProductType } from '../../../domain/enums/BoxProductType';
@@ -10,7 +10,12 @@ export class BoxMapper {
 	static fromDocument(doc: BoxDocument): Box {
 		const plain = doc.toObject();
 		const products = (plain.products || []).map(
-			(p: any) => new BoxProduct(p.productType as BoxProductType, p.productId, p.variantId),
+			(p: any) =>
+				new BoxProduct(
+					p.productType as BoxProductType,
+					p.productId,
+					p.variantId,
+				),
 		);
 		return new Box(
 			MongoIdUtils.objectIdToString(plain._id),
@@ -30,7 +35,7 @@ export class BoxMapper {
 	static fromCreateDto(dto: CreateBoxDto): Box {
 		const id = new Types.ObjectId().toString();
 		const products = (dto.products || []).map(
-			(p) => new BoxProduct(p.productType as BoxProductType, p.productId, p.variantId),
+			(p) => new BoxProduct(p.productType, p.productId, p.variantId),
 		);
 		const now = new Date();
 		return new Box(
@@ -50,7 +55,7 @@ export class BoxMapper {
 
 	static toPersistence(box: Box | Partial<Box>) {
 		const plain = instanceToPlain(box);
-		const { id, _id, __v, ...dataForDB } = plain;
+		const { id: _id1, _id: _id2, __v: _v, ...dataForDB } = plain;
 		return dataForDB;
 	}
 }

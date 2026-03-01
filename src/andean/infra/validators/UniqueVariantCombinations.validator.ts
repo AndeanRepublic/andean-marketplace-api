@@ -8,7 +8,7 @@ import {
 
 @ValidatorConstraint({ name: 'uniqueVariantCombinations', async: false })
 export class UniqueVariantCombinationsConstraint implements ValidatorConstraintInterface {
-	validate(variants: any[], args: ValidationArguments) {
+	validate(variants: any[], _args: ValidationArguments) {
 		if (!variants || variants.length === 0) {
 			return true; // Si no hay variantes, es válido
 		}
@@ -19,7 +19,7 @@ export class UniqueVariantCombinationsConstraint implements ValidatorConstraintI
 		return combinations.length === uniqueCombinations.size;
 	}
 
-	defaultMessage(args: ValidationArguments) {
+	defaultMessage(_args: ValidationArguments) {
 		return 'There are variants with duplicate combinations';
 	}
 }

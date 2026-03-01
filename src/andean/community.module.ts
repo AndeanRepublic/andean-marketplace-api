@@ -65,7 +65,7 @@ import { CommunityController } from './infra/controllers/community.controller';
 	exports: [CommunityRepository, SealRepository],
 })
 export class CommunityModule implements OnModuleInit {
-	constructor(@InjectConnection() private readonly connection: Connection) { }
+	constructor(@InjectConnection() private readonly connection: Connection) {}
 
 	async onModuleInit() {
 		try {

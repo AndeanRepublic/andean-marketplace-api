@@ -40,7 +40,7 @@ export const mockAuthUsers = {
  * ```
  */
 export class MockAuthGuard implements CanActivate {
-	constructor(private readonly user: Record<string, any> | null) { }
+	constructor(private readonly user: Record<string, any> | null) {}
 
 	canActivate(context: ExecutionContext): boolean {
 		if (!this.user) {

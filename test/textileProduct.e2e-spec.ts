@@ -8,7 +8,7 @@ import { GetByIdTextileProductUseCase } from '../src/andean/app/use_cases/textil
 import { UpdateTextileProductUseCase } from '../src/andean/app/use_cases/textileProducts/UpdateTextileProductUseCase';
 import { DeleteTextileProductUseCase } from '../src/andean/app/use_cases/textileProducts/DeleteTextileProductUseCase';
 import { TextileProduct } from '../src/andean/domain/entities/textileProducts/TextileProduct';
-import { TextileProductStatus } from '../src/andean/domain/enums/TextileProductStatus';
+
 import { ProductSortBy } from '../src/andean/domain/enums/ProductSortBy';
 import { CreateTextileCategoryUseCase } from '../src/andean/app/use_cases/textileProducts/CreateTextileCategoryUseCase';
 import { UpdateTextileCategoryUseCase } from '../src/andean/app/use_cases/textileProducts/UpdateTextileCategoryUseCase';

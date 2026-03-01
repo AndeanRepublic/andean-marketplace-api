@@ -12,10 +12,9 @@ import { UpdateDetailSourceProductUseCase } from '../src/andean/app/use_cases/de
 import { DeleteDetailSourceProductUseCase } from '../src/andean/app/use_cases/detailSourceProduct/DeleteDetailSourceProductUseCase';
 import { SuperfoodProduct } from '../src/andean/domain/entities/superfoods/SuperfoodProduct';
 import { SuperfoodProductStatus } from '../src/andean/domain/enums/SuperfoodProductStatus';
-import { SuperfoodOwnerType } from '../src/andean/domain/enums/SuperfoodOwnerType';
 import { SuperfoodColor } from '../src/andean/domain/enums/SuperfoodColor';
 import { ProductSortBy } from '../src/andean/domain/enums/ProductSortBy';
-import { SuperfoodProductListItem } from '../src/andean/app/models/superfoods/SuperfoodProductListItem';
+
 import { FixtureLoader } from './helpers/fixture-loader';
 
 describe('SuperfoodController (e2e)', () => {
@@ -25,9 +24,9 @@ describe('SuperfoodController (e2e)', () => {
 	let getAllSuperfoodProductsUseCase: GetAllSuperfoodProductsUseCase;
 	let updateSuperfoodProductUseCase: UpdateSuperfoodProductUseCase;
 	let deleteSuperfoodProductUseCase: DeleteSuperfoodProductUseCase;
-	let createDetailSourceProductUseCase: CreateDetailSourceProductUseCase;
-	let updateDetailSourceProductUseCase: UpdateDetailSourceProductUseCase;
-	let deleteDetailSourceProductUseCase: DeleteDetailSourceProductUseCase;
+	let _createDetailSourceProductUseCase: CreateDetailSourceProductUseCase;
+	let _updateDetailSourceProductUseCase: UpdateDetailSourceProductUseCase;
+	let _deleteDetailSourceProductUseCase: DeleteDetailSourceProductUseCase;
 
 	// Load mock data from JSON fixture
 	const fixture = FixtureLoader.loadSuperfoodProduct();
@@ -120,13 +119,13 @@ describe('SuperfoodController (e2e)', () => {
 		getAllSuperfoodProductsUseCase = moduleFixture.get(
 			GetAllSuperfoodProductsUseCase,
 		);
-		createDetailSourceProductUseCase = moduleFixture.get(
+		_createDetailSourceProductUseCase = moduleFixture.get(
 			CreateDetailSourceProductUseCase,
 		);
-		updateDetailSourceProductUseCase = moduleFixture.get(
+		_updateDetailSourceProductUseCase = moduleFixture.get(
 			UpdateDetailSourceProductUseCase,
 		);
-		deleteDetailSourceProductUseCase = moduleFixture.get(
+		_deleteDetailSourceProductUseCase = moduleFixture.get(
 			DeleteDetailSourceProductUseCase,
 		);
 		updateSuperfoodProductUseCase = moduleFixture.get(

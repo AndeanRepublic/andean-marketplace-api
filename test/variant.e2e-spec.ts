@@ -15,7 +15,7 @@ import { UpdateVariantUseCase } from '../src/andean/app/use_cases/variant/Update
 import { DeleteVariantUseCase } from '../src/andean/app/use_cases/variant/DeleteVariantUseCase';
 import { DeleteVariantsByProductIdUseCase } from '../src/andean/app/use_cases/variant/DeleteVariantsByProductIdUseCase';
 import { SyncVariantsUseCase } from '../src/andean/app/use_cases/variant/SyncVariantsUseCase';
-import { ProductType } from '../src/andean/domain/enums/ProductType';
+
 import { FixtureLoader } from './helpers/fixture-loader';
 
 describe('VariantController (e2e)', () => {

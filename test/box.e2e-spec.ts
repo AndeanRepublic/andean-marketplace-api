@@ -113,7 +113,7 @@ describe('BoxController (e2e)', () => {
 		});
 
 		it('should return 400 when title is missing', () => {
-			const { title, ...dtoWithoutTitle } = createDto;
+			const { title: _title, ...dtoWithoutTitle } = createDto;
 			return request(app.getHttpServer())
 				.post('/boxes')
 				.send(dtoWithoutTitle)
@@ -142,7 +142,7 @@ describe('BoxController (e2e)', () => {
 		});
 
 		it('should return 400 when products is not provided', () => {
-			const { products, ...dtoWithoutProducts } = createDto;
+			const { products: _products, ...dtoWithoutProducts } = createDto;
 			return request(app.getHttpServer())
 				.post('/boxes')
 				.send(dtoWithoutProducts)
@@ -150,7 +150,7 @@ describe('BoxController (e2e)', () => {
 		});
 
 		it('should return 400 when thumbnailImageId is missing', () => {
-			const { thumbnailImageId, ...dtoWithout } = createDto;
+			const { thumbnailImageId: _thumbnailImageId, ...dtoWithout } = createDto;
 			return request(app.getHttpServer())
 				.post('/boxes')
 				.send(dtoWithout)
@@ -158,7 +158,7 @@ describe('BoxController (e2e)', () => {
 		});
 
 		it('should return 400 when mainImageId is missing', () => {
-			const { mainImageId, ...dtoWithout } = createDto;
+			const { mainImageId: _mainImageId, ...dtoWithout } = createDto;
 			return request(app.getHttpServer())
 				.post('/boxes')
 				.send(dtoWithout)

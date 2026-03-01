@@ -38,4 +38,4 @@ import { BoxSealController } from './infra/controllers/box/boxSeal.controller';
 	],
 	exports: [BoxSealRepository, MongooseModule],
 })
-export class BoxSealModule { }
+export class BoxSealModule {}
