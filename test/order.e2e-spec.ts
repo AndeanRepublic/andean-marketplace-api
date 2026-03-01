@@ -1,5 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, HttpStatus, ValidationPipe } from '@nestjs/common';
+import {
+	INestApplication,
+	HttpStatus,
+	ValidationPipe,
+	NotFoundException,
+	BadRequestException,
+} from '@nestjs/common';
 import * as request from 'supertest';
 import { FixtureLoader } from './helpers/fixture-loader';
 
@@ -377,9 +383,7 @@ describe('OrderController (e2e)', () => {
 		it('should return 404 when cart is not found', () => {
 			jest
 				.spyOn(createOrderFromCartUseCase, 'handle')
-				.mockRejectedValueOnce(
-					new (require('@nestjs/common').NotFoundException)('Cart not found'),
-				);
+				.mockRejectedValueOnce(new NotFoundException('Cart not found'));
 			return request(app.getHttpServer())
 				.post('/orders/from-cart?customerId=non-existent')
 				.send(createFromCartDto)
@@ -389,9 +393,7 @@ describe('OrderController (e2e)', () => {
 		it('should return 400 when cart is empty', () => {
 			jest
 				.spyOn(createOrderFromCartUseCase, 'handle')
-				.mockRejectedValueOnce(
-					new (require('@nestjs/common').BadRequestException)('Cart is empty'),
-				);
+				.mockRejectedValueOnce(new BadRequestException('Cart is empty'));
 			return request(app.getHttpServer())
 				.post('/orders/from-cart?customerId=customer-uuid-789')
 				.send(createFromCartDto)
@@ -507,9 +509,7 @@ describe('OrderController (e2e)', () => {
 		it('should return 404 when order is not found', () => {
 			jest
 				.spyOn(getOrderByIdUseCase, 'handle')
-				.mockRejectedValueOnce(
-					new (require('@nestjs/common').NotFoundException)('Order not found'),
-				);
+				.mockRejectedValueOnce(new NotFoundException('Order not found'));
 			return request(app.getHttpServer())
 				.get('/orders/non-existent-id')
 				.expect(HttpStatus.NOT_FOUND);
@@ -518,11 +518,7 @@ describe('OrderController (e2e)', () => {
 		it('should return 400 when order id is invalid', () => {
 			jest
 				.spyOn(getOrderByIdUseCase, 'handle')
-				.mockRejectedValueOnce(
-					new (require('@nestjs/common').BadRequestException)(
-						'Invalid order ID',
-					),
-				);
+				.mockRejectedValueOnce(new BadRequestException('Invalid order ID'));
 			return request(app.getHttpServer())
 				.get('/orders/invalid-id')
 				.expect(HttpStatus.BAD_REQUEST);
@@ -580,11 +576,7 @@ describe('OrderController (e2e)', () => {
 		it('should return 404 when customer is not found', () => {
 			jest
 				.spyOn(getOrdersByCustomerUseCase, 'handle')
-				.mockRejectedValueOnce(
-					new (require('@nestjs/common').NotFoundException)(
-						'Customer not found',
-					),
-				);
+				.mockRejectedValueOnce(new NotFoundException('Customer not found'));
 			return request(app.getHttpServer())
 				.get('/orders/by-customer/non-existent-id')
 				.expect(HttpStatus.NOT_FOUND);
@@ -593,11 +585,7 @@ describe('OrderController (e2e)', () => {
 		it('should return 400 when customerId is invalid', () => {
 			jest
 				.spyOn(getOrdersByCustomerUseCase, 'handle')
-				.mockRejectedValueOnce(
-					new (require('@nestjs/common').BadRequestException)(
-						'Invalid customer ID',
-					),
-				);
+				.mockRejectedValueOnce(new BadRequestException('Invalid customer ID'));
 			return request(app.getHttpServer())
 				.get('/orders/by-customer/invalid-id')
 				.expect(HttpStatus.BAD_REQUEST);
@@ -679,9 +667,7 @@ describe('OrderController (e2e)', () => {
 		it('should return 404 when order is not found', () => {
 			jest
 				.spyOn(updateOrderStatusUseCase, 'handle')
-				.mockRejectedValueOnce(
-					new (require('@nestjs/common').NotFoundException)('Order not found'),
-				);
+				.mockRejectedValueOnce(new NotFoundException('Order not found'));
 			return request(app.getHttpServer())
 				.put('/orders/non-existent-id/status')
 				.send(updateDto)
@@ -691,11 +677,7 @@ describe('OrderController (e2e)', () => {
 		it('should return 400 when order id is invalid', () => {
 			jest
 				.spyOn(updateOrderStatusUseCase, 'handle')
-				.mockRejectedValueOnce(
-					new (require('@nestjs/common').BadRequestException)(
-						'Invalid order ID',
-					),
-				);
+				.mockRejectedValueOnce(new BadRequestException('Invalid order ID'));
 			return request(app.getHttpServer())
 				.put('/orders/invalid-id/status')
 				.send(updateDto)

@@ -1,5 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, HttpStatus, ValidationPipe } from '@nestjs/common';
+import {
+	INestApplication,
+	HttpStatus,
+	ValidationPipe,
+	NotFoundException,
+} from '@nestjs/common';
 import * as request from 'supertest';
 import { FixtureLoader } from './helpers/fixture-loader';
 
@@ -582,9 +587,7 @@ describe('BoxController (e2e)', () => {
 		it('should return 404 when box is not found', () => {
 			jest
 				.spyOn(getBoxDetailUseCase, 'handle')
-				.mockRejectedValueOnce(
-					new (require('@nestjs/common').NotFoundException)('Box not found'),
-				);
+				.mockRejectedValueOnce(new NotFoundException('Box not found'));
 			return request(app.getHttpServer())
 				.get('/boxes/non-existent-id')
 				.expect(HttpStatus.NOT_FOUND);

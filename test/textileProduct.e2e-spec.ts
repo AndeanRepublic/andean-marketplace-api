@@ -1,5 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, HttpStatus, ValidationPipe } from '@nestjs/common';
+import {
+	INestApplication,
+	HttpStatus,
+	ValidationPipe,
+	NotFoundException,
+} from '@nestjs/common';
 import * as request from 'supertest';
 import { TextileProductController } from '../src/andean/infra/controllers/textileProductControllers';
 import { CreateTextileProductUseCase } from '../src/andean/app/use_cases/textileProducts/CreateTextileProductUseCase';
@@ -717,10 +722,9 @@ describe('TextileProductController (e2e)', () => {
 			jest
 				.spyOn(getAllTextileProductsUseCase, 'handle')
 				.mockImplementationOnce(() => {
-					throw {
-						statusCode: 404,
-						message: 'No textile products found with the specified filters',
-					};
+					throw new NotFoundException(
+						'No textile products found with the specified filters',
+					);
 				});
 
 			await request(app.getHttpServer())
