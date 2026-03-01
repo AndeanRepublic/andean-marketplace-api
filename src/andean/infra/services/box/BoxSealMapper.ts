@@ -1,4 +1,4 @@
-import { plainToInstance, instanceToPlain } from 'class-transformer';
+import { instanceToPlain } from 'class-transformer';
 import { Types } from 'mongoose';
 import { BoxSeal } from '../../../domain/entities/box/BoxSeal';
 import { BoxSealDocument } from '../../persistence/box/boxSeal.schema';
@@ -33,7 +33,7 @@ export class BoxSealMapper {
 
 	static toPersistence(boxSeal: BoxSeal | Partial<BoxSeal>) {
 		const plain = instanceToPlain(boxSeal);
-		const { id, _id, __v, ...dataForDB } = plain;
+		const { id: _id1, _id: _id2, __v: _v, ...dataForDB } = plain;
 		return dataForDB;
 	}
 }

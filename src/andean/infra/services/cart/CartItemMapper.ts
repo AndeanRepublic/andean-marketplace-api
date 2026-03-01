@@ -1,7 +1,6 @@
 import { CartShopItemDocument } from '../../persistence/cartShopItem.schema';
 import { CartItem } from '../../../domain/entities/CartItem';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
-import { Types } from 'mongoose';
 
 export class CartItemMapper {
 	static fromDocument(doc: CartShopItemDocument): CartItem {
@@ -14,7 +13,7 @@ export class CartItemMapper {
 
 	static toPersistence(cartItem: CartItem) {
 		const plain = instanceToPlain(cartItem);
-		const { id, _id, __v, ...updateData } = plain;
+		const { id: _id1, _id: _id2, __v: _v, ...updateData } = plain;
 		return {
 			...updateData,
 		};

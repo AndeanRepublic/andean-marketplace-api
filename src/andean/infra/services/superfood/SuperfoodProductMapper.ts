@@ -244,7 +244,7 @@ export class SuperfoodProductMapper {
 
 	static toPersistence(product: SuperfoodProduct) {
 		const plain = instanceToPlain(product);
-		const { _id, id, __v, ...updateData } = plain;
+		const { _id: _id1, id: _id2, __v: _v, ...updateData } = plain;
 
 		return {
 			...updateData,

@@ -3,14 +3,12 @@ import { DetailSourceProduct } from '../../../domain/entities/superfoods/DetailS
 import { plainToInstance, instanceToPlain } from 'class-transformer';
 
 export class DetailSourceProductMapper {
-	static fromDocument(
-		doc: DetailSourceProductDocument,
-	): DetailSourceProduct {
+	static fromDocument(doc: DetailSourceProductDocument): DetailSourceProduct {
 		const plain = doc.toObject();
-		const { _id, __v, ...rest } = plain;
+		const { _id: _docId, __v: _v, ...rest } = plain;
 
 		return plainToInstance(DetailSourceProduct, {
-			id: _id.toString(),
+			id: _docId.toString(),
 			...rest,
 		});
 	}
@@ -19,7 +17,7 @@ export class DetailSourceProductMapper {
 		detailSourceProduct: DetailSourceProduct | Partial<DetailSourceProduct>,
 	) {
 		const plain = instanceToPlain(detailSourceProduct);
-		const { id, _id, __v, ...dataForDB } = plain;
+		const { id: _id1, _id: _id2, __v: _v2, ...dataForDB } = plain;
 
 		return dataForDB;
 	}

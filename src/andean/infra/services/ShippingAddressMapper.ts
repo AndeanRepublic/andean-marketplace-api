@@ -23,9 +23,11 @@ export class ShippingAddressMapper {
 		});
 	}
 
-	static toPersistence(shippingAddress: ShippingAddress | Partial<ShippingAddress>) {
+	static toPersistence(
+		shippingAddress: ShippingAddress | Partial<ShippingAddress>,
+	) {
 		const plain = instanceToPlain(shippingAddress);
-		const { id, _id, __v, ...updateData } = plain;
+		const { id: _id1, _id: _id2, __v: _v, ...updateData } = plain;
 		return {
 			...updateData,
 		};

@@ -33,7 +33,7 @@ export class SealMapper {
 
 	static toPersistence(seal: Seal) {
 		const plain = instanceToPlain(seal);
-		const { id, ...updateData } = plain;
+		const { id: _id, ...updateData } = plain;
 
 		return {
 			...updateData,

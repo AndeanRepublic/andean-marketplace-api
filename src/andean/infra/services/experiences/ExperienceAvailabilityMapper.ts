@@ -37,7 +37,7 @@ export class ExperienceAvailabilityMapper {
 		entity: ExperienceAvailability | Partial<ExperienceAvailability>,
 	) {
 		const plain = instanceToPlain(entity);
-		const { id, _id, __v, ...dataForDB } = plain;
+		const { id: _id1, _id: _id2, __v: _v, ...dataForDB } = plain;
 		return dataForDB;
 	}
 }

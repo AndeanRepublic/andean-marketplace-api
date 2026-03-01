@@ -50,13 +50,13 @@ export class BookingMapper {
 
 	static toPersistence(booking: Booking | Partial<Booking>) {
 		const plain = instanceToPlain(booking);
-		const { id, _id, __v, ...dataForDB } = plain;
+		const { id: _id1, _id: _id2, __v: _v, ...dataForDB } = plain;
 		return {
 			...dataForDB,
 		};
 	}
 
-	// -- Resolve functions 
+	// -- Resolve functions
 
 	static resolveExperienceSnapshot(
 		experience: Experience,

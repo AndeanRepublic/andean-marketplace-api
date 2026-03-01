@@ -13,7 +13,7 @@ export class CartShopMapper {
 
 	static toPersistence(cart: CartShop | Partial<CartShop>) {
 		const plain = instanceToPlain(cart);
-		const { id, _id, __v, ...updateData } = plain;
+		const { id: _id1, _id: _id2, __v: _v, ...updateData } = plain;
 		return {
 			...updateData,
 		};

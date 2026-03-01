@@ -44,7 +44,7 @@ export class CommunityMapper {
 	 */
 	static toPersistence(community: Community) {
 		const plain = instanceToPlain(community);
-		const { id, ...dataForDB } = plain;
+		const { id: _id, ...dataForDB } = plain;
 		return dataForDB;
 	}
 }
