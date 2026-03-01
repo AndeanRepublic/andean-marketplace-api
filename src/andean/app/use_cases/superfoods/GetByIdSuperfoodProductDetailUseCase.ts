@@ -11,6 +11,7 @@ import { MediaItemRepository } from '../../datastore/MediaItem.repo';
 import { DetailSourceProductRepository } from '../../datastore/DetailSourceProduct.repo';
 import { ProductType } from '../../../domain/enums/ProductType';
 import { MediaItemRole } from '../../../domain/enums/MediaItemRole';
+import { SuperfoodOwnerType } from '../../../domain/enums/SuperfoodOwnerType';
 import { Review } from '../../../domain/entities/Review';
 import { MediaItem } from '../../../domain/entities/MediaItem';
 import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
@@ -206,7 +207,7 @@ export class GetByIdSuperfoodProductDetailUseCase {
 		const ownerType = product.baseInfo.ownerType;
 		const ownerId = product.baseInfo.ownerId;
 
-		if (ownerType === 'COMMUNITY') {
+		if (ownerType === SuperfoodOwnerType.COMMUNITY) {
 			const community = await this.communityRepository.getById(ownerId);
 			let imgUrl = '';
 			if (community?.bannerImageId) {

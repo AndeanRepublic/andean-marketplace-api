@@ -54,7 +54,12 @@ export class CapturePayPalOrderService {
 				throw new Error(`PayPal API returned status ${response.statusCode}`);
 			}
 
-			const result = response.result;
+			const result = response.result as {
+				id?: string;
+				status?: string;
+				payer?: CapturePayPalOrderResponse['payer'];
+				purchaseUnits?: CapturePayPalOrderResponse['purchase_units'];
+			};
 
 			// Validar que el estado sea COMPLETED
 			if (result.status !== 'COMPLETED') {
