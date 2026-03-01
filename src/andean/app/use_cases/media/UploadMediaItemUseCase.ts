@@ -37,10 +37,9 @@ export class UploadMediaItemUseCase {
 
 			// 3. Guardar en base de datos
 			return await this.mediaItemRepository.create(mediaItem);
-		} catch (error: any) {
-			throw new BadRequestException(
-				`Error uploading media item: ${error.message}`,
-			);
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : String(error);
+			throw new BadRequestException(`Error uploading media item: ${message}`);
 		}
 	}
 }

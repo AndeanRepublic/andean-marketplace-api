@@ -12,10 +12,9 @@ export class CreateMediaItemUseCase {
 		try {
 			const mediaItem = MediaItemMapper.fromCreateDto(dto);
 			return await this.mediaItemRepository.create(mediaItem);
-		} catch (error: any) {
-			throw new BadRequestException(
-				`Error creating media item: ${error.message}`,
-			);
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : String(error);
+			throw new BadRequestException(`Error creating media item: ${message}`);
 		}
 	}
 }

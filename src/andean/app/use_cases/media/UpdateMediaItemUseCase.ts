@@ -21,10 +21,9 @@ export class UpdateMediaItemUseCase {
 		try {
 			const updated = MediaItemMapper.fromUpdateDto(dto, existing);
 			return await this.mediaItemRepository.update(updated);
-		} catch (error) {
-			throw new BadRequestException(
-				`Error updating media item: ${error.message}`,
-			);
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : String(error);
+			throw new BadRequestException(`Error updating media item: ${message}`);
 		}
 	}
 }
