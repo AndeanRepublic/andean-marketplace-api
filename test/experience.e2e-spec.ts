@@ -11,25 +11,29 @@ import { GetByIdExperienceUseCase } from '../src/andean/app/use_cases/experience
 
 import { ExperienceStatus } from '../src/andean/domain/enums/ExperienceStatus';
 import { Experience } from '../src/andean/domain/entities/experiences/Experience';
+import { PaginatedExperiencesResponse } from '../src/andean/app/models/experiences/ExperienceListItemResponse';
+import { ExperienceDetailResponse } from '../src/andean/app/models/experiences/ExperienceDetailResponse';
 
 import { FixtureLoader } from './helpers/fixture-loader';
 
 describe('ExperienceController (e2e)', () => {
 	let app: INestApplication;
-	let createExperienceUseCase: CreateExperienceUseCase;
-	let getAllExperiencesUseCase: GetAllExperiencesUseCase;
-	let updateExperienceUseCase: UpdateExperienceUseCase;
-	let deleteExperienceUseCase: DeleteExperienceUseCase;
-	let getByIdExperienceUseCase: GetByIdExperienceUseCase;
+	let createExperienceUseCase: jest.Mocked<CreateExperienceUseCase>;
+	let getAllExperiencesUseCase: jest.Mocked<GetAllExperiencesUseCase>;
+	let updateExperienceUseCase: jest.Mocked<UpdateExperienceUseCase>;
+	let deleteExperienceUseCase: jest.Mocked<DeleteExperienceUseCase>;
+	let getByIdExperienceUseCase: jest.Mocked<GetByIdExperienceUseCase>;
 
 	// Load fixture data
 	const fixture = FixtureLoader.loadExperience();
-	const mockExperience = fixture.mockExperience as Experience;
+	const mockExperience = fixture.mockExperience as unknown as Experience;
 	const createDto = fixture.createDto;
 	const updateDto = fixture.updateDto;
-	const mockPaginatedResponse = fixture.mockPaginatedResponse;
+	const mockPaginatedResponse =
+		fixture.mockPaginatedResponse as unknown as PaginatedExperiencesResponse;
 	const mockListItem = fixture.mockListItem;
-	const mockDetailResponse = fixture.mockDetailResponse;
+	const mockDetailResponse =
+		fixture.mockDetailResponse as unknown as ExperienceDetailResponse;
 
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({

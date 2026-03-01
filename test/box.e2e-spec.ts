@@ -18,6 +18,8 @@ import { GetBoxDetailUseCase } from '../src/andean/app/use_cases/boxes/GetBoxDet
 
 // ─── Domain ─────────────────────────────────────────────────────────────────
 import { Box } from '../src/andean/domain/entities/box/Box';
+import { BoxListPaginatedResponse } from '../src/andean/app/models/box/BoxListResponse';
+import { BoxDetailResponse } from '../src/andean/app/models/box/BoxDetailResponse';
 
 describe('BoxController (e2e)', () => {
 	let app: INestApplication;
@@ -33,8 +35,9 @@ describe('BoxController (e2e)', () => {
 		updatedAt: new Date(fixture.entity.updatedAt),
 	} as Box;
 	const createDto = fixture.createDto;
-	const listResponse = fixture.listResponse;
-	const detailResponse = fixture.detailResponse;
+	const listResponse =
+		fixture.listResponse as unknown as BoxListPaginatedResponse;
+	const detailResponse = fixture.detailResponse as unknown as BoxDetailResponse;
 
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
