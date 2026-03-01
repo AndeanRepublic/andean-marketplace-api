@@ -7,7 +7,7 @@ import { Types } from 'mongoose';
 
 export class ReviewMapper {
 	static fromDocument(doc: ReviewDocument): Review {
-		const plain = doc.toObject();
+		const plain = doc.toObject() as ReviewDocument;
 		return plainToInstance(Review, {
 			id: plain._id.toString(),
 			...plain,

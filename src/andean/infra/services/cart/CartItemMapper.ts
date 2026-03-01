@@ -4,7 +4,7 @@ import { instanceToPlain, plainToInstance } from 'class-transformer';
 
 export class CartItemMapper {
 	static fromDocument(doc: CartShopItemDocument): CartItem {
-		const plain = doc.toObject();
+		const plain = doc.toObject() as CartShopItemDocument;
 		return plainToInstance(CartItem, {
 			id: plain._id.toString(),
 			...plain,

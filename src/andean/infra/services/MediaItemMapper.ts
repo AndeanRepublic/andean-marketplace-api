@@ -8,7 +8,7 @@ import { MediaItemRole } from '../../domain/enums/MediaItemRole';
 
 export class MediaItemMapper {
 	static fromDocument(doc: MediaItemDocument): MediaItem {
-		const plain = doc.toObject();
+		const plain = doc.toObject() as MediaItemDocument;
 		return new MediaItem(
 			plain._id.toString(),
 			plain.type,

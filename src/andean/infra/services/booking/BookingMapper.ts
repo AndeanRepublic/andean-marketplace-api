@@ -18,7 +18,7 @@ type CreateBookingInput = CreateBookingDto & {
 
 export class BookingMapper {
 	static fromDocument(doc: BookingDocument): Booking {
-		const plain = doc.toObject();
+		const plain = doc.toObject() as BookingDocument;
 		return plainToInstance(Booking, {
 			id: plain._id.toString(),
 			...plain,

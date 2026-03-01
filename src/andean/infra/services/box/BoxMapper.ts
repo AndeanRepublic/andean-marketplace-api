@@ -8,9 +8,9 @@ import { MongoIdUtils } from '../../utils/MongoIdUtils';
 
 export class BoxMapper {
 	static fromDocument(doc: BoxDocument): Box {
-		const plain = doc.toObject();
+		const plain = doc.toObject() as BoxDocument;
 		const products = (plain.products || []).map(
-			(p: any) =>
+			(p) =>
 				new BoxProduct(
 					p.productType as BoxProductType,
 					p.productId,

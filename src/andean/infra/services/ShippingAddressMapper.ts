@@ -4,7 +4,7 @@ import { instanceToPlain, plainToInstance } from 'class-transformer';
 
 export class ShippingAddressMapper {
 	static fromDocument(doc: ShippingAddressDocument): ShippingAddress {
-		const plain = doc.toObject();
+		const plain = doc.toObject() as ShippingAddressDocument;
 		return plainToInstance(ShippingAddress, {
 			id: plain._id.toString(),
 			customerId: plain.customerId,

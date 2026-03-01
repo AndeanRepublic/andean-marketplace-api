@@ -12,7 +12,7 @@ export class CommunityMapper {
 	 * ObjectId (_id) → string (id)
 	 */
 	static fromDocument(doc: CommunityDocument): Community {
-		const plain = doc.toObject();
+		const plain = doc.toObject() as CommunityDocument;
 		return plainToInstance(Community, {
 			id: MongoIdUtils.objectIdToString(plain._id), // ObjectId → string
 			...plain,

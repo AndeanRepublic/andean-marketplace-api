@@ -6,7 +6,7 @@ import { UpdateCustomerProfileDto } from '../controllers/dto/UpdateCustomerProfi
 
 export class CustomerProfileMapper {
 	static fromDocument(doc: CustomerProfileDocument): CustomerProfile {
-		const plain = doc.toObject();
+		const plain = doc.toObject() as CustomerProfileDocument;
 		const { _id: _docId, ...rest } = plain;
 		return plainToInstance<CustomerProfile, Record<string, any>>(
 			CustomerProfile,

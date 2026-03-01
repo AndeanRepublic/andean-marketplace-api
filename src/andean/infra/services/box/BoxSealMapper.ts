@@ -7,7 +7,7 @@ import { MongoIdUtils } from '../../utils/MongoIdUtils';
 
 export class BoxSealMapper {
 	static fromDocument(doc: BoxSealDocument): BoxSeal {
-		const plain = doc.toObject();
+		const plain = doc.toObject() as BoxSealDocument;
 		return new BoxSeal(
 			MongoIdUtils.objectIdToString(plain._id),
 			plain.name,

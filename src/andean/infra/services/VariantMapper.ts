@@ -12,7 +12,7 @@ export class VariantMapper {
 	 * ObjectId (_id) → string (id)
 	 */
 	static fromDocument(doc: VariantDocument): Variant {
-		const plain = doc.toObject();
+		const plain = doc.toObject() as VariantDocument;
 		return plainToInstance(Variant, {
 			id: MongoIdUtils.objectIdToString(plain._id as Types.ObjectId),
 			...plain,
