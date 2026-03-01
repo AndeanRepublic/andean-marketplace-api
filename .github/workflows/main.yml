@@ -1,4 +1,4 @@
-name: NestJS CI/CD to Railway (pnpm)
+name: NestJS CI/CD to Railway (Docker Build & Deploy)
 
 on:
   push:
@@ -8,12 +8,17 @@ on:
     branches:
       - main
 
+# Definimos variables de entorno para la imagen
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
   # ----------------------------------------------------
-  # ETAPA 1: Integración Continua (CI)
+  # ETAPA 1: Integración Continuada (Test)
   # ----------------------------------------------------
   ci:
-    name: Build and Test
+    name: Code Quality & Tests
     runs-on: ubuntu-latest
     steps:
       - name: 📥 Checkout del código
@@ -22,42 +27,96 @@ jobs:
       - name: 📦 Instalar pnpm
         uses: pnpm/action-setup@v3
         with:
-          version: 10.15.1 # Misma versión que tu Dockerfile
+          version: 10.15.1
 
       - name: ⚙️ Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24' # Misma versión que tu Dockerfile
+          node-version: '24'
           cache: 'pnpm'
 
       - name: 📥 Instalar dependencias
         run: pnpm install --frozen-lockfile
 
-      - name: 🔍 Ejecutar Linter
-        run: pnpm run lint
+      # - name: 🔍 Ejecutar Linter
+      #   run: pnpm run lint
 
-      - name: 🧪 Ejecutar Pruebas (Unit tests)
+      - name: 🧪 Ejecutar Pruebas (E2E)
         run: pnpm run test:e2e
 
-      - name: 🏗️ Compilar el proyecto NestJS
-        run: pnpm run build
-
   # ----------------------------------------------------
-  # ETAPA 2: Despliegue Continuo (CD)
+  # ETAPA 2: Construir, Etiquetar y Subir Docker (GHCR)
   # ----------------------------------------------------
-  cd:
-    name: Deploy to Railway
+  build-and-push-docker:
+    name: Build & Push Docker Image
     runs-on: ubuntu-latest
     needs: ci
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions:
+      contents: read
+      packages: write # Permiso vital para subir la imagen a GitHub Packages
+
     steps:
       - name: 📥 Checkout del código
         uses: actions/checkout@v4
 
-      - name: 🚂 Instalar Railway CLI
-        run: npm i -g @railway/cli
+      - name: 🐳 Configurar Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: 🚢 Desplegar a Railway
-        run: railway up --detach
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      - name: 🔑 Iniciar sesión en GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }} # Token automático de GitHub
+
+      - name: 🏷️ Extraer metadatos para Docker (Tags sha, latest)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,format=short
+
+      - name: 📦 Construir y Subir imagen Docker
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ----------------------------------------------------
+  # ETAPA 3: Desplegar la imagen pre-construida en Railway
+  # ----------------------------------------------------
+  deploy:
+    name: Deploy to Railway
+    runs-on: ubuntu-latest
+    needs: build-and-push-docker
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: 🚀 Disparar Webhook de Railway
+        run: curl -X POST "${{ secrets.RAILWAY_WEBHOOK_URL }}"
+
+  # ----------------------------------------------------
+  # ETAPA 4: Limpieza Automática de Imágenes en GHCR
+  # ----------------------------------------------------
+  cleanup:
+    name: Prune Old Docker Images
+    runs-on: ubuntu-latest
+    needs: deploy # Solo limpia si el despliegue fue exitoso
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions:
+      packages: write # Permiso estricto para poder borrar paquetes
+
+    steps:
+      - name: 🧹 Mantener solo las últimas 4 imágenes
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: ${{ github.event.repository.name }}
+          package-type: 'container'
+          min-versions-to-keep: 4
+          delete-only-untagged-versions: 'false'

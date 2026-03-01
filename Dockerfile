@@ -6,7 +6,7 @@ FROM node:24-alpine AS base
 WORKDIR /app
 
 # Instalar pnpm con versión fija (misma que en local)
-RUN npm install -g pnpm@10.15.1
+RUN corepack enable && corepack prepare pnpm@10.15.1 --activate
 
 # Copiar manifests de dependencias
 COPY package.json pnpm-lock.yaml ./
@@ -46,7 +46,7 @@ WORKDIR /app
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 # Instalar pnpm con versión fija
-RUN npm install -g pnpm@10.15.1
+RUN corepack enable && corepack prepare pnpm@10.15.1 --activate
 
 # Copiar solo lo necesario desde los stages anteriores
 COPY --from=deps /app/node_modules ./node_modules
