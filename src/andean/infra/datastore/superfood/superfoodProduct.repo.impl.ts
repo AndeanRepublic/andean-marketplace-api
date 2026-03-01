@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model, PipelineStage, Types } from 'mongoose';
+import { FilterQuery, Model, PipelineStage } from 'mongoose';
 import {
 	SuperfoodProductFilters,
 	SuperfoodProductRepository,

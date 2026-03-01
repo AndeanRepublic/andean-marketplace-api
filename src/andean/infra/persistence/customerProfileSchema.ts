@@ -1,4 +1,4 @@
-import { Document, Schema, Types } from 'mongoose';
+import { Document, Schema } from 'mongoose';
 import { CoinType } from '../../domain/enums/CoinType';
 
 export const CustomerProfileSchema = new Schema({

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { ExperienceItineraryRepository } from '../../../app/datastore/experiences/ExperienceItinerary.repo';
 import { ExperienceItinerary } from 'src/andean/domain/entities/experiences/ExperienceItinerary';
 import { ExperienceItineraryDocument } from '../../persistence/experiences/experienceItinerary.schema';

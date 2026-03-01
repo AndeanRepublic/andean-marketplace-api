@@ -1,4 +1,4 @@
-import { Document, Schema, Types } from 'mongoose';
+import { Document, Schema } from 'mongoose';
 import { AccountRole } from '../../domain/enums/AccountRole';
 import { AccountStatus } from '../../domain/enums/AccountStatus';
 

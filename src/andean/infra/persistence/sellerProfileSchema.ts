@@ -1,4 +1,4 @@
-import { Document, Schema, Types } from 'mongoose';
+import { Document, Schema } from 'mongoose';
 import { PersonType } from '../../domain/enums/PersonType';
 
 export const SellerProfileSchema = new Schema({
