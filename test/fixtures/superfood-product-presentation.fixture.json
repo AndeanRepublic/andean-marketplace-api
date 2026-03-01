@@ -1,0 +1,24 @@
+{
+	"entity": {
+		"id": "123e4567-e89b-12d3-a456-426614174000",
+		"name": "En polvo",
+		"icon": "https://example.com/icons/polvo.svg",
+		"createdAt": "2026-01-01T00:00:00.000Z",
+		"updatedAt": "2026-01-01T00:00:00.000Z"
+	},
+	"createDto": {
+		"name": "En polvo",
+		"icon": "https://example.com/icons/polvo.svg"
+	},
+	"optionalFieldName": "icon",
+	"additionalEntities": [
+		{
+			"id": "uuid-2",
+			"name": "En grano"
+		},
+		{
+			"id": "uuid-3",
+			"name": "Cápsulas"
+		}
+	]
+}
