@@ -24,6 +24,21 @@ export class OriginProductRegionRepositoryImpl extends OriginProductRegionReposi
 		return OriginProductRegionMapper.fromDocument(created);
 	}
 
+	async createMany(
+		regions: OriginProductRegion[],
+	): Promise<OriginProductRegion[]> {
+		const documents = regions.map((region) => ({
+			id: region.id,
+			name: region.name,
+		}));
+		const created = await this.regionModel.insertMany(documents);
+		return created.map((doc) =>
+			OriginProductRegionMapper.fromDocument(
+				doc as unknown as OriginProductRegionDocument,
+			),
+		);
+	}
+
 	async getById(id: string): Promise<OriginProductRegion | null> {
 		const document = await this.regionModel.findOne({ id }).exec();
 		return document ? OriginProductRegionMapper.fromDocument(document) : null;

@@ -8,6 +8,9 @@ export abstract class TextilePrincipalUseRepository {
 	abstract saveTextilePrincipalUse(
 		principalUse: TextilePrincipalUse,
 	): Promise<TextilePrincipalUse>;
+	abstract createManyTextilePrincipalUses(
+		principalUses: TextilePrincipalUse[],
+	): Promise<TextilePrincipalUse[]>;
 	abstract updateTextilePrincipalUse(
 		id: string,
 		principalUse: TextilePrincipalUse,

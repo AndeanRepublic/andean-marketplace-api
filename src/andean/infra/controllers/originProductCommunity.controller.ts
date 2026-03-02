@@ -18,11 +18,13 @@ import {
 	ApiQuery,
 } from '@nestjs/swagger';
 import { CreateOriginProductCommunityUseCase } from '../../app/use_cases/origin/CreateOriginProductCommunityUseCase';
+import { CreateManyOriginProductCommunitiesUseCase } from '../../app/use_cases/origin/CreateManyOriginProductCommunitiesUseCase';
 import { UpdateOriginProductCommunityUseCase } from '../../app/use_cases/origin/UpdateOriginProductCommunityUseCase';
 import { GetOriginProductCommunityByIdUseCase } from '../../app/use_cases/origin/GetOriginProductCommunityByIdUseCase';
 import { ListOriginProductCommunityUseCase } from '../../app/use_cases/origin/ListOriginProductCommunityUseCase';
 import { DeleteOriginProductCommunityUseCase } from '../../app/use_cases/origin/DeleteOriginProductCommunityUseCase';
 import { CreateOriginProductCommunityDto } from './dto/origin/CreateOriginProductCommunityDto';
+import { CreateManyOriginProductCommunitiesDto } from './dto/origin/CreateManyOriginProductCommunitiesDto';
 import { UpdateOriginProductCommunityDto } from './dto/origin/UpdateOriginProductCommunityDto';
 import { OriginProductCommunityResponse } from '../../app/modules/OriginProductCommunityResponse';
 import { OriginProductCommunity } from '../../domain/entities/origin/OriginProductCommunity';
@@ -32,11 +34,33 @@ import { OriginProductCommunity } from '../../domain/entities/origin/OriginProdu
 export class OriginProductCommunityController {
 	constructor(
 		private readonly createCommunityUseCase: CreateOriginProductCommunityUseCase,
+		private readonly createManyCommunitiesUseCase: CreateManyOriginProductCommunitiesUseCase,
 		private readonly updateCommunityUseCase: UpdateOriginProductCommunityUseCase,
 		private readonly getCommunityByIdUseCase: GetOriginProductCommunityByIdUseCase,
 		private readonly listCommunityUseCase: ListOriginProductCommunityUseCase,
 		private readonly deleteCommunityUseCase: DeleteOriginProductCommunityUseCase,
 	) {}
+
+	@Post('/bulk')
+	@HttpCode(HttpStatus.CREATED)
+	@ApiOperation({ summary: 'Create multiple origin product communities' })
+	@ApiResponse({
+		status: 201,
+		description: 'Communities have been successfully created.',
+		type: [OriginProductCommunityResponse],
+	})
+	@ApiResponse({
+		status: 400,
+		description: 'Bad Request - Invalid input data.',
+	})
+	@ApiResponse({ status: 404, description: 'Region not found.' })
+	async createMany(
+		@Body() dto: CreateManyOriginProductCommunitiesDto,
+	): Promise<OriginProductCommunityResponse[]> {
+		const communities =
+			await this.createManyCommunitiesUseCase.execute(dto);
+		return communities.map((c) => this.toResponse(c));
+	}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)

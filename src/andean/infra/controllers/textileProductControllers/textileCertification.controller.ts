@@ -11,8 +11,10 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateTextileCertificationUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileCertificationUseCase';
+import { CreateManyTextileCertificationsUseCase } from 'src/andean/app/use_cases/textileProducts/CreateManyTextileCertificationsUseCase';
 import { TextileCertification } from 'src/andean/domain/entities/textileProducts/TextileCertification';
 import { CreateTextileCertificationDto } from '../dto/textileProducts/CreateTextileCertificationDto';
+import { CreateManyTextileCertificationsDto } from '../dto/textileProducts/CreateManyTextileCertificationsDto';
 import { UpdateTextileCertificationUseCase } from 'src/andean/app/use_cases/textileProducts/UpdateTextileCertificationUseCase';
 import { GetAllTextileCertificationsUseCase } from 'src/andean/app/use_cases/textileProducts/GetAllTextileCertificationsUseCase';
 import { GetByIdTextileCertificationUseCase } from 'src/andean/app/use_cases/textileProducts/GetByIdTextileCertificationUseCase';
@@ -23,11 +25,34 @@ import { DeleteTextileCertificationUseCase } from 'src/andean/app/use_cases/text
 export class TextileCertificationController {
 	constructor(
 		private readonly createTextileCertificationUseCase: CreateTextileCertificationUseCase,
+		private readonly createManyTextileCertificationsUseCase: CreateManyTextileCertificationsUseCase,
 		private readonly updateTextileCertificationUseCase: UpdateTextileCertificationUseCase,
 		private readonly getAllTextileCertificationsUseCase: GetAllTextileCertificationsUseCase,
 		private readonly getByIdTextileCertificationUseCase: GetByIdTextileCertificationUseCase,
 		private readonly deleteTextileCertificationUseCase: DeleteTextileCertificationUseCase,
 	) {}
+
+	@Post('/bulk')
+	@HttpCode(HttpStatus.CREATED)
+	@ApiOperation({
+		summary: 'Crear múltiples certificaciones textiles',
+		description:
+			'Crea múltiples certificaciones textiles en una sola operación. Útil para carga inicial de datos.',
+	})
+	@ApiResponse({
+		status: 201,
+		description: 'Certificaciones creadas exitosamente',
+		type: [TextileCertification],
+	})
+	@ApiResponse({
+		status: 400,
+		description: 'Datos de entrada inválidos',
+	})
+	async createManyTextileCertifications(
+		@Body() body: CreateManyTextileCertificationsDto,
+	): Promise<TextileCertification[]> {
+		return this.createManyTextileCertificationsUseCase.handle(body);
+	}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)

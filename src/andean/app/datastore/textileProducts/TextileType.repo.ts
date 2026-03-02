@@ -5,6 +5,7 @@ export abstract class TextileTypeRepository {
 	abstract getTextileTypeById(id: string): Promise<TextileType | null>;
 	abstract getTextileTypeByName(name: string): Promise<TextileType | null>;
 	abstract saveTextileType(type: TextileType): Promise<TextileType>;
+	abstract createManyTextileTypes(types: TextileType[]): Promise<TextileType[]>;
 	abstract updateTextileType(
 		id: string,
 		type: TextileType,

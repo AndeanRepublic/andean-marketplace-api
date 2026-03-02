@@ -11,8 +11,10 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateTextileCategoryUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileCategoryUseCase';
+import { CreateManyTextileCategoriesUseCase } from 'src/andean/app/use_cases/textileProducts/CreateManyTextileCategoriesUseCase';
 import { TextileCategory } from 'src/andean/domain/entities/textileProducts/TextileCategory';
 import { CreateTextileCategoryDto } from '../dto/textileProducts/CreateTextileCategory';
+import { CreateManyTextileCategoriesDto } from '../dto/textileProducts/CreateManyTextileCategoriesDto';
 import { UpdateTextileCategoryUseCase } from 'src/andean/app/use_cases/textileProducts/UpdateTextileCategoryUseCase';
 import { GetAllTextileCategoriesUseCase } from 'src/andean/app/use_cases/textileProducts/GetAllTextileCategoriesUseCase';
 import { GetByIdTextileCategoryUseCase } from 'src/andean/app/use_cases/textileProducts/GetByIdTextileCategoryUseCase';
@@ -23,11 +25,34 @@ import { DeleteTextileCategoryUseCase } from 'src/andean/app/use_cases/textilePr
 export class TextileCategoryController {
 	constructor(
 		private readonly createTextileCategoryUseCase: CreateTextileCategoryUseCase,
+		private readonly createManyTextileCategoriesUseCase: CreateManyTextileCategoriesUseCase,
 		private readonly updateTextileCategoryUseCase: UpdateTextileCategoryUseCase,
 		private readonly getAllTextileCategoriesUseCase: GetAllTextileCategoriesUseCase,
 		private readonly getByIdTextileCategoryUseCase: GetByIdTextileCategoryUseCase,
 		private readonly deleteTextileCategoryUseCase: DeleteTextileCategoryUseCase,
 	) {}
+
+	@Post('/bulk')
+	@HttpCode(HttpStatus.CREATED)
+	@ApiOperation({
+		summary: 'Crear múltiples categorías textiles',
+		description:
+			'Crea múltiples categorías textiles en una sola operación. Útil para carga inicial de datos.',
+	})
+	@ApiResponse({
+		status: 201,
+		description: 'Categorías creadas exitosamente',
+		type: [TextileCategory],
+	})
+	@ApiResponse({
+		status: 400,
+		description: 'Datos de entrada inválidos',
+	})
+	async createManyTextileCategories(
+		@Body() body: CreateManyTextileCategoriesDto,
+	): Promise<TextileCategory[]> {
+		return this.createManyTextileCategoriesUseCase.handle(body);
+	}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
