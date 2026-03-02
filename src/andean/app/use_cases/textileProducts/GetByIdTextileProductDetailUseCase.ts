@@ -101,15 +101,11 @@ export class GetByIdTextileProductDetailUseCase {
 
 		// -- Obtener variants del producto
 		const variants = await this.variantRepository.getByProductId(product.id);
-		const {
-			availableSizes,
-			availableColors,
-			availableMaterials,
-			variantInfo,
-		} = await this.textileProductAttributesAssembler.buildForProduct(
-			product,
-			variants,
-		);
+		const { availableSizes, availableColors, availableMaterials, variantInfo } =
+			await this.textileProductAttributesAssembler.buildForProduct(
+				product,
+				variants,
+			);
 
 		// -- Agrupar traceability epochs y agregar blockchainLink
 		const groupedEpochs = this.groupTraceabilityEpochs(

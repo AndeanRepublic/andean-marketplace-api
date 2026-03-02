@@ -23,7 +23,9 @@ import { VariantModule } from './andean/variant.module';
 import { BoxModule } from './andean/box.module';
 import { BoxSealModule } from './andean/boxSeal.module';
 import { ExperienceModule } from './andean/experience.module';
+import { TryOnModule } from './andean/tryOn.module';
 import { BookingModule } from './andean/booking.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
 	imports: [
@@ -63,7 +65,9 @@ import { BookingModule } from './andean/booking.module';
 		BoxModule,
 		BoxSealModule,
 		ExperienceModule,
+		TryOnModule,
 		BookingModule,
+		HealthModule,
 	],
 	controllers: [],
 	providers: [],
