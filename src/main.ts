@@ -9,14 +9,18 @@ import { join } from 'path';
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
 
+	const configService = app.get(ConfigService);
+	const port = configService.get<number>('PORT', 3000);
+	const allowedOrigins = configService
+		.get<string>('CORS_ORIGINS', 'http://localhost:3000')
+		.split(',')
+		.map((origin) => origin.trim());
+
 	app.enableCors({
-		origin: ['http://localhost:3000', 'http://localhost:3001'],
+		origin: allowedOrigins,
 		methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
 		credentials: true,
 	});
-
-	const configService = app.get(ConfigService);
-	const port = configService.get<number>('PORT', 3000);
 
 	app.useGlobalPipes(new ValidationPipe());
 	app.setGlobalPrefix('api/v1/andean');

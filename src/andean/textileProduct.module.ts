@@ -122,6 +122,7 @@ import { SuperfoodModule } from './superfood.module';
 import { VariantModule } from './variant.module';
 import { VariantSchema } from './infra/persistence/variant.schema';
 import { MediaItemSchema } from './infra/persistence/mediaItem.schema';
+import { TextileProductAttributesAssembler } from './infra/services/textileProducts/TextileProductAttributesAssembler';
 
 @Module({
 	imports: [
@@ -267,6 +268,7 @@ import { MediaItemSchema } from './infra/persistence/mediaItem.schema';
 		IncrementDislikesUseCase,
 		DecrementLikesUseCase,
 		DecrementDislikesUseCase,
+		TextileProductAttributesAssembler,
 		{
 			provide: TextileCategoryRepository,
 			useClass: TextileCategoryRepositoryImpl,
