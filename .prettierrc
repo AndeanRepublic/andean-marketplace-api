@@ -1,6 +1,5 @@
 {
   "singleQuote": true,
   "trailingComma": "all",
-  "endOfLine": "auto",
-  "useTabs": true
+  "endOfLine": "auto"
 }

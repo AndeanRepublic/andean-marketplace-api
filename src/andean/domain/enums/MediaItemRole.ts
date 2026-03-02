@@ -1,7 +1,0 @@
-export enum MediaItemRole {
-	THUMBNAIL = 'THUMBNAIL',
-	PRINCIPAL = 'PRINCIPAL',
-	SECUNDARY = 'SECUNDARY',
-	PRODUCT = 'PRODUCT',
-	NONE = 'NONE',
-}
