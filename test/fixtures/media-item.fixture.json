@@ -1,0 +1,27 @@
+{
+	"entity": {
+		"id": "123e4567-e89b-12d3-a456-426614174000",
+		"type": "IMG",
+		"name": "icon-protein.svg",
+		"key": "uploads/icon-protein.svg",
+		"url": "https://example.com/uploads/icon-protein.svg",
+		"role": "NONE",
+		"createdAt": "2026-01-01T00:00:00.000Z",
+		"updatedAt": "2026-01-01T00:00:00.000Z"
+	},
+	"createDto": {
+		"type": "IMG",
+		"name": "icon-energy.svg",
+		"url": "https://example.com/uploads/icon-energy.svg",
+		"role": "PRINCIPAL"
+	},
+	"updateDto": {
+		"name": "icon-energy-updated.svg"
+	},
+	"additionalEntities": [
+		{
+			"id": "223e4567-e89b-12d3-a456-426614174001",
+			"name": "icon-fiber.svg"
+		}
+	]
+}
