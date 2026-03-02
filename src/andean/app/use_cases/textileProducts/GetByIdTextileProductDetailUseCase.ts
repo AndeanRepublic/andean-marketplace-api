@@ -15,9 +15,8 @@ import { ShopRepository } from '../../datastore/Shop.repo';
 import { VariantRepository } from '../../datastore/Variant.repo';
 import { AccountRepository } from '../../datastore/Account.repo';
 import { Review } from 'src/andean/domain/entities/Review';
-import { Variant } from 'src/andean/domain/entities/Variant';
 import { MediaItemRepository } from '../../datastore/MediaItem.repo';
-import { AvailableColorResponse } from '../../models/TextileProducts/TextileProductDetailResponse';
+import { TextileProductAttributesAssembler } from '../../../infra/services/textileProducts/TextileProductAttributesAssembler';
 
 @Injectable()
 export class GetByIdTextileProductDetailUseCase {
@@ -46,6 +45,7 @@ export class GetByIdTextileProductDetailUseCase {
 		private readonly accountRepository: AccountRepository,
 		@Inject(MediaItemRepository)
 		private readonly mediaItemRepository: MediaItemRepository,
+		private readonly textileProductAttributesAssembler: TextileProductAttributesAssembler,
 	) {}
 
 	async handle(id: string): Promise<TextileProductDetailResponse> {
@@ -99,57 +99,13 @@ export class GetByIdTextileProductDetailUseCase {
 			dislikes: review.numberDislikes,
 		}));
 
-		// -- Obtener sizes y colors de options
-		const sizeOption = product.options?.find(
-			(opt) => opt.name === TextileOptionName.SIZE,
-		);
-		const colorOption = product.options?.find(
-			(opt) => opt.name === TextileOptionName.COLOR,
-		);
-		const materialOption = product.options?.find(
-			(opt) => opt.name === TextileOptionName.MATERIAL,
-		);
-
-		// -- Obtener availableSizes
-		const availableSizes: string[] = [];
-		if (sizeOption) {
-			for (const value of sizeOption.values) {
-				if (value.idOpcionAlternative) {
-					const sizeAlt = await this.sizeOptionAlternativeRepository.getById(
-						value.idOpcionAlternative,
-					);
-					if (sizeAlt && !availableSizes.includes(sizeAlt.nameLabel)) {
-						availableSizes.push(sizeAlt.nameLabel);
-					}
-				} else if (value.label && !availableSizes.includes(value.label)) {
-					availableSizes.push(value.label);
-				}
-			}
-		}
-
-		// -- Obtener availableColors
-		const availableColors = await this.buildAvailableColors(colorOption);
-
-		// -- Obtener availableMaterials
-		const availableMaterials: string[] = [];
-		if (materialOption) {
-			for (const value of materialOption.values) {
-				if (value.label && !availableMaterials.includes(value.label)) {
-					availableMaterials.push(value.label);
-				}
-			}
-		}
-
 		// -- Obtener variants del producto
 		const variants = await this.variantRepository.getByProductId(product.id);
-
-		// -- Construir variantInfo
-		const variantInfo = await this.buildVariantInfo(
-			variants,
-			sizeOption,
-			colorOption,
-			materialOption,
-		);
+		const { availableSizes, availableColors, availableMaterials, variantInfo } =
+			await this.textileProductAttributesAssembler.buildForProduct(
+				product,
+				variants,
+			);
 
 		// -- Agrupar traceability epochs y agregar blockchainLink
 		const groupedEpochs = this.groupTraceabilityEpochs(
@@ -258,133 +214,6 @@ export class GetByIdTextileProductDetailUseCase {
 			totalReviews,
 			averagePunctuation: Math.round(averagePunctuation * 10) / 10, // Redondear a 1 decimal
 		};
-	}
-
-	private async buildAvailableColors(
-		colorOption: any,
-	): Promise< AvailableColorResponse[]> {
-		if (!colorOption?.values?.length) {
-			return [];
-		}
-
-		const availableColors: AvailableColorResponse[] =
-			[];
-
-		for (const value of colorOption.values) {
-			let color = value.label || '';
-			let hexCode = '#000000';
-
-			if (value.idOpcionAlternative) {
-				const colorAlt = await this.colorOptionAlternativeRepository.getById(
-					value.idOpcionAlternative,
-				);
-				if (colorAlt) {
-					color = colorAlt.nameLabel || color;
-					hexCode = colorAlt.hexCode || hexCode;
-				}
-			}
-
-			let imgUrl = '';
-			const firstMediaId = value.mediaIds?.[0];
-			if (firstMediaId) {
-				const mediaItem = await this.mediaItemRepository.getById(firstMediaId);
-				imgUrl = mediaItem
-					? `${process.env.STORAGE_BASE_URL}/${mediaItem.key}`
-					: '';
-			}
-
-			availableColors.push({ color, hexCode, imgUrl });
-		}
-
-		return availableColors;
-	}
-
-	private async buildVariantInfo(
-		variants: Variant[],
-		sizeOption: any,
-		colorOption: any,
-		materialOption: any,
-	): Promise<
-		{
-			variantId: string;
-			size: string;
-			color: string;
-			material: string;
-			price: number;
-			stock: number;
-		}[]
-	> {
-		if (!variants || variants.length === 0) {
-			return [];
-		}
-
-		const variantInfoArray: {
-			variantId: string;
-			size: string;
-			color: string;
-			material: string;
-			price: number;
-			stock: number;
-		}[] = [];
-
-		for (const variant of variants) {
-			// Obtener size del combination
-			let size = '';
-			if (sizeOption && variant.combination[TextileOptionName.SIZE]) {
-				const sizeLabel = variant.combination[TextileOptionName.SIZE];
-				const sizeValue = sizeOption.values.find(
-					(v: any) => v.label === sizeLabel,
-				);
-				if (sizeValue?.idOpcionAlternative) {
-					const sizeAlt = await this.sizeOptionAlternativeRepository.getById(
-						sizeValue.idOpcionAlternative,
-					);
-					size = sizeAlt?.nameLabel || sizeValue.label || '';
-				} else {
-					size = sizeValue?.label || sizeLabel || '';
-				}
-			}
-
-			// Obtener color del combination
-			let color = '';
-			if (colorOption && variant.combination[TextileOptionName.COLOR]) {
-				const colorLabel = variant.combination[TextileOptionName.COLOR];
-				const colorValue = colorOption.values.find(
-					(v: any) => v.label === colorLabel,
-				);
-				if (colorValue?.idOpcionAlternative) {
-					const colorAlt = await this.colorOptionAlternativeRepository.getById(
-						colorValue.idOpcionAlternative,
-					);
-					color = colorAlt?.nameLabel || colorValue.label || '';
-				} else {
-					color = colorValue?.label || colorLabel || '';
-				}
-			}
-
-			// Obtener material del combination
-			let material = '';
-			if (materialOption && variant.combination[TextileOptionName.MATERIAL]) {
-				const materialLabel = variant.combination[TextileOptionName.MATERIAL];
-				const materialValue = materialOption.values.find(
-					(v: any) => v.label === materialLabel,
-				);
-				material = materialValue?.label || materialLabel || '';
-			} else {
-				material = '';
-			}
-
-			variantInfoArray.push({
-				variantId: variant.id,
-				size,
-				color,
-				material,
-				price: variant.price,
-				stock: variant.stock,
-			});
-		}
-
-		return variantInfoArray;
 	}
 
 	private groupTraceabilityEpochs(epochs: any[]) {

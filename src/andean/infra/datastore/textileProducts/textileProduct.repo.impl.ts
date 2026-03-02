@@ -13,6 +13,8 @@ import { MongoIdUtils } from '../../utils/MongoIdUtils';
 import { FilterCount } from 'src/andean/app/modules/PaginatedProductsResponse';
 import { TextileProductListItem } from '../../../app/modules/TextileProductListItemResponse';
 import { ProductSortBy } from 'src/andean/domain/enums/ProductSortBy';
+import { VariantMapper } from '../../services/VariantMapper';
+import { TextileProductAttributesAssembler } from '../../services/textileProducts/TextileProductAttributesAssembler';
 
 @Injectable()
 export class TextileProductRepositoryImpl extends TextileProductRepository {
@@ -21,6 +23,7 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 		private readonly textileProductModel: Model<TextileProductDocument>,
 		@InjectModel('Variant')
 		private readonly variantModel: Model<VariantDocument>,
+		private readonly textileProductAttributesAssembler: TextileProductAttributesAssembler,
 	) {
 		super();
 	}
@@ -430,6 +433,34 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 	}
 
 	/**
+	 * Construye la proyección base para el listado.
+	 * Deja campos directos y options para enriquecer luego con el assembler.
+	 */
+	private buildListBaseProjection(): PipelineStage {
+		return {
+			$project: {
+				_id: 0,
+				id: { $toString: '$_id' },
+				titulo: '$baseInfo.title',
+				categoryName: {
+					$ifNull: [{ $arrayElemAt: ['$category.name', 0] }, 'Sin categoría'],
+				},
+				productorName: {
+					$ifNull: [
+						{ $arrayElemAt: ['$seller.commercialName', 0] },
+						'Productor desconocido',
+					],
+				},
+				principalImgUrl: {
+					$ifNull: [{ $arrayElemAt: ['$baseInfo.mediaIds', 0] }, ''],
+				},
+				price: '$priceInventary.basePrice',
+				options: { $ifNull: ['$options', []] },
+			},
+		};
+	}
+
+	/**
 	 * Ejecuta una aggregation para contar y hacer lookup de documentos relacionados
 	 */
 	private async aggregateWithLookup(
@@ -661,24 +692,61 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 		const perPage = filters.perPage || 10;
 		const skip = (page - 1) * perPage;
 
-		// Aggregation pipeline usando métodos modulares
+		// Aggregation pipeline base para listado
 		const pipeline: PipelineStage[] = [
 			{ $match: query },
 			...this.buildSortStages(filters.sortBy),
 			...this.buildCategoryAndSellerLookups(),
-			...this.buildColorProcessingStages(),
-			this.buildFinalProjection(),
+			this.buildListBaseProjection(),
 			{ $skip: skip },
 			{ $limit: perPage },
 		];
 
-		const [products, countResult] = await Promise.all([
+		const [rawProducts, countResult] = await Promise.all([
 			this.textileProductModel.aggregate(pipeline).exec(),
 			this.textileProductModel.countDocuments(query).exec(),
 		]);
 
+		const productIds = rawProducts.map((product: any) => product.id);
+		const variantDocs =
+			productIds.length > 0
+				? await this.variantModel.find({ productId: { $in: productIds } }).exec()
+				: [];
+		const variants = variantDocs.map((doc) => VariantMapper.fromDocument(doc));
+
+		const attributesByProductId =
+			await this.textileProductAttributesAssembler.buildForProducts(
+				rawProducts.map((product: any) => ({
+					id: product.id,
+					options: product.options,
+				})),
+				variants,
+			);
+
+		const products: TextileProductListItem[] = rawProducts.map((product: any) => {
+			const attrs = attributesByProductId.get(product.id) || {
+				availableSizes: [],
+				availableColors: [],
+				availableMaterials: [],
+				variantInfo: [],
+			};
+
+			return {
+				id: product.id,
+				titulo: product.titulo,
+				categoryName: product.categoryName,
+				productorName: product.productorName,
+				principalImgUrl: product.principalImgUrl,
+				price: product.price,
+				availableSizes: attrs.availableSizes,
+				availableColors: attrs.availableColors,
+				availableMaterials: attrs.availableMaterials,
+				variantInfo: attrs.variantInfo,
+			};
+		});
+
 		return {
-			products: products as TextileProductListItem[],
+			products,
 			total: countResult,
 		};
 	}
