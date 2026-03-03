@@ -3,7 +3,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { TextileCategorySchema } from './infra/persistence/textileProducts/textileCategory.schema';
 import { TextileTypeSchema } from './infra/persistence/textileProducts/textileType.schema';
 import { TextileStyleSchema } from './infra/persistence/textileProducts/textileStyle.schema';
-import { TextileSubcategorySchema } from './infra/persistence/textileProducts/textileSubcategory.schema';
 import { TextileCraftTechniqueSchema } from './infra/persistence/textileProducts/textileCraftTechnique.schema';
 import { TextilePrincipalUseSchema } from './infra/persistence/textileProducts/textilePrincipalUse.schema';
 import { TextileProductSchema } from './infra/persistence/textileProducts/textileProduct.schema';
@@ -23,14 +22,11 @@ import { TextileTypeRepository } from './app/datastore/textileProducts/TextileTy
 import { TextileTypeRepositoryImpl } from './infra/datastore/textileProducts/textileType.repo.impl';
 import { TextileStyleRepository } from './app/datastore/textileProducts/TextileStyle.repo';
 import { TextileStyleRepositoryImpl } from './infra/datastore/textileProducts/textileStyle.repo.impl';
-import { TextileSubcategoryRepository } from './app/datastore/textileProducts/TextileSubcategory.repo';
-import { TextileSubcategoryRepositoryImpl } from './infra/datastore/textileProducts/textileSubcategory.repo.impl';
 import {
 	TextileProductController,
 	TextileCategoryController,
 	TextileTypeController,
 	TextileStyleController,
-	TextileSubcategoryController,
 	TextileCraftTechniqueController,
 	TextilePrincipalUseController,
 	TextileCertificationController,
@@ -54,11 +50,6 @@ import { UpdateTextileStyleUseCase } from './app/use_cases/textileProducts/Updat
 import { GetAllTextileStylesUseCase } from './app/use_cases/textileProducts/GetAllTextileStylesUseCase';
 import { GetByIdTextileStyleUseCase } from './app/use_cases/textileProducts/GetByIdTextileStyleUseCase';
 import { DeleteTextileStyleUseCase } from './app/use_cases/textileProducts/DeleteTextileStyleUseCase';
-import { CreateTextileSubcategoryUseCase } from './app/use_cases/textileProducts/CreateTextileSubcategoryUseCase';
-import { UpdateTextileSubcategoryUseCase } from './app/use_cases/textileProducts/UpdateTextileSubcategoryUseCase';
-import { GetAllTextileSubcategoriesUseCase } from './app/use_cases/textileProducts/GetAllTextileSubcategoriesUseCase';
-import { GetByIdTextileSubcategoryUseCase } from './app/use_cases/textileProducts/GetByIdTextileSubcategoryUseCase';
-import { DeleteTextileSubcategoryUseCase } from './app/use_cases/textileProducts/DeleteTextileSubcategoryUseCase';
 import { CreateTextileCraftTechniqueUseCase } from './app/use_cases/textileProducts/CreateTextileCraftTechniqueUseCase';
 import { CreateManyTextileCraftTechniquesUseCase } from './app/use_cases/textileProducts/CreateManyTextileCraftTechniquesUseCase';
 import { UpdateTextileCraftTechniqueUseCase } from './app/use_cases/textileProducts/UpdateTextileCraftTechniqueUseCase';
@@ -146,10 +137,6 @@ import { TextileProductAttributesAssembler } from './infra/services/textileProdu
 				schema: TextileStyleSchema,
 			},
 			{
-				name: 'TextileSubcategory',
-				schema: TextileSubcategorySchema,
-			},
-			{
 				name: 'TextileCraftTechnique',
 				schema: TextileCraftTechniqueSchema,
 			},
@@ -202,7 +189,6 @@ import { TextileProductAttributesAssembler } from './infra/services/textileProdu
 		TextileCategoryController,
 		TextileTypeController,
 		TextileStyleController,
-		TextileSubcategoryController,
 		TextileCraftTechniqueController,
 		TextilePrincipalUseController,
 		TextileCertificationController,
@@ -230,11 +216,6 @@ import { TextileProductAttributesAssembler } from './infra/services/textileProdu
 		GetAllTextileStylesUseCase,
 		GetByIdTextileStyleUseCase,
 		DeleteTextileStyleUseCase,
-		CreateTextileSubcategoryUseCase,
-		UpdateTextileSubcategoryUseCase,
-		GetAllTextileSubcategoriesUseCase,
-		GetByIdTextileSubcategoryUseCase,
-		DeleteTextileSubcategoryUseCase,
 		CreateTextileCraftTechniqueUseCase,
 		CreateManyTextileCraftTechniquesUseCase,
 		UpdateTextileCraftTechniqueUseCase,
@@ -294,10 +275,6 @@ import { TextileProductAttributesAssembler } from './infra/services/textileProdu
 			useClass: TextileStyleRepositoryImpl,
 		},
 		{
-			provide: TextileSubcategoryRepository,
-			useClass: TextileSubcategoryRepositoryImpl,
-		},
-		{
 			provide: TextileCraftTechniqueRepository,
 			useClass: TextileCraftTechniqueRepositoryImpl,
 		},
@@ -338,7 +315,6 @@ import { TextileProductAttributesAssembler } from './infra/services/textileProdu
 		TextileCategoryRepository,
 		TextileTypeRepository,
 		TextileStyleRepository,
-		TextileSubcategoryRepository,
 		TextileCraftTechniqueRepository,
 		TextilePrincipalUseRepository,
 		TextileProductRepository,
