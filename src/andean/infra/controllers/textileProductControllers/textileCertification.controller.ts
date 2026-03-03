@@ -102,20 +102,20 @@ export class TextileCertificationController {
 	// 	return this.updateTextileCertificationUseCase.handle(id, body);
 	// }
 
-	// @Get()
-	// @ApiOperation({
-	// 	summary: 'Listar todas las certificaciones textiles',
-	// 	description:
-	// 		'Retorna todas las certificaciones disponibles para productos textiles',
-	// })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'Lista de certificaciones',
-	// 	type: [TextileCertification],
-	// })
-	// async getAllTextileCertifications(): Promise<TextileCertification[]> {
-	// 	return this.getAllTextileCertificationsUseCase.handle();
-	// }
+	@Get()
+	@ApiOperation({
+		summary: 'Listar todas las certificaciones textiles',
+		description:
+			'Retorna todas las certificaciones disponibles para productos textiles',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista de certificaciones',
+		type: [TextileCertification],
+	})
+	async getAllTextileCertifications(): Promise<TextileCertification[]> {
+		return this.getAllTextileCertificationsUseCase.handle();
+	}
 
 	// @Get('/:id')
 	// @ApiOperation({

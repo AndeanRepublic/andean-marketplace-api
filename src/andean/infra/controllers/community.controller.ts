@@ -81,17 +81,17 @@ export class CommunityController {
 	// 	return this.toResponse(community);
 	// }
 
-	// @Get()
-	// @ApiOperation({ summary: 'List all communities' })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'List of communities.',
-	// 	type: [CommunityResponse],
-	// })
-	// async list(): Promise<CommunityResponse[]> {
-	// 	const communities = await this.listCommunityUseCase.execute();
-	// 	return communities.map((c) => this.toResponse(c));
-	// }
+	@Get()
+	@ApiOperation({ summary: 'List all communities' })
+	@ApiResponse({
+		status: 200,
+		description: 'List of communities.',
+		type: [CommunityResponse],
+	})
+	async list(): Promise<CommunityResponse[]> {
+		const communities = await this.listCommunityUseCase.execute();
+		return communities.map((c) => this.toResponse(c));
+	}
 
 	// @Put(':id')
 	// @ApiOperation({ summary: 'Update community' })

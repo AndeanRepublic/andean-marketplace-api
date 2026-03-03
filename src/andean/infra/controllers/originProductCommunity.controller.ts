@@ -57,8 +57,7 @@ export class OriginProductCommunityController {
 	async createMany(
 		@Body() dto: CreateManyOriginProductCommunitiesDto,
 	): Promise<OriginProductCommunityResponse[]> {
-		const communities =
-			await this.createManyCommunitiesUseCase.execute(dto);
+		const communities = await this.createManyCommunitiesUseCase.execute(dto);
 		return communities.map((c) => this.toResponse(c));
 	}
 
@@ -98,24 +97,24 @@ export class OriginProductCommunityController {
 	// 	return this.toResponse(community);
 	// }
 
-	// @Get()
-	// @ApiOperation({ summary: 'List all origin product communities' })
-	// @ApiQuery({
-	// 	name: 'regionId',
-	// 	required: false,
-	// 	description: 'Filter by region ID',
-	// })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'List of communities.',
-	// 	type: [OriginProductCommunityResponse],
-	// })
-	// async list(
-	// 	@Query('regionId') regionId?: string,
-	// ): Promise<OriginProductCommunityResponse[]> {
-	// 	const communities = await this.listCommunityUseCase.execute(regionId);
-	// 	return communities.map((c) => this.toResponse(c));
-	// }
+	@Get()
+	@ApiOperation({ summary: 'List all origin product communities' })
+	@ApiQuery({
+		name: 'regionId',
+		required: false,
+		description: 'Filter by region ID',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'List of communities.',
+		type: [OriginProductCommunityResponse],
+	})
+	async list(
+		@Query('regionId') regionId?: string,
+	): Promise<OriginProductCommunityResponse[]> {
+		const communities = await this.listCommunityUseCase.execute(regionId);
+		return communities.map((c) => this.toResponse(c));
+	}
 
 	// @Put(':id')
 	// @ApiOperation({ summary: 'Update origin product community' })

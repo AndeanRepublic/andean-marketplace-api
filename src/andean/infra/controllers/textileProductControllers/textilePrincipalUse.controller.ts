@@ -102,20 +102,20 @@ export class TextilePrincipalUseController {
 	// 	return this.updateTextilePrincipalUseUseCase.handle(id, body);
 	// }
 
-	// @Get()
-	// @ApiOperation({
-	// 	summary: 'Listar todos los usos principales',
-	// 	description:
-	// 		'Retorna todos los usos principales disponibles para productos textiles',
-	// })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'Lista de usos principales',
-	// 	type: [TextilePrincipalUse],
-	// })
-	// async getAllTextilePrincipalUses(): Promise<TextilePrincipalUse[]> {
-	// 	return this.getAllTextilePrincipalUsesUseCase.handle();
-	// }
+	@Get()
+	@ApiOperation({
+		summary: 'Listar todos los usos principales',
+		description:
+			'Retorna todos los usos principales disponibles para productos textiles',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista de usos principales',
+		type: [TextilePrincipalUse],
+	})
+	async getAllTextilePrincipalUses(): Promise<TextilePrincipalUse[]> {
+		return this.getAllTextilePrincipalUsesUseCase.handle();
+	}
 
 	// @Get('/:id')
 	// @ApiOperation({

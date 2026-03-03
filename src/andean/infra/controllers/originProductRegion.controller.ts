@@ -86,17 +86,17 @@ export class OriginProductRegionController {
 	// 	return this.toResponse(region);
 	// }
 
-	// @Get()
-	// @ApiOperation({ summary: 'List all origin product regions' })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'List of regions.',
-	// 	type: [OriginProductRegionResponse],
-	// })
-	// async list(): Promise<OriginProductRegionResponse[]> {
-	// 	const regions = await this.listRegionUseCase.execute();
-	// 	return regions.map((r) => this.toResponse(r));
-	// }
+	@Get()
+	@ApiOperation({ summary: 'List all origin product regions' })
+	@ApiResponse({
+		status: 200,
+		description: 'List of regions.',
+		type: [OriginProductRegionResponse],
+	})
+	async list(): Promise<OriginProductRegionResponse[]> {
+		const regions = await this.listRegionUseCase.execute();
+		return regions.map((r) => this.toResponse(r));
+	}
 
 	// @Put(':id')
 	// @ApiOperation({ summary: 'Update origin product region' })

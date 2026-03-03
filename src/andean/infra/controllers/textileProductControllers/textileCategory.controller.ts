@@ -102,20 +102,20 @@ export class TextileCategoryController {
 	// 	return this.updateTextileCategoryUseCase.handle(id, body);
 	// }
 
-	// @Get()
-	// @ApiOperation({
-	// 	summary: 'Listar todas las categorías textiles',
-	// 	description:
-	// 		'Retorna todas las categorías de productos textiles disponibles',
-	// })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'Lista de categorías',
-	// 	type: [TextileCategory],
-	// })
-	// async getAllTextileCategories(): Promise<TextileCategory[]> {
-	// 	return this.getAllTextileCategoriesUseCase.handle();
-	// }
+	@Get()
+	@ApiOperation({
+		summary: 'Listar todas las categorías textiles',
+		description:
+			'Retorna todas las categorías de productos textiles disponibles',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista de categorías',
+		type: [TextileCategory],
+	})
+	async getAllTextileCategories(): Promise<TextileCategory[]> {
+		return this.getAllTextileCategoriesUseCase.handle();
+	}
 
 	// @Get('/:id')
 	// @ApiOperation({

@@ -102,19 +102,19 @@ export class TextileTypeController {
 	// 	return this.updateTextileTypeUseCase.handle(id, body);
 	// }
 
-	// @Get()
-	// @ApiOperation({
-	// 	summary: 'Listar todos los tipos de textil',
-	// 	description: 'Retorna todos los tipos de textil disponibles',
-	// })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'Lista de tipos',
-	// 	type: [TextileType],
-	// })
-	// async getAllTextileTypes(): Promise<TextileType[]> {
-	// 	return this.getAllTextileTypesUseCase.handle();
-	// }
+	@Get()
+	@ApiOperation({
+		summary: 'Listar todos los tipos de textil',
+		description: 'Retorna todos los tipos de textil disponibles',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista de tipos',
+		type: [TextileType],
+	})
+	async getAllTextileTypes(): Promise<TextileType[]> {
+		return this.getAllTextileTypesUseCase.handle();
+	}
 
 	// @Get('/:id')
 	// @ApiOperation({

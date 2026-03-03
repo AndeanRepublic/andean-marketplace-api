@@ -102,20 +102,20 @@ export class TextileCraftTechniqueController {
 	// 	return this.updateTextileCraftTechniqueUseCase.handle(id, body);
 	// }
 
-	// @Get()
-	// @ApiOperation({
-	// 	summary: 'Listar todas las técnicas de elaboración',
-	// 	description:
-	// 		'Retorna todas las técnicas artesanales de elaboración textil disponibles',
-	// })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'Lista de técnicas',
-	// 	type: [TextileCraftTechnique],
-	// })
-	// async getAllTextileCraftTechniques(): Promise<TextileCraftTechnique[]> {
-	// 	return this.getAllTextileCraftTechniquesUseCase.handle();
-	// }
+	@Get()
+	@ApiOperation({
+		summary: 'Listar todas las técnicas de elaboración',
+		description:
+			'Retorna todas las técnicas artesanales de elaboración textil disponibles',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista de técnicas',
+		type: [TextileCraftTechnique],
+	})
+	async getAllTextileCraftTechniques(): Promise<TextileCraftTechnique[]> {
+		return this.getAllTextileCraftTechniquesUseCase.handle();
+	}
 
 	// @Get('/:id')
 	// @ApiOperation({
