@@ -148,10 +148,16 @@ export class CommunityController {
 		return this.createSealUseCase.handle(body);
 	}
 
-	// @Get(path_seals)
-	// async getAllSeals(): Promise<Seal[]> {
-	// 	return this.getAllSealsUseCase.handle();
-	// }
+	@Get(path_seals)
+	@ApiOperation({ summary: 'List all seals' })
+	@ApiResponse({
+		status: 200,
+		description: 'List of seals.',
+		type: [Seal],
+	})
+	async getAllSeals(): Promise<Seal[]> {
+		return this.getAllSealsUseCase.handle();
+	}
 
 	// @Get(path_seals_id)
 	// async getByIdSeal(@Param('id') id: string): Promise<Seal> {
