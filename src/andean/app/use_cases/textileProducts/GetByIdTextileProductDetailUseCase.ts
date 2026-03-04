@@ -1,6 +1,9 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { TextileProductRepository } from '../../datastore/textileProducts/TextileProduct.repo';
-import { TextileProductDetailResponse } from '../../models/TextileProducts/TextileProductDetailResponse';
+import {
+	TextileProductDetailResponse,
+	TraceabilityInfoResponse,
+} from '../../models/TextileProducts/TextileProductDetailResponse';
 import { ProductType } from '../../../domain/enums/ProductType';
 import { OwnerType } from '../../../domain/enums/OwnerType';
 import { TextileOptionName } from '../../../domain/enums/TextileOptionName';
@@ -17,6 +20,7 @@ import { AccountRepository } from '../../datastore/Account.repo';
 import { Review } from 'src/andean/domain/entities/Review';
 import { MediaItemRepository } from '../../datastore/MediaItem.repo';
 import { TextileProductAttributesAssembler } from '../../../infra/services/textileProducts/TextileProductAttributesAssembler';
+import { TraceabilityProcessName } from '../../../domain/enums/TraceabilityProcessName';
 
 @Injectable()
 export class GetByIdTextileProductDetailUseCase {
@@ -111,11 +115,17 @@ export class GetByIdTextileProductDetailUseCase {
 		const groupedEpochs = this.groupTraceabilityEpochs(
 			product.productTraceability?.epochs || [],
 		);
-		const traceabilityInfo = {
+		const traceabilityInfo: TraceabilityInfoResponse = {
+			origen: groupedEpochs.origen as TraceabilityInfoResponse['origen'],
+			processing:
+				groupedEpochs.processing as TraceabilityInfoResponse['processing'],
+			development:
+				groupedEpochs.development as TraceabilityInfoResponse['development'],
+			merchandising:
+				groupedEpochs.merchandising as TraceabilityInfoResponse['merchandising'],
 			...(product.productTraceability?.blockchainLink && {
 				blockchainLink: product.productTraceability.blockchainLink,
 			}),
-			...groupedEpochs,
 		};
 
 		// -- Obtener productos similares
@@ -216,67 +226,44 @@ export class GetByIdTextileProductDetailUseCase {
 		};
 	}
 
-	private groupTraceabilityEpochs(epochs: any[]) {
-		const grupos: any = {
+	private groupTraceabilityEpochs(
+		epochs: {
+			title: string;
+			country: string;
+			city: string;
+			description: string;
+			processName: string;
+			supplier: string;
+		}[],
+	) {
+		const grupos: Record<string, unknown[]> = {
 			origen: [],
 			processing: [],
 			development: [],
 			merchandising: [],
 		};
 
-		epochs.forEach((epoch) => {
-			const processNameLower = epoch.processName?.toLowerCase() || '';
+		const stepData = (
+			epoch: (typeof epochs)[0],
+		): { title: string; supplier: string; country: string; city: string; description: string } => ({
+			title: epoch.title,
+			supplier: epoch.supplier,
+			country: epoch.country,
+			city: epoch.city,
+			description: epoch.description,
+		});
 
-			// Determinar el grupo basado en processName
-			if (
-				processNameLower.includes('origen') ||
-				processNameLower.includes('origin') ||
-				processNameLower.includes('cosecha') ||
-				processNameLower.includes('cultivo')
-			) {
-				grupos.origen.push({
-					title: epoch.title,
-					supplier: epoch.supplier,
-					country: epoch.country,
-					city: epoch.city,
-					description: epoch.description,
-				});
-			} else if (
-				processNameLower.includes('processing') ||
-				processNameLower.includes('procesamiento') ||
-				processNameLower.includes('transformación')
-			) {
-				grupos.processing.push({
-					title: epoch.title,
-					supplier: epoch.supplier,
-					country: epoch.country,
-					city: epoch.city,
-					description: epoch.description,
-				});
-			} else if (
-				processNameLower.includes('development') ||
-				processNameLower.includes('desarrollo') ||
-				processNameLower.includes('elaboración')
-			) {
-				grupos.development.push({
-					title: epoch.title,
-					supplier: epoch.supplier,
-					country: epoch.country,
-					city: epoch.city,
-					description: epoch.description,
-				});
-			} else if (
-				processNameLower.includes('merchandising') ||
-				processNameLower.includes('comercialización') ||
-				processNameLower.includes('venta')
-			) {
-				grupos.merchandising.push({
-					title: epoch.title,
-					supplier: epoch.supplier,
-					country: epoch.country,
-					city: epoch.city,
-					description: epoch.description,
-				});
+		const keyMap: Record<TraceabilityProcessName, keyof typeof grupos> = {
+			[TraceabilityProcessName.ORIGIN]: 'origen',
+			[TraceabilityProcessName.PROCESSING]: 'processing',
+			[TraceabilityProcessName.DEVELOPMENT]: 'development',
+			[TraceabilityProcessName.MERCHANDISING]: 'merchandising',
+		};
+
+		epochs.forEach((epoch) => {
+			const key = keyMap[epoch.processName as TraceabilityProcessName];
+			if (key) {
+				grupos[key].push(stepData(epoch));
 			}
 		});
 

@@ -38,6 +38,25 @@ export class TextileCraftTechniqueRepositoryImpl extends TextileCraftTechniqueRe
 		return TextileCraftTechniqueMapper.fromDocument(savedTechnique);
 	}
 
+	async createManyTextileCraftTechniques(
+		techniques: TextileCraftTechnique[],
+	): Promise<TextileCraftTechnique[]> {
+		const plains = techniques.map((technique) => {
+			const plain = TextileCraftTechniqueMapper.toPersistence(technique);
+			return {
+				_id: technique.id,
+				name: plain.name,
+			};
+		});
+		const created =
+			await this.textileCraftTechniqueModel.insertMany(plains);
+		return created.map((doc) =>
+			TextileCraftTechniqueMapper.fromDocument(
+				doc as unknown as TextileCraftTechniqueDocument,
+			),
+		);
+	}
+
 	async updateTextileCraftTechnique(
 		id: string,
 		technique: TextileCraftTechnique,

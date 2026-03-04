@@ -5,6 +5,7 @@ import { Gender } from 'src/andean/domain/enums/Gender';
 import { Season } from 'src/andean/domain/enums/Season';
 import { ToolUsed } from 'src/andean/domain/enums/ToolUsed';
 import { TextileOptionName } from 'src/andean/domain/enums/TextileOptionName';
+import { TraceabilityProcessName } from 'src/andean/domain/enums/TraceabilityProcessName';
 
 // Nested schemas
 
@@ -35,7 +36,6 @@ const PriceInventarySchema = new Schema(
 
 const AtributeSchema = new Schema({
 	textileTypeId: { type: String, required: false },
-	subcategoryId: { type: String, required: false },
 	gender: {
 		type: String,
 		enum: Object.values(Gender),
@@ -102,7 +102,11 @@ const TextileTraceabilityEpochSchema = new Schema(
 		country: { type: String, required: true },
 		city: { type: String, required: true },
 		description: { type: String, required: true },
-		processName: { type: String, required: true },
+		processName: {
+			type: String,
+			enum: Object.values(TraceabilityProcessName),
+			required: true,
+		},
 		supplier: { type: String, required: true },
 	},
 	{ _id: false },
@@ -152,7 +156,6 @@ export interface TextileProductDocument extends Document {
 	};
 	atribute?: {
 		textileTypeId?: string;
-		subcategoryId?: string;
 		gender?: Gender;
 		textileStyleId?: string;
 		season?: Season;

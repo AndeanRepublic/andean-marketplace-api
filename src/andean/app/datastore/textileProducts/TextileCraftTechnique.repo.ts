@@ -8,6 +8,9 @@ export abstract class TextileCraftTechniqueRepository {
 	abstract saveTextileCraftTechnique(
 		technique: TextileCraftTechnique,
 	): Promise<TextileCraftTechnique>;
+	abstract createManyTextileCraftTechniques(
+		techniques: TextileCraftTechnique[],
+	): Promise<TextileCraftTechnique[]>;
 	abstract updateTextileCraftTechnique(
 		id: string,
 		technique: TextileCraftTechnique,

@@ -4,6 +4,9 @@ export abstract class OriginProductCommunityRepository {
 	abstract create(
 		community: OriginProductCommunity,
 	): Promise<OriginProductCommunity>;
+	abstract createMany(
+		communities: OriginProductCommunity[],
+	): Promise<OriginProductCommunity[]>;
 	abstract getById(id: string): Promise<OriginProductCommunity | null>;
 	abstract getAll(): Promise<OriginProductCommunity[]>;
 	abstract getByName(name: string): Promise<OriginProductCommunity | null>;

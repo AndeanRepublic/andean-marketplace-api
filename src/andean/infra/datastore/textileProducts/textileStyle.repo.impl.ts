@@ -34,6 +34,24 @@ export class TextileStyleRepositoryImpl extends TextileStyleRepository {
 		return TextileStyleMapper.fromDocument(savedStyle);
 	}
 
+	async createManyTextileStyles(
+		styles: TextileStyle[],
+	): Promise<TextileStyle[]> {
+		const plains = styles.map((style) => {
+			const plain = TextileStyleMapper.toPersistence(style);
+			return {
+				_id: style.id,
+				name: plain.name,
+			};
+		});
+		const created = await this.textileStyleModel.insertMany(plains);
+		return created.map((doc) =>
+			TextileStyleMapper.fromDocument(
+				doc as unknown as TextileStyleDocument,
+			),
+		);
+	}
+
 	async updateTextileStyle(
 		id: string,
 		style: TextileStyle,

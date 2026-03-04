@@ -34,6 +34,24 @@ export class SealRepositoryImpl extends SealRepository {
 		return SealMapper.fromDocument(savedSeal);
 	}
 
+	async createMany(seals: Seal[]): Promise<Seal[]> {
+		const plains = seals.map((seal) => {
+			const plain = SealMapper.toPersistence(seal);
+			return {
+				_id: seal.id,
+				name: plain.name,
+				description: plain.description,
+				logoMediaId: plain.logoMediaId,
+			};
+		});
+		const created = await this.sealModel.insertMany(plains);
+		return created.map((doc) =>
+			SealMapper.fromDocument(
+				doc as unknown as SealDocument,
+			),
+		);
+	}
+
 	async update(id: string, seal: Seal): Promise<Seal> {
 		const plain = SealMapper.toPersistence(seal);
 		const objectId = MongoIdUtils.stringToObjectId(id);

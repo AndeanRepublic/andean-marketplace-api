@@ -4,6 +4,9 @@ export abstract class TextileCategoryRepository {
 	abstract getAllCategories(): Promise<TextileCategory[]>;
 	abstract getCategoryById(id: string): Promise<TextileCategory | null>;
 	abstract saveCategory(category: TextileCategory): Promise<TextileCategory>;
+	abstract createManyCategories(
+		categories: TextileCategory[],
+	): Promise<TextileCategory[]>;
 	abstract updateCategory(
 		id: string,
 		category: TextileCategory,

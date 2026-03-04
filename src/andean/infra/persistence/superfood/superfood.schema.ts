@@ -4,6 +4,7 @@ import { SuperfoodColor } from '../../../domain/enums/SuperfoodColor';
 import { SuperfoodConsumptionWay } from '../../../domain/enums/SuperfoodConsumptionWay';
 import { SuperfoodProductionMethod } from '../../../domain/enums/SuperfoodProductionMethod';
 import { SuperfoodOwnerType } from '../../../domain/enums/SuperfoodOwnerType';
+import { TraceabilityProcessName } from '../../../domain/enums/TraceabilityProcessName';
 
 // Nested schemas
 const SuperfoodOptionsItemSchema = new Schema({
@@ -87,7 +88,11 @@ const SuperfoodEpochSchema = new Schema(
 		country: { type: String, required: true },
 		city: { type: String, required: true },
 		description: { type: String, required: true },
-		processName: { type: String, required: true },
+		processName: {
+			type: String,
+			enum: Object.values(TraceabilityProcessName),
+			required: true,
+		},
 		supplier: { type: String, required: true },
 	},
 	{ _id: false },

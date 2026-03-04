@@ -34,6 +34,25 @@ export class TextileCategoryRepositoryImpl extends TextileCategoryRepository {
 		return TextileCategoryMapper.fromDocument(savedCategory);
 	}
 
+	async createManyCategories(
+		categories: TextileCategory[],
+	): Promise<TextileCategory[]> {
+		const plains = categories.map((category) => {
+			const plain = TextileCategoryMapper.toPersistence(category);
+			return {
+				_id: category.id,
+				name: plain.name,
+				status: plain.status,
+			};
+		});
+		const created = await this.textileCategoryModel.insertMany(plains);
+		return created.map((doc) =>
+			TextileCategoryMapper.fromDocument(
+				doc as unknown as TextileCategoryDocument,
+			),
+		);
+	}
+
 	async updateCategory(
 		id: string,
 		category: TextileCategory,
