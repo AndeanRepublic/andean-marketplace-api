@@ -11,8 +11,10 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateTextileCraftTechniqueUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileCraftTechniqueUseCase';
+import { CreateManyTextileCraftTechniquesUseCase } from 'src/andean/app/use_cases/textileProducts/CreateManyTextileCraftTechniquesUseCase';
 import { TextileCraftTechnique } from 'src/andean/domain/entities/textileProducts/TextileCraftTechnique';
 import { CreateTextileCraftTechniqueDto } from '../dto/textileProducts/CreateTextileCraftTechniqueDto';
+import { CreateManyTextileCraftTechniquesDto } from '../dto/textileProducts/CreateManyTextileCraftTechniquesDto';
 import { UpdateTextileCraftTechniqueUseCase } from 'src/andean/app/use_cases/textileProducts/UpdateTextileCraftTechniqueUseCase';
 import { GetAllTextileCraftTechniquesUseCase } from 'src/andean/app/use_cases/textileProducts/GetAllTextileCraftTechniquesUseCase';
 import { GetByIdTextileCraftTechniqueUseCase } from 'src/andean/app/use_cases/textileProducts/GetByIdTextileCraftTechniqueUseCase';
@@ -23,11 +25,34 @@ import { DeleteTextileCraftTechniqueUseCase } from 'src/andean/app/use_cases/tex
 export class TextileCraftTechniqueController {
 	constructor(
 		private readonly createTextileCraftTechniqueUseCase: CreateTextileCraftTechniqueUseCase,
+		private readonly createManyTextileCraftTechniquesUseCase: CreateManyTextileCraftTechniquesUseCase,
 		private readonly updateTextileCraftTechniqueUseCase: UpdateTextileCraftTechniqueUseCase,
 		private readonly getAllTextileCraftTechniquesUseCase: GetAllTextileCraftTechniquesUseCase,
 		private readonly getByIdTextileCraftTechniqueUseCase: GetByIdTextileCraftTechniqueUseCase,
 		private readonly deleteTextileCraftTechniqueUseCase: DeleteTextileCraftTechniqueUseCase,
 	) {}
+
+	@Post('/bulk')
+	@HttpCode(HttpStatus.CREATED)
+	@ApiOperation({
+		summary: 'Crear múltiples técnicas de elaboración',
+		description:
+			'Crea múltiples técnicas artesanales en una sola operación. Útil para carga inicial de datos.',
+	})
+	@ApiResponse({
+		status: 201,
+		description: 'Técnicas creadas exitosamente',
+		type: [TextileCraftTechnique],
+	})
+	@ApiResponse({
+		status: 400,
+		description: 'Datos de entrada inválidos',
+	})
+	async createManyTextileCraftTechniques(
+		@Body() body: CreateManyTextileCraftTechniquesDto,
+	): Promise<TextileCraftTechnique[]> {
+		return this.createManyTextileCraftTechniquesUseCase.handle(body);
+	}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
@@ -77,20 +102,20 @@ export class TextileCraftTechniqueController {
 	// 	return this.updateTextileCraftTechniqueUseCase.handle(id, body);
 	// }
 
-	// @Get()
-	// @ApiOperation({
-	// 	summary: 'Listar todas las técnicas de elaboración',
-	// 	description:
-	// 		'Retorna todas las técnicas artesanales de elaboración textil disponibles',
-	// })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'Lista de técnicas',
-	// 	type: [TextileCraftTechnique],
-	// })
-	// async getAllTextileCraftTechniques(): Promise<TextileCraftTechnique[]> {
-	// 	return this.getAllTextileCraftTechniquesUseCase.handle();
-	// }
+	@Get()
+	@ApiOperation({
+		summary: 'Listar todas las técnicas de elaboración',
+		description:
+			'Retorna todas las técnicas artesanales de elaboración textil disponibles',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista de técnicas',
+		type: [TextileCraftTechnique],
+	})
+	async getAllTextileCraftTechniques(): Promise<TextileCraftTechnique[]> {
+		return this.getAllTextileCraftTechniquesUseCase.handle();
+	}
 
 	// @Get('/:id')
 	// @ApiOperation({

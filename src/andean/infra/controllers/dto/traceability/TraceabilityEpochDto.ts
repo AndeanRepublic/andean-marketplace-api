@@ -1,5 +1,12 @@
-import { IsNotEmpty, IsString, MinLength, MaxLength } from 'class-validator';
+import {
+	IsNotEmpty,
+	IsString,
+	MinLength,
+	MaxLength,
+	IsEnum,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { TraceabilityProcessName } from '../../../../domain/enums/TraceabilityProcessName';
 
 export class TraceabilityEpochDto {
 	@ApiProperty({
@@ -52,15 +59,12 @@ export class TraceabilityEpochDto {
 
 	@ApiProperty({
 		description: 'Nombre del proceso realizado',
-		example: 'Cosecha manual',
-		minLength: 2,
-		maxLength: 100,
+		enum: TraceabilityProcessName,
+		example: TraceabilityProcessName.ORIGIN,
 	})
-	@IsString()
+	@IsEnum(TraceabilityProcessName)
 	@IsNotEmpty()
-	@MinLength(2)
-	@MaxLength(100)
-	processName: string;
+	processName: TraceabilityProcessName;
 
 	@ApiProperty({
 		description: 'Nombre del proveedor o responsable',

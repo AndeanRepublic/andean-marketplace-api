@@ -17,6 +17,7 @@ import { GetCommunityByIdUseCase } from '../../app/use_cases/community/GetCommun
 import { ListCommunityUseCase } from '../../app/use_cases/community/ListCommunityUseCase';
 import { DeleteCommunityUseCase } from '../../app/use_cases/community/DeleteCommunityUseCase';
 import { CreateSealUseCase } from '../../app/use_cases/community/CreateSealUseCase';
+import { CreateManySealsUseCase } from '../../app/use_cases/community/CreateManySealsUseCase';
 import { GetAllSealsUseCase } from '../../app/use_cases/community/GetAllSealsUseCase';
 import { GetByIdSealUseCase } from '../../app/use_cases/community/GetByIdSealUseCase';
 import { UpdateSealUseCase } from '../../app/use_cases/community/UpdateSealUseCase';
@@ -24,6 +25,7 @@ import { DeleteSealUseCase } from '../../app/use_cases/community/DeleteSealUseCa
 import { CreateCommunityDto } from './dto/community/CreateCommunityDto';
 import { UpdateCommunityDto } from './dto/community/UpdateCommunityDto';
 import { CreateSealDto } from './dto/community/CreateSealDto';
+import { CreateManySealsDto } from './dto/community/CreateManySealsDto';
 import { CommunityResponse } from '../../app/modules/CommunityResponse';
 import { Community } from '../../domain/entities/community/Community';
 import { Seal } from '../../domain/entities/community/Seal';
@@ -41,6 +43,7 @@ export class CommunityController {
 		private readonly listCommunityUseCase: ListCommunityUseCase,
 		private readonly deleteCommunityUseCase: DeleteCommunityUseCase,
 		private readonly createSealUseCase: CreateSealUseCase,
+		private readonly createManySealsUseCase: CreateManySealsUseCase,
 		private readonly getAllSealsUseCase: GetAllSealsUseCase,
 		private readonly getByIdSealUseCase: GetByIdSealUseCase,
 		private readonly updateSealUseCase: UpdateSealUseCase,
@@ -78,17 +81,17 @@ export class CommunityController {
 	// 	return this.toResponse(community);
 	// }
 
-	// @Get()
-	// @ApiOperation({ summary: 'List all communities' })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'List of communities.',
-	// 	type: [CommunityResponse],
-	// })
-	// async list(): Promise<CommunityResponse[]> {
-	// 	const communities = await this.listCommunityUseCase.execute();
-	// 	return communities.map((c) => this.toResponse(c));
-	// }
+	@Get()
+	@ApiOperation({ summary: 'List all communities' })
+	@ApiResponse({
+		status: 200,
+		description: 'List of communities.',
+		type: [CommunityResponse],
+	})
+	async list(): Promise<CommunityResponse[]> {
+		const communities = await this.listCommunityUseCase.execute();
+		return communities.map((c) => this.toResponse(c));
+	}
 
 	// @Put(':id')
 	// @ApiOperation({ summary: 'Update community' })
@@ -121,15 +124,40 @@ export class CommunityController {
 	// 	await this.deleteCommunityUseCase.execute(id);
 	// }
 
+	@Post(`${path_seals}/bulk`)
+	@HttpCode(HttpStatus.CREATED)
+	@ApiOperation({ summary: 'Create multiple seals' })
+	@ApiResponse({
+		status: 201,
+		description: 'Seals have been successfully created.',
+		type: [Seal],
+	})
+	@ApiResponse({
+		status: 400,
+		description: 'Bad Request - Invalid input data.',
+	})
+	@ApiResponse({ status: 404, description: 'MediaItem not found.' })
+	async createManySeals(@Body() body: CreateManySealsDto): Promise<Seal[]> {
+		return this.createManySealsUseCase.handle(body);
+	}
+
 	@Post(path_seals)
+	@HttpCode(HttpStatus.CREATED)
+	@ApiOperation({ summary: 'Create a new seal' })
 	async createSeal(@Body() body: CreateSealDto): Promise<Seal> {
 		return this.createSealUseCase.handle(body);
 	}
 
-	// @Get(path_seals)
-	// async getAllSeals(): Promise<Seal[]> {
-	// 	return this.getAllSealsUseCase.handle();
-	// }
+	@Get(path_seals)
+	@ApiOperation({ summary: 'List all seals' })
+	@ApiResponse({
+		status: 200,
+		description: 'List of seals.',
+		type: [Seal],
+	})
+	async getAllSeals(): Promise<Seal[]> {
+		return this.getAllSealsUseCase.handle();
+	}
 
 	// @Get(path_seals_id)
 	// async getByIdSeal(@Param('id') id: string): Promise<Seal> {
