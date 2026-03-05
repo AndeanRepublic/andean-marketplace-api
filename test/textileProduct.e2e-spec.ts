@@ -25,11 +25,6 @@ import { UpdateTextileStyleUseCase } from '../src/andean/app/use_cases/textilePr
 import { GetAllTextileStylesUseCase } from '../src/andean/app/use_cases/textileProducts/GetAllTextileStylesUseCase';
 import { GetByIdTextileStyleUseCase } from '../src/andean/app/use_cases/textileProducts/GetByIdTextileStyleUseCase';
 import { DeleteTextileStyleUseCase } from '../src/andean/app/use_cases/textileProducts/DeleteTextileStyleUseCase';
-import { CreateTextileSubcategoryUseCase } from '../src/andean/app/use_cases/textileProducts/CreateTextileSubcategoryUseCase';
-import { UpdateTextileSubcategoryUseCase } from '../src/andean/app/use_cases/textileProducts/UpdateTextileSubcategoryUseCase';
-import { GetAllTextileSubcategoriesUseCase } from '../src/andean/app/use_cases/textileProducts/GetAllTextileSubcategoriesUseCase';
-import { GetByIdTextileSubcategoryUseCase } from '../src/andean/app/use_cases/textileProducts/GetByIdTextileSubcategoryUseCase';
-import { DeleteTextileSubcategoryUseCase } from '../src/andean/app/use_cases/textileProducts/DeleteTextileSubcategoryUseCase';
 import { CreateTextileCraftTechniqueUseCase } from '../src/andean/app/use_cases/textileProducts/CreateTextileCraftTechniqueUseCase';
 import { UpdateTextileCraftTechniqueUseCase } from '../src/andean/app/use_cases/textileProducts/UpdateTextileCraftTechniqueUseCase';
 import { GetAllTextileCraftTechniquesUseCase } from '../src/andean/app/use_cases/textileProducts/GetAllTextileCraftTechniquesUseCase';
@@ -170,27 +165,6 @@ describe('TextileProductController (e2e)', () => {
 				{ provide: GetAllTextileStylesUseCase, useValue: createMockUseCase() },
 				{ provide: GetByIdTextileStyleUseCase, useValue: createMockUseCase() },
 				{ provide: DeleteTextileStyleUseCase, useValue: createMockUseCase() },
-				// ── Subcategory use cases ───────────────────────────────────────
-				{
-					provide: CreateTextileSubcategoryUseCase,
-					useValue: createMockUseCase(),
-				},
-				{
-					provide: UpdateTextileSubcategoryUseCase,
-					useValue: createMockUseCase(),
-				},
-				{
-					provide: GetAllTextileSubcategoriesUseCase,
-					useValue: createMockUseCase(),
-				},
-				{
-					provide: GetByIdTextileSubcategoryUseCase,
-					useValue: createMockUseCase(),
-				},
-				{
-					provide: DeleteTextileSubcategoryUseCase,
-					useValue: createMockUseCase(),
-				},
 				// ── CraftTechnique use cases ────────────────────────────────────
 				{
 					provide: CreateTextileCraftTechniqueUseCase,

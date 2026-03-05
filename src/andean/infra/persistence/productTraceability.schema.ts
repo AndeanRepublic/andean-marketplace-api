@@ -1,4 +1,5 @@
 import { Document, Schema } from 'mongoose';
+import { TraceabilityProcessName } from '../../domain/enums/TraceabilityProcessName';
 
 const TraceabilityEpochSchema = new Schema(
 	{
@@ -6,7 +7,11 @@ const TraceabilityEpochSchema = new Schema(
 		country: { type: String, required: true },
 		city: { type: String, required: true },
 		description: { type: String, required: true },
-		processName: { type: String, required: true },
+		processName: {
+			type: String,
+			enum: Object.values(TraceabilityProcessName),
+			required: true,
+		},
 		supplier: { type: String, required: true },
 	},
 	{ _id: false },
@@ -26,7 +31,7 @@ export interface ProductTraceabilityDocument extends Document {
 		country: string;
 		city: string;
 		description: string;
-		processName: string;
+		processName: TraceabilityProcessName;
 		supplier: string;
 	}[];
 }

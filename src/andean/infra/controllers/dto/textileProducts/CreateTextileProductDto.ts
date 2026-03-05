@@ -138,14 +138,6 @@ export class AtributeDto {
 	textileTypeId?: string;
 
 	@ApiPropertyOptional({
-		description: 'ID de la subcategoría del producto',
-		example: 'subcategory-001',
-	})
-	@IsString()
-	@IsOptional()
-	subcategoryId?: string;
-
-	@ApiPropertyOptional({
 		description: 'Género objetivo del producto',
 		enum: Gender,
 		example: Gender.UNISEX,

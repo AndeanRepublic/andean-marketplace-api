@@ -103,20 +103,20 @@ export class ColorOptionAlternativeController {
 	// 	return this.updateColorOptionAlternativeUseCase.handle(id, body);
 	// }
 
-	// @Get()
-	// @ApiOperation({
-	// 	summary: 'Listar todas las opciones de color',
-	// 	description:
-	// 		'Retorna todas las opciones de color disponibles para productos textiles',
-	// })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'Lista de opciones de color',
-	// 	type: [ColorOptionAlternative],
-	// })
-	// async getAllColorOptionAlternatives(): Promise<ColorOptionAlternative[]> {
-	// 	return this.getAllColorOptionAlternativesUseCase.handle();
-	// }
+	@Get()
+	@ApiOperation({
+		summary: 'Listar todas las opciones de color',
+		description:
+			'Retorna todas las opciones de color disponibles para productos textiles',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista de opciones de color',
+		type: [ColorOptionAlternative],
+	})
+	async getAllColorOptionAlternatives(): Promise<ColorOptionAlternative[]> {
+		return this.getAllColorOptionAlternativesUseCase.handle();
+	}
 
 	// @Get('/:id')
 	// @ApiOperation({

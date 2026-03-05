@@ -31,7 +31,7 @@ export interface TextileProductAttributes {
 
 @Injectable()
 export class TextileProductAttributesAssembler {
-	private readonly storageBaseUrl = process.env.AWS_S3_BASE_URL || '';
+	private readonly storageBaseUrl = process.env.STORAGE_BASE_URL || '';
 
 	constructor(
 		@Inject(ColorOptionAlternativeRepository)

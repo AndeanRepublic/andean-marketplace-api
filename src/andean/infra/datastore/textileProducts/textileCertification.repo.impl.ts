@@ -49,6 +49,26 @@ export class TextileCertificationRepositoryImpl extends TextileCertificationRepo
 		return TextileCertificationMapper.fromDocument(saved);
 	}
 
+	async createManyTextileCertifications(
+		certifications: TextileCertification[],
+	): Promise<TextileCertification[]> {
+		const plains = certifications.map((certification) => {
+			const plain =
+				TextileCertificationMapper.toPersistence(certification);
+			return {
+				_id: certification.id,
+				name: plain.name,
+			};
+		});
+		const created =
+			await this.textileCertificationModel.insertMany(plains);
+		return created.map((doc) =>
+			TextileCertificationMapper.fromDocument(
+				doc as unknown as TextileCertificationDocument,
+			),
+		);
+	}
+
 	async updateTextileCertification(
 		id: string,
 		certification: TextileCertification,

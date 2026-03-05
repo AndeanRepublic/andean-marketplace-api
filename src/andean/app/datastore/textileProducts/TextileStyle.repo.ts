@@ -4,6 +4,9 @@ export abstract class TextileStyleRepository {
 	abstract getAllTextileStyles(): Promise<TextileStyle[]>;
 	abstract getTextileStyleById(id: string): Promise<TextileStyle | null>;
 	abstract saveTextileStyle(style: TextileStyle): Promise<TextileStyle>;
+	abstract createManyTextileStyles(
+		styles: TextileStyle[],
+	): Promise<TextileStyle[]>;
 	abstract updateTextileStyle(
 		id: string,
 		style: TextileStyle,

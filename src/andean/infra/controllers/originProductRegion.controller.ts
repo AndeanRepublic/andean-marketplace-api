@@ -11,11 +11,13 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateOriginProductRegionUseCase } from '../../app/use_cases/origin/CreateOriginProductRegionUseCase';
+import { CreateManyOriginProductRegionsUseCase } from '../../app/use_cases/origin/CreateManyOriginProductRegionsUseCase';
 import { UpdateOriginProductRegionUseCase } from '../../app/use_cases/origin/UpdateOriginProductRegionUseCase';
 import { GetOriginProductRegionByIdUseCase } from '../../app/use_cases/origin/GetOriginProductRegionByIdUseCase';
 import { ListOriginProductRegionUseCase } from '../../app/use_cases/origin/ListOriginProductRegionUseCase';
 import { DeleteOriginProductRegionUseCase } from '../../app/use_cases/origin/DeleteOriginProductRegionUseCase';
 import { CreateOriginProductRegionDto } from './dto/origin/CreateOriginProductRegionDto';
+import { CreateManyOriginProductRegionsDto } from './dto/origin/CreateManyOriginProductRegionsDto';
 import { UpdateOriginProductRegionDto } from './dto/origin/UpdateOriginProductRegionDto';
 import { OriginProductRegionResponse } from '../../app/modules/OriginProductRegionResponse';
 import { OriginProductRegion } from '../../domain/entities/origin/OriginProductRegion';
@@ -25,11 +27,31 @@ import { OriginProductRegion } from '../../domain/entities/origin/OriginProductR
 export class OriginProductRegionController {
 	constructor(
 		private readonly createRegionUseCase: CreateOriginProductRegionUseCase,
+		private readonly createManyRegionsUseCase: CreateManyOriginProductRegionsUseCase,
 		private readonly updateRegionUseCase: UpdateOriginProductRegionUseCase,
 		private readonly getRegionByIdUseCase: GetOriginProductRegionByIdUseCase,
 		private readonly listRegionUseCase: ListOriginProductRegionUseCase,
 		private readonly deleteRegionUseCase: DeleteOriginProductRegionUseCase,
 	) {}
+
+	@Post('/bulk')
+	@HttpCode(HttpStatus.CREATED)
+	@ApiOperation({ summary: 'Create multiple origin product regions' })
+	@ApiResponse({
+		status: 201,
+		description: 'Regions have been successfully created.',
+		type: [OriginProductRegionResponse],
+	})
+	@ApiResponse({
+		status: 400,
+		description: 'Bad Request - Invalid input data.',
+	})
+	async createMany(
+		@Body() dto: CreateManyOriginProductRegionsDto,
+	): Promise<OriginProductRegionResponse[]> {
+		const regions = await this.createManyRegionsUseCase.execute(dto);
+		return regions.map((r) => this.toResponse(r));
+	}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
@@ -64,17 +86,17 @@ export class OriginProductRegionController {
 	// 	return this.toResponse(region);
 	// }
 
-	// @Get()
-	// @ApiOperation({ summary: 'List all origin product regions' })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'List of regions.',
-	// 	type: [OriginProductRegionResponse],
-	// })
-	// async list(): Promise<OriginProductRegionResponse[]> {
-	// 	const regions = await this.listRegionUseCase.execute();
-	// 	return regions.map((r) => this.toResponse(r));
-	// }
+	@Get()
+	@ApiOperation({ summary: 'List all origin product regions' })
+	@ApiResponse({
+		status: 200,
+		description: 'List of regions.',
+		type: [OriginProductRegionResponse],
+	})
+	async list(): Promise<OriginProductRegionResponse[]> {
+		const regions = await this.listRegionUseCase.execute();
+		return regions.map((r) => this.toResponse(r));
+	}
 
 	// @Put(':id')
 	// @ApiOperation({ summary: 'Update origin product region' })
