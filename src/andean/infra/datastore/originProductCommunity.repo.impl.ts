@@ -27,6 +27,22 @@ export class OriginProductCommunityRepositoryImpl extends OriginProductCommunity
 		return OriginProductCommunityMapper.fromDocument(created);
 	}
 
+	async createMany(
+		communities: OriginProductCommunity[],
+	): Promise<OriginProductCommunity[]> {
+		const documents = communities.map((community) => ({
+			id: community.id,
+			name: community.name,
+			regionId: community.regionId,
+		}));
+		const created = await this.communityModel.insertMany(documents);
+		return created.map((doc) =>
+			OriginProductCommunityMapper.fromDocument(
+				doc as unknown as OriginProductCommunityDocument,
+			),
+		);
+	}
+
 	async getById(id: string): Promise<OriginProductCommunity | null> {
 		const document = await this.communityModel.findOne({ id }).exec();
 		return document

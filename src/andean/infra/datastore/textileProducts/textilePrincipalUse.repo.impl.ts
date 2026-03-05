@@ -38,6 +38,18 @@ export class TextilePrincipalUseRepositoryImpl extends TextilePrincipalUseReposi
 		return TextilePrincipalUseMapper.fromDocument(savedPrincipalUse);
 	}
 
+	async createManyTextilePrincipalUses(
+		principalUses: TextilePrincipalUse[],
+	): Promise<TextilePrincipalUse[]> {
+		const plains = principalUses.map((pu) => TextilePrincipalUseMapper.toPersistence(pu));
+		const created = await this.textilePrincipalUseModel.insertMany(plains);
+		return created.map((doc) =>
+			TextilePrincipalUseMapper.fromDocument(
+				doc as unknown as TextilePrincipalUseDocument,
+			),
+		);
+	}
+
 	async updateTextilePrincipalUse(
 		id: string,
 		principalUse: TextilePrincipalUse,

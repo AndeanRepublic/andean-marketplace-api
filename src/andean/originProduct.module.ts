@@ -13,6 +13,7 @@ import { OriginProductCommunityRepositoryImpl } from './infra/datastore/originPr
 
 // Region Use Cases
 import { CreateOriginProductRegionUseCase } from './app/use_cases/origin/CreateOriginProductRegionUseCase';
+import { CreateManyOriginProductRegionsUseCase } from './app/use_cases/origin/CreateManyOriginProductRegionsUseCase';
 import { UpdateOriginProductRegionUseCase } from './app/use_cases/origin/UpdateOriginProductRegionUseCase';
 import { GetOriginProductRegionByIdUseCase } from './app/use_cases/origin/GetOriginProductRegionByIdUseCase';
 import { ListOriginProductRegionUseCase } from './app/use_cases/origin/ListOriginProductRegionUseCase';
@@ -20,6 +21,7 @@ import { DeleteOriginProductRegionUseCase } from './app/use_cases/origin/DeleteO
 
 // Community Use Cases
 import { CreateOriginProductCommunityUseCase } from './app/use_cases/origin/CreateOriginProductCommunityUseCase';
+import { CreateManyOriginProductCommunitiesUseCase } from './app/use_cases/origin/CreateManyOriginProductCommunitiesUseCase';
 import { UpdateOriginProductCommunityUseCase } from './app/use_cases/origin/UpdateOriginProductCommunityUseCase';
 import { GetOriginProductCommunityByIdUseCase } from './app/use_cases/origin/GetOriginProductCommunityByIdUseCase';
 import { ListOriginProductCommunityUseCase } from './app/use_cases/origin/ListOriginProductCommunityUseCase';
@@ -54,6 +56,7 @@ import { OriginProductCommunityController } from './infra/controllers/originProd
 
 		// Region Use Cases
 		CreateOriginProductRegionUseCase,
+		CreateManyOriginProductRegionsUseCase,
 		UpdateOriginProductRegionUseCase,
 		GetOriginProductRegionByIdUseCase,
 		ListOriginProductRegionUseCase,
@@ -61,6 +64,7 @@ import { OriginProductCommunityController } from './infra/controllers/originProd
 
 		// Community Use Cases
 		CreateOriginProductCommunityUseCase,
+		CreateManyOriginProductCommunitiesUseCase,
 		UpdateOriginProductCommunityUseCase,
 		GetOriginProductCommunityByIdUseCase,
 		ListOriginProductCommunityUseCase,
