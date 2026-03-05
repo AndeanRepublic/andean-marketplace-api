@@ -3,6 +3,7 @@ import { INestApplication, HttpStatus, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { OriginProductRegionController } from '../src/andean/infra/controllers/originProductRegion.controller';
 import { CreateOriginProductRegionUseCase } from '../src/andean/app/use_cases/origin/CreateOriginProductRegionUseCase';
+import { CreateManyOriginProductRegionsUseCase } from '../src/andean/app/use_cases/origin/CreateManyOriginProductRegionsUseCase';
 import { UpdateOriginProductRegionUseCase } from '../src/andean/app/use_cases/origin/UpdateOriginProductRegionUseCase';
 import { GetOriginProductRegionByIdUseCase } from '../src/andean/app/use_cases/origin/GetOriginProductRegionByIdUseCase';
 import { ListOriginProductRegionUseCase } from '../src/andean/app/use_cases/origin/ListOriginProductRegionUseCase';

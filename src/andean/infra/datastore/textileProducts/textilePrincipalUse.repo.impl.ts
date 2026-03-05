@@ -41,15 +41,8 @@ export class TextilePrincipalUseRepositoryImpl extends TextilePrincipalUseReposi
 	async createManyTextilePrincipalUses(
 		principalUses: TextilePrincipalUse[],
 	): Promise<TextilePrincipalUse[]> {
-		const plains = principalUses.map((principalUse) => {
-			const plain = TextilePrincipalUseMapper.toPersistence(principalUse);
-			return {
-				_id: principalUse.id,
-				name: plain.name,
-			};
-		});
-		const created =
-			await this.textilePrincipalUseModel.insertMany(plains);
+		const plains = principalUses.map((pu) => TextilePrincipalUseMapper.toPersistence(pu));
+		const created = await this.textilePrincipalUseModel.insertMany(plains);
 		return created.map((doc) =>
 			TextilePrincipalUseMapper.fromDocument(
 				doc as unknown as TextilePrincipalUseDocument,

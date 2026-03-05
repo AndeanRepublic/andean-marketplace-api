@@ -36,19 +36,19 @@ export class CapturePayPalOrderUseCase {
 		}
 
 		// If the payment was successful, create the order from the cart
-		try {
-			const orderDto = {
-				shippingInfo: dto.shippingInfo,
-				payment: {
-					method: PaymentMethod.PAYPAL,
-					provider: PaymentProvider.PAYPAL,
-					transactionId: result.transactionId ?? undefined,
-					paidAt: new Date(),
-				},
-				currency: dto.currency,
-				deliveryOption: dto.deliveryOption,
-			};
+		const orderDto: CreateOrderFromCartDto = {
+			shippingInfo: dto.shippingInfo,
+			payment: {
+				method: PaymentMethod.PAYPAL,
+				provider: PaymentProvider.PAYPAL,
+				transactionId: result.transactionId ?? undefined,
+				paidAt: new Date(),
+			},
+			currency: dto.currency,
+			deliveryOption: dto.deliveryOption,
+		};
 
+		try {
 			const order = await this.createOrderFromCartUseCase.handle(
 				dto.customerId,
 				dto.customerEmail,
@@ -65,6 +65,11 @@ export class CapturePayPalOrderUseCase {
 		} catch (error) {
 			if (error instanceof BadRequestException) {
 				throw error;
+			}
+			if (error instanceof Error) {
+				throw new BadRequestException(
+					`Failed to create order from cart: ${error.message}`,
+				);
 			}
 			throw new BadRequestException('Failed to create order from cart');
 		}
