@@ -8,7 +8,6 @@ import { UpdateOriginProductRegionUseCase } from '../src/andean/app/use_cases/or
 import { GetOriginProductRegionByIdUseCase } from '../src/andean/app/use_cases/origin/GetOriginProductRegionByIdUseCase';
 import { ListOriginProductRegionUseCase } from '../src/andean/app/use_cases/origin/ListOriginProductRegionUseCase';
 import { DeleteOriginProductRegionUseCase } from '../src/andean/app/use_cases/origin/DeleteOriginProductRegionUseCase';
-import { CreateManyOriginProductRegionsUseCase } from '../src/andean/app/use_cases/origin/CreateManyOriginProductRegionsUseCase';
 import { OriginProductRegion } from '../src/andean/domain/entities/origin/OriginProductRegion';
 import { FixtureLoader } from './helpers/fixture-loader';
 
