@@ -120,6 +120,7 @@ import { VariantModule } from './variant.module';
 import { VariantSchema } from './infra/persistence/variant.schema';
 import { MediaItemSchema } from './infra/persistence/mediaItem.schema';
 import { TextileProductAttributesAssembler } from './infra/services/textileProducts/TextileProductAttributesAssembler';
+import { MediaUrlResolver } from './infra/services/textileProducts/MediaUrlResolver';
 
 @Module({
 	imports: [
@@ -262,6 +263,7 @@ import { TextileProductAttributesAssembler } from './infra/services/textileProdu
 		DecrementLikesUseCase,
 		DecrementDislikesUseCase,
 		TextileProductAttributesAssembler,
+		MediaUrlResolver,
 		{
 			provide: TextileCategoryRepository,
 			useClass: TextileCategoryRepositoryImpl,

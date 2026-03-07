@@ -20,6 +20,7 @@ import { AccountRepository } from '../../datastore/Account.repo';
 import { Review } from 'src/andean/domain/entities/Review';
 import { MediaItemRepository } from '../../datastore/MediaItem.repo';
 import { TextileProductAttributesAssembler } from '../../../infra/services/textileProducts/TextileProductAttributesAssembler';
+import { MediaUrlResolver } from '../../../infra/services/textileProducts/MediaUrlResolver';
 import { TraceabilityProcessName } from '../../../domain/enums/TraceabilityProcessName';
 
 @Injectable()
@@ -49,6 +50,7 @@ export class GetByIdTextileProductDetailUseCase {
 		private readonly accountRepository: AccountRepository,
 		@Inject(MediaItemRepository)
 		private readonly mediaItemRepository: MediaItemRepository,
+		private readonly mediaUrlResolver: MediaUrlResolver,
 		private readonly textileProductAttributesAssembler: TextileProductAttributesAssembler,
 	) {}
 
@@ -384,6 +386,16 @@ export class GetByIdTextileProductDetailUseCase {
 			}),
 		);
 
-		return mappedProducts;
+		const mediaIds = mappedProducts
+			.map((p) => p.principalImgUrl)
+			.filter((id): id is string => Boolean(id));
+		const mediaIdToUrl = await this.mediaUrlResolver.resolveUrls(mediaIds);
+
+		return mappedProducts.map((p) => ({
+			...p,
+			principalImgUrl: p.principalImgUrl
+				? (mediaIdToUrl.get(p.principalImgUrl) ?? '')
+				: '',
+		}));
 	}
 }
