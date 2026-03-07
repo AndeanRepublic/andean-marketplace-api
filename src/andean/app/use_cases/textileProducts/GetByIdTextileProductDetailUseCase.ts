@@ -1,6 +1,9 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { TextileProductRepository } from '../../datastore/textileProducts/TextileProduct.repo';
-import { TextileProductDetailResponse } from '../../models/TextileProducts/TextileProductDetailResponse';
+import {
+	TextileProductDetailResponse,
+	TraceabilityInfoResponse,
+} from '../../models/TextileProducts/TextileProductDetailResponse';
 import { ProductType } from '../../../domain/enums/ProductType';
 import { OwnerType } from '../../../domain/enums/OwnerType';
 import { TextileOptionName } from '../../../domain/enums/TextileOptionName';
@@ -15,9 +18,10 @@ import { ShopRepository } from '../../datastore/Shop.repo';
 import { VariantRepository } from '../../datastore/Variant.repo';
 import { AccountRepository } from '../../datastore/Account.repo';
 import { Review } from 'src/andean/domain/entities/Review';
-import { Variant } from 'src/andean/domain/entities/Variant';
 import { MediaItemRepository } from '../../datastore/MediaItem.repo';
-import { AvailableColorResponse } from '../../models/TextileProducts/TextileProductDetailResponse';
+import { TextileProductAttributesAssembler } from '../../../infra/services/textileProducts/TextileProductAttributesAssembler';
+import { MediaUrlResolver } from '../../../infra/services/textileProducts/MediaUrlResolver';
+import { TraceabilityProcessName } from '../../../domain/enums/TraceabilityProcessName';
 
 @Injectable()
 export class GetByIdTextileProductDetailUseCase {
@@ -46,6 +50,8 @@ export class GetByIdTextileProductDetailUseCase {
 		private readonly accountRepository: AccountRepository,
 		@Inject(MediaItemRepository)
 		private readonly mediaItemRepository: MediaItemRepository,
+		private readonly mediaUrlResolver: MediaUrlResolver,
+		private readonly textileProductAttributesAssembler: TextileProductAttributesAssembler,
 	) {}
 
 	async handle(id: string): Promise<TextileProductDetailResponse> {
@@ -63,7 +69,7 @@ export class GetByIdTextileProductDetailUseCase {
 		const images = mediaItems.map((mediaItem) => ({
 			name: mediaItem.name,
 			role: mediaItem.role,
-			url: `${process.env.AWS_S3_BASE_URL}/${mediaItem.key}`, // TODO: Usar el storage base url
+			url: `${process.env.STORAGE_BASE_URL || ''}/${mediaItem.key}`,
 		}));
 
 		// -- Obtener reviews del producto
@@ -99,67 +105,29 @@ export class GetByIdTextileProductDetailUseCase {
 			dislikes: review.numberDislikes,
 		}));
 
-		// -- Obtener sizes y colors de options
-		const sizeOption = product.options?.find(
-			(opt) => opt.name === TextileOptionName.SIZE,
-		);
-		const colorOption = product.options?.find(
-			(opt) => opt.name === TextileOptionName.COLOR,
-		);
-		const materialOption = product.options?.find(
-			(opt) => opt.name === TextileOptionName.MATERIAL,
-		);
-
-		// -- Obtener availableSizes
-		const availableSizes: string[] = [];
-		if (sizeOption) {
-			for (const value of sizeOption.values) {
-				if (value.idOpcionAlternative) {
-					const sizeAlt = await this.sizeOptionAlternativeRepository.getById(
-						value.idOpcionAlternative,
-					);
-					if (sizeAlt && !availableSizes.includes(sizeAlt.nameLabel)) {
-						availableSizes.push(sizeAlt.nameLabel);
-					}
-				} else if (value.label && !availableSizes.includes(value.label)) {
-					availableSizes.push(value.label);
-				}
-			}
-		}
-
-		// -- Obtener availableColors
-		const availableColors = await this.buildAvailableColors(colorOption);
-
-		// -- Obtener availableMaterials
-		const availableMaterials: string[] = [];
-		if (materialOption) {
-			for (const value of materialOption.values) {
-				if (value.label && !availableMaterials.includes(value.label)) {
-					availableMaterials.push(value.label);
-				}
-			}
-		}
-
 		// -- Obtener variants del producto
 		const variants = await this.variantRepository.getByProductId(product.id);
-
-		// -- Construir variantInfo
-		const variantInfo = await this.buildVariantInfo(
-			variants,
-			sizeOption,
-			colorOption,
-			materialOption,
-		);
+		const { availableSizes, availableColors, availableMaterials, variantInfo } =
+			await this.textileProductAttributesAssembler.buildForProduct(
+				product,
+				variants,
+			);
 
 		// -- Agrupar traceability epochs y agregar blockchainLink
 		const groupedEpochs = this.groupTraceabilityEpochs(
 			product.productTraceability?.epochs || [],
 		);
-		const traceabilityInfo = {
+		const traceabilityInfo: TraceabilityInfoResponse = {
+			origen: groupedEpochs.origen as TraceabilityInfoResponse['origen'],
+			processing:
+				groupedEpochs.processing as TraceabilityInfoResponse['processing'],
+			development:
+				groupedEpochs.development as TraceabilityInfoResponse['development'],
+			merchandising:
+				groupedEpochs.merchandising as TraceabilityInfoResponse['merchandising'],
 			...(product.productTraceability?.blockchainLink && {
 				blockchainLink: product.productTraceability.blockchainLink,
 			}),
-			...groupedEpochs,
 		};
 
 		// -- Obtener productos similares
@@ -260,194 +228,50 @@ export class GetByIdTextileProductDetailUseCase {
 		};
 	}
 
-	private async buildAvailableColors(
-		colorOption: any,
-	): Promise< AvailableColorResponse[]> {
-		if (!colorOption?.values?.length) {
-			return [];
-		}
-
-		const availableColors: AvailableColorResponse[] =
-			[];
-
-		for (const value of colorOption.values) {
-			let color = value.label || '';
-			let hexCode = '#000000';
-
-			if (value.idOpcionAlternative) {
-				const colorAlt = await this.colorOptionAlternativeRepository.getById(
-					value.idOpcionAlternative,
-				);
-				if (colorAlt) {
-					color = colorAlt.nameLabel || color;
-					hexCode = colorAlt.hexCode || hexCode;
-				}
-			}
-
-			let imgUrl = '';
-			const firstMediaId = value.mediaIds?.[0];
-			if (firstMediaId) {
-				const mediaItem = await this.mediaItemRepository.getById(firstMediaId);
-				imgUrl = mediaItem
-					? `${process.env.STORAGE_BASE_URL}/${mediaItem.key}`
-					: '';
-			}
-
-			availableColors.push({ color, hexCode, imgUrl });
-		}
-
-		return availableColors;
-	}
-
-	private async buildVariantInfo(
-		variants: Variant[],
-		sizeOption: any,
-		colorOption: any,
-		materialOption: any,
-	): Promise<
-		{
-			variantId: string;
-			size: string;
-			color: string;
-			material: string;
-			price: number;
-			stock: number;
-		}[]
-	> {
-		if (!variants || variants.length === 0) {
-			return [];
-		}
-
-		const variantInfoArray: {
-			variantId: string;
-			size: string;
-			color: string;
-			material: string;
-			price: number;
-			stock: number;
-		}[] = [];
-
-		for (const variant of variants) {
-			// Obtener size del combination
-			let size = '';
-			if (sizeOption && variant.combination[TextileOptionName.SIZE]) {
-				const sizeLabel = variant.combination[TextileOptionName.SIZE];
-				const sizeValue = sizeOption.values.find(
-					(v: any) => v.label === sizeLabel,
-				);
-				if (sizeValue?.idOpcionAlternative) {
-					const sizeAlt = await this.sizeOptionAlternativeRepository.getById(
-						sizeValue.idOpcionAlternative,
-					);
-					size = sizeAlt?.nameLabel || sizeValue.label || '';
-				} else {
-					size = sizeValue?.label || sizeLabel || '';
-				}
-			}
-
-			// Obtener color del combination
-			let color = '';
-			if (colorOption && variant.combination[TextileOptionName.COLOR]) {
-				const colorLabel = variant.combination[TextileOptionName.COLOR];
-				const colorValue = colorOption.values.find(
-					(v: any) => v.label === colorLabel,
-				);
-				if (colorValue?.idOpcionAlternative) {
-					const colorAlt = await this.colorOptionAlternativeRepository.getById(
-						colorValue.idOpcionAlternative,
-					);
-					color = colorAlt?.nameLabel || colorValue.label || '';
-				} else {
-					color = colorValue?.label || colorLabel || '';
-				}
-			}
-
-			// Obtener material del combination
-			let material = '';
-			if (materialOption && variant.combination[TextileOptionName.MATERIAL]) {
-				const materialLabel = variant.combination[TextileOptionName.MATERIAL];
-				const materialValue = materialOption.values.find(
-					(v: any) => v.label === materialLabel,
-				);
-				material = materialValue?.label || materialLabel || '';
-			} else {
-				material = '';
-			}
-
-			variantInfoArray.push({
-				variantId: variant.id,
-				size,
-				color,
-				material,
-				price: variant.price,
-				stock: variant.stock,
-			});
-		}
-
-		return variantInfoArray;
-	}
-
-	private groupTraceabilityEpochs(epochs: any[]) {
-		const grupos: any = {
+	private groupTraceabilityEpochs(
+		epochs: {
+			title: string;
+			country: string;
+			city: string;
+			description: string;
+			processName: string;
+			supplier: string;
+		}[],
+	) {
+		const grupos: Record<string, unknown[]> = {
 			origen: [],
 			processing: [],
 			development: [],
 			merchandising: [],
 		};
 
-		epochs.forEach((epoch) => {
-			const processNameLower = epoch.processName?.toLowerCase() || '';
+		const stepData = (
+			epoch: (typeof epochs)[0],
+		): {
+			title: string;
+			supplier: string;
+			country: string;
+			city: string;
+			description: string;
+		} => ({
+			title: epoch.title,
+			supplier: epoch.supplier,
+			country: epoch.country,
+			city: epoch.city,
+			description: epoch.description,
+		});
 
-			// Determinar el grupo basado en processName
-			if (
-				processNameLower.includes('origen') ||
-				processNameLower.includes('origin') ||
-				processNameLower.includes('cosecha') ||
-				processNameLower.includes('cultivo')
-			) {
-				grupos.origen.push({
-					title: epoch.title,
-					supplier: epoch.supplier,
-					country: epoch.country,
-					city: epoch.city,
-					description: epoch.description,
-				});
-			} else if (
-				processNameLower.includes('processing') ||
-				processNameLower.includes('procesamiento') ||
-				processNameLower.includes('transformación')
-			) {
-				grupos.processing.push({
-					title: epoch.title,
-					supplier: epoch.supplier,
-					country: epoch.country,
-					city: epoch.city,
-					description: epoch.description,
-				});
-			} else if (
-				processNameLower.includes('development') ||
-				processNameLower.includes('desarrollo') ||
-				processNameLower.includes('elaboración')
-			) {
-				grupos.development.push({
-					title: epoch.title,
-					supplier: epoch.supplier,
-					country: epoch.country,
-					city: epoch.city,
-					description: epoch.description,
-				});
-			} else if (
-				processNameLower.includes('merchandising') ||
-				processNameLower.includes('comercialización') ||
-				processNameLower.includes('venta')
-			) {
-				grupos.merchandising.push({
-					title: epoch.title,
-					supplier: epoch.supplier,
-					country: epoch.country,
-					city: epoch.city,
-					description: epoch.description,
-				});
+		const keyMap: Record<TraceabilityProcessName, keyof typeof grupos> = {
+			[TraceabilityProcessName.ORIGIN]: 'origen',
+			[TraceabilityProcessName.PROCESSING]: 'processing',
+			[TraceabilityProcessName.DEVELOPMENT]: 'development',
+			[TraceabilityProcessName.MERCHANDISING]: 'merchandising',
+		};
+
+		epochs.forEach((epoch) => {
+			const key = keyMap[epoch.processName as TraceabilityProcessName];
+			if (key) {
+				grupos[key].push(stepData(epoch));
 			}
 		});
 
@@ -562,6 +386,16 @@ export class GetByIdTextileProductDetailUseCase {
 			}),
 		);
 
-		return mappedProducts;
+		const mediaIds = mappedProducts
+			.map((p) => p.principalImgUrl)
+			.filter((id): id is string => Boolean(id));
+		const mediaIdToUrl = await this.mediaUrlResolver.resolveUrls(mediaIds);
+
+		return mappedProducts.map((p) => ({
+			...p,
+			principalImgUrl: p.principalImgUrl
+				? (mediaIdToUrl.get(p.principalImgUrl) ?? '')
+				: '',
+		}));
 	}
 }

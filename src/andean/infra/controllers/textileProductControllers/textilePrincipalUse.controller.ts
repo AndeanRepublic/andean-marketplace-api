@@ -11,8 +11,10 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateTextilePrincipalUseUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextilePrincipalUseUseCase';
+import { CreateManyTextilePrincipalUsesUseCase } from 'src/andean/app/use_cases/textileProducts/CreateManyTextilePrincipalUsesUseCase';
 import { TextilePrincipalUse } from 'src/andean/domain/entities/textileProducts/TextilePrincipalUse';
 import { CreateTextilePrincipalUseDto } from '../dto/textileProducts/CreateTextilePrincipalUseDto';
+import { CreateManyTextilePrincipalUsesDto } from '../dto/textileProducts/CreateManyTextilePrincipalUsesDto';
 import { UpdateTextilePrincipalUseUseCase } from 'src/andean/app/use_cases/textileProducts/UpdateTextilePrincipalUseUseCase';
 import { GetAllTextilePrincipalUsesUseCase } from 'src/andean/app/use_cases/textileProducts/GetAllTextilePrincipalUsesUseCase';
 import { GetByIdTextilePrincipalUseUseCase } from 'src/andean/app/use_cases/textileProducts/GetByIdTextilePrincipalUseUseCase';
@@ -23,11 +25,34 @@ import { DeleteTextilePrincipalUseUseCase } from 'src/andean/app/use_cases/texti
 export class TextilePrincipalUseController {
 	constructor(
 		private readonly createTextilePrincipalUseUseCase: CreateTextilePrincipalUseUseCase,
+		private readonly createManyTextilePrincipalUsesUseCase: CreateManyTextilePrincipalUsesUseCase,
 		private readonly updateTextilePrincipalUseUseCase: UpdateTextilePrincipalUseUseCase,
 		private readonly getAllTextilePrincipalUsesUseCase: GetAllTextilePrincipalUsesUseCase,
 		private readonly getByIdTextilePrincipalUseUseCase: GetByIdTextilePrincipalUseUseCase,
 		private readonly deleteTextilePrincipalUseUseCase: DeleteTextilePrincipalUseUseCase,
 	) {}
+
+	@Post('/bulk')
+	@HttpCode(HttpStatus.CREATED)
+	@ApiOperation({
+		summary: 'Crear múltiples usos principales',
+		description:
+			'Crea múltiples usos principales en una sola operación. Útil para carga inicial de datos.',
+	})
+	@ApiResponse({
+		status: 201,
+		description: 'Usos principales creados exitosamente',
+		type: [TextilePrincipalUse],
+	})
+	@ApiResponse({
+		status: 400,
+		description: 'Datos de entrada inválidos',
+	})
+	async createManyTextilePrincipalUses(
+		@Body() body: CreateManyTextilePrincipalUsesDto,
+	): Promise<TextilePrincipalUse[]> {
+		return this.createManyTextilePrincipalUsesUseCase.handle(body);
+	}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
@@ -77,20 +102,20 @@ export class TextilePrincipalUseController {
 	// 	return this.updateTextilePrincipalUseUseCase.handle(id, body);
 	// }
 
-	// @Get()
-	// @ApiOperation({
-	// 	summary: 'Listar todos los usos principales',
-	// 	description:
-	// 		'Retorna todos los usos principales disponibles para productos textiles',
-	// })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'Lista de usos principales',
-	// 	type: [TextilePrincipalUse],
-	// })
-	// async getAllTextilePrincipalUses(): Promise<TextilePrincipalUse[]> {
-	// 	return this.getAllTextilePrincipalUsesUseCase.handle();
-	// }
+	@Get()
+	@ApiOperation({
+		summary: 'Listar todos los usos principales',
+		description:
+			'Retorna todos los usos principales disponibles para productos textiles',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista de usos principales',
+		type: [TextilePrincipalUse],
+	})
+	async getAllTextilePrincipalUses(): Promise<TextilePrincipalUse[]> {
+		return this.getAllTextilePrincipalUsesUseCase.handle();
+	}
 
 	// @Get('/:id')
 	// @ApiOperation({

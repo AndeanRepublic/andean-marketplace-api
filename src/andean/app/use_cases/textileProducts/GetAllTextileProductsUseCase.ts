@@ -3,6 +3,7 @@ import {
 	TextileProductRepository,
 	ProductFilters,
 } from '../../datastore/textileProducts/TextileProduct.repo';
+import { MediaUrlResolver } from '../../../infra/services/textileProducts/MediaUrlResolver';
 import { PaginatedProductsResponse } from '../../modules/PaginatedProductsResponse';
 import { TextileProductListItem } from '../../modules/TextileProductListItemResponse';
 
@@ -11,6 +12,7 @@ export class GetAllTextileProductsUseCase {
 	constructor(
 		@Inject(TextileProductRepository)
 		private readonly textileProductRepository: TextileProductRepository,
+		private readonly mediaUrlResolver: MediaUrlResolver,
 	) {}
 
 	async handle(
@@ -28,8 +30,10 @@ export class GetAllTextileProductsUseCase {
 				throw new NotFoundException('No textile products found');
 			}
 
+			const enrichedProducts = await this.enrichPrincipalImgUrls(products);
+
 			return {
-				products,
+				products: enrichedProducts,
 				pagination: {
 					total,
 					page: 1,
@@ -54,8 +58,10 @@ export class GetAllTextileProductsUseCase {
 		const page = filters.page || 1;
 		const perPage = filters.perPage || 10;
 
+		const enrichedProducts = await this.enrichPrincipalImgUrls(products);
+
 		return {
-			products,
+			products: enrichedProducts,
 			pagination: {
 				total,
 				page,
@@ -63,5 +69,21 @@ export class GetAllTextileProductsUseCase {
 			},
 			filterCount,
 		};
+	}
+
+	private async enrichPrincipalImgUrls(
+		products: TextileProductListItem[],
+	): Promise<TextileProductListItem[]> {
+		const mediaIds = products
+			.map((p) => p.principalImgUrl)
+			.filter((id): id is string => Boolean(id));
+		const mediaIdToUrl = await this.mediaUrlResolver.resolveUrls(mediaIds);
+
+		return products.map((p) => ({
+			...p,
+			principalImgUrl: p.principalImgUrl
+				? (mediaIdToUrl.get(p.principalImgUrl) ?? '')
+				: '',
+		}));
 	}
 }
