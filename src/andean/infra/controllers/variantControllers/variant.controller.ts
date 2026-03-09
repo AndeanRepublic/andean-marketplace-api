@@ -10,6 +10,7 @@ import {
 	HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { VariantResponse } from 'src/andean/app/modules/VariantResponse';
 import { CreateVariantUseCase } from 'src/andean/app/use_cases/variant/CreateVariantUseCase';
 import { CreateManyVariantsUseCase } from 'src/andean/app/use_cases/variant/CreateManyVariantsUseCase';
 import { GetAllVariantsUseCase } from 'src/andean/app/use_cases/variant/GetAllVariantsUseCase';
@@ -38,7 +39,7 @@ export class VariantController {
 		private readonly deleteVariantUseCase: DeleteVariantUseCase,
 		private readonly deleteVariantsByProductIdUseCase: DeleteVariantsByProductIdUseCase,
 		private readonly syncVariantsUseCase: SyncVariantsUseCase,
-	) { }
+	) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
@@ -51,7 +52,11 @@ export class VariantController {
 	@Post('/many')
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({ summary: 'Create many variants' })
-	@ApiResponse({ status: 201, description: 'Variants created', type: [Variant] })
+	@ApiResponse({
+		status: 201,
+		description: 'Variants created',
+		type: [Variant],
+	})
 	async createMany(@Body() body: CreateManyVariantsDto): Promise<Variant[]> {
 		return this.createManyVariantsUseCase.execute(body);
 	}
@@ -65,24 +70,50 @@ export class VariantController {
 	}
 
 	@Get()
-	@ApiOperation({ summary: 'Get all variants' })
-	@ApiResponse({ status: 200, description: 'List of variants', type: [Variant] })
+	@ApiOperation({
+		summary: 'Obtener todas las variantes',
+		description: 'Recupera la lista completa de variantes registradas',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista de variantes',
+		type: [VariantResponse],
+	})
 	async getAll(): Promise<Variant[]> {
 		return this.getAllVariantsUseCase.execute();
 	}
 
 	@Get('/product/:productId')
-	@ApiOperation({ summary: 'Get variants by product id' })
-	@ApiParam({ name: 'productId', description: 'Product id' })
-	@ApiResponse({ status: 200, description: 'Variants for product', type: [Variant] })
-	async getByProductId(@Param('productId') productId: string): Promise<Variant[]> {
+	@ApiOperation({
+		summary: 'Obtener variantes por producto',
+		description:
+			'Recupera todas las variantes asociadas a un producto específico',
+	})
+	@ApiParam({ name: 'productId', description: 'ID del producto', type: String })
+	@ApiResponse({
+		status: 200,
+		description: 'Lista de variantes del producto',
+		type: [VariantResponse],
+	})
+	@ApiResponse({ status: 404, description: 'Producto no encontrado' })
+	async getByProductId(
+		@Param('productId') productId: string,
+	): Promise<Variant[]> {
 		return this.getVariantsByProductIdUseCase.execute(productId);
 	}
 
 	@Get('/:id')
-	@ApiOperation({ summary: 'Get variant by id' })
-	@ApiParam({ name: 'id', description: 'Variant id' })
-	@ApiResponse({ status: 200, description: 'Variant', type: Variant })
+	@ApiOperation({
+		summary: 'Obtener variante por ID',
+		description: 'Recupera la información de una variante específica por su ID',
+	})
+	@ApiParam({ name: 'id', description: 'ID de la variante', type: String })
+	@ApiResponse({
+		status: 200,
+		description: 'Variante encontrada',
+		type: VariantResponse,
+	})
+	@ApiResponse({ status: 404, description: 'Variante no encontrada' })
 	async getById(@Param('id') id: string): Promise<Variant> {
 		return this.getVariantByIdUseCase.execute(id);
 	}
@@ -91,7 +122,10 @@ export class VariantController {
 	@ApiOperation({ summary: 'Update variant' })
 	@ApiParam({ name: 'id', description: 'Variant id' })
 	@ApiResponse({ status: 200, description: 'Updated variant', type: Variant })
-	async update(@Param('id') id: string, @Body() body: UpdateVariantDto): Promise<Variant> {
+	async update(
+		@Param('id') id: string,
+		@Body() body: UpdateVariantDto,
+	): Promise<Variant> {
 		return this.updateVariantUseCase.execute(id, body);
 	}
 
@@ -109,7 +143,9 @@ export class VariantController {
 	@ApiOperation({ summary: 'Delete variants by product id' })
 	@ApiParam({ name: 'productId', description: 'Product id' })
 	@ApiResponse({ status: 204, description: 'Variants deleted for product' })
-	async deleteByProductId(@Param('productId') productId: string): Promise<void> {
+	async deleteByProductId(
+		@Param('productId') productId: string,
+	): Promise<void> {
 		await this.deleteVariantsByProductIdUseCase.execute(productId);
 	}
 }

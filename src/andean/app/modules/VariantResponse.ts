@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ProductType } from '../../domain/enums/ProductType';
 
 export class VariantResponse {
 	@ApiProperty({
@@ -12,6 +13,13 @@ export class VariantResponse {
 		example: '507f1f77bcf86cd799439022',
 	})
 	productId: string;
+
+	@ApiProperty({
+		description: 'Tipo de producto al que pertenece la variante',
+		enum: ProductType,
+		example: ProductType.TEXTILE,
+	})
+	productType: ProductType;
 
 	@ApiProperty({
 		description: 'Combinación de opciones que define esta variante',
