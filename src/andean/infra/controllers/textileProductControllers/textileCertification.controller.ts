@@ -10,6 +10,7 @@ import {
 	HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { TextileCertificationResponse } from 'src/andean/app/modules/TextileCertificationResponse';
 import { CreateTextileCertificationUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileCertificationUseCase';
 import { CreateManyTextileCertificationsUseCase } from 'src/andean/app/use_cases/textileProducts/CreateManyTextileCertificationsUseCase';
 import { TextileCertification } from 'src/andean/domain/entities/textileProducts/TextileCertification';
@@ -111,7 +112,7 @@ export class TextileCertificationController {
 	@ApiResponse({
 		status: 200,
 		description: 'Lista de certificaciones',
-		type: [TextileCertification],
+		type: [TextileCertificationResponse],
 	})
 	async getAllTextileCertifications(): Promise<TextileCertification[]> {
 		return this.getAllTextileCertificationsUseCase.handle();

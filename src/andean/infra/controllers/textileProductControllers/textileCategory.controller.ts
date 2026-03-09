@@ -10,6 +10,7 @@ import {
 	HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { TextileCategoryResponse } from 'src/andean/app/modules/TextileCategoryResponse';
 import { CreateTextileCategoryUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileCategoryUseCase';
 import { CreateManyTextileCategoriesUseCase } from 'src/andean/app/use_cases/textileProducts/CreateManyTextileCategoriesUseCase';
 import { TextileCategory } from 'src/andean/domain/entities/textileProducts/TextileCategory';
@@ -111,7 +112,7 @@ export class TextileCategoryController {
 	@ApiResponse({
 		status: 200,
 		description: 'Lista de categorías',
-		type: [TextileCategory],
+		type: [TextileCategoryResponse],
 	})
 	async getAllTextileCategories(): Promise<TextileCategory[]> {
 		return this.getAllTextileCategoriesUseCase.handle();

@@ -10,6 +10,7 @@ import {
 	HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { TextileStyleResponse } from 'src/andean/app/modules/TextileStyleResponse';
 import { CreateTextileStyleUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileStyleUseCase';
 import { CreateManyTextileStylesUseCase } from 'src/andean/app/use_cases/textileProducts/CreateManyTextileStylesUseCase';
 import { TextileStyle } from 'src/andean/domain/entities/textileProducts/TextileStyle';
@@ -110,7 +111,7 @@ export class TextileStyleController {
 	@ApiResponse({
 		status: 200,
 		description: 'Lista de estilos',
-		type: [TextileStyle],
+		type: [TextileStyleResponse],
 	})
 	async getAllTextileStyles(): Promise<TextileStyle[]> {
 		return this.getAllTextileStylesUseCase.handle();

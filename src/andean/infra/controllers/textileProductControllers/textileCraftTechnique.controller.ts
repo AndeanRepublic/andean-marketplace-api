@@ -10,6 +10,7 @@ import {
 	HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { TextileCraftTechniqueResponse } from 'src/andean/app/modules/TextileCraftTechniqueResponse';
 import { CreateTextileCraftTechniqueUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileCraftTechniqueUseCase';
 import { CreateManyTextileCraftTechniquesUseCase } from 'src/andean/app/use_cases/textileProducts/CreateManyTextileCraftTechniquesUseCase';
 import { TextileCraftTechnique } from 'src/andean/domain/entities/textileProducts/TextileCraftTechnique';
@@ -111,7 +112,7 @@ export class TextileCraftTechniqueController {
 	@ApiResponse({
 		status: 200,
 		description: 'Lista de técnicas',
-		type: [TextileCraftTechnique],
+		type: [TextileCraftTechniqueResponse],
 	})
 	async getAllTextileCraftTechniques(): Promise<TextileCraftTechnique[]> {
 		return this.getAllTextileCraftTechniquesUseCase.handle();
