@@ -49,17 +49,17 @@ export class VariantController {
 		return this.createVariantUseCase.execute(body);
 	}
 
-	@Post('/many')
-	@HttpCode(HttpStatus.CREATED)
-	@ApiOperation({ summary: 'Create many variants' })
-	@ApiResponse({
-		status: 201,
-		description: 'Variants created',
-		type: [Variant],
-	})
-	async createMany(@Body() body: CreateManyVariantsDto): Promise<Variant[]> {
-		return this.createManyVariantsUseCase.execute(body);
-	}
+	// @Post('/many')
+	// @HttpCode(HttpStatus.CREATED)
+	// @ApiOperation({ summary: 'Create many variants' })
+	// @ApiResponse({
+	// 	status: 201,
+	// 	description: 'Variants created',
+	// 	type: [Variant],
+	// })
+	// async createMany(@Body() body: CreateManyVariantsDto): Promise<Variant[]> {
+	// 	return this.createManyVariantsUseCase.execute(body);
+	// }
 
 	@Put('/sync')
 	@HttpCode(HttpStatus.OK)
