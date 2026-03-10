@@ -8,7 +8,7 @@ import {
 } from '@nestjs/swagger';
 import { UpdatePriceByAgeGroupUseCase } from 'src/andean/app/use_cases/experiences/prices/UpdatePriceByAgeGroupUseCase';
 import { PatchAgeGroupPriceDto } from '../dto/experiences/PatchExperiencePricesDto';
-import { ExperiencePrices } from 'src/andean/domain/entities/experiences/ExperiencePrices';
+import { ExperiencePricesPatchResponse } from 'src/andean/app/modules/experiences/ExperiencePatchResponse';
 
 @ApiTags('Experiences — Prices')
 @Controller('experiences/:experienceId/prices')
@@ -32,7 +32,7 @@ export class ExperiencePricesController {
 	@ApiResponse({
 		status: 200,
 		description: 'Precio del grupo de edad actualizado exitosamente',
-		type: ExperiencePrices,
+		type: ExperiencePricesPatchResponse,
 	})
 	@ApiResponse({
 		status: 400,
@@ -45,7 +45,7 @@ export class ExperiencePricesController {
 	async updateAgeGroupPrice(
 		@Param('experienceId') experienceId: string,
 		@Body() body: PatchAgeGroupPriceDto,
-	): Promise<ExperiencePrices> {
+	): Promise<ExperiencePricesPatchResponse> {
 		return this.updatePriceByAgeGroupUseCase.handle(experienceId, body);
 	}
 }

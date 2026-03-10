@@ -12,7 +12,7 @@ import {
 	PatchExcludedDatesDto,
 	PatchAvailableDatesDto,
 } from '../dto/experiences/PatchExperiencePricesDto';
-import { ExperienceAvailability } from 'src/andean/domain/entities/experiences/ExperienceAvailability';
+import { ExperienceAvailabilityPatchResponse } from 'src/andean/app/modules/experiences/ExperiencePatchResponse';
 
 @ApiTags('Experiences — Availability')
 @Controller('experiences/:experienceId/availability')
@@ -37,7 +37,7 @@ export class ExperienceAvailabilityController {
 	@ApiResponse({
 		status: 200,
 		description: 'Fechas excluidas actualizadas exitosamente',
-		type: ExperienceAvailability,
+		type: ExperienceAvailabilityPatchResponse,
 	})
 	@ApiResponse({
 		status: 404,
@@ -46,7 +46,7 @@ export class ExperienceAvailabilityController {
 	async updateExcludedDates(
 		@Param('experienceId') experienceId: string,
 		@Body() body: PatchExcludedDatesDto,
-	): Promise<ExperienceAvailability> {
+	): Promise<ExperienceAvailabilityPatchResponse> {
 		return this.updateExcludedDatesUseCase.handle(experienceId, body);
 	}
 
@@ -65,7 +65,7 @@ export class ExperienceAvailabilityController {
 	@ApiResponse({
 		status: 200,
 		description: 'Fechas disponibles actualizadas exitosamente',
-		type: ExperienceAvailability,
+		type: ExperienceAvailabilityPatchResponse,
 	})
 	@ApiResponse({
 		status: 404,
@@ -74,7 +74,7 @@ export class ExperienceAvailabilityController {
 	async updateAvailableDates(
 		@Param('experienceId') experienceId: string,
 		@Body() body: PatchAvailableDatesDto,
-	): Promise<ExperienceAvailability> {
+	): Promise<ExperienceAvailabilityPatchResponse> {
 		return this.updateAvailableDatesUseCase.handle(experienceId, body);
 	}
 }
