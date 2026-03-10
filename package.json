@@ -13,9 +13,10 @@
 		"start:debug": "nest start --debug --watch",
 		"start:prod": "node dist/main",
 		"lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-		"test": "jest",
-		"test:watch": "jest --watch",
-		"test:cov": "jest --coverage",
+		"test": "jest --config ./test/jest-unit.json",
+		"test:unit": "jest --config ./test/jest-unit.json",
+		"test:watch": "jest --config ./test/jest-unit.json --watch",
+		"test:cov": "jest --config ./test/jest-unit.json --coverage",
 		"test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
 		"test:e2e": "NODE_OPTIONS='--experimental-vm-modules' jest --config ./test/jest-e2e.json",
 		"test:e2e:win": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --config ./test/jest-e2e.json"
@@ -90,6 +91,9 @@
 			"**/*.(t|j)s"
 		],
 		"coverageDirectory": "../coverage",
-		"testEnvironment": "node"
+		"testEnvironment": "node",
+		"moduleNameMapper": {
+			"^src/(.*)$": "<rootDir>/$1"
+		}
 	}
 }
