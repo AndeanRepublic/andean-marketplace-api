@@ -57,4 +57,14 @@ export class SuperfoodTypeRepoImpl implements SuperfoodTypeRepository {
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		await this.model.findByIdAndDelete(objectId).exec();
 	}
+
+	async saveMany(types: SuperfoodType[]): Promise<SuperfoodType[]> {
+		const persistenceData = types.map((type) =>
+			SuperfoodTypeMapper.toPersistence(type),
+		);
+		const savedDocs = await this.model.insertMany(persistenceData);
+		return savedDocs.map((doc) =>
+			SuperfoodTypeMapper.fromDocument(doc as SuperfoodTypeDocument),
+		);
+	}
 }

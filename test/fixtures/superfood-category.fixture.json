@@ -10,6 +10,18 @@
 		"name": "Maca",
 		"status": "ENABLED"
 	},
+	"bulkCreateDto": {
+		"superfoodCategories": [
+			{
+				"name": "Cacao",
+				"status": "ENABLED"
+			},
+			{
+				"name": "Kiwicha",
+				"status": "ENABLED"
+			}
+		]
+	},
 	"additionalEntities": [
 		{
 			"id": "223e4567-e89b-12d3-a456-426614174001",
