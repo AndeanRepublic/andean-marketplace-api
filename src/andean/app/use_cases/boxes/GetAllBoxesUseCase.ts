@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { BoxRepository } from '../../datastore/box/Box.repo';
-import { BoxListPaginatedResponse, BoxListItemResponse, BoxProductResponse } from '../../models/box/BoxListResponse';
-import { BoxImageResponse } from '../../models/box/BoxImageResponse';
+import { BoxListPaginatedResponse, BoxListItemResponse, BoxProductResponse } from '../../modules/box/BoxListResponse';
+import { BoxImageResponse } from '../../modules/box/BoxImageResponse';
 import { ProductType } from '../../../domain/enums/ProductType';
 import { BoxProductResolutionService } from '../../../infra/services/box/BoxProductResolutionService';
 

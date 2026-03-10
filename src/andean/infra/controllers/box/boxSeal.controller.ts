@@ -1,5 +1,16 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	HttpCode,
+	HttpStatus,
+	Param,
+	Post,
+	Put,
+} from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import { BoxSealResponse } from '../../../app/modules/box/BoxSealResponse';
 import { CreateBoxSealUseCase } from '../../../app/use_cases/boxSeals/CreateBoxSealUseCase';
 import { GetAllBoxSealsUseCase } from '../../../app/use_cases/boxSeals/GetAllBoxSealsUseCase';
 import { GetBoxSealByIdUseCase } from '../../../app/use_cases/boxSeals/GetBoxSealByIdUseCase';
@@ -18,18 +29,20 @@ export class BoxSealController {
 		private readonly getBoxSealByIdUseCase: GetBoxSealByIdUseCase,
 		private readonly updateBoxSealUseCase: UpdateBoxSealUseCase,
 		private readonly deleteBoxSealUseCase: DeleteBoxSealUseCase,
-	) { }
+	) {}
 
 	@Post('')
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
 		summary: 'Crear nuevo sello de box',
-		description: 'Crea un nuevo sello (certificación) que puede ser asociado a boxes. Requiere nombre, descripción y un media ID del logo.',
+		description:
+			'Crea un nuevo sello (certificación) que puede ser asociado a boxes. Requiere nombre, descripción y un media ID del logo.',
 	})
+	@ApiBody({ type: CreateBoxSealDto })
 	@ApiResponse({
 		status: 201,
 		description: 'Sello creado exitosamente',
-		type: BoxSeal,
+		type: BoxSealResponse,
 	})
 	@ApiResponse({
 		status: 400,

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { MediaItemType } from '../../domain/enums/MediaItemType';
-import { MediaItemRole } from '../../domain/enums/MediaItemRole';
+import { MediaItemType } from '../../../domain/enums/MediaItemType';
+import { MediaItemRole } from '../../../domain/enums/MediaItemRole';
 
 export class MediaItemResponse {
 	@ApiProperty()

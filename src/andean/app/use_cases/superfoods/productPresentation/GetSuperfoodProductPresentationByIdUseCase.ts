@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { SuperfoodProductPresentationRepository } from '../../../datastore/superfoods/SuperfoodProductPresentation.repo';
 import { SuperfoodProductPresentation } from '../../../../domain/entities/superfoods/SuperfoodProductPresentation';
-import { SuperfoodProductPresentationResponse } from '../../../modules/SuperfoodProductPresentationResponse';
+import { SuperfoodProductPresentationResponse } from '../../../modules/superfoods/SuperfoodProductPresentationResponse';
 import { SuperfoodProductPresentationMapper } from '../../../../infra/services/superfood/SuperfoodProductPresentationMapper';
 
 @Injectable()

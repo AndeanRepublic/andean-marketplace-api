@@ -26,7 +26,7 @@ import { DeleteOriginProductCommunityUseCase } from '../../app/use_cases/origin/
 import { CreateOriginProductCommunityDto } from './dto/origin/CreateOriginProductCommunityDto';
 import { CreateManyOriginProductCommunitiesDto } from './dto/origin/CreateManyOriginProductCommunitiesDto';
 import { UpdateOriginProductCommunityDto } from './dto/origin/UpdateOriginProductCommunityDto';
-import { OriginProductCommunityResponse } from '../../app/modules/OriginProductCommunityResponse';
+import { OriginProductCommunityResponse } from '../../app/modules/shared/OriginProductCommunityResponse';
 import { OriginProductCommunity } from '../../domain/entities/origin/OriginProductCommunity';
 
 @ApiTags('Origin Product Communities')

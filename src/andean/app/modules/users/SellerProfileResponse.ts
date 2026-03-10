@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PersonType } from '../../domain/enums/PersonType';
+import { PersonType } from '../../../domain/enums/PersonType';
 
 export class SellerProfileResponse {
 	@ApiProperty({

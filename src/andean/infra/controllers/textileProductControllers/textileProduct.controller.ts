@@ -28,9 +28,9 @@ import { DeleteTextileProductUseCase } from 'src/andean/app/use_cases/textilePro
 import {
 	PaginatedProductsResponse,
 	PaginatedTextileProductsResponse,
-} from 'src/andean/app/modules/PaginatedProductsResponse';
-import { TextileProductListItem } from 'src/andean/app/modules/TextileProductListItemResponse';
-import { TextileProductDetailResponse } from 'src/andean/app/models/TextileProducts/TextileProductDetailResponse';
+} from 'src/andean/app/modules/shared/PaginatedProductsResponse';
+import { TextileProductListItem } from 'src/andean/app/modules/textile/TextileProductListItemResponse';
+import { TextileProductDetailResponse } from 'src/andean/app/modules/textile/TextileProductDetailResponse';
 import { GetByIdTextileProductDetailUseCase } from 'src/andean/app/use_cases/textileProducts/GetByIdTextileProductDetailUseCase';
 import { ProductSortBy } from 'src/andean/domain/enums/ProductSortBy';
 

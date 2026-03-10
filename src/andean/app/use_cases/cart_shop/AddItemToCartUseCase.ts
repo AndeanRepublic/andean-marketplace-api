@@ -12,7 +12,7 @@ import { CartShopItemRepository } from '../../datastore/CartShopItem.repo';
 import { VariantRepository } from '../../datastore/Variant.repo';
 import { CartItem } from '../../../domain/entities/CartItem';
 import { Types } from 'mongoose';
-import { ShoppingCartItemResponse } from '../../models/cart/ShoppingCartItemResponse';
+import { ShoppingCartItemResponse } from '../../modules/cart/ShoppingCartItemResponse';
 import { ProductInfoProviderRegistry } from '../../../infra/services/products/ProductInfoProviderRegistry';
 import { OwnerNameResolver } from '../../../infra/services/OwnerNameResolver';
 import { ShoppingCartItemMapper } from '../../../infra/services/cart/ShoppingCartItemMapper';

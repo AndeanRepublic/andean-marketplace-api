@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { SuperfoodProductStatus } from '../../domain/enums/SuperfoodProductStatus';
-import { SuperfoodConsumptionWay } from '../../domain/enums/SuperfoodConsumptionWay';
-import { SuperfoodProductionMethod } from '../../domain/enums/SuperfoodProductionMethod';
-import { SuperfoodOwnerType } from '../../domain/enums/SuperfoodOwnerType';
+import { SuperfoodProductStatus } from '../../../domain/enums/SuperfoodProductStatus';
+import { SuperfoodConsumptionWay } from '../../../domain/enums/SuperfoodConsumptionWay';
+import { SuperfoodProductionMethod } from '../../../domain/enums/SuperfoodProductionMethod';
+import { SuperfoodOwnerType } from '../../../domain/enums/SuperfoodOwnerType';
 
 export class SuperfoodBasicInfoResponse {
 	@ApiProperty({ description: 'Título del superfood' })

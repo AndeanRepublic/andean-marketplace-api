@@ -9,7 +9,7 @@ import { VariantRepository } from '../../datastore/Variant.repo';
 import { TextileProductRepository } from '../../datastore/textileProducts/TextileProduct.repo';
 import { SuperfoodProductRepository } from '../../datastore/superfoods/SuperfoodProduct.repo';
 import { ProductType } from '../../../domain/enums/ProductType';
-import { CartItemQuantityResponse } from '../../models/cart/CartItemQuantityResponse';
+import { CartItemQuantityResponse } from '../../modules/cart/CartItemQuantityResponse';
 
 @Injectable()
 export class UpdateCartItemQuantityUseCase {

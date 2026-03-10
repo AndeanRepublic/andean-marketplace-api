@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { TextileProductListItem } from './TextileProductListItemResponse';
+import { TextileProductListItem } from '../textile/TextileProductListItemResponse';
 
 export class FilterCountItem {
 	@ApiProperty({ description: 'Etiqueta del filtro', example: 'Rojo' })

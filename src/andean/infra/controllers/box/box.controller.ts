@@ -22,8 +22,8 @@ import { GetAllBoxesUseCase } from '../../../app/use_cases/boxes/GetAllBoxesUseC
 import { GetBoxDetailUseCase } from '../../../app/use_cases/boxes/GetBoxDetailUseCase';
 import { Box } from '../../../domain/entities/box/Box';
 import { CreateBoxDto } from '../dto/box/CreateBoxDto';
-import { BoxListPaginatedResponse } from '../../../app/models/box/BoxListResponse';
-import { BoxDetailResponse } from '../../../app/models/box/BoxDetailResponse';
+import { BoxListPaginatedResponse } from '../../../app/modules/box/BoxListResponse';
+import { BoxDetailResponse } from '../../../app/modules/box/BoxDetailResponse';
 
 @Controller('boxes')
 export class BoxController {
@@ -31,7 +31,7 @@ export class BoxController {
 		private readonly createBoxUseCase: CreateBoxUseCase,
 		private readonly getAllBoxesUseCase: GetAllBoxesUseCase,
 		private readonly getBoxDetailUseCase: GetBoxDetailUseCase,
-	) { }
+	) {}
 
 	@Post('')
 	@HttpCode(HttpStatus.CREATED)
@@ -106,7 +106,9 @@ export class BoxController {
 		status: 404,
 		description: 'Box no encontrado',
 	})
-	async getBoxDetail(@Param('boxId') boxId: string): Promise<BoxDetailResponse> {
+	async getBoxDetail(
+		@Param('boxId') boxId: string,
+	): Promise<BoxDetailResponse> {
 		return this.getBoxDetailUseCase.handle(boxId);
 	}
 }

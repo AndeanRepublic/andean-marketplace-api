@@ -26,8 +26,8 @@ import { GetByIdExperienceUseCase } from 'src/andean/app/use_cases/experiences/G
 import { CreateExperienceDto } from '../dto/experiences/CreateExperienceDto';
 import { UpdateExperienceDto } from '../dto/experiences/UpdateExperienceDto';
 import { Experience } from 'src/andean/domain/entities/experiences/Experience';
-import { PaginatedExperiencesResponse } from 'src/andean/app/models/experiences/ExperienceListItemResponse';
-import { ExperienceDetailResponse } from 'src/andean/app/models/experiences/ExperienceDetailResponse';
+import { PaginatedExperiencesResponse } from 'src/andean/app/modules/experiences/ExperienceListItemResponse';
+import { ExperienceDetailResponse } from 'src/andean/app/modules/experiences/ExperienceDetailResponse';
 
 @ApiTags('Experiences')
 @Controller('experiences')
@@ -38,7 +38,7 @@ export class ExperienceController {
 		private readonly deleteExperienceUseCase: DeleteExperienceUseCase,
 		private readonly getAllExperiencesUseCase: GetAllExperiencesUseCase,
 		private readonly getByIdExperienceUseCase: GetByIdExperienceUseCase,
-	) { }
+	) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
