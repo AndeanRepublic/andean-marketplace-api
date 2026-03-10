@@ -91,7 +91,8 @@
 			}
 		],
 		"principalImgUrl": "https://example.com/poncho.jpg",
-		"price": 150.0
+		"price": 150.0,
+		"stock": 25
 	},
 	"paginatedResponse": {
 		"products": [
@@ -119,7 +120,8 @@
 					}
 				],
 				"principalImgUrl": "https://example.com/poncho.jpg",
-				"price": 150.0
+				"price": 150.0,
+				"stock": 25
 			}
 		],
 		"pagination": {

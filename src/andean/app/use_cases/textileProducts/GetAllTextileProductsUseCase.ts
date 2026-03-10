@@ -84,6 +84,7 @@ export class GetAllTextileProductsUseCase {
 			principalImgUrl: p.principalImgUrl
 				? (mediaIdToUrl.get(p.principalImgUrl) ?? '')
 				: '',
+			stock: p.stock ?? 0,
 		}));
 	}
 }

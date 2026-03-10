@@ -79,4 +79,10 @@ export class TextileProductListItem {
 
 	@ApiProperty({ description: 'Precio del producto', example: 150.0 })
 	price: number;
+
+	@ApiProperty({
+		description: 'Stock total disponible (suma de variantes)',
+		example: 50,
+	})
+	stock: number;
 }
