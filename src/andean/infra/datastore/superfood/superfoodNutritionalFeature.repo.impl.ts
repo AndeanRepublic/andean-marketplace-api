@@ -12,7 +12,7 @@ export class SuperfoodNutritionalFeatureRepoImpl implements SuperfoodNutritional
 	constructor(
 		@InjectModel('SuperfoodNutritionalFeature')
 		private readonly model: Model<SuperfoodNutritionalFeatureDocument>,
-	) { }
+	) {}
 
 	async getById(id: string): Promise<SuperfoodNutritionalFeature | null> {
 		// Convertir string a ObjectId
@@ -70,6 +70,22 @@ export class SuperfoodNutritionalFeatureRepoImpl implements SuperfoodNutritional
 		if (!ids.length) return [];
 		const objectIds = ids.map((id) => MongoIdUtils.stringToObjectId(id));
 		const docs = await this.model.find({ _id: { $in: objectIds } }).exec();
-		return docs.map((doc) => SuperfoodNutritionalFeatureMapper.fromDocument(doc));
+		return docs.map((doc) =>
+			SuperfoodNutritionalFeatureMapper.fromDocument(doc),
+		);
+	}
+
+	async saveMany(
+		features: SuperfoodNutritionalFeature[],
+	): Promise<SuperfoodNutritionalFeature[]> {
+		const persistenceData = features.map((feature) =>
+			SuperfoodNutritionalFeatureMapper.toPersistence(feature),
+		);
+		const savedDocs = await this.model.insertMany(persistenceData);
+		return savedDocs.map((doc) =>
+			SuperfoodNutritionalFeatureMapper.fromDocument(
+				doc as SuperfoodNutritionalFeatureDocument,
+			),
+		);
 	}
 }

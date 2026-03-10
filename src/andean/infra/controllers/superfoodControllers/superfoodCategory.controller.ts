@@ -10,8 +10,10 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateSuperfoodCategoryDto } from '../dto/superfoods/CreateSuperfoodCategoryDto';
+import { CreateManySuperfoodCategoriesDto } from '../dto/superfoods/CreateManySuperfoodCategoriesDto';
 import { SuperfoodCategoryResponse } from '../../../app/modules/superfoods/SuperfoodCategoryResponse';
 import { CreateSuperfoodCategoryUseCase } from '../../../app/use_cases/superfoods/category/CreateSuperfoodCategoryUseCase';
+import { CreateManySuperfoodCategoriesUseCase } from '../../../app/use_cases/superfoods/category/CreateManySuperfoodCategoriesUseCase';
 import { GetSuperfoodCategoryByIdUseCase } from '../../../app/use_cases/superfoods/category/GetSuperfoodCategoryByIdUseCase';
 import { ListSuperfoodCategoriesUseCase } from '../../../app/use_cases/superfoods/category/ListSuperfoodCategoriesUseCase';
 import { DeleteSuperfoodCategoryUseCase } from '../../../app/use_cases/superfoods/category/DeleteSuperfoodCategoryUseCase';
@@ -21,10 +23,33 @@ import { DeleteSuperfoodCategoryUseCase } from '../../../app/use_cases/superfood
 export class SuperfoodCategoryController {
 	constructor(
 		private readonly createSuperfoodCategoryUseCase: CreateSuperfoodCategoryUseCase,
+		private readonly createManySuperfoodCategoriesUseCase: CreateManySuperfoodCategoriesUseCase,
 		private readonly getSuperfoodCategoryByIdUseCase: GetSuperfoodCategoryByIdUseCase,
 		private readonly listSuperfoodCategoriesUseCase: ListSuperfoodCategoriesUseCase,
 		private readonly deleteSuperfoodCategoryUseCase: DeleteSuperfoodCategoryUseCase,
 	) {}
+
+	@Post('/bulk')
+	@HttpCode(HttpStatus.CREATED)
+	@ApiOperation({
+		summary: 'Crear múltiples categorías de superfood',
+		description:
+			'Crea múltiples categorías de superfood en una sola operación. Útil para carga inicial de datos.',
+	})
+	@ApiResponse({
+		status: 201,
+		description: 'Categorías creadas exitosamente',
+		type: [SuperfoodCategoryResponse],
+	})
+	@ApiResponse({
+		status: 400,
+		description: 'Datos de entrada inválidos',
+	})
+	async createManyCategories(
+		@Body() dto: CreateManySuperfoodCategoriesDto,
+	): Promise<SuperfoodCategoryResponse[]> {
+		return await this.createManySuperfoodCategoriesUseCase.handle(dto);
+	}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
@@ -48,19 +73,19 @@ export class SuperfoodCategoryController {
 		return await this.createSuperfoodCategoryUseCase.handle(dto);
 	}
 
-	// @Get()
-	// @ApiOperation({
-	// 	summary: 'Listar todas las categorías',
-	// 	description: 'Retorna todas las categorías de superfood disponibles',
-	// })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'Lista de categorías',
-	// 	type: [SuperfoodCategoryResponse],
-	// })
-	// async listCategories(): Promise<SuperfoodCategoryResponse[]> {
-	// 	return await this.listSuperfoodCategoriesUseCase.handle();
-	// }
+	@Get()
+	@ApiOperation({
+		summary: 'Listar todas las categorías',
+		description: 'Retorna todas las categorías de superfood disponibles',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista de categorías',
+		type: [SuperfoodCategoryResponse],
+	})
+	async listCategories(): Promise<SuperfoodCategoryResponse[]> {
+		return await this.listSuperfoodCategoriesUseCase.handle();
+	}
 
 	// @Get('/:id')
 	// @ApiOperation({

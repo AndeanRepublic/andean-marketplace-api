@@ -59,4 +59,16 @@ export class SuperfoodCategoryRepoImpl implements SuperfoodCategoryRepository {
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		await this.model.findByIdAndDelete(objectId).exec();
 	}
+
+	async saveManyCategories(
+		categories: SuperfoodCategory[],
+	): Promise<SuperfoodCategory[]> {
+		const persistenceData = categories.map((category) =>
+			SuperfoodCategoryMapper.toPersistence(category),
+		);
+		const savedDocs = await this.model.insertMany(persistenceData);
+		return savedDocs.map((doc) =>
+			SuperfoodCategoryMapper.fromDocument(doc as SuperfoodCategoryDocument),
+		);
+	}
 }

@@ -10,6 +10,18 @@
 		"name": "En polvo",
 		"icon": "https://example.com/icons/polvo.svg"
 	},
+	"bulkCreateDto": {
+		"superfoodProductPresentations": [
+			{
+				"name": "En grano",
+				"icon": "https://example.com/icons/grano.svg"
+			},
+			{
+				"name": "Cápsulas",
+				"icon": "https://example.com/icons/capsulas.svg"
+			}
+		]
+	},
 	"optionalFieldName": "icon",
 	"additionalEntities": [
 		{

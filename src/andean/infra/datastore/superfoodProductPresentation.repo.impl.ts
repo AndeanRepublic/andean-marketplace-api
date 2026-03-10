@@ -64,4 +64,18 @@ export class SuperfoodProductPresentationRepoImpl implements SuperfoodProductPre
 	async delete(id: string): Promise<void> {
 		await this.model.deleteOne({ id }).exec();
 	}
+
+	async saveMany(
+		presentations: SuperfoodProductPresentation[],
+	): Promise<SuperfoodProductPresentation[]> {
+		const persistenceData = presentations.map((presentation) =>
+			SuperfoodProductPresentationMapper.toPersistence(presentation),
+		);
+		const savedDocs = await this.model.insertMany(persistenceData);
+		return savedDocs.map((doc) =>
+			SuperfoodProductPresentationMapper.fromDocument(
+				doc as SuperfoodProductPresentationDocument,
+			),
+		);
+	}
 }

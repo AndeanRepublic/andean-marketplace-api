@@ -10,7 +10,8 @@ import { MongoIdUtils } from '../../utils/MongoIdUtils';
 @Injectable()
 export class BoxSealRepoImpl extends BoxSealRepository {
 	constructor(
-		@InjectModel('BoxSeal') private readonly boxSealModel: Model<BoxSealDocument>,
+		@InjectModel('BoxSeal')
+		private readonly boxSealModel: Model<BoxSealDocument>,
 	) {
 		super();
 	}
@@ -54,7 +55,19 @@ export class BoxSealRepoImpl extends BoxSealRepository {
 	async getByIds(ids: string[]): Promise<BoxSeal[]> {
 		if (!ids.length) return [];
 		const objectIds = ids.map((id) => MongoIdUtils.stringToObjectId(id));
-		const docs = await this.boxSealModel.find({ _id: { $in: objectIds } }).exec();
+		const docs = await this.boxSealModel
+			.find({ _id: { $in: objectIds } })
+			.exec();
 		return docs.map((doc) => BoxSealMapper.fromDocument(doc));
+	}
+
+	async saveMany(boxSeals: BoxSeal[]): Promise<BoxSeal[]> {
+		const data = boxSeals.map((boxSeal) =>
+			BoxSealMapper.toPersistence(boxSeal),
+		);
+		const docs = await this.boxSealModel.insertMany(data);
+		return docs.map((doc) =>
+			BoxSealMapper.fromDocument(doc as BoxSealDocument),
+		);
 	}
 }

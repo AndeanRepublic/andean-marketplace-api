@@ -10,6 +10,18 @@
 		"name": "Fair Trade",
 		"icon": "https://example.com/icons/fairtrade.svg"
 	},
+	"bulkCreateDto": {
+		"superfoodCertifications": [
+			{
+				"name": "Fair Trade",
+				"icon": "https://example.com/icons/fairtrade.svg"
+			},
+			{
+				"name": "Sin Gluten",
+				"icon": "https://example.com/icons/gluten-free.svg"
+			}
+		]
+	},
 	"optionalFieldName": "icon",
 	"additionalEntities": [
 		{

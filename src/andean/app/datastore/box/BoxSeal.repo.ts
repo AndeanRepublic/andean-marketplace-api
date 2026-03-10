@@ -7,4 +7,5 @@ export abstract class BoxSealRepository {
 	abstract update(id: string, boxSeal: Partial<BoxSeal>): Promise<BoxSeal>;
 	abstract delete(id: string): Promise<void>;
 	abstract getByIds(ids: string[]): Promise<BoxSeal[]>;
+	abstract saveMany(boxSeals: BoxSeal[]): Promise<BoxSeal[]>;
 }

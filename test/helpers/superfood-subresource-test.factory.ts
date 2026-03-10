@@ -7,7 +7,7 @@ import { FixtureLoader } from './fixture-loader';
  * Configuration for a superfood sub-resource CRUD test suite.
  *
  * Each sub-resource (benefit, certification, type, etc.) shares the same
- * test structure: Create, GetById, List, Delete with `handle` method.
+ * test structure: Create, Bulk Create, GetById, List, Delete with `handle` method.
  * This factory eliminates ~95% of duplicated code across those tests.
  */
 export interface SubResourceTestConfig {
@@ -22,6 +22,7 @@ export interface SubResourceTestConfig {
 	/** Use case classes keyed by operation */
 	useCases: {
 		create: any;
+		createMany: any;
 		getById: any;
 		list: any;
 		delete: any;
@@ -43,9 +44,17 @@ export interface SubResourceTestConfig {
  * createSuperfoodSubResourceTests({ name: '...', endpoint: '...', ... });
  * ```
  */
-export function createSuperfoodSubResourceTests(config: SubResourceTestConfig): void {
+export function createSuperfoodSubResourceTests(
+	config: SubResourceTestConfig,
+): void {
 	const fixture = FixtureLoader.load(config.fixtureName);
-	const { entity, createDto, optionalFieldName, additionalEntities } = fixture;
+	const {
+		entity,
+		createDto,
+		bulkCreateDto,
+		optionalFieldName,
+		additionalEntities,
+	} = fixture;
 
 	// Build the mock response with Date objects
 	const mockResponse = {
@@ -57,6 +66,7 @@ export function createSuperfoodSubResourceTests(config: SubResourceTestConfig): 
 	describe(`${config.name}Controller (e2e)`, () => {
 		let app: INestApplication;
 		let createUseCase: any;
+		let createManyUseCase: any;
 		let getByIdUseCase: any;
 		let listUseCase: any;
 		let deleteUseCase: any;
@@ -68,6 +78,10 @@ export function createSuperfoodSubResourceTests(config: SubResourceTestConfig): 
 					{
 						provide: config.useCases.create,
 						useValue: { handle: jest.fn().mockResolvedValue(mockResponse) },
+					},
+					{
+						provide: config.useCases.createMany,
+						useValue: { handle: jest.fn().mockResolvedValue([mockResponse]) },
 					},
 					{
 						provide: config.useCases.getById,
@@ -95,6 +109,7 @@ export function createSuperfoodSubResourceTests(config: SubResourceTestConfig): 
 			await app.init();
 
 			createUseCase = moduleFixture.get(config.useCases.create);
+			createManyUseCase = moduleFixture.get(config.useCases.createMany);
 			getByIdUseCase = moduleFixture.get(config.useCases.getById);
 			listUseCase = moduleFixture.get(config.useCases.list);
 			deleteUseCase = moduleFixture.get(config.useCases.delete);
@@ -106,6 +121,57 @@ export function createSuperfoodSubResourceTests(config: SubResourceTestConfig): 
 
 		afterEach(() => {
 			jest.clearAllMocks();
+		});
+
+		// ─── POST /bulk ──────────────────────────────────────────────────
+		describe(`POST ${config.endpoint}/bulk`, () => {
+			it(`should create multiple ${config.name}s in bulk`, () => {
+				const bulkItems = additionalEntities.map((e: any) => ({
+					...mockResponse,
+					...e,
+				}));
+				jest
+					.spyOn(createManyUseCase, 'handle')
+					.mockResolvedValueOnce(bulkItems);
+
+				return request(app.getHttpServer())
+					.post(`${config.endpoint}/bulk`)
+					.send(bulkCreateDto)
+					.expect(HttpStatus.CREATED)
+					.expect((res) => {
+						expect(Array.isArray(res.body)).toBe(true);
+						expect(res.body.length).toBeGreaterThan(0);
+						res.body.forEach((item: any) => {
+							expect(item).toMatchObject({
+								id: expect.any(String),
+								name: expect.any(String),
+							});
+						});
+					});
+			});
+
+			it(`should return empty array when bulk list is empty`, () => {
+				jest.spyOn(createManyUseCase, 'handle').mockResolvedValueOnce([]);
+
+				const emptyBulk = { ...bulkCreateDto };
+				const arrayKey = Object.keys(emptyBulk)[0];
+				emptyBulk[arrayKey] = [];
+
+				return request(app.getHttpServer())
+					.post(`${config.endpoint}/bulk`)
+					.send(emptyBulk)
+					.expect(HttpStatus.CREATED)
+					.expect((res) => {
+						expect(Array.isArray(res.body)).toBe(true);
+					});
+			});
+
+			it(`should return 400 when bulk body is missing the array field`, () => {
+				return request(app.getHttpServer())
+					.post(`${config.endpoint}/bulk`)
+					.send({})
+					.expect(HttpStatus.BAD_REQUEST);
+			});
 		});
 
 		// ─── POST ────────────────────────────────────────────────────────
@@ -146,8 +212,13 @@ export function createSuperfoodSubResourceTests(config: SubResourceTestConfig): 
 
 			if (optionalFieldName) {
 				it(`should create ${config.name} without ${optionalFieldName} (optional field)`, () => {
-					const withoutOptional = { ...mockResponse, [optionalFieldName]: undefined };
-					jest.spyOn(createUseCase, 'handle').mockResolvedValueOnce(withoutOptional);
+					const withoutOptional = {
+						...mockResponse,
+						[optionalFieldName]: undefined,
+					};
+					jest
+						.spyOn(createUseCase, 'handle')
+						.mockResolvedValueOnce(withoutOptional);
 
 					const dtoWithoutOptional = { ...createDto };
 					delete dtoWithoutOptional[optionalFieldName];
@@ -157,7 +228,10 @@ export function createSuperfoodSubResourceTests(config: SubResourceTestConfig): 
 						.send(dtoWithoutOptional)
 						.expect(HttpStatus.CREATED)
 						.expect((res) => {
-							expect(res.body).toMatchObject({ id: expect.any(String), name: expect.any(String) });
+							expect(res.body).toMatchObject({
+								id: expect.any(String),
+								name: expect.any(String),
+							});
 						});
 				});
 			}
@@ -185,10 +259,12 @@ export function createSuperfoodSubResourceTests(config: SubResourceTestConfig): 
 		});
 
 		// ─── GET BY ID ───────────────────────────────────────────────────
-		// SKIPPED: Route commented out in controller (only POST is active)
+		// SKIPPED: Route commented out in controller
 		describe.skip(`GET ${config.endpoint}/:id`, () => {
 			it(`should return a ${config.name} by id`, () => {
-				jest.spyOn(getByIdUseCase, 'handle').mockResolvedValueOnce(mockResponse);
+				jest
+					.spyOn(getByIdUseCase, 'handle')
+					.mockResolvedValueOnce(mockResponse);
 
 				return request(app.getHttpServer())
 					.get(`${config.endpoint}/${mockResponse.id}`)
@@ -214,8 +290,7 @@ export function createSuperfoodSubResourceTests(config: SubResourceTestConfig): 
 		});
 
 		// ─── LIST ────────────────────────────────────────────────────────
-		// SKIPPED: Route commented out in controller (only POST is active)
-		describe.skip(`GET ${config.endpoint}`, () => {
+		describe(`GET ${config.endpoint}`, () => {
 			it(`should return all ${config.name}s`, () => {
 				const items = [
 					mockResponse,
@@ -230,7 +305,10 @@ export function createSuperfoodSubResourceTests(config: SubResourceTestConfig): 
 						expect(Array.isArray(res.body)).toBe(true);
 						expect(res.body).toHaveLength(items.length);
 						res.body.forEach((item: any) => {
-							expect(item).toMatchObject({ id: expect.any(String), name: expect.any(String) });
+							expect(item).toMatchObject({
+								id: expect.any(String),
+								name: expect.any(String),
+							});
 						});
 					});
 			});
@@ -269,7 +347,7 @@ export function createSuperfoodSubResourceTests(config: SubResourceTestConfig): 
 		});
 
 		// ─── DELETE ──────────────────────────────────────────────────────
-		// SKIPPED: Route commented out in controller (only POST is active)
+		// SKIPPED: Route commented out in controller
 		describe.skip(`DELETE ${config.endpoint}/:id`, () => {
 			it(`should delete a ${config.name}`, () => {
 				jest.spyOn(deleteUseCase, 'handle').mockResolvedValueOnce(undefined);

@@ -1,6 +1,7 @@
 import { createSuperfoodSubResourceTests } from './helpers/superfood-subresource-test.factory';
 import { SuperfoodProductPresentationController } from '../src/andean/infra/controllers/superfoodControllers/superfoodProductPresentation.controller';
 import { CreateSuperfoodProductPresentationUseCase } from '../src/andean/app/use_cases/superfoods/productPresentation/CreateSuperfoodProductPresentationUseCase';
+import { CreateManySuperfoodProductPresentationsUseCase } from '../src/andean/app/use_cases/superfoods/productPresentation/CreateManySuperfoodProductPresentationsUseCase';
 import { GetSuperfoodProductPresentationByIdUseCase } from '../src/andean/app/use_cases/superfoods/productPresentation/GetSuperfoodProductPresentationByIdUseCase';
 import { ListSuperfoodProductPresentationsUseCase } from '../src/andean/app/use_cases/superfoods/productPresentation/ListSuperfoodProductPresentationsUseCase';
 import { DeleteSuperfoodProductPresentationUseCase } from '../src/andean/app/use_cases/superfoods/productPresentation/DeleteSuperfoodProductPresentationUseCase';
@@ -12,6 +13,7 @@ createSuperfoodSubResourceTests({
 	controller: SuperfoodProductPresentationController,
 	useCases: {
 		create: CreateSuperfoodProductPresentationUseCase,
+		createMany: CreateManySuperfoodProductPresentationsUseCase,
 		getById: GetSuperfoodProductPresentationByIdUseCase,
 		list: ListSuperfoodProductPresentationsUseCase,
 		delete: DeleteSuperfoodProductPresentationUseCase,

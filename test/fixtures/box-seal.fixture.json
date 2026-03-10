@@ -16,6 +16,20 @@
 		"name": "Sello Orgánico Premium",
 		"description": "Certificación de producto orgánico premium"
 	},
+	"bulkCreateDto": {
+		"boxSeals": [
+			{
+				"name": "Sello Orgánico Certificado",
+				"description": "Certificación de producto orgánico avalado por SENASA",
+				"logoMediaId": "media-logo-seal-001"
+			},
+			{
+				"name": "Sello Comercio Justo",
+				"description": "Garantiza condiciones justas de comercio",
+				"logoMediaId": "media-logo-seal-002"
+			}
+		]
+	},
 	"additionalEntities": [
 		{
 			"id": "box-seal-uuid-002",

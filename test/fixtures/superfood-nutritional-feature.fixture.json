@@ -10,6 +10,16 @@
 		"name": "Rico en fibra",
 		"iconId": "67890abcdef1234567890125"
 	},
+	"bulkCreateDto": {
+		"superfoodNutritionalFeatures": [
+			{
+				"name": "Rico en antioxidantes"
+			},
+			{
+				"name": "Fuente de omega-3"
+			}
+		]
+	},
 	"optionalFieldName": "iconId",
 	"additionalEntities": [
 		{
