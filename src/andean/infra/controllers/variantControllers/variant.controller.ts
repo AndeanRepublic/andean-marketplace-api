@@ -10,7 +10,7 @@ import {
 	HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
-import { VariantResponse } from 'src/andean/app/modules/VariantResponse';
+import { VariantResponse } from 'src/andean/app/modules/variant/VariantResponse';
 import { CreateVariantUseCase } from 'src/andean/app/use_cases/variant/CreateVariantUseCase';
 import { CreateManyVariantsUseCase } from 'src/andean/app/use_cases/variant/CreateManyVariantsUseCase';
 import { GetAllVariantsUseCase } from 'src/andean/app/use_cases/variant/GetAllVariantsUseCase';

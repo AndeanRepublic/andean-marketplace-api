@@ -25,7 +25,7 @@ import { CreateSuperfoodProductUseCase } from '../../../app/use_cases/superfoods
 import { UpdateSuperfoodProductUseCase } from '../../../app/use_cases/superfoods/UpdateSuperfoodProductUseCase';
 import { DeleteSuperfoodProductUseCase } from '../../../app/use_cases/superfoods/DeleteSuperfoodProductUseCase';
 import { GetAllSuperfoodProductsUseCase } from '../../../app/use_cases/superfoods/GetAllSuperfoodProductsUseCase';
-import { PaginatedProductsResponse } from '../../../app/modules/PaginatedProductsResponse';
+import { PaginatedProductsResponse } from '../../../app/modules/shared/PaginatedProductsResponse';
 import { SuperfoodProductListItem } from '../../../app/models/superfoods/SuperfoodProductListItem';
 import { PaginatedSuperfoodProductsResponse } from '../../../app/models/superfoods/PaginatedSuperfoodProductsResponse';
 import { ProductSortBy } from '../../../domain/enums/ProductSortBy';
@@ -41,7 +41,7 @@ export class SuperfoodController {
 		private readonly updateSuperfoodProductUseCase: UpdateSuperfoodProductUseCase,
 		private readonly deleteSuperfoodProductUseCase: DeleteSuperfoodProductUseCase,
 		private readonly getByIdSuperfoodProductDetailUseCase: GetByIdSuperfoodProductDetailUseCase,
-	) { }
+	) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)

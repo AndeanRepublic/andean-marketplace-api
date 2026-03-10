@@ -21,8 +21,8 @@ import { UpdateCustomerProfileUseCase } from '../../app/use_cases/users/UpdateCu
 import { UpdateCustomerProfileDto } from './dto/UpdateCustomerProfileDto';
 import { UpdateSellerProfileDto } from './dto/UpdateSellerProfileDto';
 import { UpdateSellerProfileUseCase } from '../../app/use_cases/users/UpdateSellerProfileUseCase';
-import { CustomerProfileResponse } from '../../app/modules/CustomerProfileResponse';
-import { SellerProfileResponse } from '../../app/modules/SellerProfileResponse';
+import { CustomerProfileResponse } from '../../app/modules/users/CustomerProfileResponse';
+import { SellerProfileResponse } from '../../app/modules/users/SellerProfileResponse';
 
 const path_customers: string = '/customers';
 const path_sellers: string = '/sellers';

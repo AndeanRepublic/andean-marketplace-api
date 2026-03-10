@@ -22,7 +22,7 @@ import { DeleteShopUseCase } from '../../app/use_cases/shops/DeleteShopUseCase';
 import { CreateShopUseCase } from '../../app/use_cases/shops/CreateShopUseCase';
 import { Shop } from '../../domain/entities/Shop';
 import { CreateShopDto } from './dto/CreateShopDto';
-import { ShopResponse } from '../../app/modules/ShopResponse';
+import { ShopResponse } from '../../app/modules/shop/ShopResponse';
 
 @ApiTags('shops')
 @Controller('shops')

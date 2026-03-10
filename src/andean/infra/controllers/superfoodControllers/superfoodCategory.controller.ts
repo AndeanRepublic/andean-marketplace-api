@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateSuperfoodCategoryDto } from '../dto/superfoods/CreateSuperfoodCategoryDto';
-import { SuperfoodCategoryResponse } from '../../../app/modules/SuperfoodCategoryResponse';
+import { SuperfoodCategoryResponse } from '../../../app/modules/superfoods/SuperfoodCategoryResponse';
 import { CreateSuperfoodCategoryUseCase } from '../../../app/use_cases/superfoods/category/CreateSuperfoodCategoryUseCase';
 import { GetSuperfoodCategoryByIdUseCase } from '../../../app/use_cases/superfoods/category/GetSuperfoodCategoryByIdUseCase';
 import { ListSuperfoodCategoriesUseCase } from '../../../app/use_cases/superfoods/category/ListSuperfoodCategoriesUseCase';

@@ -10,7 +10,7 @@ import {
 	HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
-import { TextileStyleResponse } from 'src/andean/app/modules/TextileStyleResponse';
+import { TextileStyleResponse } from 'src/andean/app/modules/textile/TextileStyleResponse';
 import { CreateTextileStyleUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileStyleUseCase';
 import { CreateManyTextileStylesUseCase } from 'src/andean/app/use_cases/textileProducts/CreateManyTextileStylesUseCase';
 import { TextileStyle } from 'src/andean/domain/entities/textileProducts/TextileStyle';

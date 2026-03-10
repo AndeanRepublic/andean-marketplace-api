@@ -28,7 +28,7 @@ import { CreateReviewUseCase } from 'src/andean/app/use_cases/CreateReviewUseCas
 import { Review } from 'src/andean/domain/entities/Review';
 import { CreateReviewDto } from './dto/CreateReviewDto';
 import { UpdateReviewDto } from './dto/UpdateReviewDto';
-import { ReviewResponse } from 'src/andean/app/modules/ReviewResponse';
+import { ReviewResponse } from 'src/andean/app/modules/review/ReviewResponse';
 import { GetAllReviewsUseCase } from 'src/andean/app/use_cases/GetAllReviewsUseCase';
 import { GetByIdReviewUseCase } from 'src/andean/app/use_cases/GetByIdReviewUseCase';
 import { UpdateReviewUseCase } from 'src/andean/app/use_cases/UpdateReviewUseCase';

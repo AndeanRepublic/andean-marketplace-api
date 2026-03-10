@@ -10,7 +10,7 @@ import {
 	Put,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
-import { BoxSealResponse } from '../../../app/modules/BoxSealResponse';
+import { BoxSealResponse } from '../../../app/modules/box/BoxSealResponse';
 import { CreateBoxSealUseCase } from '../../../app/use_cases/boxSeals/CreateBoxSealUseCase';
 import { GetAllBoxSealsUseCase } from '../../../app/use_cases/boxSeals/GetAllBoxSealsUseCase';
 import { GetBoxSealByIdUseCase } from '../../../app/use_cases/boxSeals/GetBoxSealByIdUseCase';
