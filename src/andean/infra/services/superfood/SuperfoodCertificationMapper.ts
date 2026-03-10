@@ -1,7 +1,7 @@
 import { SuperfoodCertificationDocument } from '../../persistence/superfood/superfoodCertification.schema';
 import { SuperfoodCertification } from '../../../domain/entities/superfoods/SuperfoodCertification';
 import { CreateSuperfoodCertificationDto } from '../../controllers/dto/superfoods/CreateSuperfoodCertificationDto';
-import { SuperfoodCertificationResponse } from '../../../app/modules/SuperfoodCertificationResponse';
+import { SuperfoodCertificationResponse } from '../../../app/modules/superfoods/SuperfoodCertificationResponse';
 import { MongoIdUtils } from '../../utils/MongoIdUtils';
 import { Types } from 'mongoose';
 

@@ -33,7 +33,7 @@ describe('ReviewController (e2e)', () => {
 	const mockReview = {
 		...fixture.entity,
 		createdAt: new Date(fixture.entity.createdAt),
-		updatedAt: new Date(fixture.entity.updatedAt)
+		updatedAt: new Date(fixture.entity.updatedAt),
 	} as any;
 	const createDto = fixture.createDto;
 	const createDtoWithMedia = fixture.createDtoWithMedia;
@@ -41,7 +41,7 @@ describe('ReviewController (e2e)', () => {
 	const mockMediaItem = {
 		...fixture.mockMediaItem,
 		createdAt: new Date(fixture.mockMediaItem.createdAt),
-		updatedAt: new Date(fixture.mockMediaItem.updatedAt)
+		updatedAt: new Date(fixture.mockMediaItem.updatedAt),
 	} as any;
 
 	// Minimal valid 1x1 pixel PNG for file upload tests
@@ -56,49 +56,51 @@ describe('ReviewController (e2e)', () => {
 			providers: [
 				{
 					provide: CreateReviewUseCase,
-					useValue: { handle: jest.fn().mockResolvedValue(mockReview) }
+					useValue: { handle: jest.fn().mockResolvedValue(mockReview) },
 				},
 				{
 					provide: GetAllReviewsUseCase,
-					useValue: { handle: jest.fn().mockResolvedValue([mockReview]) }
+					useValue: { handle: jest.fn().mockResolvedValue([mockReview]) },
 				},
 				{
 					provide: GetByIdReviewUseCase,
-					useValue: { handle: jest.fn().mockResolvedValue(mockReview) }
+					useValue: { handle: jest.fn().mockResolvedValue(mockReview) },
 				},
 				{
 					provide: UpdateReviewUseCase,
-					useValue: { handle: jest.fn().mockResolvedValue(mockReview) }
+					useValue: { handle: jest.fn().mockResolvedValue(mockReview) },
 				},
 				{
 					provide: DeleteReviewUseCase,
-					useValue: { handle: jest.fn().mockResolvedValue(undefined) }
+					useValue: { handle: jest.fn().mockResolvedValue(undefined) },
 				},
 				{
 					provide: IncrementLikesUseCase,
-					useValue: { handle: jest.fn().mockResolvedValue(mockReview) }
+					useValue: { handle: jest.fn().mockResolvedValue(mockReview) },
 				},
 				{
 					provide: IncrementDislikesUseCase,
-					useValue: { handle: jest.fn().mockResolvedValue(mockReview) }
+					useValue: { handle: jest.fn().mockResolvedValue(mockReview) },
 				},
 				{
 					provide: DecrementLikesUseCase,
-					useValue: { handle: jest.fn().mockResolvedValue(mockReview) }
+					useValue: { handle: jest.fn().mockResolvedValue(mockReview) },
 				},
 				{
 					provide: DecrementDislikesUseCase,
-					useValue: { handle: jest.fn().mockResolvedValue(mockReview) }
+					useValue: { handle: jest.fn().mockResolvedValue(mockReview) },
 				},
 			],
 		}).compile();
 
 		app = moduleFixture.createNestApplication();
-		app.useGlobalPipes(new ValidationPipe({
-			whitelist: true,
-			forbidNonWhitelisted: true,
-			transform: true
-		}));
+		app.useGlobalPipes(
+			new ValidationPipe({
+				whitelist: true,
+				forbidNonWhitelisted: true,
+				transform: true,
+			}),
+		);
 		await app.init();
 
 		createReviewUseCase = moduleFixture.get(CreateReviewUseCase);
@@ -122,7 +124,9 @@ describe('ReviewController (e2e)', () => {
 
 	describe('POST /reviews (create review)', () => {
 		it('should create a new review without media', () => {
-			jest.spyOn(createReviewUseCase, 'handle').mockResolvedValueOnce(mockReview);
+			jest
+				.spyOn(createReviewUseCase, 'handle')
+				.mockResolvedValueOnce(mockReview);
 
 			return request(app.getHttpServer())
 				.post('/reviews')
@@ -139,7 +143,7 @@ describe('ReviewController (e2e)', () => {
 						numberStarts: expect.any(Number),
 						customerId: expect.any(String),
 						productId: expect.any(String),
-						productType: expect.any(String)
+						productType: expect.any(String),
 					});
 					expect(res.body).toHaveProperty('createdAt');
 					expect(res.body).toHaveProperty('updatedAt');
@@ -149,20 +153,25 @@ describe('ReviewController (e2e)', () => {
 							numberStarts: createDto.numberStarts,
 							customerId: createDto.customerId,
 							productId: createDto.productId,
-							productType: createDto.productType
+							productType: createDto.productType,
 						}),
-						undefined // No file
+						undefined, // No file
 					);
 				});
 		});
 
 		it('should create a new review with media file', () => {
 			const reviewWithMedia = { ...mockReview, mediaId: mockMediaItem.id };
-			jest.spyOn(createReviewUseCase, 'handle').mockResolvedValueOnce(reviewWithMedia);
+			jest
+				.spyOn(createReviewUseCase, 'handle')
+				.mockResolvedValueOnce(reviewWithMedia);
 
 			return request(app.getHttpServer())
 				.post('/reviews')
-				.attach('file', validPngBuffer, { filename: 'review-photo.jpg', contentType: 'image/jpeg' })
+				.attach('file', validPngBuffer, {
+					filename: 'review-photo.jpg',
+					contentType: 'image/jpeg',
+				})
 				.field('content', createDtoWithMedia.content)
 				.field('numberStarts', createDtoWithMedia.numberStarts)
 				.field('customerId', createDtoWithMedia.customerId)
@@ -177,20 +186,20 @@ describe('ReviewController (e2e)', () => {
 						id: expect.any(String),
 						content: expect.any(String),
 						numberStarts: expect.any(Number),
-						mediaId: expect.any(String)
+						mediaId: expect.any(String),
 					});
 					expect(createReviewUseCase.handle).toHaveBeenCalledWith(
 						expect.objectContaining({
 							content: createDtoWithMedia.content,
 							mediaType: createDtoWithMedia.mediaType,
 							mediaName: createDtoWithMedia.mediaName,
-							mediaRole: createDtoWithMedia.mediaRole
+							mediaRole: createDtoWithMedia.mediaRole,
 						}),
 						expect.objectContaining({
 							buffer: expect.any(Buffer),
 							mimetype: 'image/jpeg',
-							originalname: 'review-photo.jpg'
-						})
+							originalname: 'review-photo.jpg',
+						}),
 					);
 				});
 		});
@@ -250,7 +259,10 @@ describe('ReviewController (e2e)', () => {
 
 			return request(app.getHttpServer())
 				.post('/reviews')
-				.attach('file', largeBuffer, { filename: 'large.jpg', contentType: 'image/jpeg' })
+				.attach('file', largeBuffer, {
+					filename: 'large.jpg',
+					contentType: 'image/jpeg',
+				})
 				.field('content', 'Great product')
 				.field('numberStarts', 5)
 				.field('customerId', 'customer-123')
@@ -266,7 +278,10 @@ describe('ReviewController (e2e)', () => {
 
 			return request(app.getHttpServer())
 				.post('/reviews')
-				.attach('file', textBuffer, { filename: 'file.txt', contentType: 'text/plain' })
+				.attach('file', textBuffer, {
+					filename: 'file.txt',
+					contentType: 'text/plain',
+				})
 				.field('content', 'Great product')
 				.field('numberStarts', 5)
 				.field('customerId', 'customer-123')
@@ -283,7 +298,10 @@ describe('ReviewController (e2e)', () => {
 			// Test JPEG
 			await request(app.getHttpServer())
 				.post('/reviews')
-				.attach('file', validPngBuffer, { filename: 'photo.jpeg', contentType: 'image/jpeg' })
+				.attach('file', validPngBuffer, {
+					filename: 'photo.jpeg',
+					contentType: 'image/jpeg',
+				})
 				.field('content', 'Great')
 				.field('numberStarts', 5)
 				.field('customerId', 'customer-123')
@@ -296,7 +314,10 @@ describe('ReviewController (e2e)', () => {
 			// Test PNG
 			await request(app.getHttpServer())
 				.post('/reviews')
-				.attach('file', validPngBuffer, { filename: 'photo.png', contentType: 'image/png' })
+				.attach('file', validPngBuffer, {
+					filename: 'photo.png',
+					contentType: 'image/png',
+				})
 				.field('content', 'Great')
 				.field('numberStarts', 5)
 				.field('customerId', 'customer-123')
@@ -309,7 +330,10 @@ describe('ReviewController (e2e)', () => {
 			// Test WEBP
 			await request(app.getHttpServer())
 				.post('/reviews')
-				.attach('file', validPngBuffer, { filename: 'photo.webp', contentType: 'image/webp' })
+				.attach('file', validPngBuffer, {
+					filename: 'photo.webp',
+					contentType: 'image/webp',
+				})
 				.field('content', 'Great')
 				.field('numberStarts', 5)
 				.field('customerId', 'customer-123')
@@ -323,7 +347,9 @@ describe('ReviewController (e2e)', () => {
 
 	describe('GET /reviews', () => {
 		it('should return all reviews', () => {
-			jest.spyOn(getAllReviewsUseCase, 'handle').mockResolvedValueOnce([mockReview]);
+			jest
+				.spyOn(getAllReviewsUseCase, 'handle')
+				.mockResolvedValueOnce([mockReview]);
 
 			return request(app.getHttpServer())
 				.get('/reviews')
@@ -334,15 +360,15 @@ describe('ReviewController (e2e)', () => {
 					expect(res.body[0]).toMatchObject({
 						id: expect.any(String),
 						content: expect.any(String),
-						numberStarts: expect.any(Number)
+						numberStarts: expect.any(Number),
 					});
 				});
 		});
 
 		it('should return 404 when no reviews exist', () => {
-			jest.spyOn(getAllReviewsUseCase, 'handle').mockRejectedValueOnce(
-				new Error('No reviews found')
-			);
+			jest
+				.spyOn(getAllReviewsUseCase, 'handle')
+				.mockRejectedValueOnce(new Error('No reviews found'));
 
 			return request(app.getHttpServer())
 				.get('/reviews')
@@ -352,7 +378,9 @@ describe('ReviewController (e2e)', () => {
 
 	describe('GET /reviews/:id', () => {
 		it('should return a review by id', () => {
-			jest.spyOn(getByIdReviewUseCase, 'handle').mockResolvedValueOnce(mockReview);
+			jest
+				.spyOn(getByIdReviewUseCase, 'handle')
+				.mockResolvedValueOnce(mockReview);
 
 			return request(app.getHttpServer())
 				.get(`/reviews/${mockReview.id}`)
@@ -361,15 +389,15 @@ describe('ReviewController (e2e)', () => {
 					expect(res.body).toMatchObject({
 						id: mockReview.id,
 						content: mockReview.content,
-						numberStarts: mockReview.numberStarts
+						numberStarts: mockReview.numberStarts,
 					});
 				});
 		});
 
 		it('should return 404 when review not found', () => {
-			jest.spyOn(getByIdReviewUseCase, 'handle').mockRejectedValueOnce(
-				new Error('Review not found')
-			);
+			jest
+				.spyOn(getByIdReviewUseCase, 'handle')
+				.mockRejectedValueOnce(new Error('Review not found'));
 
 			return request(app.getHttpServer())
 				.get('/reviews/non-existent-id')
@@ -380,7 +408,9 @@ describe('ReviewController (e2e)', () => {
 	describe('PUT /reviews/:id', () => {
 		it('should update a review', () => {
 			const updatedReview = { ...mockReview, content: updateDto.content };
-			jest.spyOn(updateReviewUseCase, 'handle').mockResolvedValueOnce(updatedReview);
+			jest
+				.spyOn(updateReviewUseCase, 'handle')
+				.mockResolvedValueOnce(updatedReview);
 
 			return request(app.getHttpServer())
 				.put(`/reviews/${mockReview.id}`)
@@ -389,15 +419,15 @@ describe('ReviewController (e2e)', () => {
 				.expect((res) => {
 					expect(res.body).toMatchObject({
 						id: mockReview.id,
-						content: updateDto.content
+						content: updateDto.content,
 					});
 				});
 		});
 
 		it('should return 404 when trying to update non-existent review', () => {
-			jest.spyOn(updateReviewUseCase, 'handle').mockRejectedValueOnce(
-				new Error('Review not found')
-			);
+			jest
+				.spyOn(updateReviewUseCase, 'handle')
+				.mockRejectedValueOnce(new Error('Review not found'));
 
 			return request(app.getHttpServer())
 				.put('/reviews/non-existent-id')
@@ -408,17 +438,19 @@ describe('ReviewController (e2e)', () => {
 
 	describe('DELETE /reviews/:id', () => {
 		it('should delete a review', () => {
-			jest.spyOn(deleteReviewUseCase, 'handle').mockResolvedValueOnce(undefined);
+			jest
+				.spyOn(deleteReviewUseCase, 'handle')
+				.mockResolvedValueOnce(undefined);
 
 			return request(app.getHttpServer())
 				.delete(`/reviews/${mockReview.id}`)
-				.expect(HttpStatus.OK);
+				.expect(HttpStatus.NO_CONTENT);
 		});
 
 		it('should return 404 when trying to delete non-existent review', () => {
-			jest.spyOn(deleteReviewUseCase, 'handle').mockRejectedValueOnce(
-				new Error('Review not found')
-			);
+			jest
+				.spyOn(deleteReviewUseCase, 'handle')
+				.mockRejectedValueOnce(new Error('Review not found'));
 
 			return request(app.getHttpServer())
 				.delete('/reviews/non-existent-id')
@@ -428,8 +460,13 @@ describe('ReviewController (e2e)', () => {
 
 	describe('PATCH /reviews/:id/likes', () => {
 		it('should increment likes', () => {
-			const reviewWithMoreLikes = { ...mockReview, numberLikes: mockReview.numberLikes + 1 };
-			jest.spyOn(incrementLikesUseCase, 'handle').mockResolvedValueOnce(reviewWithMoreLikes);
+			const reviewWithMoreLikes = {
+				...mockReview,
+				numberLikes: mockReview.numberLikes + 1,
+			};
+			jest
+				.spyOn(incrementLikesUseCase, 'handle')
+				.mockResolvedValueOnce(reviewWithMoreLikes);
 
 			return request(app.getHttpServer())
 				.patch(`/reviews/${mockReview.id}/likes`)
@@ -437,7 +474,7 @@ describe('ReviewController (e2e)', () => {
 				.expect((res) => {
 					expect(res.body).toMatchObject({
 						id: mockReview.id,
-						numberLikes: mockReview.numberLikes + 1
+						numberLikes: mockReview.numberLikes + 1,
 					});
 				});
 		});
@@ -445,8 +482,13 @@ describe('ReviewController (e2e)', () => {
 
 	describe('PATCH /reviews/:id/dislikes', () => {
 		it('should increment dislikes', () => {
-			const reviewWithMoreDislikes = { ...mockReview, numberDislikes: mockReview.numberDislikes + 1 };
-			jest.spyOn(incrementDislikesUseCase, 'handle').mockResolvedValueOnce(reviewWithMoreDislikes);
+			const reviewWithMoreDislikes = {
+				...mockReview,
+				numberDislikes: mockReview.numberDislikes + 1,
+			};
+			jest
+				.spyOn(incrementDislikesUseCase, 'handle')
+				.mockResolvedValueOnce(reviewWithMoreDislikes);
 
 			return request(app.getHttpServer())
 				.patch(`/reviews/${mockReview.id}/dislikes`)
@@ -454,7 +496,7 @@ describe('ReviewController (e2e)', () => {
 				.expect((res) => {
 					expect(res.body).toMatchObject({
 						id: mockReview.id,
-						numberDislikes: mockReview.numberDislikes + 1
+						numberDislikes: mockReview.numberDislikes + 1,
 					});
 				});
 		});
@@ -462,8 +504,13 @@ describe('ReviewController (e2e)', () => {
 
 	describe('DELETE /reviews/:id/likes', () => {
 		it('should decrement likes', () => {
-			const reviewWithFewerLikes = { ...mockReview, numberLikes: Math.max(0, mockReview.numberLikes - 1) };
-			jest.spyOn(decrementLikesUseCase, 'handle').mockResolvedValueOnce(reviewWithFewerLikes);
+			const reviewWithFewerLikes = {
+				...mockReview,
+				numberLikes: Math.max(0, mockReview.numberLikes - 1),
+			};
+			jest
+				.spyOn(decrementLikesUseCase, 'handle')
+				.mockResolvedValueOnce(reviewWithFewerLikes);
 
 			return request(app.getHttpServer())
 				.delete(`/reviews/${mockReview.id}/likes`)
@@ -471,7 +518,7 @@ describe('ReviewController (e2e)', () => {
 				.expect((res) => {
 					expect(res.body).toMatchObject({
 						id: mockReview.id,
-						numberLikes: Math.max(0, mockReview.numberLikes - 1)
+						numberLikes: Math.max(0, mockReview.numberLikes - 1),
 					});
 				});
 		});
@@ -479,8 +526,13 @@ describe('ReviewController (e2e)', () => {
 
 	describe('DELETE /reviews/:id/dislikes', () => {
 		it('should decrement dislikes', () => {
-			const reviewWithFewerDislikes = { ...mockReview, numberDislikes: Math.max(0, mockReview.numberDislikes - 1) };
-			jest.spyOn(decrementDislikesUseCase, 'handle').mockResolvedValueOnce(reviewWithFewerDislikes);
+			const reviewWithFewerDislikes = {
+				...mockReview,
+				numberDislikes: Math.max(0, mockReview.numberDislikes - 1),
+			};
+			jest
+				.spyOn(decrementDislikesUseCase, 'handle')
+				.mockResolvedValueOnce(reviewWithFewerDislikes);
 
 			return request(app.getHttpServer())
 				.delete(`/reviews/${mockReview.id}/dislikes`)
@@ -488,7 +540,7 @@ describe('ReviewController (e2e)', () => {
 				.expect((res) => {
 					expect(res.body).toMatchObject({
 						id: mockReview.id,
-						numberDislikes: Math.max(0, mockReview.numberDislikes - 1)
+						numberDislikes: Math.max(0, mockReview.numberDislikes - 1),
 					});
 				});
 		});

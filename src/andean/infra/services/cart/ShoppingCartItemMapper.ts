@@ -1,5 +1,5 @@
-import { ShoppingCartItemResponse } from '../../../app/models/cart/ShoppingCartItemResponse';
-import { BoxContentItemResponse } from '../../../app/models/cart/BoxContentItemResponse';
+import { ShoppingCartItemResponse } from '../../../app/modules/cart/ShoppingCartItemResponse';
+import { BoxContentItemResponse } from '../../../app/modules/cart/BoxContentItemResponse';
 import { CartItem } from '../../../domain/entities/CartItem';
 import { Variant } from '../../../domain/entities/Variant';
 import { ProductInfo } from '../../../domain/interfaces/ProductInfo';

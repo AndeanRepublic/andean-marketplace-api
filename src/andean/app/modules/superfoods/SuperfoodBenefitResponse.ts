@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { SuperfoodColor } from '../../domain/enums/SuperfoodColor';
+import { SuperfoodColor } from '../../../domain/enums/SuperfoodColor';
 
 export class SuperfoodBenefitResponse {
 	@ApiProperty({ description: 'ID único del beneficio' })
@@ -13,7 +13,8 @@ export class SuperfoodBenefitResponse {
 
 	@ApiProperty({
 		description: 'Descripción detallada del beneficio',
-		example: 'Este beneficio ayuda a mejorar la digestión gracias a sus propiedades naturales.',
+		example:
+			'Este beneficio ayuda a mejorar la digestión gracias a sus propiedades naturales.',
 	})
 	description!: string;
 

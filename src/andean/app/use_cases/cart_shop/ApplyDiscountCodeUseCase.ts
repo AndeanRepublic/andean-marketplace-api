@@ -7,7 +7,7 @@ import {
 import { CartShopItemRepository } from '../../datastore/CartShopItem.repo';
 import { CartShopRepository } from '../../datastore/CartShop.repo';
 import { DiscountCodeService } from '../../../infra/services/DiscountCodeService';
-import { ApplyDiscountResponse } from '../../models/cart/ApplyDiscountResponse';
+import { ApplyDiscountResponse } from '../../modules/cart/ApplyDiscountResponse';
 
 @Injectable()
 export class ApplyDiscountCodeUseCase {

@@ -1,7 +1,7 @@
 import { SuperfoodBenefitDocument } from '../../persistence/superfood/superfoodBenefit.schema';
 import { SuperfoodBenefit } from '../../../domain/entities/superfoods/SuperfoodBenefit';
 import { CreateSuperfoodBenefitDto } from '../../controllers/dto/superfoods/CreateSuperfoodBenefitDto';
-import { SuperfoodBenefitResponse } from '../../../app/modules/SuperfoodBenefitResponse';
+import { SuperfoodBenefitResponse } from '../../../app/modules/superfoods/SuperfoodBenefitResponse';
 import { MongoIdUtils } from '../../utils/MongoIdUtils';
 import { Types } from 'mongoose';
 

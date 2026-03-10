@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateSuperfoodNutritionalFeatureDto } from '../dto/superfoods/CreateSuperfoodNutritionalFeatureDto';
-import { SuperfoodNutritionalFeatureResponse } from '../../../app/modules/SuperfoodNutritionalFeatureResponse';
+import { SuperfoodNutritionalFeatureResponse } from '../../../app/modules/superfoods/SuperfoodNutritionalFeatureResponse';
 import { CreateSuperfoodNutritionalFeatureUseCase } from '../../../app/use_cases/superfoods/nutritionalFeature/CreateSuperfoodNutritionalFeatureUseCase';
 import { GetSuperfoodNutritionalFeatureByIdUseCase } from '../../../app/use_cases/superfoods/nutritionalFeature/GetSuperfoodNutritionalFeatureByIdUseCase';
 import { ListSuperfoodNutritionalFeaturesUseCase } from '../../../app/use_cases/superfoods/nutritionalFeature/ListSuperfoodNutritionalFeaturesUseCase';

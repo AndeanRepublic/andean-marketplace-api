@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { TraceabilityProcessName } from '../../domain/enums/TraceabilityProcessName';
+import { TraceabilityProcessName } from '../../../domain/enums/TraceabilityProcessName';
 
 export class TraceabilityEpochResponse {
 	@ApiProperty({
