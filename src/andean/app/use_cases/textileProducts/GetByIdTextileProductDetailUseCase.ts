@@ -183,7 +183,7 @@ export class GetByIdTextileProductDetailUseCase {
 		// -- Construir respuesta completa
 		return {
 			id: product.id,
-			name: product.baseInfo.title,
+			title: product.baseInfo.title,
 			images,
 			variantInfo,
 			generalStock: product.priceInventary.totalStock,

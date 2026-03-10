@@ -246,8 +246,8 @@ export class TextileProductDetailResponse {
 	})
 	id!: string;
 
-	@ApiProperty({ description: 'Nombre del producto textil' })
-	name!: string;
+	@ApiProperty({ description: 'Título del producto textil' })
+	title!: string;
 
 	@ApiProperty({
 		type: [MediaImageResponse],

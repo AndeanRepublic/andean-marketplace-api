@@ -28,7 +28,7 @@ describe('CartShopController (e2e)', () => {
 	// Mock responses using fixtures
 	const mockAddItemResponse = {
 		ownerName: textileFixtures.shop.name,
-		titulo: textileFixtures.entity.baseInfo.title,
+		title: textileFixtures.entity.baseInfo.title,
 		combinationVariant: textileFixtures.variants[0].combination,
 		thumbnailImgUrl: textileFixtures.mediaItems[0].url,
 		unitPrice: textileFixtures.variants[0].price,
@@ -43,7 +43,7 @@ describe('CartShopController (e2e)', () => {
 		items: [
 			{
 				ownerName: textileFixtures.shop.name,
-				titulo: textileFixtures.entity.baseInfo.title,
+				title: textileFixtures.entity.baseInfo.title,
 				combinationVariant: textileFixtures.variants[0].combination,
 				thumbnailImgUrl: textileFixtures.mediaItems[0].url,
 				unitPrice: textileFixtures.variants[0].price,
@@ -55,7 +55,7 @@ describe('CartShopController (e2e)', () => {
 			},
 			{
 				ownerName: superfoodFixtures.community.name,
-				titulo: superfoodFixtures.superfood.baseInfo.title,
+				title: superfoodFixtures.superfood.baseInfo.title,
 				combinationVariant: superfoodFixtures.variants[0].combination,
 				thumbnailImgUrl: superfoodFixtures.mediaItems[0].url,
 				unitPrice: superfoodFixtures.variants[0].price,
@@ -81,7 +81,7 @@ describe('CartShopController (e2e)', () => {
 	// Mock response for adding a box item to the cart
 	const mockAddBoxItemResponse = {
 		ownerName: '',
-		titulo: boxFixtures.entity.title,
+		title: boxFixtures.entity.title,
 		combinationVariant: {},
 		thumbnailImgUrl: boxFixtures.entity.thumbnailImageId,
 		unitPrice: boxFixtures.entity.price,
@@ -111,7 +111,7 @@ describe('CartShopController (e2e)', () => {
 		items: [
 			{
 				ownerName: textileFixtures.shop.name,
-				titulo: textileFixtures.entity.baseInfo.title,
+				title: textileFixtures.entity.baseInfo.title,
 				combinationVariant: textileFixtures.variants[0].combination,
 				thumbnailImgUrl: textileFixtures.mediaItems[0].url,
 				unitPrice: textileFixtures.variants[0].price,
@@ -123,7 +123,7 @@ describe('CartShopController (e2e)', () => {
 			},
 			{
 				ownerName: '',
-				titulo: boxFixtures.entity.title,
+				title: boxFixtures.entity.title,
 				combinationVariant: {},
 				thumbnailImgUrl: boxFixtures.entity.thumbnailImageId,
 				unitPrice: boxFixtures.entity.price,
@@ -253,7 +253,7 @@ describe('CartShopController (e2e)', () => {
 				.expect((res) => {
 					expect(res.body).toMatchObject({
 						ownerName: textileFixtures.shop.name,
-						titulo: textileFixtures.entity.baseInfo.title,
+						title: textileFixtures.entity.baseInfo.title,
 						combinationVariant: expect.any(Object),
 						thumbnailImgUrl: textileFixtures.mediaItems[0].url,
 						unitPrice: textileFixtures.variants[0].price,
@@ -273,7 +273,7 @@ describe('CartShopController (e2e)', () => {
 				.send(addItemDto)
 				.expect(HttpStatus.CREATED);
 
-			expect(spy).toHaveBeenCalledWith(customerId, undefined, addItemDto);
+			expect(spy).toHaveBeenCalledWith(customerId, addItemDto);
 		});
 
 		it('should return 400 when quantity is less than 1', () => {
@@ -313,7 +313,7 @@ describe('CartShopController (e2e)', () => {
 		it('should handle adding superfood items', () => {
 			const superfoodResponse = {
 				ownerName: superfoodFixtures.community.name,
-				titulo: superfoodFixtures.superfood.baseInfo.title,
+				title: superfoodFixtures.superfood.baseInfo.title,
 				combinationVariant: superfoodFixtures.variants[0].combination,
 				thumbnailImgUrl: superfoodFixtures.mediaItems[0].url,
 				unitPrice: superfoodFixtures.variants[0].price,
@@ -341,7 +341,7 @@ describe('CartShopController (e2e)', () => {
 						superfoodFixtures.community.name,
 					);
 					expect(res.body).toHaveProperty(
-						'titulo',
+						'title',
 						superfoodFixtures.superfood.baseInfo.title,
 					);
 				});
@@ -362,7 +362,7 @@ describe('CartShopController (e2e)', () => {
 				.expect((res) => {
 					expect(res.body).toMatchObject({
 						ownerName: '',
-						titulo: boxFixtures.entity.title,
+						title: boxFixtures.entity.title,
 						combinationVariant: {},
 						unitPrice: boxFixtures.entity.price,
 						quantity: 1,
@@ -439,7 +439,7 @@ describe('CartShopController (e2e)', () => {
 				.expect((res) => {
 					const firstItem = res.body.items[0];
 					expect(firstItem).toHaveProperty('ownerName');
-					expect(firstItem).toHaveProperty('titulo');
+					expect(firstItem).toHaveProperty('title');
 					expect(firstItem).toHaveProperty('combinationVariant');
 					expect(firstItem).toHaveProperty('thumbnailImgUrl');
 					expect(firstItem).toHaveProperty('unitPrice');
@@ -461,7 +461,7 @@ describe('CartShopController (e2e)', () => {
 				.expect((res) => {
 					const textileItem = res.body.items[0];
 					expect(textileItem.ownerName).toBe(textileFixtures.shop.name);
-					expect(textileItem.titulo).toBe(
+					expect(textileItem.title).toBe(
 						textileFixtures.entity.baseInfo.title,
 					);
 					expect(textileItem.combinationVariant).toEqual(
@@ -483,7 +483,7 @@ describe('CartShopController (e2e)', () => {
 					expect(superfoodItem.ownerName).toBe(
 						superfoodFixtures.community.name,
 					);
-					expect(superfoodItem.titulo).toBe(
+					expect(superfoodItem.title).toBe(
 						superfoodFixtures.superfood.baseInfo.title,
 					);
 					expect(superfoodItem.combinationVariant).toEqual(
@@ -553,7 +553,7 @@ describe('CartShopController (e2e)', () => {
 					const boxItem = res.body.items[1];
 					expect(boxItem.productType).toBe(ProductType.BOX);
 					expect(boxItem.ownerName).toBe('');
-					expect(boxItem.titulo).toBe(boxFixtures.entity.title);
+					expect(boxItem.title).toBe(boxFixtures.entity.title);
 					expect(boxItem.combinationVariant).toEqual({});
 					expect(boxItem.quantity).toBe(1);
 					expect(boxItem.maxStock).toBe(1);

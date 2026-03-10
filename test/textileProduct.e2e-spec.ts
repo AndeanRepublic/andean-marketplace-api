@@ -848,7 +848,7 @@ describe('TextileProductController (e2e)', () => {
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					expect(res.body).toHaveProperty('id', mockDetailResponse.id);
-					expect(res.body).toHaveProperty('name', mockDetailResponse.name);
+					expect(res.body).toHaveProperty('title', mockDetailResponse.title);
 				});
 		});
 

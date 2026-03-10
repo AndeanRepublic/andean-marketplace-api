@@ -54,7 +54,7 @@ export class TextileProductListItem {
 		description: 'Título del producto',
 		example: 'Poncho de Alpaca Tradicional',
 	})
-	titulo: string;
+	title: string;
 
 	@ApiProperty({ description: 'Nombre de la categoría', example: 'Ponchos' })
 	categoryName: string;
