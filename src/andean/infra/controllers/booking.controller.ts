@@ -27,8 +27,8 @@ import { UpdateBookingStatusUseCase } from '../../app/use_cases/bookings/UpdateB
 import { CreateBookingDto } from './dto/booking/CreateBookingDto';
 import { UpdateBookingDto } from './dto/booking/UpdateBookingDto';
 import { Booking } from '../../domain/entities/booking/Booking';
-import { BookingResponse } from '../../app/models/booking/BookingResponse';
-import { BookingErrorResponse } from '../../app/models/booking/BookingErrorResponse';
+import { BookingResponse } from '../../app/modules/booking/BookingResponse';
+import { BookingErrorResponse } from '../../app/modules/booking/BookingErrorResponse';
 import { CreatePayPalBookingOrderDto } from './dto/booking/CreatePayPalBookingOrderDto';
 import { CapturePayPalBookingDto } from './dto/booking/CapturePayPalBookingDto';
 import { CapturePayPalBookingResponse } from '../../app/use_cases/bookings/CapturePayPalBookingUseCase';
@@ -73,7 +73,8 @@ export class BookingController {
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
 		summary: 'Crear orden PayPal para booking',
-		description: 'Crea una orden de pago en PayPal para un booking y retorna el orderId',
+		description:
+			'Crea una orden de pago en PayPal para un booking y retorna el orderId',
 	})
 	@ApiBody({ type: CreatePayPalBookingOrderDto })
 	@ApiResponse({
@@ -191,7 +192,8 @@ export class BookingController {
 	@Get('/by-email')
 	@ApiOperation({
 		summary: 'Obtener bookings por email',
-		description: 'Recupera todos los bookings de un cliente por su email (para guest bookings)',
+		description:
+			'Recupera todos los bookings de un cliente por su email (para guest bookings)',
 	})
 	@ApiQuery({
 		name: 'email',

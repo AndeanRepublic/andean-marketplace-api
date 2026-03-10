@@ -26,11 +26,11 @@ import { UpdateSuperfoodProductUseCase } from '../../../app/use_cases/superfoods
 import { DeleteSuperfoodProductUseCase } from '../../../app/use_cases/superfoods/DeleteSuperfoodProductUseCase';
 import { GetAllSuperfoodProductsUseCase } from '../../../app/use_cases/superfoods/GetAllSuperfoodProductsUseCase';
 import { PaginatedProductsResponse } from '../../../app/modules/shared/PaginatedProductsResponse';
-import { SuperfoodProductListItem } from '../../../app/models/superfoods/SuperfoodProductListItem';
-import { PaginatedSuperfoodProductsResponse } from '../../../app/models/superfoods/PaginatedSuperfoodProductsResponse';
+import { SuperfoodProductListItem } from '../../../app/modules/superfoods/SuperfoodProductListItem';
+import { PaginatedSuperfoodProductsResponse } from '../../../app/modules/superfoods/PaginatedSuperfoodProductsResponse';
 import { ProductSortBy } from '../../../domain/enums/ProductSortBy';
 import { GetByIdSuperfoodProductDetailUseCase } from '../../../app/use_cases/superfoods/GetByIdSuperfoodProductDetailUseCase';
-import { SuperfoodProductDetailResponse } from '../../../app/models/superfoods/SuperfoodProductDetailResponse';
+import { SuperfoodProductDetailResponse } from '../../../app/modules/superfoods/SuperfoodProductDetailResponse';
 
 @ApiTags('Superfoods')
 @Controller('superfoods')
