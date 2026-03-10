@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ProductType } from '../../domain/enums/ProductType';
+import { ProductType } from '../../../domain/enums/ProductType';
 
 export class VariantResponse {
 	@ApiProperty({

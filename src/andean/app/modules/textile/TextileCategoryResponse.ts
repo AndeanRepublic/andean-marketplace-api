@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { TextileCategoryStatus } from '../../domain/enums/TextileCategoryStatus';
+import { TextileCategoryStatus } from '../../../domain/enums/TextileCategoryStatus';
 
 export class TextileCategoryResponse {
 	@ApiProperty({

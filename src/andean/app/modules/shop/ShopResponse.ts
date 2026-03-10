@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ShopCategory } from '../../domain/enums/ShopCategory';
+import { ShopCategory } from '../../../domain/enums/ShopCategory';
 
 export class ShopResponse {
 	@ApiProperty({

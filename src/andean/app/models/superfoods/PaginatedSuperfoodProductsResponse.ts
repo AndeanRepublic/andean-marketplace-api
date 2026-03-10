@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { SuperfoodProductListItem } from './SuperfoodProductListItem';
-import { PaginationInfo } from '../../modules/PaginatedProductsResponse';
+import { PaginationInfo } from '../../modules/shared/PaginatedProductsResponse';
 
 export class PaginatedSuperfoodProductsResponse {
 	@ApiProperty({
