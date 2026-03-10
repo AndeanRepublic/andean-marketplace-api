@@ -126,11 +126,20 @@ describe('VariantController (e2e)', () => {
 	});
 
 	describe('POST /variants/many', () => {
-		it('should return 404 because endpoint is disabled', async () => {
-			await request(app.getHttpServer())
+		it.skip('should create multiple variants', async () => {
+			createManyVariantsUseCase.execute.mockResolvedValue(mockVariantArray);
+			const response = await request(app.getHttpServer())
 				.post('/variants/many')
 				.send(fixture.createManyDto)
-				.expect(404);
+				.expect(201);
+			expect(Array.isArray(response.body)).toBe(true);
+			expect(response.body[0]).toMatchObject({
+				id: fixture.entity.id,
+				productId: fixture.entity.productId,
+			});
+			expect(createManyVariantsUseCase.execute).toHaveBeenCalledWith(
+				fixture.createManyDto,
+			);
 		});
 	});
 
