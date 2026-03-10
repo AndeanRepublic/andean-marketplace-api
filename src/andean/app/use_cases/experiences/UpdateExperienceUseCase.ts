@@ -108,6 +108,7 @@ export class UpdateExperienceUseCase {
 			dto.mediaInfo.thumbnailImg,
 			...(dto.mediaInfo.photos || []),
 			...(dto.mediaInfo.videos || []),
+			...(dto.mediaInfo.ubicationImg ? [dto.mediaInfo.ubicationImg] : []),
 		].filter(Boolean) as string[];
 
 		const uniqueIds = [...new Set(allIds)];
