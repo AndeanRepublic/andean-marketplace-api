@@ -10,7 +10,13 @@ import {
 	HttpStatus,
 	Inject,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import {
+	ApiTags,
+	ApiOperation,
+	ApiResponse,
+	ApiParam,
+	ApiBody,
+} from '@nestjs/swagger';
 import { CreateCommunityUseCase } from '../../app/use_cases/community/CreateCommunityUseCase';
 import { UpdateCommunityUseCase } from '../../app/use_cases/community/UpdateCommunityUseCase';
 import { GetCommunityByIdUseCase } from '../../app/use_cases/community/GetCommunityByIdUseCase';
@@ -27,6 +33,7 @@ import { UpdateCommunityDto } from './dto/community/UpdateCommunityDto';
 import { CreateSealDto } from './dto/community/CreateSealDto';
 import { CreateManySealsDto } from './dto/community/CreateManySealsDto';
 import { CommunityResponse } from '../../app/modules/CommunityResponse';
+import { SealResponse } from '../../app/modules/SealResponse';
 import { Community } from '../../domain/entities/community/Community';
 import { Seal } from '../../domain/entities/community/Seal';
 
@@ -126,34 +133,51 @@ export class CommunityController {
 
 	@Post(`${path_seals}/bulk`)
 	@HttpCode(HttpStatus.CREATED)
-	@ApiOperation({ summary: 'Create multiple seals' })
+	@ApiOperation({
+		summary: 'Crear múltiples sellos',
+		description:
+			'Crea múltiples sellos de comunidad en una sola operación. Útil para carga inicial de datos.',
+	})
+	@ApiBody({ type: CreateManySealsDto })
 	@ApiResponse({
 		status: 201,
-		description: 'Seals have been successfully created.',
-		type: [Seal],
+		description: 'Sellos creados exitosamente',
+		type: [SealResponse],
 	})
-	@ApiResponse({
-		status: 400,
-		description: 'Bad Request - Invalid input data.',
-	})
-	@ApiResponse({ status: 404, description: 'MediaItem not found.' })
+	@ApiResponse({ status: 400, description: 'Datos de entrada inválidos' })
+	@ApiResponse({ status: 404, description: 'MediaItem no encontrado' })
 	async createManySeals(@Body() body: CreateManySealsDto): Promise<Seal[]> {
 		return this.createManySealsUseCase.handle(body);
 	}
 
 	@Post(path_seals)
 	@HttpCode(HttpStatus.CREATED)
-	@ApiOperation({ summary: 'Create a new seal' })
+	@ApiOperation({
+		summary: 'Crear un nuevo sello',
+		description:
+			'Crea un nuevo sello de comunidad con su nombre, descripción y logo',
+	})
+	@ApiBody({ type: CreateSealDto })
+	@ApiResponse({
+		status: 201,
+		description: 'Sello creado exitosamente',
+		type: SealResponse,
+	})
+	@ApiResponse({ status: 400, description: 'Datos de entrada inválidos' })
+	@ApiResponse({ status: 404, description: 'MediaItem no encontrado' })
 	async createSeal(@Body() body: CreateSealDto): Promise<Seal> {
 		return this.createSealUseCase.handle(body);
 	}
 
 	@Get(path_seals)
-	@ApiOperation({ summary: 'List all seals' })
+	@ApiOperation({
+		summary: 'Listar todos los sellos',
+		description: 'Retorna la lista completa de sellos de comunidad disponibles',
+	})
 	@ApiResponse({
 		status: 200,
-		description: 'List of seals.',
-		type: [Seal],
+		description: 'Lista de sellos',
+		type: [SealResponse],
 	})
 	async getAllSeals(): Promise<Seal[]> {
 		return this.getAllSealsUseCase.handle();
