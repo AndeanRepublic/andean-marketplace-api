@@ -107,7 +107,7 @@ export class GetByIdTextileProductDetailUseCase {
 
 		// -- Obtener variants del producto
 		const variants = await this.variantRepository.getByProductId(product.id);
-		const { availableSizes, availableColors, availableMaterials, variantInfo } =
+		const { variantInfo } =
 			await this.textileProductAttributesAssembler.buildForProduct(
 				product,
 				variants,
@@ -185,9 +185,6 @@ export class GetByIdTextileProductDetailUseCase {
 			id: product.id,
 			name: product.baseInfo.title,
 			images,
-			availableSizes,
-			availableColors,
-			availableMaterials,
 			variantInfo,
 			generalStock: product.priceInventary.totalStock,
 			information: product.baseInfo.information || '',

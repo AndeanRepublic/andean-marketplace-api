@@ -864,7 +864,7 @@ describe('TextileProductController (e2e)', () => {
 			expect(spy).toHaveBeenCalledWith(productId);
 		});
 
-		it('should include availableSizes, availableColors and variantInfo', () => {
+		it('should include variantInfo with color as object', () => {
 			jest
 				.spyOn(getByIdTextileProductDetailUseCase, 'handle')
 				.mockResolvedValueOnce(mockDetailResponse as any);
@@ -873,9 +873,13 @@ describe('TextileProductController (e2e)', () => {
 				.get(`/textile-products/${productId}/details`)
 				.expect(HttpStatus.OK)
 				.expect((res) => {
-					expect(Array.isArray(res.body.availableSizes)).toBe(true);
-					expect(Array.isArray(res.body.availableColors)).toBe(true);
 					expect(Array.isArray(res.body.variantInfo)).toBe(true);
+					if (res.body.variantInfo.length > 0) {
+						expect(res.body.variantInfo[0]).toHaveProperty('color');
+						expect(res.body.variantInfo[0].color).toHaveProperty('color');
+						expect(res.body.variantInfo[0].color).toHaveProperty('hexCode');
+						expect(res.body.variantInfo[0].color).toHaveProperty('imgUrl');
+					}
 				});
 		});
 

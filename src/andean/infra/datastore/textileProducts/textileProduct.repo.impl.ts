@@ -725,9 +725,6 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 
 		const products: TextileProductListItem[] = rawProducts.map((product: any) => {
 			const attrs = attributesByProductId.get(product.id) || {
-				availableSizes: [],
-				availableColors: [],
-				availableMaterials: [],
 				variantInfo: [],
 			};
 
@@ -738,9 +735,6 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 				productorName: product.productorName,
 				principalImgUrl: product.principalImgUrl,
 				price: product.price,
-				availableSizes: attrs.availableSizes,
-				availableColors: attrs.availableColors,
-				availableMaterials: attrs.availableMaterials,
 				variantInfo: attrs.variantInfo,
 			};
 		});

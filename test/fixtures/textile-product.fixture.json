@@ -72,11 +72,24 @@
 		"titulo": "Poncho Andino Premium",
 		"categoryName": "Ponchos",
 		"productorName": "Artesanos Andinos",
-		"colors": [
-			{ "name": "Rojo", "colorHexCode": "#FF0000" },
-			{ "name": "Azul", "colorHexCode": "#0000FF" }
+		"variantInfo": [
+			{
+				"variantId": "variant-uuid-1",
+				"size": "M",
+				"color": { "color": "Rojo", "hexCode": "#FF0000", "imgUrl": "" },
+				"material": "",
+				"price": 150,
+				"stock": 10
+			},
+			{
+				"variantId": "variant-uuid-2",
+				"size": "L",
+				"color": { "color": "Azul", "hexCode": "#0000FF", "imgUrl": "" },
+				"material": "",
+				"price": 150,
+				"stock": 15
+			}
 		],
-		"tallas": ["M", "L"],
 		"principalImgUrl": "https://example.com/poncho.jpg",
 		"price": 150.0
 	},
@@ -87,11 +100,24 @@
 				"titulo": "Poncho Andino Premium",
 				"categoryName": "Ponchos",
 				"productorName": "Artesanos Andinos",
-				"colors": [
-					{ "name": "Rojo", "colorHexCode": "#FF0000" },
-					{ "name": "Azul", "colorHexCode": "#0000FF" }
+				"variantInfo": [
+					{
+						"variantId": "variant-uuid-1",
+						"size": "M",
+						"color": { "color": "Rojo", "hexCode": "#FF0000", "imgUrl": "" },
+						"material": "",
+						"price": 150,
+						"stock": 10
+					},
+					{
+						"variantId": "variant-uuid-2",
+						"size": "L",
+						"color": { "color": "Azul", "hexCode": "#0000FF", "imgUrl": "" },
+						"material": "",
+						"price": 150,
+						"stock": 15
+					}
 				],
-				"tallas": ["M", "L"],
 				"principalImgUrl": "https://example.com/poncho.jpg",
 				"price": 150.0
 			}
@@ -132,20 +158,19 @@
 				"url": "https://cdn.example.com/poncho-rojo.jpg"
 			}
 		],
-		"availableSizes": ["M", "L"],
-		"availableColors": ["Rojo", "Azul"],
-		"availableMaterials": [],
 		"variantInfo": [
 			{
+				"variantId": "variant-uuid-1",
 				"size": "M",
-				"color": "Rojo",
+				"color": { "color": "Rojo", "hexCode": "#FF0000", "imgUrl": "" },
 				"material": "",
 				"price": 150,
 				"stock": 10
 			},
 			{
+				"variantId": "variant-uuid-2",
 				"size": "L",
-				"color": "Azul",
+				"color": { "color": "Azul", "hexCode": "#0000FF", "imgUrl": "" },
 				"material": "",
 				"price": 150,
 				"stock": 15

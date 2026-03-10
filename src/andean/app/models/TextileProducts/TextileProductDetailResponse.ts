@@ -19,6 +19,23 @@ export class MediaImageResponse {
 	url!: string;
 }
 
+export class AvailableColorResponse {
+	@ApiProperty({ description: 'Nombre del color', example: 'Rojo' })
+	color!: string;
+
+	@ApiProperty({
+		description: 'Codigo hexadecimal del color',
+		example: '#FF0000',
+	})
+	hexCode!: string;
+
+	@ApiProperty({
+		description: 'URL de imagen asociada al color',
+		example: 'https://cdn.example.com/colors/rojo.jpg',
+	})
+	imgUrl?: string;
+}
+
 // ── Variant Info ──────────────────────────────────────────────────────────
 export class VariantInfoResponse {
 	@ApiProperty({
@@ -30,8 +47,11 @@ export class VariantInfoResponse {
 	@ApiProperty({ description: 'Talla de la variante', example: 'M' })
 	size!: string;
 
-	@ApiProperty({ description: 'Color de la variante', example: 'Rojo' })
-	color!: string;
+	@ApiProperty({
+		type: AvailableColorResponse,
+		description: 'Color de la variante (nombre, hexCode, imgUrl)',
+	})
+	color!: AvailableColorResponse;
 
 	@ApiProperty({ description: 'Material de la variante', example: 'Algodón' })
 	material!: string;
@@ -160,23 +180,6 @@ export class ColorInfoResponse {
 	colorHexCode!: string;
 }
 
-export class AvailableColorResponse {
-	@ApiProperty({ description: 'Nombre del color', example: 'Rojo' })
-	color!: string;
-
-	@ApiProperty({
-		description: 'Codigo hexadecimal del color',
-		example: '#FF0000',
-	})
-	hexCode!: string;
-
-	@ApiProperty({
-		description: 'URL de imagen asociada al color',
-		example: 'https://cdn.example.com/colors/rojo.jpg',
-	})
-	imgUrl?: string;
-}
-
 export class SimilarProductResponse {
 	@ApiProperty({
 		description: 'ID único del producto similar',
@@ -251,18 +254,6 @@ export class TextileProductDetailResponse {
 		description: 'Imágenes del producto',
 	})
 	images!: MediaImageResponse[];
-
-	@ApiProperty({ type: [String], description: 'Tallas disponibles' })
-	availableSizes!: string[];
-
-	@ApiProperty({
-		type: [AvailableColorResponse],
-		description: 'Colores disponibles con codigo hexadecimal e imagen',
-	})
-	availableColors!: AvailableColorResponse[];
-
-	@ApiProperty({ type: [String], description: 'Materiales disponibles' })
-	availableMaterials!: string[];
 
 	@ApiProperty({
 		type: [VariantInfoResponse],
