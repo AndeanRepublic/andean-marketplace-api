@@ -4,7 +4,7 @@ import {
 	SuperfoodProductRepository,
 } from '../../datastore/superfoods/SuperfoodProduct.repo';
 import { PaginatedProductsResponse } from '../../modules/shared/PaginatedProductsResponse';
-import { SuperfoodProductListItem } from '../../models/superfoods/SuperfoodProductListItem';
+import { SuperfoodProductListItem } from '../../modules/superfoods/SuperfoodProductListItem';
 
 @Injectable()
 export class GetAllSuperfoodProductsUseCase {

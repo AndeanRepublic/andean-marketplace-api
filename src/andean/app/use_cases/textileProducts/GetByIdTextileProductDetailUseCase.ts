@@ -3,7 +3,7 @@ import { TextileProductRepository } from '../../datastore/textileProducts/Textil
 import {
 	TextileProductDetailResponse,
 	TraceabilityInfoResponse,
-} from '../../models/TextileProducts/TextileProductDetailResponse';
+} from '../../modules/textile/TextileProductDetailResponse';
 import { ProductType } from '../../../domain/enums/ProductType';
 import { OwnerType } from '../../../domain/enums/OwnerType';
 import { TextileOptionName } from '../../../domain/enums/TextileOptionName';

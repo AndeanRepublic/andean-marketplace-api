@@ -20,8 +20,8 @@ import {
 	TraceabilityInfoResponse,
 	ReviewsResponse,
 	SuperfoodProductListItemCompact,
-} from '../../models/superfoods/SuperfoodProductDetailResponse';
-import { SuperfoodProductListItem } from '../../models/superfoods/SuperfoodProductListItem';
+} from '../../modules/superfoods/SuperfoodProductDetailResponse';
+import { SuperfoodProductListItem } from '../../modules/superfoods/SuperfoodProductListItem';
 
 @Injectable()
 export class GetByIdSuperfoodProductDetailUseCase {
