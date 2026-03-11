@@ -250,6 +250,12 @@ export class TextileProductDetailResponse {
 	@ApiProperty({ description: 'Stock general del producto' })
 	generalStock!: number;
 
+	@ApiProperty({
+		description: 'Precio base del producto',
+		example: 89.99,
+	})
+	basePrice!: number;
+
 	@ApiProperty({ description: 'Información del producto' })
 	information!: string;
 

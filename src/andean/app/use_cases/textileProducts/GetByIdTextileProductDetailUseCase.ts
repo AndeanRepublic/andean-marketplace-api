@@ -180,6 +180,7 @@ export class GetByIdTextileProductDetailUseCase {
 			images,
 			variantInfo,
 			generalStock: product.priceInventary.totalStock,
+			basePrice: product.priceInventary.basePrice,
 			information: product.baseInfo.information || '',
 			description: product.baseInfo.description,
 			traceabilityInfo,
