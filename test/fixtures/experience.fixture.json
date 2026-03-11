@@ -246,6 +246,139 @@
 			"per_page": 20
 		}
 	},
+	"mockPrices": {
+		"id": "prices-001",
+		"useAgeBasedPricing": true,
+		"currency": "USD",
+		"ageGroups": [
+			{
+				"code": "ADULTS",
+				"label": "Adultos",
+				"price": 120,
+				"minAge": 18,
+				"maxAge": 65
+			},
+			{
+				"code": "YOUNG",
+				"label": "Jóvenes",
+				"price": 80,
+				"minAge": 12,
+				"maxAge": 17
+			},
+			{
+				"code": "CHILD",
+				"label": "Niños",
+				"price": 40,
+				"minAge": 5,
+				"maxAge": 11
+			}
+		]
+	},
+	"mockPricesAfterAdultsPatch": {
+		"id": "prices-001",
+		"useAgeBasedPricing": true,
+		"currency": "USD",
+		"ageGroups": [
+			{
+				"code": "ADULTS",
+				"label": "Adultos",
+				"price": 150,
+				"minAge": 18,
+				"maxAge": 65
+			},
+			{
+				"code": "YOUNG",
+				"label": "Jóvenes",
+				"price": 80,
+				"minAge": 12,
+				"maxAge": 17
+			},
+			{
+				"code": "CHILD",
+				"label": "Niños",
+				"price": 40,
+				"minAge": 5,
+				"maxAge": 11
+			}
+		]
+	},
+	"mockPricesAfterChildPatch": {
+		"id": "prices-001",
+		"useAgeBasedPricing": true,
+		"currency": "USD",
+		"ageGroups": [
+			{
+				"code": "ADULTS",
+				"label": "Adultos",
+				"price": 120,
+				"minAge": 18,
+				"maxAge": 65
+			},
+			{
+				"code": "YOUNG",
+				"label": "Jóvenes",
+				"price": 80,
+				"minAge": 12,
+				"maxAge": 17
+			},
+			{
+				"code": "CHILD",
+				"label": "Niños",
+				"price": 25,
+				"minAge": 5,
+				"maxAge": 11
+			}
+		]
+	},
+	"patchAdultsPriceDto": {
+		"code": "ADULTS",
+		"price": 150
+	},
+	"patchChildPriceDto": {
+		"code": "CHILD",
+		"price": 25
+	},
+	"mockAvailability": {
+		"id": "availability-001",
+		"mode": "exclusiveGroup",
+		"weeklyStartDays": [1, 3, 5],
+		"specificAvailableStartDates": [
+			"2026-06-15T00:00:00.000Z",
+			"2026-07-28T00:00:00.000Z"
+		],
+		"excludedDates": ["2026-12-25T00:00:00.000Z"]
+	},
+	"mockAvailabilityAfterExcludedPatch": {
+		"id": "availability-001",
+		"mode": "exclusiveGroup",
+		"weeklyStartDays": [1, 3, 5],
+		"specificAvailableStartDates": [
+			"2026-06-15T00:00:00.000Z",
+			"2026-07-28T00:00:00.000Z"
+		],
+		"excludedDates": [
+			"2026-12-25T00:00:00.000Z",
+			"2026-01-01T00:00:00.000Z",
+			"2026-07-28T00:00:00.000Z"
+		]
+	},
+	"mockAvailabilityAfterAvailablePatch": {
+		"id": "availability-001",
+		"mode": "exclusiveGroup",
+		"weeklyStartDays": [1, 3, 5],
+		"specificAvailableStartDates": [
+			"2026-04-01T00:00:00.000Z",
+			"2026-04-15T00:00:00.000Z",
+			"2026-05-01T00:00:00.000Z"
+		],
+		"excludedDates": ["2026-12-25T00:00:00.000Z"]
+	},
+	"patchExcludedDatesDto": {
+		"excludedDates": ["2026-12-25", "2026-01-01", "2026-07-28"]
+	},
+	"patchAvailableDatesDto": {
+		"specificAvailableStartDates": ["2026-04-01", "2026-04-15", "2026-05-01"]
+	},
 	"mockDetailResponse": {
 		"heroDetail": {
 			"title": "Trekking al Valle Sagrado",

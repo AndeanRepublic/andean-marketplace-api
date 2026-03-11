@@ -19,7 +19,7 @@ import { DeleteOriginProductRegionUseCase } from '../../app/use_cases/origin/Del
 import { CreateOriginProductRegionDto } from './dto/origin/CreateOriginProductRegionDto';
 import { CreateManyOriginProductRegionsDto } from './dto/origin/CreateManyOriginProductRegionsDto';
 import { UpdateOriginProductRegionDto } from './dto/origin/UpdateOriginProductRegionDto';
-import { OriginProductRegionResponse } from '../../app/modules/OriginProductRegionResponse';
+import { OriginProductRegionResponse } from '../../app/modules/shared/OriginProductRegionResponse';
 import { OriginProductRegion } from '../../domain/entities/origin/OriginProductRegion';
 
 @ApiTags('Origin Product Regions')

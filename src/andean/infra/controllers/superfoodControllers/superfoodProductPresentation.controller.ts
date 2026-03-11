@@ -10,8 +10,10 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateSuperfoodProductPresentationDto } from '../dto/superfoods/CreateSuperfoodProductPresentationDto';
-import { SuperfoodProductPresentationResponse } from '../../../app/modules/SuperfoodProductPresentationResponse';
+import { CreateManySuperfoodProductPresentationsDto } from '../dto/superfoods/CreateManySuperfoodProductPresentationsDto';
+import { SuperfoodProductPresentationResponse } from '../../../app/modules/superfoods/SuperfoodProductPresentationResponse';
 import { CreateSuperfoodProductPresentationUseCase } from '../../../app/use_cases/superfoods/productPresentation/CreateSuperfoodProductPresentationUseCase';
+import { CreateManySuperfoodProductPresentationsUseCase } from '../../../app/use_cases/superfoods/productPresentation/CreateManySuperfoodProductPresentationsUseCase';
 import { GetSuperfoodProductPresentationByIdUseCase } from '../../../app/use_cases/superfoods/productPresentation/GetSuperfoodProductPresentationByIdUseCase';
 import { ListSuperfoodProductPresentationsUseCase } from '../../../app/use_cases/superfoods/productPresentation/ListSuperfoodProductPresentationsUseCase';
 import { DeleteSuperfoodProductPresentationUseCase } from '../../../app/use_cases/superfoods/productPresentation/DeleteSuperfoodProductPresentationUseCase';
@@ -21,10 +23,35 @@ import { DeleteSuperfoodProductPresentationUseCase } from '../../../app/use_case
 export class SuperfoodProductPresentationController {
 	constructor(
 		private readonly createSuperfoodProductPresentationUseCase: CreateSuperfoodProductPresentationUseCase,
+		private readonly createManySuperfoodProductPresentationsUseCase: CreateManySuperfoodProductPresentationsUseCase,
 		private readonly getSuperfoodProductPresentationByIdUseCase: GetSuperfoodProductPresentationByIdUseCase,
 		private readonly listSuperfoodProductPresentationsUseCase: ListSuperfoodProductPresentationsUseCase,
 		private readonly deleteSuperfoodProductPresentationUseCase: DeleteSuperfoodProductPresentationUseCase,
 	) {}
+
+	@Post('/bulk')
+	@HttpCode(HttpStatus.CREATED)
+	@ApiOperation({
+		summary: 'Crear múltiples presentaciones de producto',
+		description:
+			'Crea múltiples presentaciones de producto en una sola operación. Útil para carga inicial de datos.',
+	})
+	@ApiResponse({
+		status: 201,
+		description: 'Presentaciones creadas exitosamente',
+		type: [SuperfoodProductPresentationResponse],
+	})
+	@ApiResponse({
+		status: 400,
+		description: 'Datos de entrada inválidos',
+	})
+	async createManyProductPresentations(
+		@Body() dto: CreateManySuperfoodProductPresentationsDto,
+	): Promise<SuperfoodProductPresentationResponse[]> {
+		return await this.createManySuperfoodProductPresentationsUseCase.handle(
+			dto,
+		);
+	}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
@@ -48,21 +75,21 @@ export class SuperfoodProductPresentationController {
 		return await this.createSuperfoodProductPresentationUseCase.handle(dto);
 	}
 
-	// @Get()
-	// @ApiOperation({
-	// 	summary: 'Listar todas las presentaciones',
-	// 	description: 'Retorna todas las presentaciones de producto disponibles',
-	// })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'Lista de presentaciones',
-	// 	type: [SuperfoodProductPresentationResponse],
-	// })
-	// async listProductPresentations(): Promise<
-	// 	SuperfoodProductPresentationResponse[]
-	// > {
-	// 	return await this.listSuperfoodProductPresentationsUseCase.handle();
-	// }
+	@Get()
+	@ApiOperation({
+		summary: 'Listar todas las presentaciones',
+		description: 'Retorna todas las presentaciones de producto disponibles',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista de presentaciones',
+		type: [SuperfoodProductPresentationResponse],
+	})
+	async listProductPresentations(): Promise<
+		SuperfoodProductPresentationResponse[]
+	> {
+		return await this.listSuperfoodProductPresentationsUseCase.handle();
+	}
 
 	// @Get('/:id')
 	// @ApiOperation({

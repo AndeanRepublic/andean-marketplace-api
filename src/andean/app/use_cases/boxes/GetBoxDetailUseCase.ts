@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BoxRepository } from '../../datastore/box/Box.repo';
 import { BoxSealRepository } from '../../datastore/box/BoxSeal.repo';
-import { BoxDetailResponse, BoxContainedProductResponse, BoxSealDetailResponse } from '../../models/box/BoxDetailResponse';
-import { BoxImageResponse } from '../../models/box/BoxImageResponse';
+import { BoxDetailResponse, BoxContainedProductResponse, BoxSealDetailResponse } from '../../modules/box/BoxDetailResponse';
+import { BoxImageResponse } from '../../modules/box/BoxImageResponse';
 import { ProductType } from '../../../domain/enums/ProductType';
 import { BoxProductResolutionService } from '../../../infra/services/box/BoxProductResolutionService';
 

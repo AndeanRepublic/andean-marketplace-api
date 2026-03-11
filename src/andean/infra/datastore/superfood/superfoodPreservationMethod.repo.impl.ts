@@ -65,4 +65,18 @@ export class SuperfoodPreservationMethodRepoImpl implements SuperfoodPreservatio
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		await this.model.findByIdAndDelete(objectId).exec();
 	}
+
+	async saveMany(
+		methods: SuperfoodPreservationMethod[],
+	): Promise<SuperfoodPreservationMethod[]> {
+		const persistenceData = methods.map((method) =>
+			SuperfoodPreservationMethodMapper.toPersistence(method),
+		);
+		const savedDocs = await this.model.insertMany(persistenceData);
+		return savedDocs.map((doc) =>
+			SuperfoodPreservationMethodMapper.fromDocument(
+				doc as SuperfoodPreservationMethodDocument,
+			),
+		);
+	}
 }

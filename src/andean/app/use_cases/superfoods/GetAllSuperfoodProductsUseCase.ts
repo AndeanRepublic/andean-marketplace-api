@@ -3,15 +3,15 @@ import {
 	SuperfoodProductFilters,
 	SuperfoodProductRepository,
 } from '../../datastore/superfoods/SuperfoodProduct.repo';
-import { PaginatedProductsResponse } from '../../modules/PaginatedProductsResponse';
-import { SuperfoodProductListItem } from '../../models/superfoods/SuperfoodProductListItem';
+import { PaginatedProductsResponse } from '../../modules/shared/PaginatedProductsResponse';
+import { SuperfoodProductListItem } from '../../modules/superfoods/SuperfoodProductListItem';
 
 @Injectable()
 export class GetAllSuperfoodProductsUseCase {
 	constructor(
 		@Inject(SuperfoodProductRepository)
 		private readonly superfoodProductRepository: SuperfoodProductRepository,
-	) { }
+	) {}
 
 	async handle(
 		filters?: SuperfoodProductFilters,
