@@ -1,5 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, HttpStatus, ValidationPipe } from '@nestjs/common';
+import {
+	INestApplication,
+	HttpStatus,
+	ValidationPipe,
+	ForbiddenException,
+} from '@nestjs/common';
 import * as request from 'supertest';
 import { ReviewController } from '../src/andean/infra/controllers/Review.controller';
 import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';
@@ -16,6 +21,7 @@ import { DecrementDislikesUseCase } from '../src/andean/app/use_cases/DecrementD
 import { ProductType } from '../src/andean/domain/enums/ProductType';
 import { MediaItemType } from '../src/andean/domain/enums/MediaItemType';
 import { MediaItemRole } from '../src/andean/domain/enums/MediaItemRole';
+import { AccountRole } from '../src/andean/domain/enums/AccountRole';
 import { FixtureLoader } from './helpers/fixture-loader';
 
 describe('ReviewController (e2e)', () => {
@@ -426,7 +432,23 @@ describe('ReviewController (e2e)', () => {
 						id: mockReview.id,
 						content: updateDto.content,
 					});
+					expect(updateReviewUseCase.handle).toHaveBeenCalledWith(
+						mockReview.id,
+						mockAuthUsers.customer.userId,
+						updateDto,
+					);
 				});
+		});
+
+		it('should return 403 when non-owner tries to update', () => {
+			jest
+				.spyOn(updateReviewUseCase, 'handle')
+				.mockRejectedValueOnce(new ForbiddenException('forbidden'));
+
+			return request(app.getHttpServer())
+				.put(`/reviews/${mockReview.id}`)
+				.send(updateDto)
+				.expect(HttpStatus.FORBIDDEN);
 		});
 
 		it('should return 404 when trying to update non-existent review', () => {
@@ -449,7 +471,24 @@ describe('ReviewController (e2e)', () => {
 
 			return request(app.getHttpServer())
 				.delete(`/reviews/${mockReview.id}`)
-				.expect(HttpStatus.NO_CONTENT);
+				.expect(HttpStatus.NO_CONTENT)
+				.expect(() => {
+					expect(deleteReviewUseCase.handle).toHaveBeenCalledWith(
+						mockReview.id,
+						mockAuthUsers.customer.userId,
+						mockAuthUsers.customer.roles,
+					);
+				});
+		});
+
+		it('should return 403 when non-owner non-admin tries to delete', () => {
+			jest
+				.spyOn(deleteReviewUseCase, 'handle')
+				.mockRejectedValueOnce(new ForbiddenException('forbidden'));
+
+			return request(app.getHttpServer())
+				.delete(`/reviews/${mockReview.id}`)
+				.expect(HttpStatus.FORBIDDEN);
 		});
 
 		it('should return 404 when trying to delete non-existent review', () => {
@@ -460,6 +499,92 @@ describe('ReviewController (e2e)', () => {
 			return request(app.getHttpServer())
 				.delete('/reviews/non-existent-id')
 				.expect(HttpStatus.INTERNAL_SERVER_ERROR);
+		});
+	});
+
+	describe('DELETE /reviews/:id — ADMIN bypass', () => {
+		let adminApp: INestApplication;
+		let adminDeleteUseCase: DeleteReviewUseCase;
+
+		beforeAll(async () => {
+			const adminModule: TestingModule = await Test.createTestingModule({
+				controllers: [ReviewController],
+				providers: [
+					{
+						provide: CreateReviewUseCase,
+						useValue: { handle: jest.fn().mockResolvedValue(mockReview) },
+					},
+					{
+						provide: GetAllReviewsUseCase,
+						useValue: { handle: jest.fn().mockResolvedValue([mockReview]) },
+					},
+					{
+						provide: GetByIdReviewUseCase,
+						useValue: { handle: jest.fn().mockResolvedValue(mockReview) },
+					},
+					{
+						provide: UpdateReviewUseCase,
+						useValue: { handle: jest.fn().mockResolvedValue(mockReview) },
+					},
+					{
+						provide: DeleteReviewUseCase,
+						useValue: { handle: jest.fn().mockResolvedValue(undefined) },
+					},
+					{
+						provide: IncrementLikesUseCase,
+						useValue: { handle: jest.fn().mockResolvedValue(mockReview) },
+					},
+					{
+						provide: IncrementDislikesUseCase,
+						useValue: { handle: jest.fn().mockResolvedValue(mockReview) },
+					},
+					{
+						provide: DecrementLikesUseCase,
+						useValue: { handle: jest.fn().mockResolvedValue(mockReview) },
+					},
+					{
+						provide: DecrementDislikesUseCase,
+						useValue: { handle: jest.fn().mockResolvedValue(mockReview) },
+					},
+				],
+			})
+				.overrideGuard(JwtAuthGuard)
+				.useValue(createAllowAllGuard(mockAuthUsers.admin))
+				.compile();
+
+			adminApp = adminModule.createNestApplication();
+			adminApp.useGlobalPipes(
+				new ValidationPipe({
+					whitelist: true,
+					forbidNonWhitelisted: true,
+					transform: true,
+				}),
+			);
+			await adminApp.init();
+
+			adminDeleteUseCase = adminModule.get(DeleteReviewUseCase);
+		});
+
+		afterAll(async () => {
+			await adminApp.close();
+		});
+
+		afterEach(() => {
+			jest.clearAllMocks();
+		});
+
+		it('should return 204 when ADMIN deletes any review', async () => {
+			jest.spyOn(adminDeleteUseCase, 'handle').mockResolvedValueOnce(undefined);
+
+			await request(adminApp.getHttpServer())
+				.delete(`/reviews/${mockReview.id}`)
+				.expect(HttpStatus.NO_CONTENT);
+
+			expect(adminDeleteUseCase.handle).toHaveBeenCalledWith(
+				mockReview.id,
+				mockAuthUsers.admin.userId,
+				mockAuthUsers.admin.roles,
+			);
 		});
 	});
 

@@ -1,4 +1,8 @@
-import { CanActivate, ExecutionContext } from '@nestjs/common';
+import {
+	CanActivate,
+	ExecutionContext,
+	UnauthorizedException,
+} from '@nestjs/common';
 import { AccountRole } from '../../src/andean/domain/enums/AccountRole';
 
 /**
@@ -51,7 +55,7 @@ export class MockAuthGuard implements CanActivate {
 
 	canActivate(context: ExecutionContext): boolean {
 		if (!this.user) {
-			return false;
+			throw new UnauthorizedException();
 		}
 		const req = context.switchToHttp().getRequest();
 		req.user = this.user;
