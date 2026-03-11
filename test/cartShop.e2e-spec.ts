@@ -273,7 +273,7 @@ describe('CartShopController (e2e)', () => {
 				.send(addItemDto)
 				.expect(HttpStatus.CREATED);
 
-			expect(spy).toHaveBeenCalledWith(customerId, addItemDto);
+			expect(spy).toHaveBeenCalledWith(customerId, undefined, addItemDto);
 		});
 
 		it('should return 400 when quantity is less than 1', () => {
