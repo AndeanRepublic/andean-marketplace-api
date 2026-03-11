@@ -12,6 +12,7 @@ import { GetShopsByCategoryUseCase } from './app/use_cases/shops/GetShopsByCateg
 import { GetShopsBySellerIdUseCase } from './app/use_cases/shops/GetShopsBySellerIdUseCase';
 import { DeleteShopUseCase } from './app/use_cases/shops/DeleteShopUseCase';
 import { UsersModule } from './users.module';
+import { AuthModule } from './auth.module';
 
 @Module({
 	imports: [
@@ -22,6 +23,7 @@ import { UsersModule } from './users.module';
 			},
 		]),
 		UsersModule,
+		AuthModule,
 	],
 	controllers: [ShopController],
 	providers: [

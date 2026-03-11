@@ -8,7 +8,9 @@ import {
 	ParseFilePipe,
 	MaxFileSizeValidator,
 	FileTypeValidator,
+	UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from '../core/jwtAuth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
 	ApiTags,
@@ -26,6 +28,7 @@ import { TryOnResponse } from '../../app/modules/tryOn/TryOnResponse';
 export class TryOnController {
 	constructor(private readonly tryOnUseCase: TryOnUseCase) {}
 
+	@UseGuards(JwtAuthGuard)
 	@Post()
 	@UseInterceptors(FileInterceptor('file'))
 	@ApiConsumes('multipart/form-data')

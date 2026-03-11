@@ -10,7 +10,12 @@ import {
 	HttpStatus,
 	Query,
 	ParseIntPipe,
+	UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from '../../core/jwtAuth.guard';
+import { RolesGuard } from '../../core/roles.guard';
+import { Roles } from '../../core/roles.decorator';
+import { AccountRole } from '../../../domain/enums/AccountRole';
 import {
 	ApiTags,
 	ApiOperation,
@@ -43,6 +48,8 @@ export class SuperfoodController {
 		private readonly getByIdSuperfoodProductDetailUseCase: GetByIdSuperfoodProductDetailUseCase,
 	) {}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({

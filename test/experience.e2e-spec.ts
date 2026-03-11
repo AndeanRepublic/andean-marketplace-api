@@ -3,6 +3,9 @@ import { INestApplication, HttpStatus, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 
 import { ExperienceController } from '../src/andean/infra/controllers/experienceControllers/experience.controller';
+import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';
+import { RolesGuard } from '../src/andean/infra/core/roles.guard';
+import { createAllowAllGuard, mockAuthUsers } from './helpers/auth-test.helper';
 import { CreateExperienceUseCase } from '../src/andean/app/use_cases/experiences/CreateExperienceUseCase';
 import { UpdateExperienceUseCase } from '../src/andean/app/use_cases/experiences/UpdateExperienceUseCase';
 import { DeleteExperienceUseCase } from '../src/andean/app/use_cases/experiences/DeleteExperienceUseCase';
@@ -69,7 +72,12 @@ describe('ExperienceController (e2e)', () => {
 					},
 				},
 			],
-		}).compile();
+		})
+			.overrideGuard(JwtAuthGuard)
+			.useValue(createAllowAllGuard(mockAuthUsers.seller))
+			.overrideGuard(RolesGuard)
+			.useValue({ canActivate: () => true })
+			.compile();
 
 		app = moduleFixture.createNestApplication();
 

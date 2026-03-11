@@ -8,7 +8,9 @@ import {
 	Put,
 	HttpCode,
 	HttpStatus,
+	UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from '../core/jwtAuth.guard';
 import {
 	ApiTags,
 	ApiOperation,
@@ -38,6 +40,7 @@ export class ShippingAddressController {
 		private readonly getShippingAddressByIdUseCase: GetShippingAddressByIdUseCase,
 	) {}
 
+	@UseGuards(JwtAuthGuard)
 	@Post('/customer/:customerId')
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -64,6 +67,7 @@ export class ShippingAddressController {
 		return this.createShippingAddressUseCase.handle(customerId, body);
 	}
 
+	@UseGuards(JwtAuthGuard)
 	@Get('/customer/:customerId')
 	@ApiOperation({
 		summary: 'Obtener direcciones de envío por cliente',
@@ -153,7 +157,8 @@ export class ShippingAddressController {
 	@Put('/:id/set-default')
 	@ApiOperation({
 		summary: 'Marcar dirección como predeterminada',
-		description: 'Marca una dirección de envío como predeterminada para el cliente',
+		description:
+			'Marca una dirección de envío como predeterminada para el cliente',
 	})
 	@ApiParam({
 		name: 'id',

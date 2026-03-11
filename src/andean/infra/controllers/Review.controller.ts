@@ -14,7 +14,9 @@ import {
 	ParseFilePipe,
 	MaxFileSizeValidator,
 	FileTypeValidator,
+	UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from '../core/jwtAuth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
 	ApiTags,
@@ -56,6 +58,7 @@ export class ReviewController {
 		private readonly decrementDislikesUseCase: DecrementDislikesUseCase,
 	) {}
 
+	@UseGuards(JwtAuthGuard)
 	@Post(path_reviews)
 	@HttpCode(HttpStatus.CREATED)
 	@UseInterceptors(FileInterceptor('file'))
@@ -155,6 +158,7 @@ export class ReviewController {
 		return this.deleteReviewUseCase.handle(id);
 	}
 
+	@UseGuards(JwtAuthGuard)
 	@Patch(`${path_reviews_id}/likes`)
 	@ApiOperation({
 		summary: 'Incrementar likes',
@@ -171,6 +175,7 @@ export class ReviewController {
 		return this.incrementLikesUseCase.handle(id);
 	}
 
+	@UseGuards(JwtAuthGuard)
 	@Patch(`${path_reviews_id}/dislikes`)
 	@ApiOperation({
 		summary: 'Incrementar dislikes',
@@ -187,6 +192,7 @@ export class ReviewController {
 		return this.incrementDislikesUseCase.handle(id);
 	}
 
+	@UseGuards(JwtAuthGuard)
 	@Delete(`${path_reviews_id}/likes`)
 	@ApiOperation({
 		summary: 'Decrementar likes',
@@ -203,6 +209,7 @@ export class ReviewController {
 		return this.decrementLikesUseCase.handle(id);
 	}
 
+	@UseGuards(JwtAuthGuard)
 	@Delete(`${path_reviews_id}/dislikes`)
 	@ApiOperation({
 		summary: 'Decrementar dislikes',

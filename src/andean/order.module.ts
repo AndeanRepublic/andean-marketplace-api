@@ -29,6 +29,7 @@ import { TextileStockReducer } from './infra/services/stock/TextileStockReducer'
 import { SuperfoodStockReducer } from './infra/services/stock/SuperfoodStockReducer';
 import { BoxStockReducer } from './infra/services/stock/BoxStockReducer';
 import { StockReducerRegistry } from './infra/services/stock/StockReducerRegistry';
+import { AuthModule } from './auth.module';
 
 @Module({
 	imports: [
@@ -44,6 +45,7 @@ import { StockReducerRegistry } from './infra/services/stock/StockReducerRegistr
 		TextileProductModule,
 		SuperfoodModule,
 		BoxModule,
+		AuthModule,
 	],
 	controllers: [OrderController],
 	providers: [

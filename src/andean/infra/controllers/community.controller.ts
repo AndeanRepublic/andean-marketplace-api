@@ -9,7 +9,12 @@ import {
 	HttpCode,
 	HttpStatus,
 	Inject,
+	UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from '../core/jwtAuth.guard';
+import { RolesGuard } from '../core/roles.guard';
+import { Roles } from '../core/roles.decorator';
+import { AccountRole } from '../../domain/enums/AccountRole';
 import {
 	ApiTags,
 	ApiOperation,
@@ -57,6 +62,8 @@ export class CommunityController {
 		private readonly deleteSealUseCase: DeleteSealUseCase,
 	) {}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({ summary: 'Create a new community' })
@@ -131,6 +138,8 @@ export class CommunityController {
 	// 	await this.deleteCommunityUseCase.execute(id);
 	// }
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post(`${path_seals}/bulk`)
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -150,6 +159,8 @@ export class CommunityController {
 		return this.createManySealsUseCase.handle(body);
 	}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post(path_seals)
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({

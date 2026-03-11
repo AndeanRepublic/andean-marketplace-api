@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { AuthModule } from './auth.module';
 
 // Schema
 import { VariantSchema } from './infra/persistence/variant.schema';
@@ -24,6 +25,7 @@ import { VariantController } from './infra/controllers/variantControllers/varian
 @Module({
 	imports: [
 		MongooseModule.forFeature([{ name: 'Variant', schema: VariantSchema }]),
+		AuthModule,
 	],
 	controllers: [VariantController],
 	providers: [
@@ -57,4 +59,4 @@ import { VariantController } from './infra/controllers/variantControllers/varian
 		SyncVariantsUseCase,
 	],
 })
-export class VariantModule { }
+export class VariantModule {}

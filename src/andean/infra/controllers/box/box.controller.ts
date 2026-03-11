@@ -9,7 +9,12 @@ import {
 	ParseIntPipe,
 	Post,
 	Query,
+	UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from '../../core/jwtAuth.guard';
+import { RolesGuard } from '../../core/roles.guard';
+import { Roles } from '../../core/roles.decorator';
+import { AccountRole } from '../../../domain/enums/AccountRole';
 import {
 	ApiTags,
 	ApiOperation,
@@ -33,6 +38,8 @@ export class BoxController {
 		private readonly getBoxDetailUseCase: GetBoxDetailUseCase,
 	) {}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
 	@Post('')
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({

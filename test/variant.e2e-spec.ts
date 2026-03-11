@@ -6,6 +6,9 @@ import {
 } from '@nestjs/common';
 import * as request from 'supertest';
 import { VariantController } from '../src/andean/infra/controllers/variantControllers/variant.controller';
+import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';
+import { RolesGuard } from '../src/andean/infra/core/roles.guard';
+import { createAllowAllGuard, mockAuthUsers } from './helpers/auth-test.helper';
 import { CreateVariantUseCase } from '../src/andean/app/use_cases/variant/CreateVariantUseCase';
 import { CreateManyVariantsUseCase } from '../src/andean/app/use_cases/variant/CreateManyVariantsUseCase';
 import { GetAllVariantsUseCase } from '../src/andean/app/use_cases/variant/GetAllVariantsUseCase';
@@ -63,7 +66,12 @@ describe('VariantController (e2e)', () => {
 				},
 				{ provide: SyncVariantsUseCase, useValue: { execute: jest.fn() } },
 			],
-		}).compile();
+		})
+			.overrideGuard(JwtAuthGuard)
+			.useValue(createAllowAllGuard(mockAuthUsers.seller))
+			.overrideGuard(RolesGuard)
+			.useValue({ canActivate: () => true })
+			.compile();
 
 		app = moduleFixture.createNestApplication();
 		// FIX: Added whitelist + forbidNonWhitelisted + transform to match main.ts

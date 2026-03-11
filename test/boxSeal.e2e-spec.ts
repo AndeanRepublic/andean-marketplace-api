@@ -5,6 +5,9 @@ import { FixtureLoader } from './helpers/fixture-loader';
 
 // ─── Controller ─────────────────────────────────────────────────────────────
 import { BoxSealController } from '../src/andean/infra/controllers/box/boxSeal.controller';
+import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';
+import { RolesGuard } from '../src/andean/infra/core/roles.guard';
+import { createAllowAllGuard, mockAuthUsers } from './helpers/auth-test.helper';
 
 // ─── Use Cases ──────────────────────────────────────────────────────────────
 import { CreateBoxSealUseCase } from '../src/andean/app/use_cases/boxSeals/CreateBoxSealUseCase';
@@ -81,7 +84,12 @@ describe('BoxSealController (e2e)', () => {
 					useValue: { handle: jest.fn().mockResolvedValue(undefined) },
 				},
 			],
-		}).compile();
+		})
+			.overrideGuard(JwtAuthGuard)
+			.useValue(createAllowAllGuard(mockAuthUsers.admin))
+			.overrideGuard(RolesGuard)
+			.useValue({ canActivate: () => true })
+			.compile();
 
 		app = moduleFixture.createNestApplication();
 		app.useGlobalPipes(

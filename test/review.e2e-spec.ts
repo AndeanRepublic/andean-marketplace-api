@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, HttpStatus, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { ReviewController } from '../src/andean/infra/controllers/Review.controller';
+import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';
+import { createAllowAllGuard, mockAuthUsers } from './helpers/auth-test.helper';
 import { CreateReviewUseCase } from '../src/andean/app/use_cases/CreateReviewUseCase';
 import { GetAllReviewsUseCase } from '../src/andean/app/use_cases/GetAllReviewsUseCase';
 import { GetByIdReviewUseCase } from '../src/andean/app/use_cases/GetByIdReviewUseCase';
@@ -91,7 +93,10 @@ describe('ReviewController (e2e)', () => {
 					useValue: { handle: jest.fn().mockResolvedValue(mockReview) },
 				},
 			],
-		}).compile();
+		})
+			.overrideGuard(JwtAuthGuard)
+			.useValue(createAllowAllGuard(mockAuthUsers.customer))
+			.compile();
 
 		app = moduleFixture.createNestApplication();
 		app.useGlobalPipes(

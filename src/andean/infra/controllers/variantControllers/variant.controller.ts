@@ -8,8 +8,13 @@ import {
 	Delete,
 	HttpCode,
 	HttpStatus,
+	UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../../core/jwtAuth.guard';
+import { RolesGuard } from '../../core/roles.guard';
+import { Roles } from '../../core/roles.decorator';
+import { AccountRole } from '../../../domain/enums/AccountRole';
 import { VariantResponse } from 'src/andean/app/modules/variant/VariantResponse';
 import { CreateVariantUseCase } from 'src/andean/app/use_cases/variant/CreateVariantUseCase';
 import { CreateManyVariantsUseCase } from 'src/andean/app/use_cases/variant/CreateManyVariantsUseCase';
@@ -41,6 +46,8 @@ export class VariantController {
 		private readonly syncVariantsUseCase: SyncVariantsUseCase,
 	) {}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({ summary: 'Create a new variant' })

@@ -7,6 +7,9 @@ import {
 } from '@nestjs/common';
 import * as request from 'supertest';
 import { CommunityController } from '../src/andean/infra/controllers/community.controller';
+import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';
+import { RolesGuard } from '../src/andean/infra/core/roles.guard';
+import { createAllowAllGuard, mockAuthUsers } from './helpers/auth-test.helper';
 import { CreateCommunityUseCase } from '../src/andean/app/use_cases/community/CreateCommunityUseCase';
 import { UpdateCommunityUseCase } from '../src/andean/app/use_cases/community/UpdateCommunityUseCase';
 import { GetCommunityByIdUseCase } from '../src/andean/app/use_cases/community/GetCommunityByIdUseCase';
@@ -94,7 +97,12 @@ describe('CommunityController (e2e)', () => {
 					useValue: { handle: jest.fn().mockResolvedValue(undefined) },
 				},
 			],
-		}).compile();
+		})
+			.overrideGuard(JwtAuthGuard)
+			.useValue(createAllowAllGuard(mockAuthUsers.seller))
+			.overrideGuard(RolesGuard)
+			.useValue({ canActivate: () => true })
+			.compile();
 
 		app = moduleFixture.createNestApplication();
 		app.useGlobalPipes(

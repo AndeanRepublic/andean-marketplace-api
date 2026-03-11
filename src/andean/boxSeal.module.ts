@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { AuthModule } from './auth.module';
 
 // Schema
 import { BoxSealSchema } from './infra/persistence/box/boxSeal.schema';
@@ -22,6 +23,7 @@ import { BoxSealController } from './infra/controllers/box/boxSeal.controller';
 @Module({
 	imports: [
 		MongooseModule.forFeature([{ name: 'BoxSeal', schema: BoxSealSchema }]),
+		AuthModule,
 	],
 	controllers: [BoxSealController],
 	providers: [

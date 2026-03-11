@@ -13,8 +13,13 @@ import {
 	ParseFilePipe,
 	MaxFileSizeValidator,
 	FileTypeValidator,
+	UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { JwtAuthGuard } from '../core/jwtAuth.guard';
+import { RolesGuard } from '../core/roles.guard';
+import { Roles } from '../core/roles.decorator';
+import { AccountRole } from '../../domain/enums/AccountRole';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
 	ApiTags,
@@ -56,6 +61,8 @@ export class MediaItemController {
 		);
 	}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post()
 	@UseInterceptors(FileInterceptor('file'))
 	@ApiConsumes('multipart/form-data')
