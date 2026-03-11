@@ -27,8 +27,11 @@ export class VariantInfoListItem {
 	@ApiProperty({ description: 'Talla de la variante', example: 'M' })
 	size: string;
 
-	@ApiProperty({ description: 'Color de la variante', example: 'Rojo' })
-	color: string;
+	@ApiProperty({
+		type: TextileProductColorInfo,
+		description: 'Color de la variante (nombre, hexCode, imgUrl)',
+	})
+	color: TextileProductColorInfo;
 
 	@ApiProperty({ description: 'Material de la variante', example: 'Algodón' })
 	material: string;
@@ -51,7 +54,7 @@ export class TextileProductListItem {
 		description: 'Título del producto',
 		example: 'Poncho de Alpaca Tradicional',
 	})
-	titulo: string;
+	title: string;
 
 	@ApiProperty({ description: 'Nombre de la categoría', example: 'Ponchos' })
 	categoryName: string;
@@ -61,24 +64,6 @@ export class TextileProductListItem {
 		example: 'Artesanías Cusco',
 	})
 	productorName: string;
-
-	@ApiProperty({
-		description: 'Lista de colores disponibles',
-		type: [TextileProductColorInfo],
-	})
-	availableColors: TextileProductColorInfo[];
-
-	@ApiProperty({
-		description: 'Lista de tallas disponibles',
-		example: ['S', 'M', 'L', 'XL'],
-	})
-	availableSizes: string[];
-
-	@ApiProperty({
-		description: 'Lista de materiales disponibles',
-		example: ['Algodón', 'Lana'],
-	})
-	availableMaterials: string[];
 
 	@ApiProperty({
 		description: 'Información de variantes disponibles',
@@ -94,4 +79,10 @@ export class TextileProductListItem {
 
 	@ApiProperty({ description: 'Precio del producto', example: 150.0 })
 	price: number;
+
+	@ApiProperty({
+		description: 'Stock total disponible (suma de variantes)',
+		example: 50,
+	})
+	stock: number;
 }
