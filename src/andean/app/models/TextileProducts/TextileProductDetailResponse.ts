@@ -196,6 +196,9 @@ export class SimilarProductResponse {
 
 	@ApiProperty({ description: 'Precio del producto' })
 	price!: number;
+
+	@ApiProperty({ description: 'Stock general del producto' })
+	stock!: number;
 }
 
 // ── Community Info ────────────────────────────────────────────────────────

@@ -288,6 +288,7 @@ export class GetByIdTextileProductDetailUseCase {
 			}[];
 			principalImgUrl: string;
 			price: number;
+			stock: number;
 		}[]
 	> {
 		if (!categoryId) {
@@ -349,6 +350,7 @@ export class GetByIdTextileProductDetailUseCase {
 					variantInfo: attrs.variantInfo,
 					principalImgUrl: product.baseInfo.mediaIds?.[0] || '',
 					price: product.priceInventary.basePrice,
+					stock: product.priceInventary.totalStock,
 				};
 			}),
 		);
