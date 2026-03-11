@@ -19,6 +19,23 @@ export class MediaImageResponse {
 	url!: string;
 }
 
+export class AvailableColorResponse {
+	@ApiProperty({ description: 'Nombre del color', example: 'Rojo' })
+	color!: string;
+
+	@ApiProperty({
+		description: 'Codigo hexadecimal del color',
+		example: '#FF0000',
+	})
+	hexCode!: string;
+
+	@ApiProperty({
+		description: 'URL de imagen asociada al color',
+		example: 'https://cdn.example.com/colors/rojo.jpg',
+	})
+	imgUrl?: string;
+}
+
 // ── Variant Info ──────────────────────────────────────────────────────────
 export class VariantInfoResponse {
 	@ApiProperty({
@@ -30,8 +47,11 @@ export class VariantInfoResponse {
 	@ApiProperty({ description: 'Talla de la variante', example: 'M' })
 	size!: string;
 
-	@ApiProperty({ description: 'Color de la variante', example: 'Rojo' })
-	color!: string;
+	@ApiProperty({
+		type: AvailableColorResponse,
+		description: 'Color de la variante (nombre, hexCode, imgUrl)',
+	})
+	color!: AvailableColorResponse;
 
 	@ApiProperty({ description: 'Material de la variante', example: 'Algodón' })
 	material!: string;
@@ -149,34 +169,6 @@ export class ReviewsResponse {
 }
 
 // ── Similar Product ───────────────────────────────────────────────────────
-export class ColorInfoResponse {
-	@ApiProperty({ description: 'Nombre del color', example: 'Rojo' })
-	colorName!: string;
-
-	@ApiProperty({
-		description: 'Código hexadecimal del color',
-		example: '#FF0000',
-	})
-	colorHexCode!: string;
-}
-
-export class AvailableColorResponse {
-	@ApiProperty({ description: 'Nombre del color', example: 'Rojo' })
-	color!: string;
-
-	@ApiProperty({
-		description: 'Codigo hexadecimal del color',
-		example: '#FF0000',
-	})
-	hexCode!: string;
-
-	@ApiProperty({
-		description: 'URL de imagen asociada al color',
-		example: 'https://cdn.example.com/colors/rojo.jpg',
-	})
-	imgUrl?: string;
-}
-
 export class SimilarProductResponse {
 	@ApiProperty({
 		description: 'ID único del producto similar',
@@ -194,19 +186,19 @@ export class SimilarProductResponse {
 	productorName!: string;
 
 	@ApiProperty({
-		type: [ColorInfoResponse],
-		description: 'Colores disponibles',
+		type: [VariantInfoResponse],
+		description: 'Información de variantes del producto similar',
 	})
-	colors!: ColorInfoResponse[];
-
-	@ApiProperty({ type: [String], description: 'Tallas disponibles' })
-	sizes!: string[];
+	variantInfo!: VariantInfoResponse[];
 
 	@ApiProperty({ description: 'URL de la imagen principal' })
 	principalImgUrl!: string;
 
 	@ApiProperty({ description: 'Precio del producto' })
 	price!: number;
+
+	@ApiProperty({ description: 'Stock general del producto' })
+	stock!: number;
 }
 
 // ── Community Info ────────────────────────────────────────────────────────
@@ -243,26 +235,14 @@ export class TextileProductDetailResponse {
 	})
 	id!: string;
 
-	@ApiProperty({ description: 'Nombre del producto textil' })
-	name!: string;
+	@ApiProperty({ description: 'Título del producto textil' })
+	title!: string;
 
 	@ApiProperty({
 		type: [MediaImageResponse],
 		description: 'Imágenes del producto',
 	})
 	images!: MediaImageResponse[];
-
-	@ApiProperty({ type: [String], description: 'Tallas disponibles' })
-	availableSizes!: string[];
-
-	@ApiProperty({
-		type: [AvailableColorResponse],
-		description: 'Colores disponibles con codigo hexadecimal e imagen',
-	})
-	availableColors!: AvailableColorResponse[];
-
-	@ApiProperty({ type: [String], description: 'Materiales disponibles' })
-	availableMaterials!: string[];
 
 	@ApiProperty({
 		type: [VariantInfoResponse],
@@ -272,6 +252,12 @@ export class TextileProductDetailResponse {
 
 	@ApiProperty({ description: 'Stock general del producto' })
 	generalStock!: number;
+
+	@ApiProperty({
+		description: 'Precio base del producto',
+		example: 89.99,
+	})
+	basePrice!: number;
 
 	@ApiProperty({ description: 'Información del producto' })
 	information!: string;

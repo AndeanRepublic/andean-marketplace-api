@@ -26,7 +26,7 @@ export class ShoppingCartItemMapper {
 	): ShoppingCartItemResponse {
 		return {
 			ownerName,
-			titulo: productInfo.title,
+			title: productInfo.title,
 			combinationVariant: variant?.combination || {},
 			thumbnailImgUrl: productInfo.thumbnailImgUrl,
 			unitPrice: item.unitPrice,
@@ -50,7 +50,7 @@ export class ShoppingCartItemMapper {
 	): ShoppingCartItemResponse {
 		return {
 			ownerName: '',
-			titulo: productInfo.title,
+			title: productInfo.title,
 			combinationVariant: {},
 			thumbnailImgUrl: productInfo.thumbnailImgUrl,
 			unitPrice: item.unitPrice,
@@ -78,7 +78,7 @@ export class ShoppingCartItemMapper {
 	}): ShoppingCartItemResponse {
 		return {
 			ownerName: params.ownerName,
-			titulo: params.productInfo.title,
+			title: params.productInfo.title,
 			combinationVariant: params.variant.combination,
 			thumbnailImgUrl: params.productInfo.thumbnailImgUrl,
 			unitPrice: params.variant.price,

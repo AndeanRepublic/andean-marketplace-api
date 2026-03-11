@@ -848,7 +848,7 @@ describe('TextileProductController (e2e)', () => {
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					expect(res.body).toHaveProperty('id', mockDetailResponse.id);
-					expect(res.body).toHaveProperty('name', mockDetailResponse.name);
+					expect(res.body).toHaveProperty('title', mockDetailResponse.title);
 				});
 		});
 
@@ -864,7 +864,7 @@ describe('TextileProductController (e2e)', () => {
 			expect(spy).toHaveBeenCalledWith(productId);
 		});
 
-		it('should include availableSizes, availableColors and variantInfo', () => {
+		it('should include variantInfo with color as object', () => {
 			jest
 				.spyOn(getByIdTextileProductDetailUseCase, 'handle')
 				.mockResolvedValueOnce(mockDetailResponse as any);
@@ -873,9 +873,13 @@ describe('TextileProductController (e2e)', () => {
 				.get(`/textile-products/${productId}/details`)
 				.expect(HttpStatus.OK)
 				.expect((res) => {
-					expect(Array.isArray(res.body.availableSizes)).toBe(true);
-					expect(Array.isArray(res.body.availableColors)).toBe(true);
 					expect(Array.isArray(res.body.variantInfo)).toBe(true);
+					if (res.body.variantInfo.length > 0) {
+						expect(res.body.variantInfo[0]).toHaveProperty('color');
+						expect(res.body.variantInfo[0].color).toHaveProperty('color');
+						expect(res.body.variantInfo[0].color).toHaveProperty('hexCode');
+						expect(res.body.variantInfo[0].color).toHaveProperty('imgUrl');
+					}
 				});
 		});
 
@@ -909,6 +913,8 @@ describe('TextileProductController (e2e)', () => {
 						expect(res.body.similarProducts[0]).toHaveProperty('id');
 						expect(res.body.similarProducts[0]).toHaveProperty('title');
 						expect(res.body.similarProducts[0]).toHaveProperty('price');
+						expect(res.body.similarProducts[0]).toHaveProperty('variantInfo');
+						expect(Array.isArray(res.body.similarProducts[0].variantInfo)).toBe(true);
 					}
 				});
 		});

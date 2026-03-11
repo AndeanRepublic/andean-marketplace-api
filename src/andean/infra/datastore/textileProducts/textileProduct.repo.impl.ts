@@ -352,7 +352,7 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 			$project: {
 				_id: 0,
 				id: '$_id',
-				titulo: '$baseInfo.title',
+				title: '$baseInfo.title',
 				categoryName: {
 					$ifNull: [{ $arrayElemAt: ['$category.name', 0] }, 'Sin categoría'],
 				},
@@ -441,7 +441,7 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 			$project: {
 				_id: 0,
 				id: { $toString: '$_id' },
-				titulo: '$baseInfo.title',
+				title: '$baseInfo.title',
 				categoryName: {
 					$ifNull: [{ $arrayElemAt: ['$category.name', 0] }, 'Sin categoría'],
 				},
@@ -728,23 +728,22 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 		const products: TextileProductListItem[] = rawProducts.map(
 			(product: any) => {
 				const attrs = attributesByProductId.get(product.id) || {
-					availableSizes: [],
-					availableColors: [],
-					availableMaterials: [],
 					variantInfo: [],
 				};
+				const stock = attrs.variantInfo.reduce(
+					(sum, v) => sum + (v.stock ?? 0),
+					0,
+				);
 
 				return {
 					id: product.id,
-					titulo: product.titulo,
+					title: product.title,
 					categoryName: product.categoryName,
 					productorName: product.productorName,
 					principalImgUrl: product.principalImgUrl,
 					price: product.price,
-					availableSizes: attrs.availableSizes,
-					availableColors: attrs.availableColors,
-					availableMaterials: attrs.availableMaterials,
 					variantInfo: attrs.variantInfo,
+					stock,
 				};
 			},
 		);
