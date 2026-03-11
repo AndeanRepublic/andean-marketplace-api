@@ -455,6 +455,7 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 					$ifNull: [{ $arrayElemAt: ['$baseInfo.mediaIds', 0] }, ''],
 				},
 				price: '$priceInventary.basePrice',
+				totalStock: { $ifNull: ['$priceInventary.totalStock', 0] },
 				options: { $ifNull: ['$options', []] },
 			},
 		};
@@ -730,10 +731,7 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 				const attrs = attributesByProductId.get(product.id) || {
 					variantInfo: [],
 				};
-				const stock = attrs.variantInfo.reduce(
-					(sum, v) => sum + (v.stock ?? 0),
-					0,
-				);
+				const stock = product.totalStock ?? 0;
 
 				return {
 					id: product.id,
