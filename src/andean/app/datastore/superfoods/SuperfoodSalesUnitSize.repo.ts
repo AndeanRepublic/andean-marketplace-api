@@ -14,4 +14,8 @@ export abstract class SuperfoodSalesUnitSizeRepository {
 	): Promise<SuperfoodSalesUnitSize>;
 
 	abstract delete(id: string): Promise<void>;
+
+	abstract saveMany(
+		unitSizes: SuperfoodSalesUnitSize[],
+	): Promise<SuperfoodSalesUnitSize[]>;
 }

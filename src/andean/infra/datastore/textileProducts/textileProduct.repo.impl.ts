@@ -10,8 +10,8 @@ import { VariantDocument } from '../../persistence/variant.schema';
 import { TextileProduct } from 'src/andean/domain/entities/textileProducts/TextileProduct';
 import { TextileProductMapper } from '../../services/textileProducts/TextileProductMapper';
 import { MongoIdUtils } from '../../utils/MongoIdUtils';
-import { FilterCount } from 'src/andean/app/modules/PaginatedProductsResponse';
-import { TextileProductListItem } from '../../../app/modules/TextileProductListItemResponse';
+import { FilterCount } from 'src/andean/app/modules/shared/PaginatedProductsResponse';
+import { TextileProductListItem } from '../../../app/modules/textile/TextileProductListItemResponse';
 import { ProductSortBy } from 'src/andean/domain/enums/ProductSortBy';
 import { VariantMapper } from '../../services/VariantMapper';
 import { TextileProductAttributesAssembler } from '../../services/textileProducts/TextileProductAttributesAssembler';
@@ -352,7 +352,7 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 			$project: {
 				_id: 0,
 				id: '$_id',
-				titulo: '$baseInfo.title',
+				title: '$baseInfo.title',
 				categoryName: {
 					$ifNull: [{ $arrayElemAt: ['$category.name', 0] }, 'Sin categoría'],
 				},
@@ -441,7 +441,7 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 			$project: {
 				_id: 0,
 				id: { $toString: '$_id' },
-				titulo: '$baseInfo.title',
+				title: '$baseInfo.title',
 				categoryName: {
 					$ifNull: [{ $arrayElemAt: ['$category.name', 0] }, 'Sin categoría'],
 				},
@@ -455,6 +455,7 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 					$ifNull: [{ $arrayElemAt: ['$baseInfo.mediaIds', 0] }, ''],
 				},
 				price: '$priceInventary.basePrice',
+				totalStock: { $ifNull: ['$priceInventary.totalStock', 0] },
 				options: { $ifNull: ['$options', []] },
 			},
 		};
@@ -710,7 +711,9 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 		const productIds = rawProducts.map((product: any) => product.id);
 		const variantDocs =
 			productIds.length > 0
-				? await this.variantModel.find({ productId: { $in: productIds } }).exec()
+				? await this.variantModel
+						.find({ productId: { $in: productIds } })
+						.exec()
 				: [];
 		const variants = variantDocs.map((doc) => VariantMapper.fromDocument(doc));
 
@@ -723,27 +726,25 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 				variants,
 			);
 
-		const products: TextileProductListItem[] = rawProducts.map((product: any) => {
-			const attrs = attributesByProductId.get(product.id) || {
-				availableSizes: [],
-				availableColors: [],
-				availableMaterials: [],
-				variantInfo: [],
-			};
+		const products: TextileProductListItem[] = rawProducts.map(
+			(product: any) => {
+				const attrs = attributesByProductId.get(product.id) || {
+					variantInfo: [],
+				};
+				const stock = product.totalStock ?? 0;
 
-			return {
-				id: product.id,
-				titulo: product.titulo,
-				categoryName: product.categoryName,
-				productorName: product.productorName,
-				principalImgUrl: product.principalImgUrl,
-				price: product.price,
-				availableSizes: attrs.availableSizes,
-				availableColors: attrs.availableColors,
-				availableMaterials: attrs.availableMaterials,
-				variantInfo: attrs.variantInfo,
-			};
-		});
+				return {
+					id: product.id,
+					title: product.title,
+					categoryName: product.categoryName,
+					productorName: product.productorName,
+					principalImgUrl: product.principalImgUrl,
+					price: product.price,
+					variantInfo: attrs.variantInfo,
+					stock,
+				};
+			},
+		);
 
 		return {
 			products,

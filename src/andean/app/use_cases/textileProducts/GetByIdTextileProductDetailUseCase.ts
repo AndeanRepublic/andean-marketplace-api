@@ -3,16 +3,13 @@ import { TextileProductRepository } from '../../datastore/textileProducts/Textil
 import {
 	TextileProductDetailResponse,
 	TraceabilityInfoResponse,
-} from '../../models/TextileProducts/TextileProductDetailResponse';
+} from '../../modules/textile/TextileProductDetailResponse';
 import { ProductType } from '../../../domain/enums/ProductType';
 import { OwnerType } from '../../../domain/enums/OwnerType';
-import { TextileOptionName } from '../../../domain/enums/TextileOptionName';
 import { ReviewRepository } from '../../datastore/Review.repo';
 import { CustomerProfileRepository } from '../../datastore/Customer.repo';
 import { CommunityRepository } from '../../datastore/community/community.repo';
 import { SealRepository } from '../../datastore/community/Seal.repo';
-import { ColorOptionAlternativeRepository } from '../../datastore/textileProducts/ColorOptionAlternative.repo';
-import { SizeOptionAlternativeRepository } from '../../datastore/textileProducts/SizeOptionAlternative.repo';
 import { TextileCategoryRepository } from '../../datastore/textileProducts/TextileCategory.repo';
 import { ShopRepository } from '../../datastore/Shop.repo';
 import { VariantRepository } from '../../datastore/Variant.repo';
@@ -36,10 +33,6 @@ export class GetByIdTextileProductDetailUseCase {
 		private readonly communityRepository: CommunityRepository,
 		@Inject(SealRepository)
 		private readonly sealRepository: SealRepository,
-		@Inject(ColorOptionAlternativeRepository)
-		private readonly colorOptionAlternativeRepository: ColorOptionAlternativeRepository,
-		@Inject(SizeOptionAlternativeRepository)
-		private readonly sizeOptionAlternativeRepository: SizeOptionAlternativeRepository,
 		@Inject(TextileCategoryRepository)
 		private readonly textileCategoryRepository: TextileCategoryRepository,
 		@Inject(ShopRepository)
@@ -107,7 +100,7 @@ export class GetByIdTextileProductDetailUseCase {
 
 		// -- Obtener variants del producto
 		const variants = await this.variantRepository.getByProductId(product.id);
-		const { availableSizes, availableColors, availableMaterials, variantInfo } =
+		const { variantInfo } =
 			await this.textileProductAttributesAssembler.buildForProduct(
 				product,
 				variants,
@@ -183,13 +176,11 @@ export class GetByIdTextileProductDetailUseCase {
 		// -- Construir respuesta completa
 		return {
 			id: product.id,
-			name: product.baseInfo.title,
+			title: product.baseInfo.title,
 			images,
-			availableSizes,
-			availableColors,
-			availableMaterials,
 			variantInfo,
 			generalStock: product.priceInventary.totalStock,
+			basePrice: product.priceInventary.basePrice,
 			information: product.baseInfo.information || '',
 			description: product.baseInfo.description,
 			traceabilityInfo,
@@ -287,34 +278,53 @@ export class GetByIdTextileProductDetailUseCase {
 			title: string;
 			categoryName: string;
 			productorName: string;
-			colors: { colorName: string; colorHexCode: string }[];
-			sizes: string[];
+			variantInfo: {
+				variantId: string;
+				size: string;
+				color: { color: string; hexCode: string; imgUrl?: string };
+				material: string;
+				price: number;
+				stock: number;
+			}[];
 			principalImgUrl: string;
 			price: number;
+			stock: number;
 		}[]
 	> {
 		if (!categoryId) {
 			return [];
 		}
 
-		// Obtener todos los productos de la misma categoría
 		const allProducts =
 			await this.textileProductRepository.getAllTextileProducts();
 		const similarProducts = allProducts.filter(
 			(p) => p.id !== currentProductId && p.categoryId === categoryId,
 		);
-
-		// Limitar a los primeros 5 productos similares
 		const limitedProducts = similarProducts.slice(0, 5);
 
-		// Obtener category name
+		if (limitedProducts.length === 0) {
+			return [];
+		}
+
 		const category =
 			await this.textileCategoryRepository.getCategoryById(categoryId);
 
-		// Mapear productos similares
+		const allVariants = (
+			await Promise.all(
+				limitedProducts.map((p) =>
+					this.variantRepository.getByProductId(p.id),
+				),
+			)
+		).flat();
+
+		const attributesByProductId =
+			await this.textileProductAttributesAssembler.buildForProducts(
+				limitedProducts.map((p) => ({ id: p.id, options: p.options })),
+				allVariants,
+			);
+
 		const mappedProducts = await Promise.all(
 			limitedProducts.map(async (product) => {
-				// Obtener owner name (shop o community)
 				let productorName = '';
 				if (product.baseInfo.ownerType === OwnerType.SHOP) {
 					const shop = await this.shopRepository.getById(
@@ -328,60 +338,19 @@ export class GetByIdTextileProductDetailUseCase {
 					productorName = community?.name || '';
 				}
 
-				// Obtener colors
-				const colorOption = product.options?.find(
-					(opt) => opt.name === TextileOptionName.COLOR,
-				);
-				const colors: { colorName: string; colorHexCode: string }[] = [];
-
-				if (colorOption) {
-					for (const value of colorOption.values) {
-						if (value.idOpcionAlternative) {
-							const colorAlt =
-								await this.colorOptionAlternativeRepository.getById(
-									value.idOpcionAlternative,
-								);
-							if (colorAlt) {
-								colors.push({
-									colorName: colorAlt.nameLabel,
-									colorHexCode: colorAlt.hexCode,
-								});
-							}
-						}
-					}
-				}
-
-				// Obtener sizes
-				const sizeOption = product.options?.find(
-					(opt) => opt.name === TextileOptionName.SIZE,
-				);
-				const sizes: string[] = [];
-
-				if (sizeOption) {
-					for (const value of sizeOption.values) {
-						if (value.idOpcionAlternative) {
-							const sizeAlt =
-								await this.sizeOptionAlternativeRepository.getById(
-									value.idOpcionAlternative,
-								);
-							if (sizeAlt && !sizes.includes(sizeAlt.nameLabel)) {
-								sizes.push(sizeAlt.nameLabel);
-							}
-						} else if (value.label && !sizes.includes(value.label)) {
-							sizes.push(value.label);
-						}
-					}
-				}
+				const attrs = attributesByProductId.get(product.id) || {
+					variantInfo: [],
+				};
 
 				return {
 					id: product.id,
 					title: product.baseInfo.title,
 					categoryName: category?.name || '',
 					productorName,
-					colors,
-					sizes,
+					variantInfo: attrs.variantInfo,
 					principalImgUrl: product.baseInfo.mediaIds?.[0] || '',
 					price: product.priceInventary.basePrice,
+					stock: product.priceInventary.totalStock,
 				};
 			}),
 		);

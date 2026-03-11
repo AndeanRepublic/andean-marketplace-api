@@ -10,6 +10,7 @@ import { BoxSealRepoImpl } from './infra/datastore/box/boxSeal.repo.impl';
 
 // Use Cases
 import { CreateBoxSealUseCase } from './app/use_cases/boxSeals/CreateBoxSealUseCase';
+import { CreateManyBoxSealsUseCase } from './app/use_cases/boxSeals/CreateManyBoxSealsUseCase';
 import { GetAllBoxSealsUseCase } from './app/use_cases/boxSeals/GetAllBoxSealsUseCase';
 import { GetBoxSealByIdUseCase } from './app/use_cases/boxSeals/GetBoxSealByIdUseCase';
 import { UpdateBoxSealUseCase } from './app/use_cases/boxSeals/UpdateBoxSealUseCase';
@@ -31,6 +32,7 @@ import { BoxSealController } from './infra/controllers/box/boxSeal.controller';
 		},
 		// Use Cases
 		CreateBoxSealUseCase,
+		CreateManyBoxSealsUseCase,
 		GetAllBoxSealsUseCase,
 		GetBoxSealByIdUseCase,
 		UpdateBoxSealUseCase,
@@ -38,4 +40,4 @@ import { BoxSealController } from './infra/controllers/box/boxSeal.controller';
 	],
 	exports: [BoxSealRepository, MongooseModule],
 })
-export class BoxSealModule { }
+export class BoxSealModule {}

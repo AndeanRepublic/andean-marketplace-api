@@ -4,6 +4,7 @@ import {
 	ApiOperation,
 	ApiResponse,
 	ApiParam,
+	ApiBody,
 	ApiBearerAuth,
 } from '@nestjs/swagger';
 import { CreateCustomerUseCase } from '../../app/use_cases/users/CreateCustomerUseCase';
@@ -20,8 +21,8 @@ import { UpdateCustomerProfileUseCase } from '../../app/use_cases/users/UpdateCu
 import { UpdateCustomerProfileDto } from './dto/UpdateCustomerProfileDto';
 import { UpdateSellerProfileDto } from './dto/UpdateSellerProfileDto';
 import { UpdateSellerProfileUseCase } from '../../app/use_cases/users/UpdateSellerProfileUseCase';
-import { CustomerProfileResponse } from '../../app/modules/CustomerProfileResponse';
-import { SellerProfileResponse } from '../../app/modules/SellerProfileResponse';
+import { CustomerProfileResponse } from '../../app/modules/users/CustomerProfileResponse';
+import { SellerProfileResponse } from '../../app/modules/users/SellerProfileResponse';
 
 const path_customers: string = '/customers';
 const path_sellers: string = '/sellers';
@@ -88,13 +89,14 @@ export class UserController {
 		summary: 'Actualizar perfil de cliente',
 		description: 'Actualiza la información del perfil de un cliente existente',
 	})
+	@ApiParam({ name: 'userId', description: 'ID del usuario', type: String })
+	@ApiBody({ type: UpdateCustomerProfileDto })
 	@ApiResponse({
 		status: 200,
 		description: 'Perfil del cliente actualizado exitosamente',
 	})
 	@ApiResponse({ status: 400, description: 'Datos de entrada inválidos' })
 	@ApiResponse({ status: 404, description: 'Cliente no encontrado' })
-	@ApiParam({ name: 'userId', description: 'ID del usuario' })
 	async updateCustomerProfile(
 		@Param('userId') userId: string,
 		@Body() body: UpdateCustomerProfileDto,
@@ -107,13 +109,14 @@ export class UserController {
 		summary: 'Actualizar perfil de vendedor',
 		description: 'Actualiza la información del perfil de un vendedor existente',
 	})
+	@ApiParam({ name: 'userId', description: 'ID del usuario', type: String })
+	@ApiBody({ type: UpdateSellerProfileDto })
 	@ApiResponse({
 		status: 200,
 		description: 'Perfil del vendedor actualizado exitosamente',
 	})
 	@ApiResponse({ status: 400, description: 'Datos de entrada inválidos' })
 	@ApiResponse({ status: 404, description: 'Vendedor no encontrado' })
-	@ApiParam({ name: 'userId', description: 'ID del usuario' })
 	async updateSellerProfile(
 		@Param('userId') userId: string,
 		@Body() body: UpdateSellerProfileDto,

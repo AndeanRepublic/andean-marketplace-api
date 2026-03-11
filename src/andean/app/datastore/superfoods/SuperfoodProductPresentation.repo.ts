@@ -14,4 +14,8 @@ export abstract class SuperfoodProductPresentationRepository {
 	): Promise<SuperfoodProductPresentation>;
 
 	abstract delete(id: string): Promise<void>;
+
+	abstract saveMany(
+		presentations: SuperfoodProductPresentation[],
+	): Promise<SuperfoodProductPresentation[]>;
 }

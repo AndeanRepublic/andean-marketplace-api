@@ -10,8 +10,10 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateSuperfoodPreservationMethodDto } from '../dto/superfoods/CreateSuperfoodPreservationMethodDto';
-import { SuperfoodPreservationMethodResponse } from '../../../app/modules/SuperfoodPreservationMethodResponse';
+import { CreateManySuperfoodPreservationMethodsDto } from '../dto/superfoods/CreateManySuperfoodPreservationMethodsDto';
+import { SuperfoodPreservationMethodResponse } from '../../../app/modules/superfoods/SuperfoodPreservationMethodResponse';
 import { CreateSuperfoodPreservationMethodUseCase } from '../../../app/use_cases/superfoods/preservationMethod/CreateSuperfoodPreservationMethodUseCase';
+import { CreateManySuperfoodPreservationMethodsUseCase } from '../../../app/use_cases/superfoods/preservationMethod/CreateManySuperfoodPreservationMethodsUseCase';
 import { GetSuperfoodPreservationMethodByIdUseCase } from '../../../app/use_cases/superfoods/preservationMethod/GetSuperfoodPreservationMethodByIdUseCase';
 import { ListSuperfoodPreservationMethodsUseCase } from '../../../app/use_cases/superfoods/preservationMethod/ListSuperfoodPreservationMethodsUseCase';
 import { DeleteSuperfoodPreservationMethodUseCase } from '../../../app/use_cases/superfoods/preservationMethod/DeleteSuperfoodPreservationMethodUseCase';
@@ -21,10 +23,33 @@ import { DeleteSuperfoodPreservationMethodUseCase } from '../../../app/use_cases
 export class SuperfoodPreservationMethodController {
 	constructor(
 		private readonly createSuperfoodPreservationMethodUseCase: CreateSuperfoodPreservationMethodUseCase,
+		private readonly createManySuperfoodPreservationMethodsUseCase: CreateManySuperfoodPreservationMethodsUseCase,
 		private readonly getSuperfoodPreservationMethodByIdUseCase: GetSuperfoodPreservationMethodByIdUseCase,
 		private readonly listSuperfoodPreservationMethodsUseCase: ListSuperfoodPreservationMethodsUseCase,
 		private readonly deleteSuperfoodPreservationMethodUseCase: DeleteSuperfoodPreservationMethodUseCase,
 	) {}
+
+	@Post('/bulk')
+	@HttpCode(HttpStatus.CREATED)
+	@ApiOperation({
+		summary: 'Crear múltiples métodos de preservación',
+		description:
+			'Crea múltiples métodos de preservación en una sola operación. Útil para carga inicial de datos.',
+	})
+	@ApiResponse({
+		status: 201,
+		description: 'Métodos creados exitosamente',
+		type: [SuperfoodPreservationMethodResponse],
+	})
+	@ApiResponse({
+		status: 400,
+		description: 'Datos de entrada inválidos',
+	})
+	async createManyPreservationMethods(
+		@Body() dto: CreateManySuperfoodPreservationMethodsDto,
+	): Promise<SuperfoodPreservationMethodResponse[]> {
+		return await this.createManySuperfoodPreservationMethodsUseCase.handle(dto);
+	}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
@@ -48,21 +73,21 @@ export class SuperfoodPreservationMethodController {
 		return await this.createSuperfoodPreservationMethodUseCase.handle(dto);
 	}
 
-	// @Get()
-	// @ApiOperation({
-	// 	summary: 'Listar todos los métodos de preservación',
-	// 	description: 'Retorna todos los métodos de preservación disponibles',
-	// })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'Lista de métodos',
-	// 	type: [SuperfoodPreservationMethodResponse],
-	// })
-	// async listPreservationMethods(): Promise<
-	// 	SuperfoodPreservationMethodResponse[]
-	// > {
-	// 	return await this.listSuperfoodPreservationMethodsUseCase.handle();
-	// }
+	@Get()
+	@ApiOperation({
+		summary: 'Listar todos los métodos de preservación',
+		description: 'Retorna todos los métodos de preservación disponibles',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista de métodos',
+		type: [SuperfoodPreservationMethodResponse],
+	})
+	async listPreservationMethods(): Promise<
+		SuperfoodPreservationMethodResponse[]
+	> {
+		return await this.listSuperfoodPreservationMethodsUseCase.handle();
+	}
 
 	// @Get('/:id')
 	// @ApiOperation({
