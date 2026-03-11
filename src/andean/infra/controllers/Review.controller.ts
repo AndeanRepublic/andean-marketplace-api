@@ -17,6 +17,8 @@ import {
 	UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../core/jwtAuth.guard';
+import { CurrentUser } from '../core/current-user.decorator';
+import { AccountRole } from 'src/andean/domain/enums/AccountRole';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
 	ApiTags,
@@ -124,6 +126,7 @@ export class ReviewController {
 		return this.getByIdReviewUseCase.handle(id);
 	}
 
+	@UseGuards(JwtAuthGuard)
 	@Put(path_reviews_id)
 	@ApiOperation({
 		summary: 'Actualizar reseña',
@@ -137,14 +140,20 @@ export class ReviewController {
 		type: ReviewResponse,
 	})
 	@ApiResponse({ status: 400, description: 'Datos de entrada inválidos' })
+	@ApiResponse({
+		status: 403,
+		description: 'No autorizado para modificar esta reseña',
+	})
 	@ApiResponse({ status: 404, description: 'Reseña no encontrada' })
 	async updateReview(
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
 		@Param('id') id: string,
 		@Body() body: UpdateReviewDto,
 	): Promise<Review> {
-		return this.updateReviewUseCase.handle(id, body);
+		return this.updateReviewUseCase.handle(id, requestingUser.userId, body);
 	}
 
+	@UseGuards(JwtAuthGuard)
 	@Delete(path_reviews_id)
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@ApiOperation({
@@ -153,9 +162,20 @@ export class ReviewController {
 	})
 	@ApiParam({ name: 'id', description: 'ID de la reseña', type: String })
 	@ApiResponse({ status: 204, description: 'Reseña eliminada exitosamente' })
+	@ApiResponse({
+		status: 403,
+		description: 'No autorizado para eliminar esta reseña',
+	})
 	@ApiResponse({ status: 404, description: 'Reseña no encontrada' })
-	async deleteReview(@Param('id') id: string): Promise<void> {
-		return this.deleteReviewUseCase.handle(id);
+	async deleteReview(
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
+		@Param('id') id: string,
+	): Promise<void> {
+		return this.deleteReviewUseCase.handle(
+			id,
+			requestingUser.userId,
+			requestingUser.roles,
+		);
 	}
 
 	@UseGuards(JwtAuthGuard)
