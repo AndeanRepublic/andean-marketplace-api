@@ -17,7 +17,7 @@ export class ShoppingCartItemResponse {
 		description: 'Título del producto',
 		example: 'Poncho Tradicional Andino',
 	})
-	titulo!: string;
+	title!: string;
 
 	@ApiProperty({
 		description: 'Combinación de opciones de la variante seleccionada',
@@ -69,7 +69,8 @@ export class ShoppingCartItemResponse {
 	productType!: ProductType;
 
 	@ApiPropertyOptional({
-		description: 'Contenido de la caja (solo presente cuando el item es de tipo BOX)',
+		description:
+			'Contenido de la caja (solo presente cuando el item es de tipo BOX)',
 		type: [BoxContentItemResponse],
 	})
 	boxContent?: BoxContentItemResponse[];
