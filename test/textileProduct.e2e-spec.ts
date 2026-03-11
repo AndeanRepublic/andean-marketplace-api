@@ -913,6 +913,8 @@ describe('TextileProductController (e2e)', () => {
 						expect(res.body.similarProducts[0]).toHaveProperty('id');
 						expect(res.body.similarProducts[0]).toHaveProperty('title');
 						expect(res.body.similarProducts[0]).toHaveProperty('price');
+						expect(res.body.similarProducts[0]).toHaveProperty('variantInfo');
+						expect(Array.isArray(res.body.similarProducts[0].variantInfo)).toBe(true);
 					}
 				});
 		});

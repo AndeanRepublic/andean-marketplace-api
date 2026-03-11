@@ -205,8 +205,24 @@
 				"title": "Manta Andina Tradicional",
 				"categoryName": "Ponchos",
 				"productorName": "Artesanos del Sur",
-				"colors": [{ "colorName": "Verde", "colorHexCode": "#00FF00" }],
-				"sizes": ["S", "M"],
+				"variantInfo": [
+					{
+						"variantId": "similar-variant-1",
+						"size": "S",
+						"color": { "color": "Verde", "hexCode": "#00FF00", "imgUrl": "" },
+						"material": "",
+						"price": 120,
+						"stock": 8
+					},
+					{
+						"variantId": "similar-variant-2",
+						"size": "M",
+						"color": { "color": "Verde", "hexCode": "#00FF00", "imgUrl": "" },
+						"material": "",
+						"price": 120,
+						"stock": 5
+					}
+				],
 				"principalImgUrl": "https://cdn.example.com/manta.jpg",
 				"price": 120
 			}

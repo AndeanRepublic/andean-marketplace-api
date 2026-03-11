@@ -169,17 +169,6 @@ export class ReviewsResponse {
 }
 
 // ── Similar Product ───────────────────────────────────────────────────────
-export class ColorInfoResponse {
-	@ApiProperty({ description: 'Nombre del color', example: 'Rojo' })
-	colorName!: string;
-
-	@ApiProperty({
-		description: 'Código hexadecimal del color',
-		example: '#FF0000',
-	})
-	colorHexCode!: string;
-}
-
 export class SimilarProductResponse {
 	@ApiProperty({
 		description: 'ID único del producto similar',
@@ -197,13 +186,10 @@ export class SimilarProductResponse {
 	productorName!: string;
 
 	@ApiProperty({
-		type: [ColorInfoResponse],
-		description: 'Colores disponibles',
+		type: [VariantInfoResponse],
+		description: 'Información de variantes del producto similar',
 	})
-	colors!: ColorInfoResponse[];
-
-	@ApiProperty({ type: [String], description: 'Tallas disponibles' })
-	sizes!: string[];
+	variantInfo!: VariantInfoResponse[];
 
 	@ApiProperty({ description: 'URL de la imagen principal' })
 	principalImgUrl!: string;
