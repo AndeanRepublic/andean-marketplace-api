@@ -4,6 +4,7 @@ import {
 	HttpStatus,
 	ValidationPipe,
 	ForbiddenException,
+	NotFoundException,
 } from '@nestjs/common';
 import * as request from 'supertest';
 import { TextileProductController } from '../src/andean/infra/controllers/textileProductControllers';
@@ -1391,6 +1392,281 @@ describe('TextileProductController (e2e)', () => {
 					.expect(HttpStatus.UNAUTHORIZED);
 
 				await unauthApp.close();
+			});
+		});
+	});
+
+	// ─── Pattern A/F negative-path enforcement ─────────────────────────────────
+	describe('Pattern A/F negative-path enforcement', () => {
+		const productId = fixture.entity.id;
+
+		async function buildAppWithRoles(
+			authUser: { userId: string; email: string; roles: any[] } | null,
+			allowRoles = true,
+		): Promise<INestApplication> {
+			const createMockUseCase = () => ({ handle: jest.fn() });
+			const module: TestingModule = await Test.createTestingModule({
+				controllers: [TextileProductController],
+				providers: [
+					{
+						provide: CreateTextileProductUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockTextileProduct),
+						},
+					},
+					{
+						provide: GetAllTextileProductsUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockPaginatedResponse),
+						},
+					},
+					{
+						provide: GetByIdTextileProductUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockTextileProduct),
+						},
+					},
+					{
+						provide: UpdateTextileProductUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockTextileProduct),
+						},
+					},
+					{
+						provide: DeleteTextileProductUseCase,
+						useValue: { handle: jest.fn().mockResolvedValue(undefined) },
+					},
+					{
+						provide: GetByIdTextileProductDetailUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockDetailResponse),
+						},
+					},
+					{
+						provide: CreateTextileCategoryUseCase,
+						useValue: createMockUseCase(),
+					},
+					{
+						provide: UpdateTextileCategoryUseCase,
+						useValue: createMockUseCase(),
+					},
+					{
+						provide: GetAllTextileCategoriesUseCase,
+						useValue: createMockUseCase(),
+					},
+					{
+						provide: GetByIdTextileCategoryUseCase,
+						useValue: createMockUseCase(),
+					},
+					{
+						provide: DeleteTextileCategoryUseCase,
+						useValue: createMockUseCase(),
+					},
+					{ provide: CreateTextileTypeUseCase, useValue: createMockUseCase() },
+					{ provide: UpdateTextileTypeUseCase, useValue: createMockUseCase() },
+					{ provide: GetAllTextileTypesUseCase, useValue: createMockUseCase() },
+					{ provide: GetByIdTextileTypeUseCase, useValue: createMockUseCase() },
+					{ provide: DeleteTextileTypeUseCase, useValue: createMockUseCase() },
+					{ provide: CreateTextileStyleUseCase, useValue: createMockUseCase() },
+					{ provide: UpdateTextileStyleUseCase, useValue: createMockUseCase() },
+					{
+						provide: GetAllTextileStylesUseCase,
+						useValue: createMockUseCase(),
+					},
+					{
+						provide: GetByIdTextileStyleUseCase,
+						useValue: createMockUseCase(),
+					},
+					{ provide: DeleteTextileStyleUseCase, useValue: createMockUseCase() },
+					{
+						provide: CreateTextileCraftTechniqueUseCase,
+						useValue: createMockUseCase(),
+					},
+					{
+						provide: UpdateTextileCraftTechniqueUseCase,
+						useValue: createMockUseCase(),
+					},
+					{
+						provide: GetAllTextileCraftTechniquesUseCase,
+						useValue: createMockUseCase(),
+					},
+					{
+						provide: GetByIdTextileCraftTechniqueUseCase,
+						useValue: createMockUseCase(),
+					},
+					{
+						provide: DeleteTextileCraftTechniqueUseCase,
+						useValue: createMockUseCase(),
+					},
+					{
+						provide: CreateTextilePrincipalUseUseCase,
+						useValue: createMockUseCase(),
+					},
+					{
+						provide: UpdateTextilePrincipalUseUseCase,
+						useValue: createMockUseCase(),
+					},
+					{
+						provide: GetAllTextilePrincipalUsesUseCase,
+						useValue: createMockUseCase(),
+					},
+					{
+						provide: GetByIdTextilePrincipalUseUseCase,
+						useValue: createMockUseCase(),
+					},
+					{
+						provide: DeleteTextilePrincipalUseUseCase,
+						useValue: createMockUseCase(),
+					},
+					{
+						provide: CreateTextileCertificationUseCase,
+						useValue: createMockUseCase(),
+					},
+					{
+						provide: UpdateTextileCertificationUseCase,
+						useValue: createMockUseCase(),
+					},
+					{
+						provide: GetAllTextileCertificationsUseCase,
+						useValue: createMockUseCase(),
+					},
+					{
+						provide: GetByIdTextileCertificationUseCase,
+						useValue: createMockUseCase(),
+					},
+					{
+						provide: DeleteTextileCertificationUseCase,
+						useValue: createMockUseCase(),
+					},
+					{
+						provide: CreateColorOptionAlternativeUseCase,
+						useValue: createMockUseCase(),
+					},
+					{
+						provide: UpdateColorOptionAlternativeUseCase,
+						useValue: createMockUseCase(),
+					},
+					{
+						provide: GetAllColorOptionAlternativesUseCase,
+						useValue: createMockUseCase(),
+					},
+					{
+						provide: GetByIdColorOptionAlternativeUseCase,
+						useValue: createMockUseCase(),
+					},
+					{
+						provide: DeleteColorOptionAlternativeUseCase,
+						useValue: createMockUseCase(),
+					},
+					{
+						provide: CreateManyColorOptionAlternativesUseCase,
+						useValue: createMockUseCase(),
+					},
+				],
+			})
+				.overrideGuard(JwtAuthGuard)
+				.useValue(
+					authUser ? createAllowAllGuard(authUser) : createDenyAllGuard(),
+				)
+				.overrideGuard(RolesGuard)
+				.useValue({ canActivate: () => allowRoles })
+				.compile();
+
+			const app = module.createNestApplication();
+			app.useGlobalPipes(
+				new ValidationPipe({
+					whitelist: true,
+					forbidNonWhitelisted: true,
+					transform: true,
+				}),
+			);
+			await app.init();
+			return app;
+		}
+
+		// ── POST /textile-products — Pattern A USER→403 ───────────────────
+		describe('POST /textile-products', () => {
+			it('should return 403 when USER tries to create a textile product', async () => {
+				const userApp = await buildAppWithRoles(mockAuthUsers.customer, false);
+
+				await request(userApp.getHttpServer())
+					.post('/textile-products')
+					.send(createDto)
+					.expect(HttpStatus.FORBIDDEN);
+
+				await userApp.close();
+			});
+		});
+
+		// ── PUT /textile-products/:id — Pattern F negative paths ──────────
+		describe('PUT /textile-products/:id', () => {
+			it('should return 403 when SELLER has no SellerProfile', async () => {
+				const sellerApp = await buildAppWithRoles(mockAuthUsers.seller);
+				const uc = sellerApp.get(UpdateTextileProductUseCase);
+				jest
+					.spyOn(uc, 'handle')
+					.mockRejectedValueOnce(
+						new ForbiddenException('Seller profile not found'),
+					);
+
+				await request(sellerApp.getHttpServer())
+					.put(`/textile-products/${productId}`)
+					.send(updateDto)
+					.expect(HttpStatus.FORBIDDEN);
+
+				await sellerApp.close();
+			});
+
+			it('should return 404 when textile product does not exist', async () => {
+				const sellerApp = await buildAppWithRoles(mockAuthUsers.seller);
+				const uc = sellerApp.get(UpdateTextileProductUseCase);
+				jest
+					.spyOn(uc, 'handle')
+					.mockRejectedValueOnce(
+						new NotFoundException('Textile product not found'),
+					);
+
+				await request(sellerApp.getHttpServer())
+					.put('/textile-products/non-existent-id')
+					.send(updateDto)
+					.expect(HttpStatus.NOT_FOUND);
+
+				await sellerApp.close();
+			});
+		});
+
+		// ── DELETE /textile-products/:id — Pattern F negative paths ───────
+		describe('DELETE /textile-products/:id', () => {
+			it('should return 403 when SELLER has no SellerProfile', async () => {
+				const sellerApp = await buildAppWithRoles(mockAuthUsers.seller);
+				const uc = sellerApp.get(DeleteTextileProductUseCase);
+				jest
+					.spyOn(uc, 'handle')
+					.mockRejectedValueOnce(
+						new ForbiddenException('Seller profile not found'),
+					);
+
+				await request(sellerApp.getHttpServer())
+					.delete(`/textile-products/${productId}`)
+					.expect(HttpStatus.FORBIDDEN);
+
+				await sellerApp.close();
+			});
+
+			it('should return 404 when textile product does not exist', async () => {
+				const sellerApp = await buildAppWithRoles(mockAuthUsers.seller);
+				const uc = sellerApp.get(DeleteTextileProductUseCase);
+				jest
+					.spyOn(uc, 'handle')
+					.mockRejectedValueOnce(
+						new NotFoundException('Textile product not found'),
+					);
+
+				await request(sellerApp.getHttpServer())
+					.delete('/textile-products/non-existent-id')
+					.expect(HttpStatus.NOT_FOUND);
+
+				await sellerApp.close();
 			});
 		});
 	});

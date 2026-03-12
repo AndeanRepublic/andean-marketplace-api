@@ -4,6 +4,7 @@ import {
 	HttpStatus,
 	ValidationPipe,
 	ForbiddenException,
+	NotFoundException,
 } from '@nestjs/common';
 import * as request from 'supertest';
 
@@ -1028,6 +1029,135 @@ describe('ExperienceController (e2e)', () => {
 					.expect(HttpStatus.UNAUTHORIZED);
 
 				await unauthApp.close();
+			});
+		});
+
+		// ── POST /experiences — Pattern A USER→403 ─────────────────────────
+		describe('POST /experiences', () => {
+			it('should return 403 when USER tries to create an experience', async () => {
+				const module: TestingModule = await Test.createTestingModule({
+					controllers: [ExperienceController],
+					providers: [
+						{
+							provide: CreateExperienceUseCase,
+							useValue: {
+								handle: jest.fn().mockResolvedValue(mockExperience),
+							},
+						},
+						{
+							provide: GetAllExperiencesUseCase,
+							useValue: {
+								handle: jest.fn().mockResolvedValue(mockPaginatedResponse),
+							},
+						},
+						{
+							provide: UpdateExperienceUseCase,
+							useValue: {
+								handle: jest.fn().mockResolvedValue(mockExperience),
+							},
+						},
+						{
+							provide: DeleteExperienceUseCase,
+							useValue: { handle: jest.fn().mockResolvedValue(undefined) },
+						},
+						{
+							provide: GetByIdExperienceUseCase,
+							useValue: {
+								handle: jest.fn().mockResolvedValue(mockDetailResponse),
+							},
+						},
+					],
+				})
+					.overrideGuard(JwtAuthGuard)
+					.useValue(createAllowAllGuard(mockAuthUsers.customer))
+					.overrideGuard(RolesGuard)
+					.useValue({ canActivate: () => false })
+					.compile();
+
+				const userApp = module.createNestApplication();
+				userApp.useGlobalPipes(
+					new ValidationPipe({
+						whitelist: true,
+						forbidNonWhitelisted: true,
+						transform: true,
+					}),
+				);
+				await userApp.init();
+
+				await request(userApp.getHttpServer())
+					.post('/experiences')
+					.send(createDto)
+					.expect(HttpStatus.FORBIDDEN);
+
+				await userApp.close();
+			});
+		});
+
+		// ── PUT /experiences/:id — Pattern F additional ────────────────────
+		describe('PUT /experiences/:id additional', () => {
+			it('should return 403 when SELLER has no SellerProfile', async () => {
+				const sellerApp = await buildApp(mockAuthUsers.seller);
+				const uc = sellerApp.get(UpdateExperienceUseCase);
+				jest
+					.spyOn(uc, 'handle')
+					.mockRejectedValueOnce(
+						new ForbiddenException('Seller profile not found'),
+					);
+
+				await request(sellerApp.getHttpServer())
+					.put(`/experiences/${experienceId}`)
+					.send(updateDto)
+					.expect(HttpStatus.FORBIDDEN);
+
+				await sellerApp.close();
+			});
+
+			it('should return 404 when experience does not exist', async () => {
+				const sellerApp = await buildApp(mockAuthUsers.seller);
+				const uc = sellerApp.get(UpdateExperienceUseCase);
+				jest
+					.spyOn(uc, 'handle')
+					.mockRejectedValueOnce(new NotFoundException('Experience not found'));
+
+				await request(sellerApp.getHttpServer())
+					.put('/experiences/non-existent-id')
+					.send(updateDto)
+					.expect(HttpStatus.NOT_FOUND);
+
+				await sellerApp.close();
+			});
+		});
+
+		// ── DELETE /experiences/:id — Pattern F additional ─────────────────
+		describe('DELETE /experiences/:id additional', () => {
+			it('should return 403 when SELLER has no SellerProfile', async () => {
+				const sellerApp = await buildApp(mockAuthUsers.seller);
+				const uc = sellerApp.get(DeleteExperienceUseCase);
+				jest
+					.spyOn(uc, 'handle')
+					.mockRejectedValueOnce(
+						new ForbiddenException('Seller profile not found'),
+					);
+
+				await request(sellerApp.getHttpServer())
+					.delete(`/experiences/${experienceId}`)
+					.expect(HttpStatus.FORBIDDEN);
+
+				await sellerApp.close();
+			});
+
+			it('should return 404 when experience does not exist', async () => {
+				const sellerApp = await buildApp(mockAuthUsers.seller);
+				const uc = sellerApp.get(DeleteExperienceUseCase);
+				jest
+					.spyOn(uc, 'handle')
+					.mockRejectedValueOnce(new NotFoundException('Experience not found'));
+
+				await request(sellerApp.getHttpServer())
+					.delete('/experiences/non-existent-id')
+					.expect(HttpStatus.NOT_FOUND);
+
+				await sellerApp.close();
 			});
 		});
 	});

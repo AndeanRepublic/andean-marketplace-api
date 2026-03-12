@@ -4,6 +4,7 @@ import {
 	HttpStatus,
 	ValidationPipe,
 	ForbiddenException,
+	NotFoundException,
 } from '@nestjs/common';
 import * as request from 'supertest';
 import { SuperfoodController } from '../src/andean/infra/controllers/superfoodControllers/superfood.controller';
@@ -888,6 +889,170 @@ describe('SuperfoodController (e2e)', () => {
 					.expect(HttpStatus.UNAUTHORIZED);
 
 				await unauthApp.close();
+			});
+		});
+	});
+
+	// ─── Pattern A/F negative-path enforcement ─────────────────────────────────
+	describe('Pattern A/F negative-path enforcement', () => {
+		const productId = mockSuperfoodProduct.id;
+
+		async function buildAppWithRoles(
+			authUser: { userId: string; email: string; roles: any[] } | null,
+			allowRoles = true,
+		): Promise<INestApplication> {
+			const module: TestingModule = await Test.createTestingModule({
+				controllers: [SuperfoodController],
+				providers: [
+					{
+						provide: CreateSuperfoodProductUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockSuperfoodProduct),
+						},
+					},
+					{
+						provide: GetByIdSuperfoodProductDetailUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockDetailResponse),
+						},
+					},
+					{
+						provide: GetAllSuperfoodProductsUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockPaginatedResponse),
+						},
+					},
+					{
+						provide: UpdateSuperfoodProductUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockSuperfoodProduct),
+						},
+					},
+					{
+						provide: DeleteSuperfoodProductUseCase,
+						useValue: { handle: jest.fn().mockResolvedValue(undefined) },
+					},
+					{
+						provide: CreateDetailSourceProductUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue({ id: 'detail-source-123' }),
+						},
+					},
+					{
+						provide: UpdateDetailSourceProductUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue({ id: 'detail-source-123' }),
+						},
+					},
+					{
+						provide: DeleteDetailSourceProductUseCase,
+						useValue: { handle: jest.fn().mockResolvedValue(undefined) },
+					},
+				],
+			})
+				.overrideGuard(JwtAuthGuard)
+				.useValue(
+					authUser ? createAllowAllGuard(authUser) : createDenyAllGuard(),
+				)
+				.overrideGuard(RolesGuard)
+				.useValue({ canActivate: () => allowRoles })
+				.compile();
+
+			const app = module.createNestApplication();
+			app.useGlobalPipes(
+				new ValidationPipe({
+					whitelist: true,
+					forbidNonWhitelisted: true,
+					transform: true,
+				}),
+			);
+			await app.init();
+			return app;
+		}
+
+		// ── POST /superfoods — Pattern A USER→403 ─────────────────────────
+		describe('POST /superfoods', () => {
+			it('should return 403 when USER tries to create a superfood', async () => {
+				const userApp = await buildAppWithRoles(mockAuthUsers.customer, false);
+
+				await request(userApp.getHttpServer())
+					.post('/superfoods')
+					.send(createDto)
+					.expect(HttpStatus.FORBIDDEN);
+
+				await userApp.close();
+			});
+		});
+
+		// ── PUT /superfoods/:productId — Pattern F negative paths ─────────
+		describe('PUT /superfoods/:productId', () => {
+			it('should return 403 when SELLER has no SellerProfile', async () => {
+				const sellerApp = await buildAppWithRoles(mockAuthUsers.seller);
+				const uc = sellerApp.get(UpdateSuperfoodProductUseCase);
+				jest
+					.spyOn(uc, 'handle')
+					.mockRejectedValueOnce(
+						new ForbiddenException('Seller profile not found'),
+					);
+
+				await request(sellerApp.getHttpServer())
+					.put(`/superfoods/${productId}`)
+					.send(updateDto)
+					.expect(HttpStatus.FORBIDDEN);
+
+				await sellerApp.close();
+			});
+
+			it('should return 404 when superfood does not exist', async () => {
+				const sellerApp = await buildAppWithRoles(mockAuthUsers.seller);
+				const uc = sellerApp.get(UpdateSuperfoodProductUseCase);
+				jest
+					.spyOn(uc, 'handle')
+					.mockRejectedValueOnce(
+						new NotFoundException('Superfood product not found'),
+					);
+
+				await request(sellerApp.getHttpServer())
+					.put('/superfoods/non-existent-id')
+					.send(updateDto)
+					.expect(HttpStatus.NOT_FOUND);
+
+				await sellerApp.close();
+			});
+		});
+
+		// ── DELETE /superfoods/:productId — Pattern F negative paths ──────
+		describe('DELETE /superfoods/:productId', () => {
+			it('should return 403 when SELLER has no SellerProfile', async () => {
+				const sellerApp = await buildAppWithRoles(mockAuthUsers.seller);
+				const uc = sellerApp.get(DeleteSuperfoodProductUseCase);
+				jest
+					.spyOn(uc, 'handle')
+					.mockRejectedValueOnce(
+						new ForbiddenException('Seller profile not found'),
+					);
+
+				await request(sellerApp.getHttpServer())
+					.delete(`/superfoods/${productId}`)
+					.expect(HttpStatus.FORBIDDEN);
+
+				await sellerApp.close();
+			});
+
+			it('should return 404 when superfood does not exist', async () => {
+				const sellerApp = await buildAppWithRoles(mockAuthUsers.seller);
+				const uc = sellerApp.get(DeleteSuperfoodProductUseCase);
+				jest
+					.spyOn(uc, 'handle')
+					.mockRejectedValueOnce(
+						new NotFoundException('Superfood product not found'),
+					);
+
+				await request(sellerApp.getHttpServer())
+					.delete('/superfoods/non-existent-id')
+					.expect(HttpStatus.NOT_FOUND);
+
+				await sellerApp.close();
 			});
 		});
 	});

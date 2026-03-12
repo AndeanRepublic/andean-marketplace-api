@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
 	INestApplication,
 	ValidationPipe,
+	HttpStatus,
 	NotFoundException,
 	ForbiddenException,
 } from '@nestjs/common';
@@ -508,6 +509,236 @@ describe('VariantController (e2e)', () => {
 					.expect(401);
 
 				await unauthApp.close();
+			});
+		});
+
+		// ── POST /variants — Pattern A USER→403 ───────────────────────────
+		describe('POST /variants', () => {
+			it('should return 403 when USER tries to create a variant', async () => {
+				const module: TestingModule = await Test.createTestingModule({
+					controllers: [VariantController],
+					providers: [
+						{
+							provide: CreateVariantUseCase,
+							useValue: { execute: jest.fn() },
+						},
+						{
+							provide: CreateManyVariantsUseCase,
+							useValue: { execute: jest.fn() },
+						},
+						{
+							provide: GetAllVariantsUseCase,
+							useValue: { execute: jest.fn() },
+						},
+						{
+							provide: GetVariantByIdUseCase,
+							useValue: { execute: jest.fn() },
+						},
+						{
+							provide: GetVariantsByProductIdUseCase,
+							useValue: { execute: jest.fn() },
+						},
+						{
+							provide: UpdateVariantUseCase,
+							useValue: { execute: jest.fn() },
+						},
+						{
+							provide: DeleteVariantUseCase,
+							useValue: { execute: jest.fn() },
+						},
+						{
+							provide: DeleteVariantsByProductIdUseCase,
+							useValue: { execute: jest.fn() },
+						},
+						{
+							provide: SyncVariantsUseCase,
+							useValue: { execute: jest.fn() },
+						},
+					],
+				})
+					.overrideGuard(JwtAuthGuard)
+					.useValue(createAllowAllGuard(mockAuthUsers.customer))
+					.overrideGuard(RolesGuard)
+					.useValue({ canActivate: () => false })
+					.compile();
+
+				const userApp = module.createNestApplication();
+				userApp.useGlobalPipes(
+					new ValidationPipe({
+						whitelist: true,
+						forbidNonWhitelisted: true,
+						transform: true,
+					}),
+				);
+				await userApp.init();
+
+				await request(userApp.getHttpServer())
+					.post('/variants')
+					.send(fixture.createDto)
+					.expect(HttpStatus.FORBIDDEN);
+
+				await userApp.close();
+			});
+		});
+
+		// ── PUT /variants/:id — Pattern F additional ───────────────────────
+		describe('PUT /variants/:id additional', () => {
+			it('should return 403 when SELLER has no SellerProfile', async () => {
+				const sellerApp = await buildApp(mockAuthUsers.seller);
+				const uc = sellerApp.get(UpdateVariantUseCase);
+				jest
+					.spyOn(uc, 'execute')
+					.mockRejectedValueOnce(
+						new ForbiddenException('Seller profile not found'),
+					);
+
+				await request(sellerApp.getHttpServer())
+					.put(`/variants/${variantId}`)
+					.send(fixture.updateDto)
+					.expect(HttpStatus.FORBIDDEN);
+
+				await sellerApp.close();
+			});
+
+			it('should return 404 when variant does not exist', async () => {
+				const sellerApp = await buildApp(mockAuthUsers.seller);
+				const uc = sellerApp.get(UpdateVariantUseCase);
+				jest
+					.spyOn(uc, 'execute')
+					.mockRejectedValueOnce(new NotFoundException('Variant not found'));
+
+				await request(sellerApp.getHttpServer())
+					.put('/variants/non-existent-id')
+					.send(fixture.updateDto)
+					.expect(HttpStatus.NOT_FOUND);
+
+				await sellerApp.close();
+			});
+
+			it('should return 200 when ADMIN updates a non-TEXTILE variant (Pattern G bypass)', async () => {
+				const adminApp = await buildApp(mockAuthUsers.admin);
+				const uc = adminApp.get(UpdateVariantUseCase);
+				jest.spyOn(uc, 'execute').mockResolvedValueOnce(mockVariant);
+
+				await request(adminApp.getHttpServer())
+					.put(`/variants/${variantId}`)
+					.send(fixture.updateDto)
+					.expect(HttpStatus.OK);
+
+				await adminApp.close();
+			});
+		});
+
+		// ── DELETE /variants/:id — Pattern F additional ────────────────────
+		describe('DELETE /variants/:id additional', () => {
+			it('should return 403 when SELLER has no SellerProfile', async () => {
+				const sellerApp = await buildApp(mockAuthUsers.seller);
+				const uc = sellerApp.get(DeleteVariantUseCase);
+				jest
+					.spyOn(uc, 'execute')
+					.mockRejectedValueOnce(
+						new ForbiddenException('Seller profile not found'),
+					);
+
+				await request(sellerApp.getHttpServer())
+					.delete(`/variants/${variantId}`)
+					.expect(HttpStatus.FORBIDDEN);
+
+				await sellerApp.close();
+			});
+
+			it('should return 404 when variant does not exist', async () => {
+				const sellerApp = await buildApp(mockAuthUsers.seller);
+				const uc = sellerApp.get(DeleteVariantUseCase);
+				jest
+					.spyOn(uc, 'execute')
+					.mockRejectedValueOnce(new NotFoundException('Variant not found'));
+
+				await request(sellerApp.getHttpServer())
+					.delete('/variants/non-existent-id')
+					.expect(HttpStatus.NOT_FOUND);
+
+				await sellerApp.close();
+			});
+		});
+
+		// ── PUT /variants/sync — guard enforcement ─────────────────────────
+		describe('PUT /variants/sync', () => {
+			it('should return 401 when no token is provided', async () => {
+				const unauthApp = await buildApp(null);
+
+				await request(unauthApp.getHttpServer())
+					.put('/variants/sync')
+					.send(fixture.syncDto)
+					.expect(HttpStatus.UNAUTHORIZED);
+
+				await unauthApp.close();
+			});
+
+			it('should return 403 when USER tries to sync variants', async () => {
+				const module: TestingModule = await Test.createTestingModule({
+					controllers: [VariantController],
+					providers: [
+						{
+							provide: CreateVariantUseCase,
+							useValue: { execute: jest.fn() },
+						},
+						{
+							provide: CreateManyVariantsUseCase,
+							useValue: { execute: jest.fn() },
+						},
+						{
+							provide: GetAllVariantsUseCase,
+							useValue: { execute: jest.fn() },
+						},
+						{
+							provide: GetVariantByIdUseCase,
+							useValue: { execute: jest.fn() },
+						},
+						{
+							provide: GetVariantsByProductIdUseCase,
+							useValue: { execute: jest.fn() },
+						},
+						{
+							provide: UpdateVariantUseCase,
+							useValue: { execute: jest.fn() },
+						},
+						{
+							provide: DeleteVariantUseCase,
+							useValue: { execute: jest.fn() },
+						},
+						{
+							provide: DeleteVariantsByProductIdUseCase,
+							useValue: { execute: jest.fn() },
+						},
+						{
+							provide: SyncVariantsUseCase,
+							useValue: { execute: jest.fn() },
+						},
+					],
+				})
+					.overrideGuard(JwtAuthGuard)
+					.useValue(createAllowAllGuard(mockAuthUsers.customer))
+					.overrideGuard(RolesGuard)
+					.useValue({ canActivate: () => false })
+					.compile();
+
+				const userApp = module.createNestApplication();
+				userApp.useGlobalPipes(
+					new ValidationPipe({
+						whitelist: true,
+						forbidNonWhitelisted: true,
+						transform: true,
+					}),
+				);
+				await userApp.init();
+
+				await request(userApp.getHttpServer())
+					.put('/variants/sync')
+					.send(fixture.syncDto)
+					.expect(HttpStatus.FORBIDDEN);
+
+				await userApp.close();
 			});
 		});
 	});

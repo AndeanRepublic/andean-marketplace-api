@@ -4,11 +4,16 @@ import {
 	HttpStatus,
 	ValidationPipe,
 	ForbiddenException,
+	NotFoundException,
 } from '@nestjs/common';
 import * as request from 'supertest';
 import { ReviewController } from '../src/andean/infra/controllers/Review.controller';
 import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';
-import { createAllowAllGuard, mockAuthUsers } from './helpers/auth-test.helper';
+import {
+	createAllowAllGuard,
+	createDenyAllGuard,
+	mockAuthUsers,
+} from './helpers/auth-test.helper';
 import { CreateReviewUseCase } from '../src/andean/app/use_cases/CreateReviewUseCase';
 import { GetAllReviewsUseCase } from '../src/andean/app/use_cases/GetAllReviewsUseCase';
 import { GetByIdReviewUseCase } from '../src/andean/app/use_cases/GetByIdReviewUseCase';
@@ -673,6 +678,85 @@ describe('ReviewController (e2e)', () => {
 						numberDislikes: Math.max(0, mockReview.numberDislikes - 1),
 					});
 				});
+		});
+	});
+
+	// ─── no-token 401 enforcement ──────────────────────────────────────────────
+	describe('no-token 401 enforcement', () => {
+		let unauthApp: INestApplication;
+
+		beforeAll(async () => {
+			const moduleFixture: TestingModule = await Test.createTestingModule({
+				controllers: [ReviewController],
+				providers: [
+					{
+						provide: CreateReviewUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: GetAllReviewsUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: GetByIdReviewUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: UpdateReviewUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: DeleteReviewUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: IncrementLikesUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: IncrementDislikesUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: DecrementLikesUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: DecrementDislikesUseCase,
+						useValue: { handle: jest.fn() },
+					},
+				],
+			})
+				.overrideGuard(JwtAuthGuard)
+				.useValue(createDenyAllGuard())
+				.compile();
+
+			unauthApp = moduleFixture.createNestApplication();
+			unauthApp.useGlobalPipes(
+				new ValidationPipe({
+					whitelist: true,
+					forbidNonWhitelisted: true,
+					transform: true,
+				}),
+			);
+			await unauthApp.init();
+		});
+
+		afterAll(async () => {
+			await unauthApp.close();
+		});
+
+		it('should return 401 when no token on PUT /reviews/:id', () => {
+			return request(unauthApp.getHttpServer())
+				.put(`/reviews/${mockReview.id}`)
+				.send(updateDto)
+				.expect(HttpStatus.UNAUTHORIZED);
+		});
+
+		it('should return 401 when no token on DELETE /reviews/:id', () => {
+			return request(unauthApp.getHttpServer())
+				.delete(`/reviews/${mockReview.id}`)
+				.expect(HttpStatus.UNAUTHORIZED);
 		});
 	});
 });
