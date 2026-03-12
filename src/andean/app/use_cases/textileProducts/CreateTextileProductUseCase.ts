@@ -103,14 +103,20 @@ export class CreateTextileProductUseCase {
 				}
 			}
 
-			// Validar certificationId solo si existe
-			if (dto.detailTraceability.certificationId) {
-				const certificationFound =
-					await this.textileCertificationRepository.getTextileCertificationById(
-						dto.detailTraceability.certificationId,
+			// Validar certificationIds solo si hasCertifications es true y hay IDs
+			if (
+				dto.detailTraceability.hasCertifications &&
+				dto.detailTraceability.certificationIds &&
+				dto.detailTraceability.certificationIds.length > 0
+			) {
+				const certificationsFound =
+					await this.textileCertificationRepository.getByIds(
+						dto.detailTraceability.certificationIds,
 					);
-				if (!certificationFound) {
-					throw new NotFoundException('TextileCertification not found');
+				if (certificationsFound.length !== dto.detailTraceability.certificationIds.length) {
+					throw new NotFoundException(
+						'One or more TextileCertification IDs not found',
+					);
 				}
 			}
 		}
