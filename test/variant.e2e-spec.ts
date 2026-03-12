@@ -3,12 +3,17 @@ import {
 	INestApplication,
 	ValidationPipe,
 	NotFoundException,
+	ForbiddenException,
 } from '@nestjs/common';
 import * as request from 'supertest';
 import { VariantController } from '../src/andean/infra/controllers/variantControllers/variant.controller';
 import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';
 import { RolesGuard } from '../src/andean/infra/core/roles.guard';
-import { createAllowAllGuard, mockAuthUsers } from './helpers/auth-test.helper';
+import {
+	createAllowAllGuard,
+	createDenyAllGuard,
+	mockAuthUsers,
+} from './helpers/auth-test.helper';
 import { CreateVariantUseCase } from '../src/andean/app/use_cases/variant/CreateVariantUseCase';
 import { CreateManyVariantsUseCase } from '../src/andean/app/use_cases/variant/CreateManyVariantsUseCase';
 import { GetAllVariantsUseCase } from '../src/andean/app/use_cases/variant/GetAllVariantsUseCase';
@@ -236,6 +241,8 @@ describe('VariantController (e2e)', () => {
 			expect(updateVariantUseCase.execute).toHaveBeenCalledWith(
 				fixture.entity.id,
 				fixture.updateDto,
+				mockAuthUsers.seller.userId,
+				mockAuthUsers.seller.roles,
 			);
 		});
 	});
@@ -248,6 +255,8 @@ describe('VariantController (e2e)', () => {
 				.expect(204);
 			expect(deleteVariantUseCase.execute).toHaveBeenCalledWith(
 				fixture.entity.id,
+				mockAuthUsers.seller.userId,
+				mockAuthUsers.seller.roles,
 			);
 		});
 	});
@@ -261,6 +270,245 @@ describe('VariantController (e2e)', () => {
 			expect(deleteVariantsByProductIdUseCase.execute).toHaveBeenCalledWith(
 				fixture.entity.productId,
 			);
+		});
+	});
+
+	// ─── Ownership enforcement (Pattern G) ────────────────────────────────────
+	describe('ownership enforcement', () => {
+		const variantId = fixture.entity.id;
+
+		async function buildApp(
+			authUser: { userId: string; email: string; roles: any[] } | null,
+		): Promise<INestApplication> {
+			const module: TestingModule = await Test.createTestingModule({
+				controllers: [VariantController],
+				providers: [
+					{
+						provide: CreateVariantUseCase,
+						useValue: { execute: jest.fn() },
+					},
+					{
+						provide: CreateManyVariantsUseCase,
+						useValue: { execute: jest.fn() },
+					},
+					{ provide: GetAllVariantsUseCase, useValue: { execute: jest.fn() } },
+					{
+						provide: GetVariantByIdUseCase,
+						useValue: { execute: jest.fn() },
+					},
+					{
+						provide: GetVariantsByProductIdUseCase,
+						useValue: { execute: jest.fn() },
+					},
+					{
+						provide: UpdateVariantUseCase,
+						useValue: { execute: jest.fn().mockResolvedValue(mockVariant) },
+					},
+					{
+						provide: DeleteVariantUseCase,
+						useValue: { execute: jest.fn().mockResolvedValue(undefined) },
+					},
+					{
+						provide: DeleteVariantsByProductIdUseCase,
+						useValue: { execute: jest.fn() },
+					},
+					{ provide: SyncVariantsUseCase, useValue: { execute: jest.fn() } },
+				],
+			})
+				.overrideGuard(JwtAuthGuard)
+				.useValue(
+					authUser ? createAllowAllGuard(authUser) : createDenyAllGuard(),
+				)
+				.overrideGuard(RolesGuard)
+				.useValue({ canActivate: () => true })
+				.compile();
+
+			const app = module.createNestApplication();
+			app.useGlobalPipes(
+				new ValidationPipe({
+					whitelist: true,
+					forbidNonWhitelisted: true,
+					transform: true,
+				}),
+			);
+			await app.init();
+			return app;
+		}
+
+		// ── PUT /variants/:id ownership ────────────────────────────────────
+		describe('PUT /variants/:id', () => {
+			it('should return 200 when SELLER owner (parent product in their shop) updates', async () => {
+				const ownerApp = await buildApp(mockAuthUsers.seller);
+				const uc = ownerApp.get(UpdateVariantUseCase);
+				jest.spyOn(uc, 'execute').mockResolvedValueOnce(mockVariant);
+
+				await request(ownerApp.getHttpServer())
+					.put(`/variants/${variantId}`)
+					.send(fixture.updateDto)
+					.expect(200);
+
+				await ownerApp.close();
+			});
+
+			it('should return 403 when SELLER non-owner tries to update', async () => {
+				const nonOwnerApp = await buildApp(mockAuthUsers.seller);
+				const uc = nonOwnerApp.get(UpdateVariantUseCase);
+				jest
+					.spyOn(uc, 'execute')
+					.mockRejectedValueOnce(
+						new ForbiddenException('You can only modify your own resource'),
+					);
+
+				await request(nonOwnerApp.getHttpServer())
+					.put(`/variants/${variantId}`)
+					.send(fixture.updateDto)
+					.expect(403);
+
+				await nonOwnerApp.close();
+			});
+
+			it('should return 403 when SELLER tries to update non-TEXTILE variant', async () => {
+				const sellerApp = await buildApp(mockAuthUsers.seller);
+				const uc = sellerApp.get(UpdateVariantUseCase);
+				jest
+					.spyOn(uc, 'execute')
+					.mockRejectedValueOnce(
+						new ForbiddenException('You can only modify your own resource'),
+					);
+
+				await request(sellerApp.getHttpServer())
+					.put(`/variants/${variantId}`)
+					.send(fixture.updateDto)
+					.expect(403);
+
+				await sellerApp.close();
+			});
+
+			it('should return 403 when SELLER tries to update variant of COMMUNITY-owned product', async () => {
+				const sellerApp = await buildApp(mockAuthUsers.seller);
+				const uc = sellerApp.get(UpdateVariantUseCase);
+				jest
+					.spyOn(uc, 'execute')
+					.mockRejectedValueOnce(
+						new ForbiddenException('You can only modify your own resource'),
+					);
+
+				await request(sellerApp.getHttpServer())
+					.put(`/variants/${variantId}`)
+					.send(fixture.updateDto)
+					.expect(403);
+
+				await sellerApp.close();
+			});
+
+			it('should return 200 when ADMIN updates any variant', async () => {
+				const adminApp = await buildApp(mockAuthUsers.admin);
+				const uc = adminApp.get(UpdateVariantUseCase);
+				jest.spyOn(uc, 'execute').mockResolvedValueOnce(mockVariant);
+
+				await request(adminApp.getHttpServer())
+					.put(`/variants/${variantId}`)
+					.send(fixture.updateDto)
+					.expect(200);
+
+				await adminApp.close();
+			});
+
+			it('should return 401 when no token is provided', async () => {
+				const unauthApp = await buildApp(null);
+
+				await request(unauthApp.getHttpServer())
+					.put(`/variants/${variantId}`)
+					.send(fixture.updateDto)
+					.expect(401);
+
+				await unauthApp.close();
+			});
+		});
+
+		// ── DELETE /variants/:id ownership ─────────────────────────────────
+		describe('DELETE /variants/:id', () => {
+			it('should return 204 when SELLER owner deletes their variant', async () => {
+				const ownerApp = await buildApp(mockAuthUsers.seller);
+				const uc = ownerApp.get(DeleteVariantUseCase);
+				jest.spyOn(uc, 'execute').mockResolvedValueOnce(undefined);
+
+				await request(ownerApp.getHttpServer())
+					.delete(`/variants/${variantId}`)
+					.expect(204);
+
+				await ownerApp.close();
+			});
+
+			it('should return 403 when SELLER non-owner tries to delete', async () => {
+				const nonOwnerApp = await buildApp(mockAuthUsers.seller);
+				const uc = nonOwnerApp.get(DeleteVariantUseCase);
+				jest
+					.spyOn(uc, 'execute')
+					.mockRejectedValueOnce(
+						new ForbiddenException('You can only modify your own resource'),
+					);
+
+				await request(nonOwnerApp.getHttpServer())
+					.delete(`/variants/${variantId}`)
+					.expect(403);
+
+				await nonOwnerApp.close();
+			});
+
+			it('should return 403 when SELLER tries to delete non-TEXTILE variant', async () => {
+				const sellerApp = await buildApp(mockAuthUsers.seller);
+				const uc = sellerApp.get(DeleteVariantUseCase);
+				jest
+					.spyOn(uc, 'execute')
+					.mockRejectedValueOnce(
+						new ForbiddenException('You can only modify your own resource'),
+					);
+
+				await request(sellerApp.getHttpServer())
+					.delete(`/variants/${variantId}`)
+					.expect(403);
+
+				await sellerApp.close();
+			});
+
+			it('should return 403 when SELLER tries to delete variant of COMMUNITY-owned product', async () => {
+				const sellerApp = await buildApp(mockAuthUsers.seller);
+				const uc = sellerApp.get(DeleteVariantUseCase);
+				jest
+					.spyOn(uc, 'execute')
+					.mockRejectedValueOnce(
+						new ForbiddenException('You can only modify your own resource'),
+					);
+
+				await request(sellerApp.getHttpServer())
+					.delete(`/variants/${variantId}`)
+					.expect(403);
+
+				await sellerApp.close();
+			});
+
+			it('should return 204 when ADMIN deletes any variant', async () => {
+				const adminApp = await buildApp(mockAuthUsers.admin);
+				const uc = adminApp.get(DeleteVariantUseCase);
+				jest.spyOn(uc, 'execute').mockResolvedValueOnce(undefined);
+
+				await request(adminApp.getHttpServer())
+					.delete(`/variants/${variantId}`)
+					.expect(204);
+
+				await adminApp.close();
+			});
+
+			it('should return 401 when no token is provided', async () => {
+				const unauthApp = await buildApp(null);
+
+				await request(unauthApp.getHttpServer())
+					.delete(`/variants/${variantId}`)
+					.expect(401);
+
+				await unauthApp.close();
+			});
 		});
 	});
 });

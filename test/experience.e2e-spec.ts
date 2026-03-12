@@ -1,11 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, HttpStatus, ValidationPipe } from '@nestjs/common';
+import {
+	INestApplication,
+	HttpStatus,
+	ValidationPipe,
+	ForbiddenException,
+} from '@nestjs/common';
 import * as request from 'supertest';
 
 import { ExperienceController } from '../src/andean/infra/controllers/experienceControllers/experience.controller';
 import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';
 import { RolesGuard } from '../src/andean/infra/core/roles.guard';
-import { createAllowAllGuard, mockAuthUsers } from './helpers/auth-test.helper';
+import {
+	createAllowAllGuard,
+	createDenyAllGuard,
+	mockAuthUsers,
+} from './helpers/auth-test.helper';
 import { CreateExperienceUseCase } from '../src/andean/app/use_cases/experiences/CreateExperienceUseCase';
 import { UpdateExperienceUseCase } from '../src/andean/app/use_cases/experiences/UpdateExperienceUseCase';
 import { DeleteExperienceUseCase } from '../src/andean/app/use_cases/experiences/DeleteExperienceUseCase';
@@ -730,6 +739,8 @@ describe('ExperienceController (e2e)', () => {
 				expect.objectContaining({
 					status: updateDto.status,
 				}),
+				mockAuthUsers.seller.userId,
+				mockAuthUsers.seller.roles,
 			);
 		});
 
@@ -813,7 +824,211 @@ describe('ExperienceController (e2e)', () => {
 				.delete(`/experiences/${experienceId}`)
 				.expect(HttpStatus.NO_CONTENT);
 
-			expect(spy).toHaveBeenCalledWith(experienceId);
+			expect(spy).toHaveBeenCalledWith(
+				experienceId,
+				mockAuthUsers.seller.userId,
+				mockAuthUsers.seller.roles,
+			);
+		});
+	});
+
+	// ─── Ownership enforcement (PUT/DELETE) ────────────────────────────────────
+	describe('ownership enforcement', () => {
+		const experienceId = 'exp-uuid-001';
+
+		async function buildApp(
+			authUser: { userId: string; email: string; roles: any[] } | null,
+		): Promise<INestApplication> {
+			const module: TestingModule = await Test.createTestingModule({
+				controllers: [ExperienceController],
+				providers: [
+					{
+						provide: CreateExperienceUseCase,
+						useValue: { handle: jest.fn().mockResolvedValue(mockExperience) },
+					},
+					{
+						provide: GetAllExperiencesUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockPaginatedResponse),
+						},
+					},
+					{
+						provide: UpdateExperienceUseCase,
+						useValue: { handle: jest.fn().mockResolvedValue(mockExperience) },
+					},
+					{
+						provide: DeleteExperienceUseCase,
+						useValue: { handle: jest.fn().mockResolvedValue(undefined) },
+					},
+					{
+						provide: GetByIdExperienceUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockDetailResponse),
+						},
+					},
+				],
+			})
+				.overrideGuard(JwtAuthGuard)
+				.useValue(
+					authUser ? createAllowAllGuard(authUser) : createDenyAllGuard(),
+				)
+				.overrideGuard(RolesGuard)
+				.useValue({ canActivate: () => true })
+				.compile();
+
+			const app = module.createNestApplication();
+			app.useGlobalPipes(
+				new ValidationPipe({
+					whitelist: true,
+					forbidNonWhitelisted: true,
+					transform: true,
+				}),
+			);
+			await app.init();
+			return app;
+		}
+
+		// ── PUT /experiences/:id ownership ────────────────────────────────
+		describe('PUT /experiences/:id', () => {
+			it('should return 200 when SELLER owner updates the experience', async () => {
+				const ownerApp = await buildApp(mockAuthUsers.seller);
+				const uc = ownerApp.get(UpdateExperienceUseCase);
+				jest.spyOn(uc, 'handle').mockResolvedValueOnce(mockExperience);
+
+				await request(ownerApp.getHttpServer())
+					.put(`/experiences/${experienceId}`)
+					.send(updateDto)
+					.expect(HttpStatus.OK);
+
+				await ownerApp.close();
+			});
+
+			it('should return 403 when SELLER non-owner tries to update', async () => {
+				const nonOwnerApp = await buildApp(mockAuthUsers.seller);
+				const uc = nonOwnerApp.get(UpdateExperienceUseCase);
+				jest
+					.spyOn(uc, 'handle')
+					.mockRejectedValueOnce(
+						new ForbiddenException('You can only modify your own resource'),
+					);
+
+				await request(nonOwnerApp.getHttpServer())
+					.put(`/experiences/${experienceId}`)
+					.send(updateDto)
+					.expect(HttpStatus.FORBIDDEN);
+
+				await nonOwnerApp.close();
+			});
+
+			it('should return 403 when SELLER tries to update COMMUNITY-owned experience', async () => {
+				const sellerApp = await buildApp(mockAuthUsers.seller);
+				const uc = sellerApp.get(UpdateExperienceUseCase);
+				jest
+					.spyOn(uc, 'handle')
+					.mockRejectedValueOnce(
+						new ForbiddenException('You can only modify your own resource'),
+					);
+
+				await request(sellerApp.getHttpServer())
+					.put(`/experiences/${experienceId}`)
+					.send(updateDto)
+					.expect(HttpStatus.FORBIDDEN);
+
+				await sellerApp.close();
+			});
+
+			it('should return 200 when ADMIN updates any experience', async () => {
+				const adminApp = await buildApp(mockAuthUsers.admin);
+				const uc = adminApp.get(UpdateExperienceUseCase);
+				jest.spyOn(uc, 'handle').mockResolvedValueOnce(mockExperience);
+
+				await request(adminApp.getHttpServer())
+					.put(`/experiences/${experienceId}`)
+					.send(updateDto)
+					.expect(HttpStatus.OK);
+
+				await adminApp.close();
+			});
+
+			it('should return 401 when no token is provided', async () => {
+				const unauthApp = await buildApp(null);
+
+				await request(unauthApp.getHttpServer())
+					.put(`/experiences/${experienceId}`)
+					.send(updateDto)
+					.expect(HttpStatus.UNAUTHORIZED);
+
+				await unauthApp.close();
+			});
+		});
+
+		// ── DELETE /experiences/:id ownership ─────────────────────────────
+		describe('DELETE /experiences/:id', () => {
+			it('should return 204 when SELLER owner deletes the experience', async () => {
+				const ownerApp = await buildApp(mockAuthUsers.seller);
+				const uc = ownerApp.get(DeleteExperienceUseCase);
+				jest.spyOn(uc, 'handle').mockResolvedValueOnce(undefined);
+
+				await request(ownerApp.getHttpServer())
+					.delete(`/experiences/${experienceId}`)
+					.expect(HttpStatus.NO_CONTENT);
+
+				await ownerApp.close();
+			});
+
+			it('should return 403 when SELLER non-owner tries to delete', async () => {
+				const nonOwnerApp = await buildApp(mockAuthUsers.seller);
+				const uc = nonOwnerApp.get(DeleteExperienceUseCase);
+				jest
+					.spyOn(uc, 'handle')
+					.mockRejectedValueOnce(
+						new ForbiddenException('You can only modify your own resource'),
+					);
+
+				await request(nonOwnerApp.getHttpServer())
+					.delete(`/experiences/${experienceId}`)
+					.expect(HttpStatus.FORBIDDEN);
+
+				await nonOwnerApp.close();
+			});
+
+			it('should return 403 when SELLER tries to delete COMMUNITY-owned experience', async () => {
+				const sellerApp = await buildApp(mockAuthUsers.seller);
+				const uc = sellerApp.get(DeleteExperienceUseCase);
+				jest
+					.spyOn(uc, 'handle')
+					.mockRejectedValueOnce(
+						new ForbiddenException('You can only modify your own resource'),
+					);
+
+				await request(sellerApp.getHttpServer())
+					.delete(`/experiences/${experienceId}`)
+					.expect(HttpStatus.FORBIDDEN);
+
+				await sellerApp.close();
+			});
+
+			it('should return 204 when ADMIN deletes any experience', async () => {
+				const adminApp = await buildApp(mockAuthUsers.admin);
+				const uc = adminApp.get(DeleteExperienceUseCase);
+				jest.spyOn(uc, 'handle').mockResolvedValueOnce(undefined);
+
+				await request(adminApp.getHttpServer())
+					.delete(`/experiences/${experienceId}`)
+					.expect(HttpStatus.NO_CONTENT);
+
+				await adminApp.close();
+			});
+
+			it('should return 401 when no token is provided', async () => {
+				const unauthApp = await buildApp(null);
+
+				await request(unauthApp.getHttpServer())
+					.delete(`/experiences/${experienceId}`)
+					.expect(HttpStatus.UNAUTHORIZED);
+
+				await unauthApp.close();
+			});
 		});
 	});
 });

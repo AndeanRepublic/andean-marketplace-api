@@ -1,10 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, HttpStatus, ValidationPipe } from '@nestjs/common';
+import {
+	INestApplication,
+	HttpStatus,
+	ValidationPipe,
+	ForbiddenException,
+} from '@nestjs/common';
 import * as request from 'supertest';
 import { SuperfoodController } from '../src/andean/infra/controllers/superfoodControllers/superfood.controller';
 import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';
 import { RolesGuard } from '../src/andean/infra/core/roles.guard';
-import { createAllowAllGuard, mockAuthUsers } from './helpers/auth-test.helper';
+import {
+	createAllowAllGuard,
+	createDenyAllGuard,
+	mockAuthUsers,
+} from './helpers/auth-test.helper';
 import { CreateSuperfoodProductUseCase } from '../src/andean/app/use_cases/superfoods/CreateSuperfoodProductUseCase';
 import { GetByIdSuperfoodProductDetailUseCase } from '../src/andean/app/use_cases/superfoods/GetByIdSuperfoodProductDetailUseCase';
 import { GetAllSuperfoodProductsUseCase } from '../src/andean/app/use_cases/superfoods/GetAllSuperfoodProductsUseCase';
@@ -622,6 +631,8 @@ describe('SuperfoodController (e2e)', () => {
 						title: updateDto.baseInfo.title,
 					}),
 				}),
+				mockAuthUsers.seller.userId,
+				mockAuthUsers.seller.roles,
 			);
 		});
 
@@ -653,7 +664,231 @@ describe('SuperfoodController (e2e)', () => {
 			await request(app.getHttpServer())
 				.delete(`/superfoods/${productId}`)
 				.expect(HttpStatus.NO_CONTENT);
-			expect(spy).toHaveBeenCalledWith(productId);
+			expect(spy).toHaveBeenCalledWith(
+				productId,
+				mockAuthUsers.seller.userId,
+				mockAuthUsers.seller.roles,
+			);
+		});
+	});
+
+	// ─── Ownership enforcement (PUT/DELETE) ────────────────────────────────────
+	describe('ownership enforcement', () => {
+		const productId = mockSuperfoodProduct.id;
+
+		async function buildApp(
+			authUser: { userId: string; email: string; roles: any[] } | null,
+		): Promise<INestApplication> {
+			const module: TestingModule = await Test.createTestingModule({
+				controllers: [SuperfoodController],
+				providers: [
+					{
+						provide: CreateSuperfoodProductUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockSuperfoodProduct),
+						},
+					},
+					{
+						provide: GetByIdSuperfoodProductDetailUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockDetailResponse),
+						},
+					},
+					{
+						provide: GetAllSuperfoodProductsUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockPaginatedResponse),
+						},
+					},
+					{
+						provide: UpdateSuperfoodProductUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockSuperfoodProduct),
+						},
+					},
+					{
+						provide: DeleteSuperfoodProductUseCase,
+						useValue: { handle: jest.fn().mockResolvedValue(undefined) },
+					},
+					{
+						provide: CreateDetailSourceProductUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue({ id: 'detail-source-123' }),
+						},
+					},
+					{
+						provide: UpdateDetailSourceProductUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue({ id: 'detail-source-123' }),
+						},
+					},
+					{
+						provide: DeleteDetailSourceProductUseCase,
+						useValue: { handle: jest.fn().mockResolvedValue(undefined) },
+					},
+				],
+			})
+				.overrideGuard(JwtAuthGuard)
+				.useValue(
+					authUser ? createAllowAllGuard(authUser) : createDenyAllGuard(),
+				)
+				.overrideGuard(RolesGuard)
+				.useValue({ canActivate: () => true })
+				.compile();
+
+			const app = module.createNestApplication();
+			app.useGlobalPipes(
+				new ValidationPipe({
+					whitelist: true,
+					forbidNonWhitelisted: true,
+					transform: true,
+				}),
+			);
+			await app.init();
+			return app;
+		}
+
+		// ── PUT /superfoods/:productId ownership ──────────────────────────
+		describe('PUT /superfoods/:productId', () => {
+			it('should return 200 when SELLER owner updates the product', async () => {
+				const ownerApp = await buildApp(mockAuthUsers.seller);
+				const uc = ownerApp.get(UpdateSuperfoodProductUseCase);
+				jest.spyOn(uc, 'handle').mockResolvedValueOnce(mockSuperfoodProduct);
+
+				await request(ownerApp.getHttpServer())
+					.put(`/superfoods/${productId}`)
+					.send(updateDto)
+					.expect(HttpStatus.OK);
+
+				await ownerApp.close();
+			});
+
+			it('should return 403 when SELLER non-owner tries to update', async () => {
+				const nonOwnerApp = await buildApp(mockAuthUsers.seller);
+				const uc = nonOwnerApp.get(UpdateSuperfoodProductUseCase);
+				jest
+					.spyOn(uc, 'handle')
+					.mockRejectedValueOnce(
+						new ForbiddenException('You can only modify your own resource'),
+					);
+
+				await request(nonOwnerApp.getHttpServer())
+					.put(`/superfoods/${productId}`)
+					.send(updateDto)
+					.expect(HttpStatus.FORBIDDEN);
+
+				await nonOwnerApp.close();
+			});
+
+			it('should return 403 when SELLER tries to update COMMUNITY-owned product', async () => {
+				const sellerApp = await buildApp(mockAuthUsers.seller);
+				const uc = sellerApp.get(UpdateSuperfoodProductUseCase);
+				jest
+					.spyOn(uc, 'handle')
+					.mockRejectedValueOnce(
+						new ForbiddenException('You can only modify your own resource'),
+					);
+
+				await request(sellerApp.getHttpServer())
+					.put(`/superfoods/${productId}`)
+					.send(updateDto)
+					.expect(HttpStatus.FORBIDDEN);
+
+				await sellerApp.close();
+			});
+
+			it('should return 200 when ADMIN updates any product', async () => {
+				const adminApp = await buildApp(mockAuthUsers.admin);
+				const uc = adminApp.get(UpdateSuperfoodProductUseCase);
+				jest.spyOn(uc, 'handle').mockResolvedValueOnce(mockSuperfoodProduct);
+
+				await request(adminApp.getHttpServer())
+					.put(`/superfoods/${productId}`)
+					.send(updateDto)
+					.expect(HttpStatus.OK);
+
+				await adminApp.close();
+			});
+
+			it('should return 401 when no token is provided', async () => {
+				const unauthApp = await buildApp(null);
+
+				await request(unauthApp.getHttpServer())
+					.put(`/superfoods/${productId}`)
+					.send(updateDto)
+					.expect(HttpStatus.UNAUTHORIZED);
+
+				await unauthApp.close();
+			});
+		});
+
+		// ── DELETE /superfoods/:productId ownership ───────────────────────
+		describe('DELETE /superfoods/:productId', () => {
+			it('should return 204 when SELLER owner deletes the product', async () => {
+				const ownerApp = await buildApp(mockAuthUsers.seller);
+				const uc = ownerApp.get(DeleteSuperfoodProductUseCase);
+				jest.spyOn(uc, 'handle').mockResolvedValueOnce(undefined);
+
+				await request(ownerApp.getHttpServer())
+					.delete(`/superfoods/${productId}`)
+					.expect(HttpStatus.NO_CONTENT);
+
+				await ownerApp.close();
+			});
+
+			it('should return 403 when SELLER non-owner tries to delete', async () => {
+				const nonOwnerApp = await buildApp(mockAuthUsers.seller);
+				const uc = nonOwnerApp.get(DeleteSuperfoodProductUseCase);
+				jest
+					.spyOn(uc, 'handle')
+					.mockRejectedValueOnce(
+						new ForbiddenException('You can only modify your own resource'),
+					);
+
+				await request(nonOwnerApp.getHttpServer())
+					.delete(`/superfoods/${productId}`)
+					.expect(HttpStatus.FORBIDDEN);
+
+				await nonOwnerApp.close();
+			});
+
+			it('should return 403 when SELLER tries to delete COMMUNITY-owned product', async () => {
+				const sellerApp = await buildApp(mockAuthUsers.seller);
+				const uc = sellerApp.get(DeleteSuperfoodProductUseCase);
+				jest
+					.spyOn(uc, 'handle')
+					.mockRejectedValueOnce(
+						new ForbiddenException('You can only modify your own resource'),
+					);
+
+				await request(sellerApp.getHttpServer())
+					.delete(`/superfoods/${productId}`)
+					.expect(HttpStatus.FORBIDDEN);
+
+				await sellerApp.close();
+			});
+
+			it('should return 204 when ADMIN deletes any product', async () => {
+				const adminApp = await buildApp(mockAuthUsers.admin);
+				const uc = adminApp.get(DeleteSuperfoodProductUseCase);
+				jest.spyOn(uc, 'handle').mockResolvedValueOnce(undefined);
+
+				await request(adminApp.getHttpServer())
+					.delete(`/superfoods/${productId}`)
+					.expect(HttpStatus.NO_CONTENT);
+
+				await adminApp.close();
+			});
+
+			it('should return 401 when no token is provided', async () => {
+				const unauthApp = await buildApp(null);
+
+				await request(unauthApp.getHttpServer())
+					.delete(`/superfoods/${productId}`)
+					.expect(HttpStatus.UNAUTHORIZED);
+
+				await unauthApp.close();
+			});
 		});
 	});
 });
