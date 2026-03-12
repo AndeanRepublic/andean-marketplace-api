@@ -15,6 +15,7 @@ import {
 import { JwtAuthGuard } from '../../core/jwtAuth.guard';
 import { RolesGuard } from '../../core/roles.guard';
 import { Roles } from '../../core/roles.decorator';
+import { CurrentUser } from '../../core/current-user.decorator';
 import { AccountRole } from '../../../domain/enums/AccountRole';
 import {
 	ApiTags,
@@ -71,6 +72,8 @@ export class ExperienceController {
 		return this.createExperienceUseCase.handle(body);
 	}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Put('/:id')
 	@ApiOperation({
 		summary: 'Actualizar experiencia',
@@ -94,8 +97,14 @@ export class ExperienceController {
 	async update(
 		@Param('id') id: string,
 		@Body() body: UpdateExperienceDto,
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
 	): Promise<Experience> {
-		return this.updateExperienceUseCase.handle(id, body);
+		return this.updateExperienceUseCase.handle(
+			id,
+			body,
+			requestingUser.userId,
+			requestingUser.roles,
+		);
 	}
 
 	@Get('/:id')
@@ -199,6 +208,8 @@ export class ExperienceController {
 		);
 	}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Delete('/:id')
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@ApiOperation({
@@ -219,7 +230,14 @@ export class ExperienceController {
 		status: 404,
 		description: 'Experiencia no encontrada',
 	})
-	async delete(@Param('id') id: string): Promise<void> {
-		return this.deleteExperienceUseCase.handle(id);
+	async delete(
+		@Param('id') id: string,
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
+	): Promise<void> {
+		return this.deleteExperienceUseCase.handle(
+			id,
+			requestingUser.userId,
+			requestingUser.roles,
+		);
 	}
 }
