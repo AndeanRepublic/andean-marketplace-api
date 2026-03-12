@@ -252,7 +252,7 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 					as: 'category',
 				},
 			},
-			// Lookup para seller/productor
+			// Lookup para seller/productor (cuando ownerType es SHOP)
 			{
 				$lookup: {
 					from: 'sellerprofiles',
@@ -268,6 +268,24 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 					},
 					pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$ownId'] } } }],
 					as: 'seller',
+				},
+			},
+			// Lookup para community/productor (cuando ownerType es COMMUNITY)
+			{
+				$lookup: {
+					from: 'communities',
+					let: {
+						ownId: {
+							$convert: {
+								input: '$baseInfo.ownerId',
+								to: 'objectId',
+								onError: null,
+								onNull: null,
+							},
+						},
+					},
+					pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$ownId'] } } }],
+					as: 'community',
 				},
 			},
 		];
@@ -357,10 +375,17 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 					$ifNull: [{ $arrayElemAt: ['$category.name', 0] }, 'Sin categoría'],
 				},
 				productorName: {
-					$ifNull: [
-						{ $arrayElemAt: ['$seller.commercialName', 0] },
-						'Productor desconocido',
-					],
+					$cond: {
+						if: { $gt: [{ $size: '$seller' }, 0] },
+						then: { $arrayElemAt: ['$seller.commercialName', 0] },
+						else: {
+							$cond: {
+								if: { $gt: [{ $size: '$community' }, 0] },
+								then: { $arrayElemAt: ['$community.name', 0] },
+								else: 'Productor desconocido',
+							},
+						},
+					},
 				},
 				principalImgUrl: {
 					$ifNull: [{ $arrayElemAt: ['$baseInfo.mediaIds', 0] }, ''],
@@ -446,10 +471,17 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 					$ifNull: [{ $arrayElemAt: ['$category.name', 0] }, 'Sin categoría'],
 				},
 				productorName: {
-					$ifNull: [
-						{ $arrayElemAt: ['$seller.commercialName', 0] },
-						'Productor desconocido',
-					],
+					$cond: {
+						if: { $gt: [{ $size: '$seller' }, 0] },
+						then: { $arrayElemAt: ['$seller.commercialName', 0] },
+						else: {
+							$cond: {
+								if: { $gt: [{ $size: '$community' }, 0] },
+								then: { $arrayElemAt: ['$community.name', 0] },
+								else: 'Productor desconocido',
+							},
+						},
+					},
 				},
 				principalImgUrl: {
 					$ifNull: [{ $arrayElemAt: ['$baseInfo.mediaIds', 0] }, ''],
