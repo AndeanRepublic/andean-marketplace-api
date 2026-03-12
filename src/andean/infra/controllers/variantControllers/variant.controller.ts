@@ -69,6 +69,8 @@ export class VariantController {
 	// 	return this.createManyVariantsUseCase.execute(body);
 	// }
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Put('/sync')
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({ summary: 'Sync variants for a product' })
