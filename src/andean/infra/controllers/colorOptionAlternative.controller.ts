@@ -8,8 +8,13 @@ import {
 	Delete,
 	HttpCode,
 	HttpStatus,
+	UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/andean/infra/core/jwtAuth.guard';
+import { RolesGuard } from 'src/andean/infra/core/roles.guard';
+import { Roles } from 'src/andean/infra/core/roles.decorator';
+import { AccountRole } from 'src/andean/domain/enums/AccountRole';
 import { CreateColorOptionAlternativeUseCase } from 'src/andean/app/use_cases/textileProducts/CreateColorOptionAlternativeUseCase';
 import { ColorOptionAlternative } from 'src/andean/domain/entities/textileProducts/ColorOptionAlternative';
 import { CreateColorOptionAlternativeDto } from './dto/textileProducts/CreateColorOptionAlternativeDto';
@@ -34,6 +39,8 @@ export class ColorOptionAlternativeController {
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@ApiOperation({
 		summary: 'Crear nueva opción de color',
 		description:
@@ -56,6 +63,8 @@ export class ColorOptionAlternativeController {
 
 	@Post('/bulk')
 	@HttpCode(HttpStatus.CREATED)
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@ApiOperation({
 		summary: 'Crear múltiples opciones de color',
 		description:
