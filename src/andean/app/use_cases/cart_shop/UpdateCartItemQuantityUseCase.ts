@@ -28,17 +28,16 @@ export class UpdateCartItemQuantityUseCase {
 		idShoppingCartItem: string,
 		quantityDelta: number = 1,
 	): Promise<CartItemQuantityResponse> {
-		// 1. Validar que el CartItem existe
+		// -- Validate that the CartItem exists
 		const cartItem = await this.cartItemRepository.getById(idShoppingCartItem);
 		if (!cartItem) {
 			throw new NotFoundException('CartItem not found');
 		}
 
-		// 2. Obtener maxStock
+		// -- Get maxStock
 		let maxStock: number;
 
 		if (cartItem.variantProductId) {
-			// Si tiene variante, obtener stock de la variante
 			const variant = await this.variantRepository.getById(
 				cartItem.variantProductId,
 			);
@@ -47,7 +46,6 @@ export class UpdateCartItemQuantityUseCase {
 			}
 			maxStock = variant.stock;
 		} else {
-			// Si no tiene variante, obtener stock del producto según productType
 			if (cartItem.productType === ProductType.TEXTILE) {
 				const product =
 					await this.textileProductRepository.getTextileProductById(
@@ -73,21 +71,25 @@ export class UpdateCartItemQuantityUseCase {
 			}
 		}
 
-		// 3. Validar que la cantidad resultante no sea negativa antes de actualizar
+		// -- Validate that the resulting quantity is not negative before updating
 		const newQuantity = cartItem.quantity + quantityDelta;
-		if (newQuantity < 0) {
+		if (newQuantity <= 0) {
 			throw new BadRequestException(
-				'Quantity cannot be negative. The requested quantity delta would result in a negative quantity.',
+				'Quantity cannot be less than 1. The requested quantity delta would result in a quantity less than 1.',
+			);
+		}
+		if (newQuantity > maxStock) {
+			throw new BadRequestException(
+				'Quantity cannot be greater than the maximum stock. The requested quantity delta would result in a quantity greater than the maximum stock.',
 			);
 		}
 
-		// 4. Actualizar cantidad
+		// -- Update quantity
 		const updatedCartItem = await this.cartItemRepository.updateQuantity(
 			idShoppingCartItem,
 			quantityDelta,
 		);
 
-		// 5. Retornar response
 		return {
 			quantity: updatedCartItem.quantity,
 			idShoppingCartItem: updatedCartItem.id,
