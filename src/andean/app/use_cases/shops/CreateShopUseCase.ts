@@ -24,11 +24,12 @@ export class CreateShopUseCase {
 			crypto.randomUUID(),
 			shopDto.sellerId,
 			shopDto.name,
-			shopDto.description,
 			shopDto.categories,
+			shopDto.description,
 			shopDto.policies,
 			shopDto.shippingOrigin,
 			shopDto.shippingArea,
+			shopDto.providerInfoId,
 		);
 		return this.shopRepository.saveShop(shopToSave);
 	}

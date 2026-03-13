@@ -31,6 +31,17 @@ export class TextileCertificationRepositoryImpl extends TextileCertificationRepo
 		return doc ? TextileCertificationMapper.fromDocument(doc) : null;
 	}
 
+	async getByIds(ids: string[]): Promise<TextileCertification[]> {
+		if (ids.length === 0) return [];
+		const objectIds = ids.map((id) => MongoIdUtils.stringToObjectId(id));
+		const docs = await this.textileCertificationModel
+			.find({ _id: { $in: objectIds } })
+			.exec();
+		return docs.map((doc: TextileCertificationDocument) =>
+			TextileCertificationMapper.fromDocument(doc),
+		);
+	}
+
 	async getTextileCertificationByName(
 		name: string,
 	): Promise<TextileCertification | null> {
@@ -47,6 +58,26 @@ export class TextileCertificationRepositoryImpl extends TextileCertificationRepo
 		const created = new this.textileCertificationModel(plain);
 		const saved = await created.save();
 		return TextileCertificationMapper.fromDocument(saved);
+	}
+
+	async createManyTextileCertifications(
+		certifications: TextileCertification[],
+	): Promise<TextileCertification[]> {
+		const plains = certifications.map((certification) => {
+			const plain =
+				TextileCertificationMapper.toPersistence(certification);
+			return {
+				_id: certification.id,
+				name: plain.name,
+			};
+		});
+		const created =
+			await this.textileCertificationModel.insertMany(plains);
+		return created.map((doc) =>
+			TextileCertificationMapper.fromDocument(
+				doc as unknown as TextileCertificationDocument,
+			),
+		);
 	}
 
 	async updateTextileCertification(

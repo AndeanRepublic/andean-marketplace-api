@@ -17,7 +17,9 @@
 		"test:watch": "jest --watch",
 		"test:cov": "jest --coverage",
 		"test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-		"test:e2e": "NODE_OPTIONS='--experimental-vm-modules' jest --config ./test/jest-e2e.json"
+		"test:e2e": "NODE_OPTIONS='--experimental-vm-modules' jest --config ./test/jest-e2e.json",
+		"test:e2e:win": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --config ./test/jest-e2e.json",
+		"migrate:textile-entities": "ts-node -r tsconfig-paths/register scripts/migrations/migrate-textile-entities.ts"
 	},
 	"dependencies": {
 		"@aws-sdk/client-s3": "^3.995.0",
@@ -31,6 +33,7 @@
 		"@nestjs/platform-express": "^11.1.8",
 		"@nestjs/serve-static": "^5.0.4",
 		"@nestjs/swagger": "^11.2.4",
+		"@nestjs/terminus": "^11.1.1",
 		"@paypal/paypal-server-sdk": "2.2.0",
 		"argon2": "^0.44.0",
 		"axios": "^1.13.5",
@@ -57,6 +60,7 @@
 		"@types/node": "^22.10.7",
 		"@types/passport-jwt": "^4.0.1",
 		"@types/supertest": "^6.0.2",
+		"cross-env": "^10.1.0",
 		"eslint": "^10.0.1",
 		"eslint-config-prettier": "^10.0.1",
 		"eslint-plugin-prettier": "^5.2.2",

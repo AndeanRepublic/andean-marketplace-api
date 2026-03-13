@@ -6,6 +6,7 @@ import { Connection } from 'mongoose';
 // Schema
 import { CommunitySchema } from './infra/persistence/community/community.schema';
 import { SealSchema } from './infra/persistence/community/Seal.schema';
+import { ProviderInfoSchema } from './infra/persistence/providerInfo.schema';
 
 // Repository
 import { CommunityRepository } from './app/datastore/community/community.repo';
@@ -20,6 +21,7 @@ import { GetCommunityByIdUseCase } from './app/use_cases/community/GetCommunityB
 import { ListCommunityUseCase } from './app/use_cases/community/ListCommunityUseCase';
 import { DeleteCommunityUseCase } from './app/use_cases/community/DeleteCommunityUseCase';
 import { CreateSealUseCase } from './app/use_cases/community/CreateSealUseCase';
+import { CreateManySealsUseCase } from './app/use_cases/community/CreateManySealsUseCase';
 import { GetAllSealsUseCase } from './app/use_cases/community/GetAllSealsUseCase';
 import { GetByIdSealUseCase } from './app/use_cases/community/GetByIdSealUseCase';
 import { UpdateSealUseCase } from './app/use_cases/community/UpdateSealUseCase';
@@ -36,6 +38,7 @@ import { CommunityController } from './infra/controllers/community.controller';
 		MongooseModule.forFeature([
 			{ name: 'Community', schema: CommunitySchema },
 			{ name: 'Seal', schema: SealSchema },
+			{ name: 'ProviderInfo', schema: ProviderInfoSchema },
 		]),
 		MediaItemModule,
 	],
@@ -57,6 +60,7 @@ import { CommunityController } from './infra/controllers/community.controller';
 		ListCommunityUseCase,
 		DeleteCommunityUseCase,
 		CreateSealUseCase,
+		CreateManySealsUseCase,
 		GetAllSealsUseCase,
 		GetByIdSealUseCase,
 		UpdateSealUseCase,
@@ -65,7 +69,7 @@ import { CommunityController } from './infra/controllers/community.controller';
 	exports: [CommunityRepository, SealRepository],
 })
 export class CommunityModule implements OnModuleInit {
-	constructor(@InjectConnection() private readonly connection: Connection) { }
+	constructor(@InjectConnection() private readonly connection: Connection) {}
 
 	async onModuleInit() {
 		try {

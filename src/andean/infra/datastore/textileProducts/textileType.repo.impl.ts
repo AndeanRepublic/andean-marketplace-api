@@ -41,6 +41,24 @@ export class TextileTypeRepositoryImpl extends TextileTypeRepository {
 		return TextileTypeMapper.fromDocument(savedType);
 	}
 
+	async createManyTextileTypes(
+		types: TextileType[],
+	): Promise<TextileType[]> {
+		const plains = types.map((type) => {
+			const plain = TextileTypeMapper.toPersistence(type);
+			return {
+				_id: type.id,
+				name: plain.name,
+			};
+		});
+		const created = await this.textileTypeModel.insertMany(plains);
+		return created.map((doc) =>
+			TextileTypeMapper.fromDocument(
+				doc as unknown as TextileTypeDocument,
+			),
+		);
+	}
+
 	async updateTextileType(id: string, type: TextileType): Promise<TextileType> {
 		const plain = TextileTypeMapper.toPersistence(type);
 		const objectId = MongoIdUtils.stringToObjectId(id);

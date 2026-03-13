@@ -10,7 +10,6 @@ import { TextileProduct } from 'src/andean/domain/entities/textileProducts/Texti
 import { TextileProductMapper } from 'src/andean/infra/services/textileProducts/TextileProductMapper';
 import { TextileCategoryRepository } from '../../datastore/textileProducts/TextileCategory.repo';
 import { TextileTypeRepository } from '../../datastore/textileProducts/TextileType.repo';
-import { TextileSubcategoryRepository } from '../../datastore/textileProducts/TextileSubcategory.repo';
 import { TextileStyleRepository } from '../../datastore/textileProducts/TextileStyle.repo';
 import { TextilePrincipalUseRepository } from '../../datastore/textileProducts/TextilePrincipalUse.repo';
 import { TextileCraftTechniqueRepository } from '../../datastore/textileProducts/TextileCraftTechnique.repo';
@@ -32,8 +31,6 @@ export class CreateTextileProductUseCase {
 		private readonly textileCategoryRepository: TextileCategoryRepository,
 		@Inject(TextileTypeRepository)
 		private readonly textileTypeRepository: TextileTypeRepository,
-		@Inject(TextileSubcategoryRepository)
-		private readonly textileSubcategoryRepository: TextileSubcategoryRepository,
 		@Inject(TextileStyleRepository)
 		private readonly textileStyleRepository: TextileStyleRepository,
 		@Inject(TextilePrincipalUseRepository)
@@ -106,14 +103,20 @@ export class CreateTextileProductUseCase {
 				}
 			}
 
-			// Validar certificationId solo si existe
-			if (dto.detailTraceability.certificationId) {
-				const certificationFound =
-					await this.textileCertificationRepository.getTextileCertificationById(
-						dto.detailTraceability.certificationId,
+			// Validar certificationIds solo si hasCertifications es true y hay IDs
+			if (
+				dto.detailTraceability.hasCertifications &&
+				dto.detailTraceability.certificationIds &&
+				dto.detailTraceability.certificationIds.length > 0
+			) {
+				const certificationsFound =
+					await this.textileCertificationRepository.getByIds(
+						dto.detailTraceability.certificationIds,
 					);
-				if (!certificationFound) {
-					throw new NotFoundException('TextileCertification not found');
+				if (certificationsFound.length !== dto.detailTraceability.certificationIds.length) {
+					throw new NotFoundException(
+						'One or more TextileCertification IDs not found',
+					);
 				}
 			}
 		}
@@ -127,17 +130,6 @@ export class CreateTextileProductUseCase {
 				);
 				if (!typeFound) {
 					throw new NotFoundException('TextileType not found');
-				}
-			}
-
-			// Validar subcategoryId solo si existe
-			if (dto.atribute.subcategoryId) {
-				const subcategoryFound =
-					await this.textileSubcategoryRepository.getTextileSubcategoryById(
-						dto.atribute.subcategoryId,
-					);
-				if (!subcategoryFound) {
-					throw new NotFoundException('TextileSubcategory not found');
 				}
 			}
 

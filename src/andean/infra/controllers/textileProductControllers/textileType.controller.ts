@@ -10,9 +10,12 @@ import {
 	HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { TextileTypeResponse } from 'src/andean/app/modules/textile/TextileTypeResponse';
 import { CreateTextileTypeUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileTypeUseCase';
+import { CreateManyTextileTypesUseCase } from 'src/andean/app/use_cases/textileProducts/CreateManyTextileTypesUseCase';
 import { TextileType } from 'src/andean/domain/entities/textileProducts/TextileType';
 import { CreateTextileTypeDto } from '../dto/textileProducts/CreateTextileTypeDto';
+import { CreateManyTextileTypesDto } from '../dto/textileProducts/CreateManyTextileTypesDto';
 import { UpdateTextileTypeUseCase } from 'src/andean/app/use_cases/textileProducts/UpdateTextileTypeUseCase';
 import { GetAllTextileTypesUseCase } from 'src/andean/app/use_cases/textileProducts/GetAllTextileTypesUseCase';
 import { GetByIdTextileTypeUseCase } from 'src/andean/app/use_cases/textileProducts/GetByIdTextileTypeUseCase';
@@ -23,11 +26,34 @@ import { DeleteTextileTypeUseCase } from 'src/andean/app/use_cases/textileProduc
 export class TextileTypeController {
 	constructor(
 		private readonly createTextileTypeUseCase: CreateTextileTypeUseCase,
+		private readonly createManyTextileTypesUseCase: CreateManyTextileTypesUseCase,
 		private readonly updateTextileTypeUseCase: UpdateTextileTypeUseCase,
 		private readonly getAllTextileTypesUseCase: GetAllTextileTypesUseCase,
 		private readonly getByIdTextileTypeUseCase: GetByIdTextileTypeUseCase,
 		private readonly deleteTextileTypeUseCase: DeleteTextileTypeUseCase,
 	) {}
+
+	@Post('/bulk')
+	@HttpCode(HttpStatus.CREATED)
+	@ApiOperation({
+		summary: 'Crear múltiples tipos de textil',
+		description:
+			'Crea múltiples tipos de textil en una sola operación. Útil para carga inicial de datos.',
+	})
+	@ApiResponse({
+		status: 201,
+		description: 'Tipos creados exitosamente',
+		type: [TextileType],
+	})
+	@ApiResponse({
+		status: 400,
+		description: 'Datos de entrada inválidos',
+	})
+	async createManyTextileTypes(
+		@Body() body: CreateManyTextileTypesDto,
+	): Promise<TextileType[]> {
+		return this.createManyTextileTypesUseCase.handle(body);
+	}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
@@ -77,19 +103,19 @@ export class TextileTypeController {
 	// 	return this.updateTextileTypeUseCase.handle(id, body);
 	// }
 
-	// @Get()
-	// @ApiOperation({
-	// 	summary: 'Listar todos los tipos de textil',
-	// 	description: 'Retorna todos los tipos de textil disponibles',
-	// })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'Lista de tipos',
-	// 	type: [TextileType],
-	// })
-	// async getAllTextileTypes(): Promise<TextileType[]> {
-	// 	return this.getAllTextileTypesUseCase.handle();
-	// }
+	@Get()
+	@ApiOperation({
+		summary: 'Listar todos los tipos de textil',
+		description: 'Retorna todos los tipos de textil disponibles',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista de tipos',
+		type: [TextileTypeResponse],
+	})
+	async getAllTextileTypes(): Promise<TextileType[]> {
+		return this.getAllTextileTypesUseCase.handle();
+	}
 
 	// @Get('/:id')
 	// @ApiOperation({

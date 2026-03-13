@@ -102,20 +102,20 @@ export class SizeOptionAlternativeController {
 	// 	return this.updateSizeOptionAlternativeUseCase.handle(id, body);
 	// }
 
-	// @Get()
-	// @ApiOperation({
-	// 	summary: 'Listar todas las opciones de talla',
-	// 	description:
-	// 		'Retorna todas las opciones de talla disponibles para productos textiles',
-	// })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'Lista de opciones de talla',
-	// 	type: [SizeOptionAlternative],
-	// })
-	// async getAllSizeOptionAlternatives(): Promise<SizeOptionAlternative[]> {
-	// 	return this.getAllSizeOptionAlternativesUseCase.handle();
-	// }
+	@Get()
+	@ApiOperation({
+		summary: 'Listar todas las opciones de talla',
+		description:
+			'Retorna todas las opciones de talla disponibles para productos textiles',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista de opciones de talla',
+		type: [SizeOptionAlternative],
+	})
+	async getAllSizeOptionAlternatives(): Promise<SizeOptionAlternative[]> {
+		return this.getAllSizeOptionAlternativesUseCase.handle();
+	}
 
 	// @Get('/:id')
 	// @ApiOperation({

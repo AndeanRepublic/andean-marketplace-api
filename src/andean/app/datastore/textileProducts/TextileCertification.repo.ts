@@ -5,12 +5,16 @@ export abstract class TextileCertificationRepository {
 	abstract getTextileCertificationById(
 		id: string,
 	): Promise<TextileCertification | null>;
+	abstract getByIds(ids: string[]): Promise<TextileCertification[]>;
 	abstract getTextileCertificationByName(
 		name: string,
 	): Promise<TextileCertification | null>;
 	abstract saveTextileCertification(
 		certification: TextileCertification,
 	): Promise<TextileCertification>;
+	abstract createManyTextileCertifications(
+		certifications: TextileCertification[],
+	): Promise<TextileCertification[]>;
 	abstract updateTextileCertification(
 		id: string,
 		certification: TextileCertification,

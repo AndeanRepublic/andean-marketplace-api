@@ -25,11 +25,6 @@ import { UpdateTextileStyleUseCase } from '../src/andean/app/use_cases/textilePr
 import { GetAllTextileStylesUseCase } from '../src/andean/app/use_cases/textileProducts/GetAllTextileStylesUseCase';
 import { GetByIdTextileStyleUseCase } from '../src/andean/app/use_cases/textileProducts/GetByIdTextileStyleUseCase';
 import { DeleteTextileStyleUseCase } from '../src/andean/app/use_cases/textileProducts/DeleteTextileStyleUseCase';
-import { CreateTextileSubcategoryUseCase } from '../src/andean/app/use_cases/textileProducts/CreateTextileSubcategoryUseCase';
-import { UpdateTextileSubcategoryUseCase } from '../src/andean/app/use_cases/textileProducts/UpdateTextileSubcategoryUseCase';
-import { GetAllTextileSubcategoriesUseCase } from '../src/andean/app/use_cases/textileProducts/GetAllTextileSubcategoriesUseCase';
-import { GetByIdTextileSubcategoryUseCase } from '../src/andean/app/use_cases/textileProducts/GetByIdTextileSubcategoryUseCase';
-import { DeleteTextileSubcategoryUseCase } from '../src/andean/app/use_cases/textileProducts/DeleteTextileSubcategoryUseCase';
 import { CreateTextileCraftTechniqueUseCase } from '../src/andean/app/use_cases/textileProducts/CreateTextileCraftTechniqueUseCase';
 import { UpdateTextileCraftTechniqueUseCase } from '../src/andean/app/use_cases/textileProducts/UpdateTextileCraftTechniqueUseCase';
 import { GetAllTextileCraftTechniquesUseCase } from '../src/andean/app/use_cases/textileProducts/GetAllTextileCraftTechniquesUseCase';
@@ -125,6 +120,7 @@ describe('TextileProductController (e2e)', () => {
 								...mockPriceInventary,
 								basePrice: updateDto.priceInventary.basePrice,
 								totalStock: updateDto.priceInventary.totalStock,
+								currency: updateDto.priceInventary.currency,
 							},
 						}),
 					},
@@ -170,27 +166,6 @@ describe('TextileProductController (e2e)', () => {
 				{ provide: GetAllTextileStylesUseCase, useValue: createMockUseCase() },
 				{ provide: GetByIdTextileStyleUseCase, useValue: createMockUseCase() },
 				{ provide: DeleteTextileStyleUseCase, useValue: createMockUseCase() },
-				// ── Subcategory use cases ───────────────────────────────────────
-				{
-					provide: CreateTextileSubcategoryUseCase,
-					useValue: createMockUseCase(),
-				},
-				{
-					provide: UpdateTextileSubcategoryUseCase,
-					useValue: createMockUseCase(),
-				},
-				{
-					provide: GetAllTextileSubcategoriesUseCase,
-					useValue: createMockUseCase(),
-				},
-				{
-					provide: GetByIdTextileSubcategoryUseCase,
-					useValue: createMockUseCase(),
-				},
-				{
-					provide: DeleteTextileSubcategoryUseCase,
-					useValue: createMockUseCase(),
-				},
 				// ── CraftTechnique use cases ────────────────────────────────────
 				{
 					provide: CreateTextileCraftTechniqueUseCase,
@@ -335,6 +310,7 @@ describe('TextileProductController (e2e)', () => {
 						priceInventary: expect.objectContaining({
 							basePrice: mockPriceInventary.basePrice,
 							totalStock: mockPriceInventary.totalStock,
+							currency: mockPriceInventary.currency,
 							SKU: mockPriceInventary.SKU,
 						}),
 						categoryId: expect.any(String),
@@ -874,7 +850,7 @@ describe('TextileProductController (e2e)', () => {
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					expect(res.body).toHaveProperty('id', mockDetailResponse.id);
-					expect(res.body).toHaveProperty('name', mockDetailResponse.name);
+					expect(res.body).toHaveProperty('title', mockDetailResponse.title);
 				});
 		});
 
@@ -890,7 +866,7 @@ describe('TextileProductController (e2e)', () => {
 			expect(spy).toHaveBeenCalledWith(productId);
 		});
 
-		it('should include availableSizes, availableColors and variantInfo', () => {
+		it('should include variantInfo with color as object', () => {
 			jest
 				.spyOn(getByIdTextileProductDetailUseCase, 'handle')
 				.mockResolvedValueOnce(mockDetailResponse as any);
@@ -899,9 +875,13 @@ describe('TextileProductController (e2e)', () => {
 				.get(`/textile-products/${productId}/details`)
 				.expect(HttpStatus.OK)
 				.expect((res) => {
-					expect(Array.isArray(res.body.availableSizes)).toBe(true);
-					expect(Array.isArray(res.body.availableColors)).toBe(true);
 					expect(Array.isArray(res.body.variantInfo)).toBe(true);
+					if (res.body.variantInfo.length > 0) {
+						expect(res.body.variantInfo[0]).toHaveProperty('color');
+						expect(res.body.variantInfo[0].color).toHaveProperty('color');
+						expect(res.body.variantInfo[0].color).toHaveProperty('hexCode');
+						expect(res.body.variantInfo[0].color).toHaveProperty('imgUrl');
+					}
 				});
 		});
 
@@ -935,6 +915,8 @@ describe('TextileProductController (e2e)', () => {
 						expect(res.body.similarProducts[0]).toHaveProperty('id');
 						expect(res.body.similarProducts[0]).toHaveProperty('title');
 						expect(res.body.similarProducts[0]).toHaveProperty('price');
+						expect(res.body.similarProducts[0]).toHaveProperty('variantInfo');
+						expect(Array.isArray(res.body.similarProducts[0].variantInfo)).toBe(true);
 					}
 				});
 		});
@@ -967,6 +949,7 @@ describe('TextileProductController (e2e)', () => {
 				...mockPriceInventary,
 				basePrice: updateDto.priceInventary.basePrice,
 				totalStock: updateDto.priceInventary.totalStock,
+				currency: updateDto.priceInventary.currency,
 			},
 		};
 

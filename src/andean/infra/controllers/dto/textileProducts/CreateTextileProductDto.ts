@@ -17,6 +17,10 @@ import { TextileProductStatus } from 'src/andean/domain/enums/TextileProductStat
 import { OwnerType } from 'src/andean/domain/enums/OwnerType';
 import { Gender } from 'src/andean/domain/enums/Gender';
 import { Season } from 'src/andean/domain/enums/Season';
+import { SizeGuide } from 'src/andean/domain/enums/SizeGuide';
+import { ProductCurrency } from 'src/andean/domain/enums/ProductCurrency';
+import { ShippingMethod } from 'src/andean/domain/enums/ShippingMethod';
+import { ShippingRegion } from 'src/andean/domain/enums/ShippingRegion';
 import { ToolUsed } from 'src/andean/domain/enums/ToolUsed';
 import { TextileOptionName } from 'src/andean/domain/enums/TextileOptionName';
 import { CreateProductTraceabilityDto } from '../traceability/CreateProductTraceabilityDto';
@@ -119,6 +123,15 @@ export class PriceInventaryDto {
 	@IsNotEmpty()
 	totalStock!: number;
 
+	@ApiProperty({
+		description: 'Moneda del precio',
+		enum: ProductCurrency,
+		example: ProductCurrency.USD,
+	})
+	@IsEnum(ProductCurrency)
+	@IsNotEmpty()
+	currency!: ProductCurrency;
+
 	@ApiPropertyOptional({
 		description: 'Código SKU único del producto',
 		example: 'TEX-PON-001',
@@ -136,14 +149,6 @@ export class AtributeDto {
 	@IsString()
 	@IsOptional()
 	textileTypeId?: string;
-
-	@ApiPropertyOptional({
-		description: 'ID de la subcategoría del producto',
-		example: 'subcategory-001',
-	})
-	@IsString()
-	@IsOptional()
-	subcategoryId?: string;
 
 	@ApiPropertyOptional({
 		description: 'Género objetivo del producto',
@@ -189,6 +194,31 @@ export class AtributeDto {
 	@Type(() => PreparationTimeDto)
 	@IsOptional()
 	preparationTime?: PreparationTimeDto;
+
+	@ApiPropertyOptional({
+		description: 'Inspiración del diseño del producto',
+		example: 'Patrones tradicionales andinos',
+	})
+	@IsString()
+	@IsOptional()
+	inspiration?: string;
+
+	@ApiPropertyOptional({
+		description: 'Guía de tallas',
+		enum: SizeGuide,
+		example: SizeGuide.STANDARD,
+	})
+	@IsEnum(SizeGuide)
+	@IsOptional()
+	sizeGuide?: SizeGuide;
+
+	@ApiPropertyOptional({
+		description: 'Instrucciones de cuidado',
+		example: 'Lavar a mano con agua fría',
+	})
+	@IsString()
+	@IsOptional()
+	careInstructions?: string;
 }
 
 export class TextileOptionsItemDto {
@@ -235,6 +265,23 @@ export class TextileOptionsDto {
 	@Type(() => TextileOptionsItemDto)
 	@IsNotEmpty()
 	values!: TextileOptionsItemDto[];
+}
+
+export class ProductDimensionsDto {
+	@ApiProperty({ description: 'Largo en cm', example: 50 })
+	@IsNumber()
+	@Min(0)
+	length!: number;
+
+	@ApiProperty({ description: 'Ancho en cm', example: 30 })
+	@IsNumber()
+	@Min(0)
+	width!: number;
+
+	@ApiProperty({ description: 'Alto en cm', example: 5 })
+	@IsNumber()
+	@Min(0)
+	height!: number;
 }
 
 export class DetailTraceabilityDto {
@@ -306,12 +353,12 @@ export class DetailTraceabilityDto {
 	isRegisteredDesign?: boolean;
 
 	@ApiPropertyOptional({
-		description: 'Indica si se acepta pedido anticipado',
+		description: 'Disponible bajo pedido',
 		example: true,
 	})
 	@IsBoolean()
 	@IsOptional()
-	isBackorderAvailable?: boolean;
+	availableUponRequest?: boolean;
 
 	@ApiPropertyOptional({
 		description: 'Tiempo de entrega en días para pedidos anticipados',
@@ -324,12 +371,132 @@ export class DetailTraceabilityDto {
 	leadTime?: number;
 
 	@ApiPropertyOptional({
-		description: 'ID de la certificación del producto',
-		example: 'certification-fair-trade-001',
+		description: 'IDs de las certificaciones del producto (solo si hasCertifications es true)',
+		type: [String],
+		example: ['certification-fair-trade-001'],
+	})
+	@IsArray()
+	@IsString({ each: true })
+	@IsOptional()
+	certificationIds?: string[];
+
+	@ApiPropertyOptional({
+		description: 'Material principal del producto',
+		type: [String],
+		example: ['lana de alpaca'],
+	})
+	@IsArray()
+	@IsString({ each: true })
+	@IsOptional()
+	principalMaterial?: string[];
+
+	@ApiPropertyOptional({
+		description: 'Origen del material',
+		example: 'Cusco, Perú',
 	})
 	@IsString()
 	@IsOptional()
-	certificationId?: string;
+	materialOrigin?: string;
+
+	@ApiPropertyOptional({
+		description: 'Opciones de personalización disponibles',
+		example: 'Iniciales, colores',
+	})
+	@IsString()
+	@IsOptional()
+	customizable?: string;
+
+	@ApiPropertyOptional({
+		description: 'Indica si el producto tiene certificaciones',
+		example: true,
+	})
+	@IsBoolean()
+	@IsOptional()
+	hasCertifications?: boolean;
+
+	@ApiPropertyOptional({
+		description: 'Peso del producto sin empaque en kg',
+		example: 0.5,
+	})
+	@IsNumber()
+	@Min(0)
+	@IsOptional()
+	weightWithoutPackage?: number;
+
+	@ApiPropertyOptional({
+		description: 'Dimensiones del producto sin empaque (cm)',
+		type: ProductDimensionsDto,
+	})
+	@ValidateNested()
+	@Type(() => ProductDimensionsDto)
+	@IsOptional()
+	dimensionsWithoutPackage?: ProductDimensionsDto;
+
+	@ApiPropertyOptional({
+		description: 'Tipo de empaque',
+		example: 'Caja de cartón',
+	})
+	@IsString()
+	@IsOptional()
+	packagingType?: string;
+
+	@ApiPropertyOptional({
+		description: 'Personalización del empaque',
+		type: [String],
+		example: ['Tarjeta personalizada'],
+	})
+	@IsArray()
+	@IsString({ each: true })
+	@IsOptional()
+	packageCustomization?: string[];
+
+	@ApiPropertyOptional({
+		description: 'Peso del producto con empaque en kg',
+		example: 0.7,
+	})
+	@IsNumber()
+	@Min(0)
+	@IsOptional()
+	weightWithPackage?: number;
+
+	@ApiPropertyOptional({
+		description: 'Dimensiones del producto con empaque (cm)',
+		type: ProductDimensionsDto,
+	})
+	@ValidateNested()
+	@Type(() => ProductDimensionsDto)
+	@IsOptional()
+	dimensionsWithPackage?: ProductDimensionsDto;
+
+	@ApiPropertyOptional({
+		description: 'Métodos de envío disponibles',
+		enum: ShippingMethod,
+		isArray: true,
+	})
+	@IsArray()
+	@IsEnum(ShippingMethod, { each: true })
+	@IsOptional()
+	shippingMethods?: ShippingMethod[];
+
+	@ApiPropertyOptional({
+		description: 'Regiones a las que puede enviar',
+		enum: ShippingRegion,
+		isArray: true,
+	})
+	@IsArray()
+	@IsEnum(ShippingRegion, { each: true })
+	@IsOptional()
+	shippingRegions?: ShippingRegion[];
+
+	@ApiPropertyOptional({
+		description: 'Tiempo de entrega estimado en días',
+		example: 5,
+		minimum: 0,
+	})
+	@IsInt()
+	@Min(0)
+	@IsOptional()
+	estimatedDeliveryDays?: number;
 }
 
 export class CreateTextileProductDto {

@@ -20,8 +20,8 @@ import {
 	TraceabilityInfoResponse,
 	ReviewsResponse,
 	SuperfoodProductListItemCompact,
-} from '../../models/superfoods/SuperfoodProductDetailResponse';
-import { SuperfoodProductListItem } from '../../models/superfoods/SuperfoodProductListItem';
+} from '../../modules/superfoods/SuperfoodProductDetailResponse';
+import { SuperfoodProductListItem } from '../../modules/superfoods/SuperfoodProductListItem';
 
 @Injectable()
 export class GetByIdSuperfoodProductDetailUseCase {
@@ -303,24 +303,24 @@ export class GetByIdSuperfoodProductDetailUseCase {
 			merchandising: [],
 		};
 
-		for (const epoch of epochs) {
-			const pn = (epoch.processName || '').toLowerCase();
-			const step = {
-				title: epoch.title,
-				supplier: epoch.supplier,
-				country: epoch.country,
-				city: epoch.city,
-				description: epoch.description,
-			};
+		const arrayKeys = ['origen', 'processing', 'development', 'merchandising'] as const;
+		const keyMap: Record<string, (typeof arrayKeys)[number]> = {
+			origin: 'origen',
+			processing: 'processing',
+			development: 'development',
+			merchandising: 'merchandising',
+		};
 
-			if (/origen|origin|cosecha|cultivo/.test(pn)) {
-				groups.origen.push(step);
-			} else if (/processing|procesamiento|transformación/.test(pn)) {
-				groups.processing.push(step);
-			} else if (/development|desarrollo|elaboración/.test(pn)) {
-				groups.development.push(step);
-			} else if (/merchandising|comercialización|venta/.test(pn)) {
-				groups.merchandising.push(step);
+		for (const epoch of epochs) {
+			const key = keyMap[epoch.processName as string];
+			if (key) {
+				groups[key]!.push({
+					title: epoch.title,
+					supplier: epoch.supplier,
+					country: epoch.country,
+					city: epoch.city,
+					description: epoch.description,
+				});
 			}
 		}
 

@@ -10,8 +10,10 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateSuperfoodCertificationDto } from '../dto/superfoods/CreateSuperfoodCertificationDto';
-import { SuperfoodCertificationResponse } from '../../../app/modules/SuperfoodCertificationResponse';
+import { CreateManySuperfoodCertificationsDto } from '../dto/superfoods/CreateManySuperfoodCertificationsDto';
+import { SuperfoodCertificationResponse } from '../../../app/modules/superfoods/SuperfoodCertificationResponse';
 import { CreateSuperfoodCertificationUseCase } from '../../../app/use_cases/superfoods/certification/CreateSuperfoodCertificationUseCase';
+import { CreateManySuperfoodCertificationsUseCase } from '../../../app/use_cases/superfoods/certification/CreateManySuperfoodCertificationsUseCase';
 import { GetSuperfoodCertificationByIdUseCase } from '../../../app/use_cases/superfoods/certification/GetSuperfoodCertificationByIdUseCase';
 import { ListSuperfoodCertificationsUseCase } from '../../../app/use_cases/superfoods/certification/ListSuperfoodCertificationsUseCase';
 import { DeleteSuperfoodCertificationUseCase } from '../../../app/use_cases/superfoods/certification/DeleteSuperfoodCertificationUseCase';
@@ -21,10 +23,33 @@ import { DeleteSuperfoodCertificationUseCase } from '../../../app/use_cases/supe
 export class SuperfoodCertificationController {
 	constructor(
 		private readonly createSuperfoodCertificationUseCase: CreateSuperfoodCertificationUseCase,
+		private readonly createManySuperfoodCertificationsUseCase: CreateManySuperfoodCertificationsUseCase,
 		private readonly getSuperfoodCertificationByIdUseCase: GetSuperfoodCertificationByIdUseCase,
 		private readonly listSuperfoodCertificationsUseCase: ListSuperfoodCertificationsUseCase,
 		private readonly deleteSuperfoodCertificationUseCase: DeleteSuperfoodCertificationUseCase,
 	) {}
+
+	@Post('/bulk')
+	@HttpCode(HttpStatus.CREATED)
+	@ApiOperation({
+		summary: 'Crear múltiples certificaciones',
+		description:
+			'Crea múltiples certificaciones de superfood en una sola operación. Útil para carga inicial de datos.',
+	})
+	@ApiResponse({
+		status: 201,
+		description: 'Certificaciones creadas exitosamente',
+		type: [SuperfoodCertificationResponse],
+	})
+	@ApiResponse({
+		status: 400,
+		description: 'Datos de entrada inválidos',
+	})
+	async createManyCertifications(
+		@Body() dto: CreateManySuperfoodCertificationsDto,
+	): Promise<SuperfoodCertificationResponse[]> {
+		return await this.createManySuperfoodCertificationsUseCase.handle(dto);
+	}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
@@ -48,19 +73,19 @@ export class SuperfoodCertificationController {
 		return await this.createSuperfoodCertificationUseCase.handle(dto);
 	}
 
-	// @Get()
-	// @ApiOperation({
-	// 	summary: 'Listar todas las certificaciones',
-	// 	description: 'Retorna todas las certificaciones disponibles',
-	// })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'Lista de certificaciones',
-	// 	type: [SuperfoodCertificationResponse],
-	// })
-	// async listCertifications(): Promise<SuperfoodCertificationResponse[]> {
-	// 	return await this.listSuperfoodCertificationsUseCase.handle();
-	// }
+	@Get()
+	@ApiOperation({
+		summary: 'Listar todas las certificaciones',
+		description: 'Retorna todas las certificaciones disponibles',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista de certificaciones',
+		type: [SuperfoodCertificationResponse],
+	})
+	async listCertifications(): Promise<SuperfoodCertificationResponse[]> {
+		return await this.listSuperfoodCertificationsUseCase.handle();
+	}
 
 	// @Get('/:id')
 	// @ApiOperation({

@@ -22,7 +22,7 @@ import { ExperienceAvailabilityMode } from 'src/andean/domain/enums/ExperienceAv
 import {
 	ExperienceAvailabilityResponse,
 	ExperienceDetailResponse,
-} from '../../models/experiences/ExperienceDetailResponse';
+} from '../../modules/experiences/ExperienceDetailResponse';
 import { ExperienceDetailMapper } from 'src/andean/infra/services/experiences/ExperienceDetailMapper';
 import { GetFutureUnavailableDatesUseCase } from './GetFutureUnavailableDatesUseCase';
 
@@ -151,6 +151,7 @@ export class GetByIdExperienceUseCase {
 				thumbnailImg: string;
 				photos?: string[];
 				videos?: string[];
+				ubicationImg?: string;
 			};
 		},
 		itineraries: { photos: string[] }[],
@@ -161,6 +162,9 @@ export class GetByIdExperienceUseCase {
 		mediaIds.add(experience.mediaInfo.thumbnailImg);
 		experience.mediaInfo.photos?.forEach((mid) => mediaIds.add(mid));
 		experience.mediaInfo.videos?.forEach((mid) => mediaIds.add(mid));
+		if (experience.mediaInfo.ubicationImg) {
+			mediaIds.add(experience.mediaInfo.ubicationImg);
+		}
 		itineraries.forEach((it) => it.photos.forEach((mid) => mediaIds.add(mid)));
 
 		const mediaItems = await this.mediaItemRepo.getByIds([...mediaIds]);

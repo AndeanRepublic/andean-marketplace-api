@@ -3,8 +3,13 @@ import { TextileProductStatus } from 'src/andean/domain/enums/TextileProductStat
 import { OwnerType } from 'src/andean/domain/enums/OwnerType';
 import { Gender } from 'src/andean/domain/enums/Gender';
 import { Season } from 'src/andean/domain/enums/Season';
+import { SizeGuide } from 'src/andean/domain/enums/SizeGuide';
 import { ToolUsed } from 'src/andean/domain/enums/ToolUsed';
+import { ProductCurrency } from 'src/andean/domain/enums/ProductCurrency';
+import { ShippingMethod } from 'src/andean/domain/enums/ShippingMethod';
+import { ShippingRegion } from 'src/andean/domain/enums/ShippingRegion';
 import { TextileOptionName } from 'src/andean/domain/enums/TextileOptionName';
+import { TraceabilityProcessName } from 'src/andean/domain/enums/TraceabilityProcessName';
 
 // Nested schemas
 
@@ -28,6 +33,11 @@ const PriceInventarySchema = new Schema(
 	{
 		basePrice: { type: Number, required: true },
 		totalStock: { type: Number, required: true },
+		currency: {
+			type: String,
+			enum: Object.values(ProductCurrency),
+			required: true,
+		},
 		SKU: { type: String, required: false },
 	},
 	{ _id: false },
@@ -35,7 +45,6 @@ const PriceInventarySchema = new Schema(
 
 const AtributeSchema = new Schema({
 	textileTypeId: { type: String, required: false },
-	subcategoryId: { type: String, required: false },
 	gender: {
 		type: String,
 		enum: Object.values(Gender),
@@ -52,6 +61,13 @@ const AtributeSchema = new Schema({
 		days: { type: Number, required: false },
 		hours: { type: Number, required: false },
 	},
+	inspiration: { type: String, required: false },
+	sizeGuide: {
+		type: String,
+		enum: Object.values(SizeGuide),
+		required: false,
+	},
+	careInstructions: { type: String, required: false },
 });
 
 const TextileOptionsItemSchema = new Schema(
@@ -75,6 +91,15 @@ const TextileOptionsSchema = new Schema(
 	{ _id: false },
 );
 
+const ProductDimensionsSchema = new Schema(
+	{
+		length: { type: Number, required: true },
+		width: { type: Number, required: true },
+		height: { type: Number, required: true },
+	},
+	{ _id: false },
+);
+
 const DetailTraceabilitySchema = new Schema(
 	{
 		isHandmade: { type: Boolean, required: false },
@@ -89,9 +114,32 @@ const DetailTraceabilitySchema = new Schema(
 		isArtisanExclusive: { type: Boolean, required: false },
 		isOriginalCreation: { type: Boolean, required: false },
 		isRegisteredDesign: { type: Boolean, required: false },
-		isBackorderAvailable: { type: Boolean, required: false },
+		availableUponRequest: { type: Boolean, required: false },
 		leadTime: { type: Number, required: false },
-		certificationId: { type: String, required: false },
+		certificationIds: { type: [String], default: [] },
+		principalMaterial: { type: [String], default: [] },
+		materialOrigin: { type: String, required: false },
+		customizable: { type: String, required: false },
+		hasCertifications: { type: Boolean, required: false },
+		weightWithoutPackage: { type: Number, required: false },
+		dimensionsWithoutPackage: { type: ProductDimensionsSchema, required: false },
+		packagingType: { type: String, required: false },
+		packageCustomization: { type: [String], default: [] },
+		weightWithPackage: { type: Number, required: false },
+		dimensionsWithPackage: { type: ProductDimensionsSchema, required: false },
+		shippingMethods: [
+			{
+				type: String,
+				enum: Object.values(ShippingMethod),
+			},
+		],
+		shippingRegions: [
+			{
+				type: String,
+				enum: Object.values(ShippingRegion),
+			},
+		],
+		estimatedDeliveryDays: { type: Number, required: false },
 	},
 	{ _id: false },
 );
@@ -102,7 +150,11 @@ const TextileTraceabilityEpochSchema = new Schema(
 		country: { type: String, required: true },
 		city: { type: String, required: true },
 		description: { type: String, required: true },
-		processName: { type: String, required: true },
+		processName: {
+			type: String,
+			enum: Object.values(TraceabilityProcessName),
+			required: true,
+		},
 		supplier: { type: String, required: true },
 	},
 	{ _id: false },
@@ -148,11 +200,11 @@ export interface TextileProductDocument extends Document {
 	priceInventary: {
 		basePrice: number;
 		totalStock: number;
+		currency: string;
 		SKU?: string;
 	};
 	atribute?: {
 		textileTypeId?: string;
-		subcategoryId?: string;
 		gender?: Gender;
 		textileStyleId?: string;
 		season?: Season;
@@ -161,6 +213,9 @@ export interface TextileProductDocument extends Document {
 			days?: number;
 			hours?: number;
 		};
+		inspiration?: string;
+		sizeGuide?: SizeGuide;
+		careInstructions?: string;
 	};
 	detailTraceability?: {
 		isHandmade?: boolean;
@@ -171,9 +226,22 @@ export interface TextileProductDocument extends Document {
 		isArtisanExclusive?: boolean;
 		isOriginalCreation?: boolean;
 		isRegisteredDesign?: boolean;
-		isBackorderAvailable?: boolean;
+		availableUponRequest?: boolean;
 		leadTime?: number;
-		certificationId?: string;
+		certificationIds?: string[];
+		principalMaterial?: string[];
+		materialOrigin?: string;
+		customizable?: string;
+		hasCertifications?: boolean;
+		weightWithoutPackage?: number;
+		dimensionsWithoutPackage?: { length: number; width: number; height: number };
+		packagingType?: string;
+		packageCustomization?: string[];
+		weightWithPackage?: number;
+		dimensionsWithPackage?: { length: number; width: number; height: number };
+		shippingMethods?: ShippingMethod[];
+		shippingRegions?: ShippingRegion[];
+		estimatedDeliveryDays?: number;
 	};
 	productTraceability?: any;
 	options?: any[];
