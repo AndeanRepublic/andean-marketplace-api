@@ -120,6 +120,7 @@ describe('TextileProductController (e2e)', () => {
 								...mockPriceInventary,
 								basePrice: updateDto.priceInventary.basePrice,
 								totalStock: updateDto.priceInventary.totalStock,
+								currency: updateDto.priceInventary.currency,
 							},
 						}),
 					},
@@ -309,6 +310,7 @@ describe('TextileProductController (e2e)', () => {
 						priceInventary: expect.objectContaining({
 							basePrice: mockPriceInventary.basePrice,
 							totalStock: mockPriceInventary.totalStock,
+							currency: mockPriceInventary.currency,
 							SKU: mockPriceInventary.SKU,
 						}),
 						categoryId: expect.any(String),
@@ -947,6 +949,7 @@ describe('TextileProductController (e2e)', () => {
 				...mockPriceInventary,
 				basePrice: updateDto.priceInventary.basePrice,
 				totalStock: updateDto.priceInventary.totalStock,
+				currency: updateDto.priceInventary.currency,
 			},
 		};
 

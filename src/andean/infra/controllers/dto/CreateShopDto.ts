@@ -5,6 +5,8 @@ import {
 	IsArray,
 	ArrayNotEmpty,
 	IsEnum,
+	IsOptional,
+	IsMongoId,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -67,4 +69,13 @@ export class CreateShopDto {
 	@IsString()
 	@IsNotEmpty()
 	shippingArea: string;
+
+	@ApiPropertyOptional({
+		description: 'ID del ProviderInfo asociado a la tienda',
+		example: '67890abcdef1234567890125',
+	})
+	@IsString()
+	@IsMongoId()
+	@IsOptional()
+	providerInfoId?: string;
 }
