@@ -6,5 +6,6 @@ export class Community {
 		public createdAt: Date,
 		public updatedAt: Date,
 		public seals?: string[],
-	) { }
+		public providerInfoId?: string,
+	) {}
 }

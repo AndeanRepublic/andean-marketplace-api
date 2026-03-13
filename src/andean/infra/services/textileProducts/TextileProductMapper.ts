@@ -10,16 +10,22 @@ import { DetailTraceability } from 'src/andean/domain/entities/textileProducts/D
 import { TextileOptions } from 'src/andean/domain/entities/textileProducts/TextileOptions';
 import { TextileOptionsItem } from 'src/andean/domain/entities/textileProducts/TextileOptionsItem';
 import { ProductTraceability } from 'src/andean/domain/entities/ProductTraceability';
+import { ProductCurrency } from 'src/andean/domain/enums/ProductCurrency';
 import { Types } from 'mongoose';
 
 export class TextileProductMapper {
 	static fromDocument(doc: TextileProductDocument): TextileProduct {
 		const plain = doc.toObject();
 
+		// Backwards compatibility: default currency for legacy documents
+		const priceInventaryPlain = {
+			...plain.priceInventary,
+			currency: plain.priceInventary?.currency ?? ProductCurrency.USD,
+		};
 		const baseInfo = plainToInstance(BaseInfo, plain.baseInfo);
 		const priceInventary = plainToInstance(
 			PriceInventary,
-			plain.priceInventary,
+			priceInventaryPlain,
 		);
 
 		let atribute: Atribute | undefined;
@@ -37,11 +43,21 @@ export class TextileProductMapper {
 			});
 		}
 
+		// Backwards compatibility: migrate isBackorderAvailable -> availableUponRequest, certificationId -> certificationIds
+		let detailTraceabilityPlain = plain.detailTraceability;
+		if (detailTraceabilityPlain) {
+			const dt = detailTraceabilityPlain as Record<string, unknown>;
+			detailTraceabilityPlain = {
+				...detailTraceabilityPlain,
+				availableUponRequest: dt.availableUponRequest ?? dt.isBackorderAvailable,
+				certificationIds: dt.certificationIds ?? (dt.certificationId ? [dt.certificationId] : undefined),
+			};
+		}
 		let detailTraceability: DetailTraceability | undefined;
-		if (plain.detailTraceability) {
+		if (detailTraceabilityPlain) {
 			detailTraceability = plainToInstance(
 				DetailTraceability,
-				plain.detailTraceability,
+				detailTraceabilityPlain,
 			);
 		}
 
