@@ -10,6 +10,18 @@
 		"name": "Liofilizado",
 		"icon": "https://example.com/icons/freeze-dried.svg"
 	},
+	"bulkCreateDto": {
+		"superfoodPreservationMethods": [
+			{
+				"name": "Congelado",
+				"icon": "https://example.com/icons/frozen.svg"
+			},
+			{
+				"name": "Al vacío",
+				"icon": "https://example.com/icons/vacuum.svg"
+			}
+		]
+	},
 	"optionalFieldName": "icon",
 	"additionalEntities": [
 		{

@@ -10,8 +10,10 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateSuperfoodTypeDto } from '../dto/superfoods/CreateSuperfoodTypeDto';
-import { SuperfoodTypeResponse } from '../../../app/modules/SuperfoodTypeResponse';
+import { CreateManySuperfoodTypesDto } from '../dto/superfoods/CreateManySuperfoodTypesDto';
+import { SuperfoodTypeResponse } from '../../../app/modules/superfoods/SuperfoodTypeResponse';
 import { CreateSuperfoodTypeUseCase } from '../../../app/use_cases/superfoods/type/CreateSuperfoodTypeUseCase';
+import { CreateManySuperfoodTypesUseCase } from '../../../app/use_cases/superfoods/type/CreateManySuperfoodTypesUseCase';
 import { GetSuperfoodTypeByIdUseCase } from '../../../app/use_cases/superfoods/type/GetSuperfoodTypeByIdUseCase';
 import { ListSuperfoodTypesUseCase } from '../../../app/use_cases/superfoods/type/ListSuperfoodTypesUseCase';
 import { DeleteSuperfoodTypeUseCase } from '../../../app/use_cases/superfoods/type/DeleteSuperfoodTypeUseCase';
@@ -21,10 +23,33 @@ import { DeleteSuperfoodTypeUseCase } from '../../../app/use_cases/superfoods/ty
 export class SuperfoodTypeController {
 	constructor(
 		private readonly createSuperfoodTypeUseCase: CreateSuperfoodTypeUseCase,
+		private readonly createManySuperfoodTypesUseCase: CreateManySuperfoodTypesUseCase,
 		private readonly getSuperfoodTypeByIdUseCase: GetSuperfoodTypeByIdUseCase,
 		private readonly listSuperfoodTypesUseCase: ListSuperfoodTypesUseCase,
 		private readonly deleteSuperfoodTypeUseCase: DeleteSuperfoodTypeUseCase,
 	) {}
+
+	@Post('/bulk')
+	@HttpCode(HttpStatus.CREATED)
+	@ApiOperation({
+		summary: 'Crear múltiples tipos de superfood',
+		description:
+			'Crea múltiples tipos de superfood en una sola operación. Útil para carga inicial de datos.',
+	})
+	@ApiResponse({
+		status: 201,
+		description: 'Tipos creados exitosamente',
+		type: [SuperfoodTypeResponse],
+	})
+	@ApiResponse({
+		status: 400,
+		description: 'Datos de entrada inválidos',
+	})
+	async createManyTypes(
+		@Body() dto: CreateManySuperfoodTypesDto,
+	): Promise<SuperfoodTypeResponse[]> {
+		return await this.createManySuperfoodTypesUseCase.handle(dto);
+	}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
@@ -47,19 +72,19 @@ export class SuperfoodTypeController {
 		return await this.createSuperfoodTypeUseCase.handle(dto);
 	}
 
-	// @Get()
-	// @ApiOperation({
-	// 	summary: 'Listar todos los tipos',
-	// 	description: 'Retorna todos los tipos de superfood disponibles',
-	// })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'Lista de tipos',
-	// 	type: [SuperfoodTypeResponse],
-	// })
-	// async listTypes(): Promise<SuperfoodTypeResponse[]> {
-	// 	return await this.listSuperfoodTypesUseCase.handle();
-	// }
+	@Get()
+	@ApiOperation({
+		summary: 'Listar todos los tipos',
+		description: 'Retorna todos los tipos de superfood disponibles',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista de tipos',
+		type: [SuperfoodTypeResponse],
+	})
+	async listTypes(): Promise<SuperfoodTypeResponse[]> {
+		return await this.listSuperfoodTypesUseCase.handle();
+	}
 
 	// @Get('/:id')
 	// @ApiOperation({

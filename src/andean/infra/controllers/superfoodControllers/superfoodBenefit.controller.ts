@@ -10,8 +10,10 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateSuperfoodBenefitDto } from '../dto/superfoods/CreateSuperfoodBenefitDto';
-import { SuperfoodBenefitResponse } from '../../../app/modules/SuperfoodBenefitResponse';
+import { CreateManySuperfoodBenefitsDto } from '../dto/superfoods/CreateManySuperfoodBenefitsDto';
+import { SuperfoodBenefitResponse } from '../../../app/modules/superfoods/SuperfoodBenefitResponse';
 import { CreateSuperfoodBenefitUseCase } from '../../../app/use_cases/superfoods/benefit/CreateSuperfoodBenefitUseCase';
+import { CreateManySuperfoodBenefitsUseCase } from '../../../app/use_cases/superfoods/benefit/CreateManySuperfoodBenefitsUseCase';
 import { GetSuperfoodBenefitByIdUseCase } from '../../../app/use_cases/superfoods/benefit/GetSuperfoodBenefitByIdUseCase';
 import { ListSuperfoodBenefitsUseCase } from '../../../app/use_cases/superfoods/benefit/ListSuperfoodBenefitsUseCase';
 import { DeleteSuperfoodBenefitUseCase } from '../../../app/use_cases/superfoods/benefit/DeleteSuperfoodBenefitUseCase';
@@ -21,10 +23,33 @@ import { DeleteSuperfoodBenefitUseCase } from '../../../app/use_cases/superfoods
 export class SuperfoodBenefitController {
 	constructor(
 		private readonly createSuperfoodBenefitUseCase: CreateSuperfoodBenefitUseCase,
+		private readonly createManySuperfoodBenefitsUseCase: CreateManySuperfoodBenefitsUseCase,
 		private readonly getSuperfoodBenefitByIdUseCase: GetSuperfoodBenefitByIdUseCase,
 		private readonly listSuperfoodBenefitsUseCase: ListSuperfoodBenefitsUseCase,
 		private readonly deleteSuperfoodBenefitUseCase: DeleteSuperfoodBenefitUseCase,
 	) {}
+
+	@Post('/bulk')
+	@HttpCode(HttpStatus.CREATED)
+	@ApiOperation({
+		summary: 'Crear múltiples beneficios',
+		description:
+			'Crea múltiples beneficios de superfood en una sola operación. Útil para carga inicial de datos.',
+	})
+	@ApiResponse({
+		status: 201,
+		description: 'Beneficios creados exitosamente',
+		type: [SuperfoodBenefitResponse],
+	})
+	@ApiResponse({
+		status: 400,
+		description: 'Datos de entrada inválidos',
+	})
+	async createManyBenefits(
+		@Body() dto: CreateManySuperfoodBenefitsDto,
+	): Promise<SuperfoodBenefitResponse[]> {
+		return await this.createManySuperfoodBenefitsUseCase.handle(dto);
+	}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
@@ -48,19 +73,19 @@ export class SuperfoodBenefitController {
 		return await this.createSuperfoodBenefitUseCase.handle(dto);
 	}
 
-	// @Get()
-	// @ApiOperation({
-	// 	summary: 'Listar todos los beneficios',
-	// 	description: 'Retorna todos los beneficios disponibles',
-	// })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'Lista de beneficios',
-	// 	type: [SuperfoodBenefitResponse],
-	// })
-	// async listBenefits(): Promise<SuperfoodBenefitResponse[]> {
-	// 	return await this.listSuperfoodBenefitsUseCase.handle();
-	// }
+	@Get()
+	@ApiOperation({
+		summary: 'Listar todos los beneficios',
+		description: 'Retorna todos los beneficios disponibles',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista de beneficios',
+		type: [SuperfoodBenefitResponse],
+	})
+	async listBenefits(): Promise<SuperfoodBenefitResponse[]> {
+		return await this.listSuperfoodBenefitsUseCase.handle();
+	}
 
 	// @Get('/:id')
 	// @ApiOperation({

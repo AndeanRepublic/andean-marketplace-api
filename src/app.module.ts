@@ -8,10 +8,7 @@ import { BankAccountsModule } from './andean/bankAccount.module';
 import { OrdersModule } from './andean/order.module';
 import { ShippingAddressModule } from './andean/shippingAddress.module';
 import { CartShopModule } from './andean/cartShop.module';
-import { MulterModule } from '@nestjs/platform-express';
-import { UploadModule } from './andean/upload.module';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
+
 import { AdminModule } from './andean/admin.module';
 import { CommunityModule } from './andean/community.module';
 import { OriginProductModule } from './andean/originProduct.module';
@@ -22,6 +19,10 @@ import { TextileProductModule } from './andean/textileProduct.module';
 import { VariantModule } from './andean/variant.module';
 import { BoxModule } from './andean/box.module';
 import { BoxSealModule } from './andean/boxSeal.module';
+import { ExperienceModule } from './andean/experience.module';
+import { TryOnModule } from './andean/tryOn.module';
+import { BookingModule } from './andean/booking.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
 	imports: [
@@ -35,13 +36,6 @@ import { BoxSealModule } from './andean/boxSeal.module';
 				uri: configService.get<string>('MONGO_URI'),
 			}),
 		}),
-		MulterModule.register({
-			dest: join(__dirname, '..', 'uploads'),
-		}),
-		ServeStaticModule.forRoot({
-			rootPath: './uploads',
-			serveRoot: '/public',
-		}),
 		UsersModule,
 		AuthModule,
 		ShopsModule,
@@ -49,7 +43,6 @@ import { BoxSealModule } from './andean/boxSeal.module';
 		CartShopModule,
 		OrdersModule,
 		ShippingAddressModule,
-		UploadModule,
 		AdminModule,
 		CommunityModule,
 		OriginProductModule,
@@ -60,8 +53,12 @@ import { BoxSealModule } from './andean/boxSeal.module';
 		VariantModule,
 		BoxModule,
 		BoxSealModule,
+		ExperienceModule,
+		TryOnModule,
+		BookingModule,
+		HealthModule,
 	],
 	controllers: [],
 	providers: [],
 })
-export class AppModule { }
+export class AppModule {}

@@ -124,4 +124,9 @@ export class FixtureLoader {
 	static loadOrder() {
 		return this.load('order.fixture.json');
 	}
+
+	// ─── Experience fixtures ────────────────────────────────────────
+	static loadExperience() {
+		return this.load('experience.fixture.json');
+	}
 }

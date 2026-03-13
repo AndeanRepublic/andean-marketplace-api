@@ -1,7 +1,7 @@
 import { TextileProduct } from '../../../domain/entities/textileProducts/TextileProduct';
 import { ProductSortBy } from '../../../domain/enums/ProductSortBy';
-import { FilterCount } from '../../modules/PaginatedProductsResponse';
-import { TextileProductListItem } from '../../modules/TextileProductListItemResponse';
+import { FilterCount } from '../../modules/shared/PaginatedProductsResponse';
+import { TextileProductListItem } from '../../modules/textile/TextileProductListItemResponse';
 
 export interface ProductFilters {
 	color?: string;
@@ -33,5 +33,8 @@ export abstract class TextileProductRepository {
 	): Promise<TextileProduct>;
 	abstract deleteTextileProduct(id: string): Promise<void>;
 	abstract getByIds(ids: string[]): Promise<TextileProduct[]>;
-	abstract reduceStock(id: string, quantity: number): Promise<TextileProduct | null>;
+	abstract reduceStock(
+		id: string,
+		quantity: number,
+	): Promise<TextileProduct | null>;
 }

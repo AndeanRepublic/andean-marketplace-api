@@ -10,4 +10,6 @@ export abstract class SuperfoodTypeRepository {
 	abstract update(type: SuperfoodType): Promise<SuperfoodType>;
 
 	abstract delete(id: string): Promise<void>;
+
+	abstract saveMany(types: SuperfoodType[]): Promise<SuperfoodType[]>;
 }

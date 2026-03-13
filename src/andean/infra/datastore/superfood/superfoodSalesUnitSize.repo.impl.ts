@@ -63,4 +63,18 @@ export class SuperfoodSalesUnitSizeRepoImpl implements SuperfoodSalesUnitSizeRep
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		await this.model.findByIdAndDelete(objectId).exec();
 	}
+
+	async saveMany(
+		unitSizes: SuperfoodSalesUnitSize[],
+	): Promise<SuperfoodSalesUnitSize[]> {
+		const persistenceData = unitSizes.map((unitSize) =>
+			SuperfoodSalesUnitSizeMapper.toPersistence(unitSize),
+		);
+		const savedDocs = await this.model.insertMany(persistenceData);
+		return savedDocs.map((doc) =>
+			SuperfoodSalesUnitSizeMapper.fromDocument(
+				doc as SuperfoodSalesUnitSizeDocument,
+			),
+		);
+	}
 }

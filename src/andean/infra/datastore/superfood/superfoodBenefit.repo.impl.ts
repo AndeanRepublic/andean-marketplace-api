@@ -12,7 +12,7 @@ export class SuperfoodBenefitRepoImpl implements SuperfoodBenefitRepository {
 	constructor(
 		@InjectModel('SuperfoodBenefit')
 		private readonly model: Model<SuperfoodBenefitDocument>,
-	) { }
+	) {}
 
 	async getById(id: string): Promise<SuperfoodBenefit | null> {
 		// Convertir string a ObjectId
@@ -63,5 +63,15 @@ export class SuperfoodBenefitRepoImpl implements SuperfoodBenefitRepository {
 		const objectIds = ids.map((id) => MongoIdUtils.stringToObjectId(id));
 		const docs = await this.model.find({ _id: { $in: objectIds } }).exec();
 		return docs.map((doc) => SuperfoodBenefitMapper.fromDocument(doc));
+	}
+
+	async saveMany(benefits: SuperfoodBenefit[]): Promise<SuperfoodBenefit[]> {
+		const persistenceData = benefits.map((benefit) =>
+			SuperfoodBenefitMapper.toPersistence(benefit),
+		);
+		const savedDocs = await this.model.insertMany(persistenceData);
+		return savedDocs.map((doc) =>
+			SuperfoodBenefitMapper.fromDocument(doc as SuperfoodBenefitDocument),
+		);
 	}
 }

@@ -14,4 +14,8 @@ export abstract class SuperfoodCategoryRepository {
 	): Promise<SuperfoodCategory>;
 
 	abstract deleteCategory(id: string): Promise<void>;
+
+	abstract saveManyCategories(
+		categories: SuperfoodCategory[],
+	): Promise<SuperfoodCategory[]>;
 }

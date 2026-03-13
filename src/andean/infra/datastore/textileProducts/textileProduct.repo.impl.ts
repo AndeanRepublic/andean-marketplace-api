@@ -10,9 +10,11 @@ import { VariantDocument } from '../../persistence/variant.schema';
 import { TextileProduct } from 'src/andean/domain/entities/textileProducts/TextileProduct';
 import { TextileProductMapper } from '../../services/textileProducts/TextileProductMapper';
 import { MongoIdUtils } from '../../utils/MongoIdUtils';
-import { FilterCount } from 'src/andean/app/modules/PaginatedProductsResponse';
-import { TextileProductListItem } from '../../../app/modules/TextileProductListItemResponse';
+import { FilterCount } from 'src/andean/app/modules/shared/PaginatedProductsResponse';
+import { TextileProductListItem } from '../../../app/modules/textile/TextileProductListItemResponse';
 import { ProductSortBy } from 'src/andean/domain/enums/ProductSortBy';
+import { VariantMapper } from '../../services/VariantMapper';
+import { TextileProductAttributesAssembler } from '../../services/textileProducts/TextileProductAttributesAssembler';
 
 @Injectable()
 export class TextileProductRepositoryImpl extends TextileProductRepository {
@@ -21,6 +23,7 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 		private readonly textileProductModel: Model<TextileProductDocument>,
 		@InjectModel('Variant')
 		private readonly variantModel: Model<VariantDocument>,
+		private readonly textileProductAttributesAssembler: TextileProductAttributesAssembler,
 	) {
 		super();
 	}
@@ -101,7 +104,7 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 			.find(baseQuery)
 			.exec();
 		const productIds = matchingProducts.map((p) =>
-			(p as any).toObject()._id.toString(),
+			(p as TextileProductDocument).toObject()._id.toString(),
 		);
 
 		if (productIds.length === 0) {
@@ -249,7 +252,7 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 					as: 'category',
 				},
 			},
-			// Lookup para seller/productor
+			// Lookup para seller/productor (cuando ownerType es SHOP)
 			{
 				$lookup: {
 					from: 'sellerprofiles',
@@ -265,6 +268,24 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 					},
 					pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$ownId'] } } }],
 					as: 'seller',
+				},
+			},
+			// Lookup para community/productor (cuando ownerType es COMMUNITY)
+			{
+				$lookup: {
+					from: 'communities',
+					let: {
+						ownId: {
+							$convert: {
+								input: '$baseInfo.ownerId',
+								to: 'objectId',
+								onError: null,
+								onNull: null,
+							},
+						},
+					},
+					pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$ownId'] } } }],
+					as: 'community',
 				},
 			},
 		];
@@ -349,15 +370,22 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 			$project: {
 				_id: 0,
 				id: '$_id',
-				titulo: '$baseInfo.title',
+				title: '$baseInfo.title',
 				categoryName: {
 					$ifNull: [{ $arrayElemAt: ['$category.name', 0] }, 'Sin categoría'],
 				},
 				productorName: {
-					$ifNull: [
-						{ $arrayElemAt: ['$seller.commercialName', 0] },
-						'Productor desconocido',
-					],
+					$cond: {
+						if: { $gt: [{ $size: '$seller' }, 0] },
+						then: { $arrayElemAt: ['$seller.commercialName', 0] },
+						else: {
+							$cond: {
+								if: { $gt: [{ $size: '$community' }, 0] },
+								then: { $arrayElemAt: ['$community.name', 0] },
+								else: 'Productor desconocido',
+							},
+						},
+					},
 				},
 				principalImgUrl: {
 					$ifNull: [{ $arrayElemAt: ['$baseInfo.mediaIds', 0] }, ''],
@@ -425,6 +453,42 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 						},
 					},
 				},
+			},
+		};
+	}
+
+	/**
+	 * Construye la proyección base para el listado.
+	 * Deja campos directos y options para enriquecer luego con el assembler.
+	 */
+	private buildListBaseProjection(): PipelineStage {
+		return {
+			$project: {
+				_id: 0,
+				id: { $toString: '$_id' },
+				title: '$baseInfo.title',
+				categoryName: {
+					$ifNull: [{ $arrayElemAt: ['$category.name', 0] }, 'Sin categoría'],
+				},
+				productorName: {
+					$cond: {
+						if: { $gt: [{ $size: '$seller' }, 0] },
+						then: { $arrayElemAt: ['$seller.commercialName', 0] },
+						else: {
+							$cond: {
+								if: { $gt: [{ $size: '$community' }, 0] },
+								then: { $arrayElemAt: ['$community.name', 0] },
+								else: 'Productor desconocido',
+							},
+						},
+					},
+				},
+				principalImgUrl: {
+					$ifNull: [{ $arrayElemAt: ['$baseInfo.mediaIds', 0] }, ''],
+				},
+				price: '$priceInventary.basePrice',
+				totalStock: { $ifNull: ['$priceInventary.totalStock', 0] },
+				options: { $ifNull: ['$options', []] },
 			},
 		};
 	}
@@ -661,24 +725,61 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 		const perPage = filters.perPage || 10;
 		const skip = (page - 1) * perPage;
 
-		// Aggregation pipeline usando métodos modulares
+		// Aggregation pipeline base para listado
 		const pipeline: PipelineStage[] = [
 			{ $match: query },
 			...this.buildSortStages(filters.sortBy),
 			...this.buildCategoryAndSellerLookups(),
-			...this.buildColorProcessingStages(),
-			this.buildFinalProjection(),
+			this.buildListBaseProjection(),
 			{ $skip: skip },
 			{ $limit: perPage },
 		];
 
-		const [products, countResult] = await Promise.all([
+		const [rawProducts, countResult] = await Promise.all([
 			this.textileProductModel.aggregate(pipeline).exec(),
 			this.textileProductModel.countDocuments(query).exec(),
 		]);
 
+		const productIds = rawProducts.map((product: any) => product.id);
+		const variantDocs =
+			productIds.length > 0
+				? await this.variantModel
+						.find({ productId: { $in: productIds } })
+						.exec()
+				: [];
+		const variants = variantDocs.map((doc) => VariantMapper.fromDocument(doc));
+
+		const attributesByProductId =
+			await this.textileProductAttributesAssembler.buildForProducts(
+				rawProducts.map((product: any) => ({
+					id: product.id,
+					options: product.options,
+				})),
+				variants,
+			);
+
+		const products: TextileProductListItem[] = rawProducts.map(
+			(product: any) => {
+				const attrs = attributesByProductId.get(product.id) || {
+					variantInfo: [],
+				};
+				const stock = product.totalStock ?? 0;
+
+				return {
+					id: product.id,
+					title: product.title,
+					categoryName: product.categoryName,
+					productorName: product.productorName,
+					principalImgUrl: product.principalImgUrl,
+					price: product.price,
+					variantInfo: attrs.variantInfo,
+					stock,
+				};
+			},
+		);
+
 		return {
-			products: products as TextileProductListItem[],
+			products,
 			total: countResult,
 		};
 	}
@@ -692,7 +793,10 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 		return docs.map((doc) => TextileProductMapper.fromDocument(doc));
 	}
 
-	async reduceStock(id: string, quantity: number): Promise<TextileProduct | null> {
+	async reduceStock(
+		id: string,
+		quantity: number,
+	): Promise<TextileProduct | null> {
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		const updated = await this.textileProductModel
 			.findOneAndUpdate(

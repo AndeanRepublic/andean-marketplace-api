@@ -28,14 +28,14 @@ describe('CartShopController (e2e)', () => {
 	// Mock responses using fixtures
 	const mockAddItemResponse = {
 		ownerName: textileFixtures.shop.name,
-		titulo: textileFixtures.textileProduct.baseInfo.title,
+		title: textileFixtures.entity.baseInfo.title,
 		combinationVariant: textileFixtures.variants[0].combination,
 		thumbnailImgUrl: textileFixtures.mediaItems[0].url,
 		unitPrice: textileFixtures.variants[0].price,
 		quantity: 2,
 		idShoppingCartItem: cartFixtures.cartItems[0].id,
 		maxStock: textileFixtures.variants[0].stock,
-		isDiscountActive: textileFixtures.textileProduct.isDiscountActive,
+		isDiscountActive: textileFixtures.entity.isDiscountActive,
 		productType: ProductType.TEXTILE,
 	};
 
@@ -43,19 +43,19 @@ describe('CartShopController (e2e)', () => {
 		items: [
 			{
 				ownerName: textileFixtures.shop.name,
-				titulo: textileFixtures.textileProduct.baseInfo.title,
+				title: textileFixtures.entity.baseInfo.title,
 				combinationVariant: textileFixtures.variants[0].combination,
 				thumbnailImgUrl: textileFixtures.mediaItems[0].url,
 				unitPrice: textileFixtures.variants[0].price,
 				quantity: 2,
 				idShoppingCartItem: cartFixtures.cartItems[0].id,
 				maxStock: textileFixtures.variants[0].stock,
-				isDiscountActive: textileFixtures.textileProduct.isDiscountActive,
+				isDiscountActive: textileFixtures.entity.isDiscountActive,
 				productType: ProductType.TEXTILE,
 			},
 			{
 				ownerName: superfoodFixtures.community.name,
-				titulo: superfoodFixtures.superfood.baseInfo.title,
+				title: superfoodFixtures.superfood.baseInfo.title,
 				combinationVariant: superfoodFixtures.variants[0].combination,
 				thumbnailImgUrl: superfoodFixtures.mediaItems[0].url,
 				unitPrice: superfoodFixtures.variants[0].price,
@@ -81,7 +81,7 @@ describe('CartShopController (e2e)', () => {
 	// Mock response for adding a box item to the cart
 	const mockAddBoxItemResponse = {
 		ownerName: '',
-		titulo: boxFixtures.entity.title,
+		title: boxFixtures.entity.title,
 		combinationVariant: {},
 		thumbnailImgUrl: boxFixtures.entity.thumbnailImageId,
 		unitPrice: boxFixtures.entity.price,
@@ -91,9 +91,18 @@ describe('CartShopController (e2e)', () => {
 		isDiscountActive: false,
 		productType: ProductType.BOX,
 		boxContent: [
-			{ title: boxFixtures.relatedProducts.superfoods[0].baseInfo.title, productType: ProductType.SUPERFOOD },
-			{ title: boxFixtures.relatedProducts.superfoods[1].baseInfo.title, productType: ProductType.SUPERFOOD },
-			{ title: boxFixtures.relatedProducts.textiles[0].product.baseInfo.title, productType: ProductType.TEXTILE },
+			{
+				title: boxFixtures.relatedProducts.superfoods[0].baseInfo.title,
+				productType: ProductType.SUPERFOOD,
+			},
+			{
+				title: boxFixtures.relatedProducts.superfoods[1].baseInfo.title,
+				productType: ProductType.SUPERFOOD,
+			},
+			{
+				title: boxFixtures.relatedProducts.textiles[0].product.baseInfo.title,
+				productType: ProductType.TEXTILE,
+			},
 		],
 	};
 
@@ -102,19 +111,19 @@ describe('CartShopController (e2e)', () => {
 		items: [
 			{
 				ownerName: textileFixtures.shop.name,
-				titulo: textileFixtures.textileProduct.baseInfo.title,
+				title: textileFixtures.entity.baseInfo.title,
 				combinationVariant: textileFixtures.variants[0].combination,
 				thumbnailImgUrl: textileFixtures.mediaItems[0].url,
 				unitPrice: textileFixtures.variants[0].price,
 				quantity: 2,
 				idShoppingCartItem: cartFixtures.cartItems[0].id,
 				maxStock: textileFixtures.variants[0].stock,
-				isDiscountActive: textileFixtures.textileProduct.isDiscountActive,
+				isDiscountActive: textileFixtures.entity.isDiscountActive,
 				productType: ProductType.TEXTILE,
 			},
 			{
 				ownerName: '',
-				titulo: boxFixtures.entity.title,
+				title: boxFixtures.entity.title,
 				combinationVariant: {},
 				thumbnailImgUrl: boxFixtures.entity.thumbnailImageId,
 				unitPrice: boxFixtures.entity.price,
@@ -124,9 +133,19 @@ describe('CartShopController (e2e)', () => {
 				isDiscountActive: false,
 				productType: ProductType.BOX,
 				boxContent: [
-					{ title: boxFixtures.relatedProducts.superfoods[0].baseInfo.title, productType: ProductType.SUPERFOOD },
-					{ title: boxFixtures.relatedProducts.superfoods[1].baseInfo.title, productType: ProductType.SUPERFOOD },
-					{ title: boxFixtures.relatedProducts.textiles[0].product.baseInfo.title, productType: ProductType.TEXTILE },
+					{
+						title: boxFixtures.relatedProducts.superfoods[0].baseInfo.title,
+						productType: ProductType.SUPERFOOD,
+					},
+					{
+						title: boxFixtures.relatedProducts.superfoods[1].baseInfo.title,
+						productType: ProductType.SUPERFOOD,
+					},
+					{
+						title:
+							boxFixtures.relatedProducts.textiles[0].product.baseInfo.title,
+						productType: ProductType.TEXTILE,
+					},
 				],
 			},
 		],
@@ -193,12 +212,18 @@ describe('CartShopController (e2e)', () => {
 
 		await app.init();
 
-		addItemToCartUseCase = moduleFixture.get<AddItemToCartUseCase>(AddItemToCartUseCase);
-		getCartByCustomerUseCase = moduleFixture.get<GetCartByCustomerUseCase>(GetCartByCustomerUseCase);
-		updateCartItemQuantityUseCase = moduleFixture.get<UpdateCartItemQuantityUseCase>(
-			UpdateCartItemQuantityUseCase,
+		addItemToCartUseCase =
+			moduleFixture.get<AddItemToCartUseCase>(AddItemToCartUseCase);
+		getCartByCustomerUseCase = moduleFixture.get<GetCartByCustomerUseCase>(
+			GetCartByCustomerUseCase,
 		);
-		removeItemFromCartUseCase = moduleFixture.get<RemoveItemFromCartUseCase>(RemoveItemFromCartUseCase);
+		updateCartItemQuantityUseCase =
+			moduleFixture.get<UpdateCartItemQuantityUseCase>(
+				UpdateCartItemQuantityUseCase,
+			);
+		removeItemFromCartUseCase = moduleFixture.get<RemoveItemFromCartUseCase>(
+			RemoveItemFromCartUseCase,
+		);
 	});
 
 	afterAll(async () => {
@@ -217,7 +242,9 @@ describe('CartShopController (e2e)', () => {
 		};
 
 		it('should add an item to cart and return enriched product info', () => {
-			jest.spyOn(addItemToCartUseCase, 'handle').mockResolvedValueOnce(mockAddItemResponse);
+			jest
+				.spyOn(addItemToCartUseCase, 'handle')
+				.mockResolvedValueOnce(mockAddItemResponse);
 
 			return request(app.getHttpServer())
 				.post(`/cart/items?customerId=${customerId}`)
@@ -226,7 +253,7 @@ describe('CartShopController (e2e)', () => {
 				.expect((res) => {
 					expect(res.body).toMatchObject({
 						ownerName: textileFixtures.shop.name,
-						titulo: textileFixtures.textileProduct.baseInfo.title,
+						title: textileFixtures.entity.baseInfo.title,
 						combinationVariant: expect.any(Object),
 						thumbnailImgUrl: textileFixtures.mediaItems[0].url,
 						unitPrice: textileFixtures.variants[0].price,
@@ -286,7 +313,7 @@ describe('CartShopController (e2e)', () => {
 		it('should handle adding superfood items', () => {
 			const superfoodResponse = {
 				ownerName: superfoodFixtures.community.name,
-				titulo: superfoodFixtures.superfood.baseInfo.title,
+				title: superfoodFixtures.superfood.baseInfo.title,
 				combinationVariant: superfoodFixtures.variants[0].combination,
 				thumbnailImgUrl: superfoodFixtures.mediaItems[0].url,
 				unitPrice: superfoodFixtures.variants[0].price,
@@ -297,7 +324,9 @@ describe('CartShopController (e2e)', () => {
 				productType: ProductType.SUPERFOOD,
 			};
 
-			jest.spyOn(addItemToCartUseCase, 'handle').mockResolvedValueOnce(superfoodResponse);
+			jest
+				.spyOn(addItemToCartUseCase, 'handle')
+				.mockResolvedValueOnce(superfoodResponse);
 
 			return request(app.getHttpServer())
 				.post(`/cart/items?customerId=${customerId}`)
@@ -307,13 +336,21 @@ describe('CartShopController (e2e)', () => {
 				})
 				.expect(HttpStatus.CREATED)
 				.expect((res) => {
-					expect(res.body).toHaveProperty('ownerName', superfoodFixtures.community.name);
-					expect(res.body).toHaveProperty('titulo', superfoodFixtures.superfood.baseInfo.title);
+					expect(res.body).toHaveProperty(
+						'ownerName',
+						superfoodFixtures.community.name,
+					);
+					expect(res.body).toHaveProperty(
+						'title',
+						superfoodFixtures.superfood.baseInfo.title,
+					);
 				});
 		});
 
 		it('should handle adding a box item with boxContent', () => {
-			jest.spyOn(addItemToCartUseCase, 'handle').mockResolvedValueOnce(mockAddBoxItemResponse);
+			jest
+				.spyOn(addItemToCartUseCase, 'handle')
+				.mockResolvedValueOnce(mockAddBoxItemResponse);
 
 			return request(app.getHttpServer())
 				.post(`/cart/items?customerId=${customerId}`)
@@ -325,7 +362,7 @@ describe('CartShopController (e2e)', () => {
 				.expect((res) => {
 					expect(res.body).toMatchObject({
 						ownerName: '',
-						titulo: boxFixtures.entity.title,
+						title: boxFixtures.entity.title,
 						combinationVariant: {},
 						unitPrice: boxFixtures.entity.price,
 						quantity: 1,
@@ -340,7 +377,9 @@ describe('CartShopController (e2e)', () => {
 		});
 
 		it('should return box item with correct boxContent product types', () => {
-			jest.spyOn(addItemToCartUseCase, 'handle').mockResolvedValueOnce(mockAddBoxItemResponse);
+			jest
+				.spyOn(addItemToCartUseCase, 'handle')
+				.mockResolvedValueOnce(mockAddBoxItemResponse);
 
 			return request(app.getHttpServer())
 				.post(`/cart/items?customerId=${customerId}`)
@@ -360,7 +399,8 @@ describe('CartShopController (e2e)', () => {
 						productType: ProductType.SUPERFOOD,
 					});
 					expect(boxContent[2]).toEqual({
-						title: boxFixtures.relatedProducts.textiles[0].product.baseInfo.title,
+						title:
+							boxFixtures.relatedProducts.textiles[0].product.baseInfo.title,
 						productType: ProductType.TEXTILE,
 					});
 				});
@@ -371,7 +411,9 @@ describe('CartShopController (e2e)', () => {
 		const customerId = customerFixtures.customer.id;
 
 		it('should get cart with enriched items list', () => {
-			jest.spyOn(getCartByCustomerUseCase, 'handle').mockResolvedValueOnce(mockGetCartResponse);
+			jest
+				.spyOn(getCartByCustomerUseCase, 'handle')
+				.mockResolvedValueOnce(mockGetCartResponse);
 
 			return request(app.getHttpServer())
 				.get(`/cart?customerId=${customerId}`)
@@ -387,7 +429,9 @@ describe('CartShopController (e2e)', () => {
 		});
 
 		it('should return items with complete product information', () => {
-			jest.spyOn(getCartByCustomerUseCase, 'handle').mockResolvedValueOnce(mockGetCartResponse);
+			jest
+				.spyOn(getCartByCustomerUseCase, 'handle')
+				.mockResolvedValueOnce(mockGetCartResponse);
 
 			return request(app.getHttpServer())
 				.get(`/cart?customerId=${customerId}`)
@@ -395,7 +439,7 @@ describe('CartShopController (e2e)', () => {
 				.expect((res) => {
 					const firstItem = res.body.items[0];
 					expect(firstItem).toHaveProperty('ownerName');
-					expect(firstItem).toHaveProperty('titulo');
+					expect(firstItem).toHaveProperty('title');
 					expect(firstItem).toHaveProperty('combinationVariant');
 					expect(firstItem).toHaveProperty('thumbnailImgUrl');
 					expect(firstItem).toHaveProperty('unitPrice');
@@ -407,7 +451,9 @@ describe('CartShopController (e2e)', () => {
 		});
 
 		it('should return textile product with shop owner name', () => {
-			jest.spyOn(getCartByCustomerUseCase, 'handle').mockResolvedValueOnce(mockGetCartResponse);
+			jest
+				.spyOn(getCartByCustomerUseCase, 'handle')
+				.mockResolvedValueOnce(mockGetCartResponse);
 
 			return request(app.getHttpServer())
 				.get(`/cart?customerId=${customerId}`)
@@ -415,22 +461,34 @@ describe('CartShopController (e2e)', () => {
 				.expect((res) => {
 					const textileItem = res.body.items[0];
 					expect(textileItem.ownerName).toBe(textileFixtures.shop.name);
-					expect(textileItem.titulo).toBe(textileFixtures.textileProduct.baseInfo.title);
-					expect(textileItem.combinationVariant).toEqual(textileFixtures.variants[0].combination);
+					expect(textileItem.title).toBe(
+						textileFixtures.entity.baseInfo.title,
+					);
+					expect(textileItem.combinationVariant).toEqual(
+						textileFixtures.variants[0].combination,
+					);
 				});
 		});
 
 		it('should return superfood with community owner name', () => {
-			jest.spyOn(getCartByCustomerUseCase, 'handle').mockResolvedValueOnce(mockGetCartResponse);
+			jest
+				.spyOn(getCartByCustomerUseCase, 'handle')
+				.mockResolvedValueOnce(mockGetCartResponse);
 
 			return request(app.getHttpServer())
 				.get(`/cart?customerId=${customerId}`)
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					const superfoodItem = res.body.items[1];
-					expect(superfoodItem.ownerName).toBe(superfoodFixtures.community.name);
-					expect(superfoodItem.titulo).toBe(superfoodFixtures.superfood.baseInfo.title);
-					expect(superfoodItem.combinationVariant).toEqual(superfoodFixtures.variants[0].combination);
+					expect(superfoodItem.ownerName).toBe(
+						superfoodFixtures.community.name,
+					);
+					expect(superfoodItem.title).toBe(
+						superfoodFixtures.superfood.baseInfo.title,
+					);
+					expect(superfoodItem.combinationVariant).toEqual(
+						superfoodFixtures.variants[0].combination,
+					);
 				});
 		});
 
@@ -445,7 +503,9 @@ describe('CartShopController (e2e)', () => {
 		});
 
 		it('should return empty cart for new customer', () => {
-			jest.spyOn(getCartByCustomerUseCase, 'handle').mockResolvedValueOnce(mockEmptyCartResponse);
+			jest
+				.spyOn(getCartByCustomerUseCase, 'handle')
+				.mockResolvedValueOnce(mockEmptyCartResponse);
 
 			return request(app.getHttpServer())
 				.get(`/cart?customerId=${customerId}`)
@@ -459,7 +519,9 @@ describe('CartShopController (e2e)', () => {
 		});
 
 		it('should return cart with correct calculated totals', () => {
-			jest.spyOn(getCartByCustomerUseCase, 'handle').mockResolvedValueOnce(mockGetCartResponse);
+			jest
+				.spyOn(getCartByCustomerUseCase, 'handle')
+				.mockResolvedValueOnce(mockGetCartResponse);
 
 			return request(app.getHttpServer())
 				.get(`/cart?customerId=${customerId}`)
@@ -478,7 +540,9 @@ describe('CartShopController (e2e)', () => {
 		});
 
 		it('should return cart with box item containing boxContent', () => {
-			jest.spyOn(getCartByCustomerUseCase, 'handle').mockResolvedValueOnce(mockGetCartWithBoxResponse);
+			jest
+				.spyOn(getCartByCustomerUseCase, 'handle')
+				.mockResolvedValueOnce(mockGetCartWithBoxResponse);
 
 			return request(app.getHttpServer())
 				.get(`/cart?customerId=${customerId}`)
@@ -489,7 +553,7 @@ describe('CartShopController (e2e)', () => {
 					const boxItem = res.body.items[1];
 					expect(boxItem.productType).toBe(ProductType.BOX);
 					expect(boxItem.ownerName).toBe('');
-					expect(boxItem.titulo).toBe(boxFixtures.entity.title);
+					expect(boxItem.title).toBe(boxFixtures.entity.title);
 					expect(boxItem.combinationVariant).toEqual({});
 					expect(boxItem.quantity).toBe(1);
 					expect(boxItem.maxStock).toBe(1);
@@ -498,7 +562,9 @@ describe('CartShopController (e2e)', () => {
 		});
 
 		it('should return box item with correct boxContent structure', () => {
-			jest.spyOn(getCartByCustomerUseCase, 'handle').mockResolvedValueOnce(mockGetCartWithBoxResponse);
+			jest
+				.spyOn(getCartByCustomerUseCase, 'handle')
+				.mockResolvedValueOnce(mockGetCartWithBoxResponse);
 
 			return request(app.getHttpServer())
 				.get(`/cart?customerId=${customerId}`)
@@ -513,13 +579,17 @@ describe('CartShopController (e2e)', () => {
 					boxItem.boxContent.forEach((contentItem: any) => {
 						expect(contentItem).toHaveProperty('title');
 						expect(contentItem).toHaveProperty('productType');
-						expect([ProductType.SUPERFOOD, ProductType.TEXTILE]).toContain(contentItem.productType);
+						expect([ProductType.SUPERFOOD, ProductType.TEXTILE]).toContain(
+							contentItem.productType,
+						);
 					});
 				});
 		});
 
 		it('should return box item boxContent with correct product types per item', () => {
-			jest.spyOn(getCartByCustomerUseCase, 'handle').mockResolvedValueOnce(mockGetCartWithBoxResponse);
+			jest
+				.spyOn(getCartByCustomerUseCase, 'handle')
+				.mockResolvedValueOnce(mockGetCartWithBoxResponse);
 
 			return request(app.getHttpServer())
 				.get(`/cart?customerId=${customerId}`)
@@ -528,20 +598,32 @@ describe('CartShopController (e2e)', () => {
 					const boxContent = res.body.items[1].boxContent;
 
 					// 2 superfoods + 1 textile
-					const superfoodItems = boxContent.filter((c: any) => c.productType === ProductType.SUPERFOOD);
-					const textileItems = boxContent.filter((c: any) => c.productType === ProductType.TEXTILE);
+					const superfoodItems = boxContent.filter(
+						(c: any) => c.productType === ProductType.SUPERFOOD,
+					);
+					const textileItems = boxContent.filter(
+						(c: any) => c.productType === ProductType.TEXTILE,
+					);
 
 					expect(superfoodItems).toHaveLength(2);
 					expect(textileItems).toHaveLength(1);
 
-					expect(superfoodItems[0].title).toBe(boxFixtures.relatedProducts.superfoods[0].baseInfo.title);
-					expect(superfoodItems[1].title).toBe(boxFixtures.relatedProducts.superfoods[1].baseInfo.title);
-					expect(textileItems[0].title).toBe(boxFixtures.relatedProducts.textiles[0].product.baseInfo.title);
+					expect(superfoodItems[0].title).toBe(
+						boxFixtures.relatedProducts.superfoods[0].baseInfo.title,
+					);
+					expect(superfoodItems[1].title).toBe(
+						boxFixtures.relatedProducts.superfoods[1].baseInfo.title,
+					);
+					expect(textileItems[0].title).toBe(
+						boxFixtures.relatedProducts.textiles[0].product.baseInfo.title,
+					);
 				});
 		});
 
 		it('should not include boxContent on non-box items', () => {
-			jest.spyOn(getCartByCustomerUseCase, 'handle').mockResolvedValueOnce(mockGetCartWithBoxResponse);
+			jest
+				.spyOn(getCartByCustomerUseCase, 'handle')
+				.mockResolvedValueOnce(mockGetCartWithBoxResponse);
 
 			return request(app.getHttpServer())
 				.get(`/cart?customerId=${customerId}`)
@@ -568,7 +650,9 @@ describe('CartShopController (e2e)', () => {
 		};
 
 		it('should update cart item quantity', () => {
-			jest.spyOn(updateCartItemQuantityUseCase, 'handle').mockResolvedValueOnce(mockUpdateResponse);
+			jest
+				.spyOn(updateCartItemQuantityUseCase, 'handle')
+				.mockResolvedValueOnce(mockUpdateResponse);
 
 			return request(app.getHttpServer())
 				.patch(`/cart/items/${cartItemId}/quantity/5`)
@@ -595,8 +679,6 @@ describe('CartShopController (e2e)', () => {
 				.patch(`/cart/items/${cartItemId}/quantity/invalid`)
 				.expect(HttpStatus.BAD_REQUEST);
 		});
-
-
 	});
 
 	describe('DELETE /cart/items/:itemId', () => {
@@ -604,7 +686,9 @@ describe('CartShopController (e2e)', () => {
 		const cartItemId = cartFixtures.cartItems[0].id;
 
 		it('should remove item from cart', () => {
-			jest.spyOn(removeItemFromCartUseCase, 'handle').mockResolvedValueOnce(undefined);
+			jest
+				.spyOn(removeItemFromCartUseCase, 'handle')
+				.mockResolvedValueOnce(undefined);
 
 			return request(app.getHttpServer())
 				.delete(`/cart/items/${cartItemId}`)
