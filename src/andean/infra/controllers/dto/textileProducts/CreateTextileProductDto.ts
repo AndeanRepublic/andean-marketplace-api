@@ -13,7 +13,6 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { TextileProductStatus } from 'src/andean/domain/enums/TextileProductStatus';
 import { OwnerType } from 'src/andean/domain/enums/OwnerType';
 import { Gender } from 'src/andean/domain/enums/Gender';
 import { Season } from 'src/andean/domain/enums/Season';
@@ -500,15 +499,6 @@ export class DetailTraceabilityDto {
 }
 
 export class CreateTextileProductDto {
-	@ApiProperty({
-		description: 'Estado del producto textil',
-		enum: TextileProductStatus,
-		example: TextileProductStatus.PUBLISHED,
-	})
-	@IsEnum(TextileProductStatus)
-	@IsNotEmpty()
-	status!: TextileProductStatus;
-
 	@ApiProperty({
 		description:
 			'Información básica del producto (título, descripción, media, propietario)',

@@ -311,9 +311,7 @@ export class GetByIdTextileProductDetailUseCase {
 
 		const allVariants = (
 			await Promise.all(
-				limitedProducts.map((p) =>
-					this.variantRepository.getByProductId(p.id),
-				),
+				limitedProducts.map((p) => this.variantRepository.getByProductId(p.id)),
 			)
 		).flat();
 
