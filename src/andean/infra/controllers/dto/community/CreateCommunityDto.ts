@@ -40,4 +40,13 @@ export class CreateCommunityDto {
 	@IsString({ each: true })
 	@IsOptional()
 	seals?: string[];
+
+	@ApiPropertyOptional({
+		description: 'ID del ProviderInfo asociado a la comunidad',
+		example: '67890abcdef1234567890125',
+	})
+	@IsString()
+	@IsMongoId()
+	@IsOptional()
+	providerInfoId?: string;
 }

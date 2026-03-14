@@ -8,7 +8,7 @@ import {
 import { TextileProductRepository } from '../../datastore/textileProducts/TextileProduct.repo';
 import { TextileProduct } from 'src/andean/domain/entities/textileProducts/TextileProduct';
 import { TextileProductMapper } from 'src/andean/infra/services/textileProducts/TextileProductMapper';
-import { CreateTextileProductDto } from 'src/andean/infra/controllers/dto/textileProducts/CreateTextileProductDto';
+import { UpdateTextileProductDto } from 'src/andean/infra/controllers/dto/textileProducts/UpdateTextileProductDto';
 import { TextileOptionName } from 'src/andean/domain/enums/TextileOptionName';
 import { TextileCategoryRepository } from '../../datastore/textileProducts/TextileCategory.repo';
 import { TextileTypeRepository } from '../../datastore/textileProducts/TextileType.repo';
@@ -58,7 +58,7 @@ export class UpdateTextileProductUseCase {
 
 	async handle(
 		id: string,
-		dto: CreateTextileProductDto,
+		dto: UpdateTextileProductDto,
 		requestingUserId: string,
 		roles: AccountRole[],
 	): Promise<TextileProduct> {
@@ -136,14 +136,23 @@ export class UpdateTextileProductUseCase {
 				}
 			}
 
-			// Validate certificationId solo si existe
-			if (dto.detailTraceability.certificationId) {
-				const certificationFound =
-					await this.textileCertificationRepository.getTextileCertificationById(
-						dto.detailTraceability.certificationId,
+			// Validate certificationIds solo si hasCertifications es true y hay IDs
+			if (
+				dto.detailTraceability.hasCertifications &&
+				dto.detailTraceability.certificationIds &&
+				dto.detailTraceability.certificationIds.length > 0
+			) {
+				const certificationsFound =
+					await this.textileCertificationRepository.getByIds(
+						dto.detailTraceability.certificationIds,
 					);
-				if (!certificationFound) {
-					throw new NotFoundException('TextileCertification not found');
+				if (
+					certificationsFound.length !==
+					dto.detailTraceability.certificationIds.length
+				) {
+					throw new NotFoundException(
+						'One or more TextileCertification IDs not found',
+					);
 				}
 			}
 		}
@@ -237,7 +246,11 @@ export class UpdateTextileProductUseCase {
 			}
 		}
 
-		const toUpdate = TextileProductMapper.fromUpdateDto(id, dto);
+		const toUpdate = TextileProductMapper.fromUpdateDto(
+			id,
+			dto,
+			productFound.status,
+		);
 		return this.textileProductRepository.updateTextileProduct(id, toUpdate);
 	}
 }

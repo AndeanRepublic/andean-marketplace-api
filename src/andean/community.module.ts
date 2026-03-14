@@ -6,6 +6,7 @@ import { Connection } from 'mongoose';
 // Schema
 import { CommunitySchema } from './infra/persistence/community/community.schema';
 import { SealSchema } from './infra/persistence/community/Seal.schema';
+import { ProviderInfoSchema } from './infra/persistence/providerInfo.schema';
 
 // Repository
 import { CommunityRepository } from './app/datastore/community/community.repo';
@@ -38,6 +39,7 @@ import { CommunityController } from './infra/controllers/community.controller';
 		MongooseModule.forFeature([
 			{ name: 'Community', schema: CommunitySchema },
 			{ name: 'Seal', schema: SealSchema },
+			{ name: 'ProviderInfo', schema: ProviderInfoSchema },
 		]),
 		MediaItemModule,
 		AuthModule,

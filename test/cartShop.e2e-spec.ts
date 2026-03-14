@@ -273,7 +273,7 @@ describe('CartShopController (e2e)', () => {
 				.send(addItemDto)
 				.expect(HttpStatus.CREATED);
 
-			expect(spy).toHaveBeenCalledWith(customerId, undefined, addItemDto);
+			expect(spy).toHaveBeenCalledWith(customerId, addItemDto);
 		});
 
 		it('should return 400 when quantity is less than 1', () => {
@@ -499,7 +499,7 @@ describe('CartShopController (e2e)', () => {
 				.get(`/cart?customerId=${customerId}`)
 				.expect(HttpStatus.OK);
 
-			expect(spy).toHaveBeenCalledWith(customerId, undefined);
+			expect(spy).toHaveBeenCalledWith(customerId);
 		});
 
 		it('should return empty cart for new customer', () => {

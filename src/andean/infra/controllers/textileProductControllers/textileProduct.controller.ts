@@ -27,6 +27,7 @@ import {
 import { CreateTextileProductUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileProductUseCase';
 import { TextileProduct } from 'src/andean/domain/entities/textileProducts/TextileProduct';
 import { CreateTextileProductDto } from '../dto/textileProducts/CreateTextileProductDto';
+import { UpdateTextileProductDto } from '../dto/textileProducts/UpdateTextileProductDto';
 import { UpdateTextileProductUseCase } from 'src/andean/app/use_cases/textileProducts/UpdateTextileProductUseCase';
 import { GetAllTextileProductsUseCase } from 'src/andean/app/use_cases/textileProducts/GetAllTextileProductsUseCase';
 import { GetByIdTextileProductUseCase } from 'src/andean/app/use_cases/textileProducts/GetByIdTextileProductUseCase';
@@ -105,7 +106,7 @@ export class TextileProductController {
 	})
 	async updateTextileProduct(
 		@Param('id') id: string,
-		@Body() body: CreateTextileProductDto,
+		@Body() body: UpdateTextileProductDto,
 		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
 	): Promise<TextileProduct> {
 		return this.updateTextileProductUseCase.handle(

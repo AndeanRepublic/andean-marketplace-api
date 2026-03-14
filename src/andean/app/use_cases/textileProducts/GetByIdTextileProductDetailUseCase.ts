@@ -132,7 +132,7 @@ export class GetByIdTextileProductDetailUseCase {
 		// -- Obtener communityInfo si es COMMUNITY
 		let communityInfo:
 			| {
-					bannerImageId: string;
+					bannerImageUrl: string;
 					name: string;
 					seals: { title: string; description: string; logoMediaId: string }[];
 			  }
@@ -150,8 +150,16 @@ export class GetByIdTextileProductDetailUseCase {
 						)
 					: [];
 
+				let bannerImageUrl = '';
+				if (community.bannerImageId) {
+					const urlMap = await this.mediaUrlResolver.resolveUrls([
+						community.bannerImageId,
+					]);
+					bannerImageUrl = urlMap.get(community.bannerImageId) ?? '';
+				}
+
 				communityInfo = {
-					bannerImageId: community.bannerImageId,
+					bannerImageUrl,
 					name: community.name,
 					seals: seals
 						.filter((seal): seal is NonNullable<typeof seal> => seal !== null)
@@ -311,9 +319,7 @@ export class GetByIdTextileProductDetailUseCase {
 
 		const allVariants = (
 			await Promise.all(
-				limitedProducts.map((p) =>
-					this.variantRepository.getByProductId(p.id),
-				),
+				limitedProducts.map((p) => this.variantRepository.getByProductId(p.id)),
 			)
 		).flat();
 
