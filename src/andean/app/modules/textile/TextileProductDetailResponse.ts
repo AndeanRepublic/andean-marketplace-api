@@ -214,8 +214,8 @@ export class SealInfoResponse {
 }
 
 export class CommunityInfoResponse {
-	@ApiProperty({ description: 'ID de la imagen del banner de la comunidad' })
-	bannerImageId!: string;
+	@ApiProperty({ description: 'URL de la imagen del banner de la comunidad' })
+	bannerImageUrl!: string;
 
 	@ApiProperty({ description: 'Nombre de la comunidad' })
 	name!: string;

@@ -24,21 +24,17 @@ export class CreateOrderFromCartUseCase {
 	) {}
 
 	async handle(
-		customerId: string | undefined,
-		customerEmail: string | undefined,
+		customerId: string,
 		dto: CreateOrderFromCartDto,
 	): Promise<Order> {
-		// 1. Validar que al menos uno de los identificadores esté presente
-		if (!customerId && !customerEmail) {
-			throw new BadRequestException(
-				'Either customerId or customerEmail must be provided',
-			);
+		// 1. Validar que customerId esté presente
+		if (!customerId) {
+			throw new BadRequestException('customerId must be provided');
 		}
 
 		// 2. Obtener el carrito del cliente
-		const cart = await this.cartShopRepository.getCartByIdentifier(
+		const cart = await this.cartShopRepository.getCartByCustomerId(
 			customerId,
-			customerEmail,
 		);
 		if (!cart) {
 			throw new NotFoundException('Cart not found');
@@ -53,14 +49,7 @@ export class CreateOrderFromCartUseCase {
 			throw new BadRequestException('Cart is empty');
 		}
 
-		// 4. Validar que customerId o customerEmail esté presente
-		if (!cart.customerId && !cart.customerEmail) {
-			throw new BadRequestException(
-				'Either customerId or customerEmail must be present',
-			);
-		}
-
-		// 5. Validar y reducir stock antes de crear la orden
+		// 4. Validar y reducir stock antes de crear la orden
 		await this.reduceStockUseCase.handle(cartItems);
 
 		// 6. Crear orden desde el carrito

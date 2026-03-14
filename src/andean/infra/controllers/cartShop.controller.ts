@@ -55,21 +55,14 @@ export class CartShopController {
 	@ApiOperation({
 		summary: 'Obtener carrito de compras',
 		description:
-			'Recupera el carrito de compras completo del cliente con todos los items, precios y totales calculados',
+			'Recupera el carrito de compras completo del cliente con todos los items, precios y totales calculados (solo usuarios logueados)',
 	})
 	@ApiQuery({
 		name: 'customerId',
-		description: 'ID del cliente (opcional si se proporciona customerEmail)',
+		description: 'ID del cliente (requerido)',
 		type: String,
-		required: false,
+		required: true,
 		example: '507f1f77bcf86cd799439011',
-	})
-	@ApiQuery({
-		name: 'customerEmail',
-		description: 'Email del cliente (opcional si se proporciona customerId)',
-		type: String,
-		required: false,
-		example: 'customer@example.com',
 	})
 	@ApiResponse({
 		status: 200,
@@ -81,31 +74,23 @@ export class CartShopController {
 		description: 'Cliente no encontrado',
 	})
 	async getCustomerCart(
-		@Query('customerId') customerId?: string,
-		@Query('customerEmail') customerEmail?: string,
+		@Query('customerId') customerId: string,
 	): Promise<GetCartResponse> {
-		return this.getCartByCustomerUseCase.handle(customerId, customerEmail);
+		return this.getCartByCustomerUseCase.handle(customerId);
 	}
 
 	@Post(path_cart_items)
 	@ApiOperation({
 		summary: 'Agregar item al carrito',
 		description:
-			'Agrega un producto con una variante específica al carrito de compras del cliente',
+			'Agrega un producto con una variante específica al carrito de compras del cliente (solo usuarios logueados)',
 	})
 	@ApiQuery({
 		name: 'customerId',
-		description: 'ID del cliente (opcional si se proporciona customerEmail)',
+		description: 'ID del cliente (requerido)',
 		type: String,
-		required: false,
+		required: true,
 		example: '507f1f77bcf86cd799439011',
-	})
-	@ApiQuery({
-		name: 'customerEmail',
-		description: 'Email del cliente (opcional si se proporciona customerId)',
-		type: String,
-		required: false,
-		example: 'customer@example.com',
 	})
 	@ApiBody({
 		type: AddCartItemDto,
@@ -126,32 +111,24 @@ export class CartShopController {
 		description: 'Cliente o variante no encontrada',
 	})
 	async addItemToCart(
-		@Query('customerId') customerId: string | undefined,
-		@Query('customerEmail') customerEmail: string | undefined,
+		@Query('customerId') customerId: string,
 		@Body() body: AddCartItemDto,
 	): Promise<ShoppingCartItemResponse> {
-		return this.addItemToCartUseCase.handle(customerId, customerEmail, body);
+		return this.addItemToCartUseCase.handle(customerId, body);
 	}
 
 	@Delete('')
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@ApiOperation({
 		summary: 'Limpiar carrito',
-		description: 'Elimina todos los items del carrito de compras del cliente',
+		description: 'Elimina todos los items del carrito de compras del cliente (solo usuarios logueados)',
 	})
 	@ApiQuery({
 		name: 'customerId',
-		description: 'ID del cliente (opcional si se proporciona customerEmail)',
+		description: 'ID del cliente (requerido)',
 		type: String,
-		required: false,
+		required: true,
 		example: '507f1f77bcf86cd799439011',
-	})
-	@ApiQuery({
-		name: 'customerEmail',
-		description: 'Email del cliente (opcional si se proporciona customerId)',
-		type: String,
-		required: false,
-		example: 'customer@example.com',
 	})
 	@ApiResponse({
 		status: 204,
@@ -162,10 +139,9 @@ export class CartShopController {
 		description: 'Cliente no encontrado',
 	})
 	async cleanCart(
-		@Query('customerId') customerId?: string,
-		@Query('customerEmail') customerEmail?: string,
+		@Query('customerId') customerId: string,
 	): Promise<void> {
-		return this.cleanCartUseCase.handle(customerId, customerEmail);
+		return this.cleanCartUseCase.handle(customerId);
 	}
 
 	@Delete(path_remove_cart_item)

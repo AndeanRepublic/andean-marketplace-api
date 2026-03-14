@@ -67,19 +67,13 @@ export class OrderController {
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
 		summary: 'Crear orden desde carrito',
-		description: 'Crea una orden a partir del carrito del cliente',
+		description: 'Crea una orden a partir del carrito del cliente (solo usuarios logueados)',
 	})
 	@ApiQuery({
 		name: 'customerId',
-		description: 'ID del cliente (opcional si se proporciona customerEmail)',
+		description: 'ID del cliente (requerido)',
 		type: String,
-		required: false,
-	})
-	@ApiQuery({
-		name: 'customerEmail',
-		description: 'Email del cliente (opcional si se proporciona customerId)',
-		type: String,
-		required: false,
+		required: true,
 	})
 	@ApiBody({ type: CreateOrderFromCartDto })
 	@ApiResponse({
@@ -90,15 +84,10 @@ export class OrderController {
 	@ApiResponse({ status: 400, description: 'Carrito vacío o datos inválidos' })
 	@ApiResponse({ status: 404, description: 'Carrito no encontrado' })
 	async createOrderFromCart(
-		@Query('customerId') customerId: string | undefined,
-		@Query('customerEmail') customerEmail: string | undefined,
+		@Query('customerId') customerId: string,
 		@Body() body: CreateOrderFromCartDto,
 	): Promise<Order> {
-		return this.createOrderFromCartUseCase.handle(
-			customerId,
-			customerEmail,
-			body,
-		);
+		return this.createOrderFromCartUseCase.handle(customerId, body);
 	}
 
 	@Get('/:id')
