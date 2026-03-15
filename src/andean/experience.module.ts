@@ -56,7 +56,6 @@ import { MediaItemModule } from './mediaItem.module';
 import { UsersModule } from './users.module';
 import { ShopsModule } from './shop.module';
 import { BookingModule } from './booking.module';
-import { AuthModule } from './auth.module';
 
 @Module({
 	imports: [
@@ -72,7 +71,6 @@ import { AuthModule } from './auth.module';
 		UsersModule,
 		ShopsModule,
 		forwardRef(() => BookingModule),
-		AuthModule,
 	],
 	controllers: [
 		ExperienceController,
