@@ -3,6 +3,7 @@ import { ConnectionType } from '../enums/ConnectionType';
 
 export class ProviderInfo {
 	constructor(
+		public id: string,
 		public craftType?: string,
 		public tagline?: string,
 		public shortBio?: string,
