@@ -7,7 +7,12 @@ import {
 	Post,
 	HttpCode,
 	HttpStatus,
+	UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from '../core/jwtAuth.guard';
+import { RolesGuard } from '../core/roles.guard';
+import { Roles } from '../core/roles.decorator';
+import { AccountRole } from '../../domain/enums/AccountRole';
 import {
 	ApiTags,
 	ApiOperation,
@@ -23,6 +28,7 @@ import { CreateShopUseCase } from '../../app/use_cases/shops/CreateShopUseCase';
 import { Shop } from '../../domain/entities/Shop';
 import { CreateShopDto } from './dto/CreateShopDto';
 import { ShopResponse } from '../../app/modules/shop/ShopResponse';
+import { CurrentUser } from '../core/current-user.decorator';
 
 @ApiTags('shops')
 @Controller('shops')
@@ -89,6 +95,8 @@ export class ShopController {
 		return this.getShopsByCategoryUseCase.handle(categoryName);
 	}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post('')
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -108,6 +116,8 @@ export class ShopController {
 		return this.createShopUseCase.handle(createShopDto);
 	}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Delete('/:shopId')
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@ApiOperation({
@@ -117,7 +127,14 @@ export class ShopController {
 	@ApiParam({ name: 'shopId', description: 'ID de la tienda', type: String })
 	@ApiResponse({ status: 204, description: 'Tienda eliminada exitosamente' })
 	@ApiResponse({ status: 404, description: 'Tienda no encontrada' })
-	async deleteShop(@Param('shopId') shopId: string): Promise<void> {
-		return this.deleteShopUseCase.handle(shopId);
+	async deleteShop(
+		@Param('shopId') shopId: string,
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
+	): Promise<void> {
+		return this.deleteShopUseCase.handle(
+			shopId,
+			requestingUser.userId,
+			requestingUser.roles,
+		);
 	}
 }

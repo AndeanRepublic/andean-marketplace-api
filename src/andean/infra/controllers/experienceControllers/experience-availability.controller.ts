@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Patch } from '@nestjs/common';
+import { Body, Controller, Param, Patch, UseGuards } from '@nestjs/common';
 import {
 	ApiTags,
 	ApiOperation,
@@ -6,6 +6,11 @@ import {
 	ApiParam,
 	ApiBody,
 } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../../core/jwtAuth.guard';
+import { RolesGuard } from '../../core/roles.guard';
+import { Roles } from '../../core/roles.decorator';
+import { CurrentUser } from '../../core/current-user.decorator';
+import { AccountRole } from '../../../domain/enums/AccountRole';
 import { UpdateExcludedDatesUseCase } from 'src/andean/app/use_cases/experiences/availability/UpdateExcludedDatesUseCase';
 import { UpdateAvailableDatesUseCase } from 'src/andean/app/use_cases/experiences/availability/UpdateAvailableDatesUseCase';
 import {
@@ -22,6 +27,8 @@ export class ExperienceAvailabilityController {
 		private readonly updateAvailableDatesUseCase: UpdateAvailableDatesUseCase,
 	) {}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Patch('excluded-dates')
 	@ApiOperation({
 		summary: 'Reemplazar fechas excluidas',
@@ -44,12 +51,20 @@ export class ExperienceAvailabilityController {
 		description: 'Experiencia o disponibilidad no encontradas',
 	})
 	async updateExcludedDates(
+		@CurrentUser() user: { userId: string; roles: AccountRole[] },
 		@Param('experienceId') experienceId: string,
 		@Body() body: PatchExcludedDatesDto,
 	): Promise<ExperienceAvailabilityPatchResponse> {
-		return this.updateExcludedDatesUseCase.handle(experienceId, body);
+		return this.updateExcludedDatesUseCase.handle(
+			experienceId,
+			body,
+			user.userId,
+			user.roles,
+		);
 	}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Patch('available-dates')
 	@ApiOperation({
 		summary: 'Reemplazar fechas específicas disponibles',
@@ -72,9 +87,15 @@ export class ExperienceAvailabilityController {
 		description: 'Experiencia o disponibilidad no encontradas',
 	})
 	async updateAvailableDates(
+		@CurrentUser() user: { userId: string; roles: AccountRole[] },
 		@Param('experienceId') experienceId: string,
 		@Body() body: PatchAvailableDatesDto,
 	): Promise<ExperienceAvailabilityPatchResponse> {
-		return this.updateAvailableDatesUseCase.handle(experienceId, body);
+		return this.updateAvailableDatesUseCase.handle(
+			experienceId,
+			body,
+			user.userId,
+			user.roles,
+		);
 	}
 }

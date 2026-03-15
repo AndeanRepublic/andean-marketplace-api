@@ -1,8 +1,14 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+	ForbiddenException,
+	Inject,
+	Injectable,
+	NotFoundException,
+} from '@nestjs/common';
 import { CustomerProfileRepository } from '../../datastore/Customer.repo';
 import { MediaItemRepository } from '../../datastore/MediaItem.repo';
 import { UpdateCustomerProfileDto } from '../../../infra/controllers/dto/UpdateCustomerProfileDto';
 import { CustomerProfileMapper } from '../../../infra/services/CustomerProfileMapper';
+import { AccountRole } from '../../../domain/enums/AccountRole';
 
 @Injectable()
 export class UpdateCustomerProfileUseCase {
@@ -13,10 +19,20 @@ export class UpdateCustomerProfileUseCase {
 	) {}
 
 	async handle(
-		userId: string,
+		paramUserId: string,
+		requestingUserId: string,
+		roles: AccountRole[],
 		updateDto: UpdateCustomerProfileDto,
 	): Promise<void> {
-		const profileFound = await this.userRepository.getCustomerByUserId(userId);
+		if (
+			requestingUserId !== paramUserId &&
+			!roles.includes(AccountRole.ADMIN)
+		) {
+			throw new ForbiddenException('You can only update your own profile');
+		}
+
+		const profileFound =
+			await this.userRepository.getCustomerByUserId(paramUserId);
 		if (!profileFound) {
 			throw new NotFoundException('Profile not found');
 		}
@@ -35,9 +51,9 @@ export class UpdateCustomerProfileUseCase {
 
 		const toUpdate = CustomerProfileMapper.fromUpdateDto(
 			profileFound.id,
-			userId,
+			paramUserId,
 			updateDto,
 		);
-		return this.userRepository.updateCustomerById(userId, toUpdate);
+		return this.userRepository.updateCustomerById(paramUserId, toUpdate);
 	}
 }

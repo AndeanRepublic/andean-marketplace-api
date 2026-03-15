@@ -10,7 +10,13 @@ import {
 	ParseIntPipe,
 	HttpCode,
 	HttpStatus,
+	UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from '../../core/jwtAuth.guard';
+import { RolesGuard } from '../../core/roles.guard';
+import { Roles } from '../../core/roles.decorator';
+import { CurrentUser } from '../../core/current-user.decorator';
+import { AccountRole } from '../../../domain/enums/AccountRole';
 import {
 	ApiTags,
 	ApiOperation,
@@ -47,6 +53,8 @@ export class TextileProductController {
 		private readonly getByIdTextileProductDetailUseCase: GetByIdTextileProductDetailUseCase,
 	) {}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -74,6 +82,8 @@ export class TextileProductController {
 		return this.createTextileProductUseCase.handle(body);
 	}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Put('/:id')
 	@ApiOperation({
 		summary: 'Actualizar producto textil',
@@ -97,8 +107,14 @@ export class TextileProductController {
 	async updateTextileProduct(
 		@Param('id') id: string,
 		@Body() body: UpdateTextileProductDto,
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
 	): Promise<TextileProduct> {
-		return this.updateTextileProductUseCase.handle(id, body);
+		return this.updateTextileProductUseCase.handle(
+			id,
+			body,
+			requestingUser.userId,
+			requestingUser.roles,
+		);
 	}
 
 	@Get()
@@ -239,6 +255,8 @@ export class TextileProductController {
 		return this.getByIdTextileProductDetailUseCase.handle(id);
 	}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Delete('/:id')
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@ApiOperation({
@@ -258,7 +276,14 @@ export class TextileProductController {
 		status: 404,
 		description: 'Producto no encontrado',
 	})
-	async deleteTextileProduct(@Param('id') id: string): Promise<void> {
-		return this.deleteTextileProductUseCase.handle(id);
+	async deleteTextileProduct(
+		@Param('id') id: string,
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
+	): Promise<void> {
+		return this.deleteTextileProductUseCase.handle(
+			id,
+			requestingUser.userId,
+			requestingUser.roles,
+		);
 	}
 }

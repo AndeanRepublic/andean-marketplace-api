@@ -5,6 +5,9 @@ import { FixtureLoader } from './helpers/fixture-loader';
 
 // ─── Controller ─────────────────────────────────────────────────────────────
 import { OrderController } from '../src/andean/infra/controllers/order.controller';
+import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';
+import { RolesGuard } from '../src/andean/infra/core/roles.guard';
+import { createAllowAllGuard, mockAuthUsers } from './helpers/auth-test.helper';
 
 // ─── Use Cases ──────────────────────────────────────────────────────────────
 import { CreateOrderUseCase } from '../src/andean/app/use_cases/orders/CreateOrderUseCase';
@@ -91,7 +94,12 @@ describe('OrderController (e2e)', () => {
 					},
 				},
 			],
-		}).compile();
+		})
+			.overrideGuard(JwtAuthGuard)
+			.useValue(createAllowAllGuard(mockAuthUsers.admin))
+			.overrideGuard(RolesGuard)
+			.useValue({ canActivate: () => true })
+			.compile();
 
 		app = moduleFixture.createNestApplication();
 		app.useGlobalPipes(

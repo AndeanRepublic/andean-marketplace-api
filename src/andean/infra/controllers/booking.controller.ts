@@ -8,7 +8,12 @@ import {
 	Query,
 	HttpCode,
 	HttpStatus,
+	UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from '../core/jwtAuth.guard';
+import { RolesGuard } from '../core/roles.guard';
+import { Roles } from '../core/roles.decorator';
+import { AccountRole } from '../../domain/enums/AccountRole';
 import {
 	ApiTags,
 	ApiOperation,
@@ -215,6 +220,8 @@ export class BookingController {
 		return this.getBookingsByEmailUseCase.handle(email);
 	}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
 	@Put('/:id/status')
 	@ApiOperation({
 		summary: 'Actualizar estado del booking',

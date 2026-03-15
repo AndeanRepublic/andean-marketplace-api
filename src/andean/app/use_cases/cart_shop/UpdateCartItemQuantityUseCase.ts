@@ -3,12 +3,16 @@ import {
 	Injectable,
 	NotFoundException,
 	BadRequestException,
+	ForbiddenException,
 } from '@nestjs/common';
 import { CartShopItemRepository } from '../../datastore/CartShopItem.repo';
+import { CartShopRepository } from '../../datastore/CartShop.repo';
+import { CustomerProfileRepository } from '../../datastore/Customer.repo';
 import { VariantRepository } from '../../datastore/Variant.repo';
 import { TextileProductRepository } from '../../datastore/textileProducts/TextileProduct.repo';
 import { SuperfoodProductRepository } from '../../datastore/superfoods/SuperfoodProduct.repo';
 import { ProductType } from '../../../domain/enums/ProductType';
+import { AccountRole } from '../../../domain/enums/AccountRole';
 import { CartItemQuantityResponse } from '../../modules/cart/CartItemQuantityResponse';
 
 @Injectable()
@@ -16,6 +20,10 @@ export class UpdateCartItemQuantityUseCase {
 	constructor(
 		@Inject(CartShopItemRepository)
 		private readonly cartItemRepository: CartShopItemRepository,
+		@Inject(CartShopRepository)
+		private readonly cartShopRepository: CartShopRepository,
+		@Inject(CustomerProfileRepository)
+		private readonly customerRepository: CustomerProfileRepository,
 		@Inject(VariantRepository)
 		private readonly variantRepository: VariantRepository,
 		@Inject(TextileProductRepository)
@@ -27,11 +35,32 @@ export class UpdateCartItemQuantityUseCase {
 	async handle(
 		idShoppingCartItem: string,
 		quantityDelta: number = 1,
+		requestingUserId: string,
+		roles: AccountRole[],
 	): Promise<CartItemQuantityResponse> {
-		// -- Validate that the CartItem exists
+		// -- Validate that the CartItem exists (always, for 404 check)
 		const cartItem = await this.cartItemRepository.getById(idShoppingCartItem);
 		if (!cartItem) {
 			throw new NotFoundException('CartItem not found');
+		}
+
+		// -- Pattern H 3-hop ownership block (non-ADMIN only; reuses cartItem from above)
+		const isAdmin = roles.includes(AccountRole.ADMIN);
+		if (!isAdmin) {
+			const customer =
+				await this.customerRepository.getCustomerByUserId(requestingUserId);
+			if (!customer) {
+				throw new ForbiddenException('You can only access your own cart');
+			}
+			const cartShop = await this.cartShopRepository.getCartById(
+				cartItem.cartShopId,
+			);
+			if (!cartShop) {
+				throw new NotFoundException('CartShop not found');
+			}
+			if (cartShop.customerId !== customer.id) {
+				throw new ForbiddenException('You can only access your own cart');
+			}
 		}
 
 		// -- Get maxStock

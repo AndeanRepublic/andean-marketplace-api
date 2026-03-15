@@ -3,6 +3,7 @@ import {
 	Inject,
 	NotFoundException,
 	BadRequestException,
+	ForbiddenException,
 } from '@nestjs/common';
 import { SuperfoodProductRepository } from '../../datastore/superfoods/SuperfoodProduct.repo';
 import { UpdateSuperfoodDto } from '../../../infra/controllers/dto/superfoods/UpdateSuperfoodDto';
@@ -16,6 +17,8 @@ import { instanceToPlain } from 'class-transformer';
 import { CreateSuperfoodDto } from '../../../infra/controllers/dto/superfoods/CreateSuperfoodDto';
 import { CreateDetailSourceProductUseCase } from '../detailSourceProduct/CreateDetailSourceProductUseCase';
 import { UpdateDetailSourceProductUseCase } from '../detailSourceProduct/UpdateDetailSourceProductUseCase';
+import { SellerProfileRepository } from '../../datastore/Seller.repo';
+import { AccountRole } from 'src/andean/domain/enums/AccountRole';
 
 @Injectable()
 export class UpdateSuperfoodProductUseCase {
@@ -31,17 +34,38 @@ export class UpdateSuperfoodProductUseCase {
 
 		private readonly createDetailSourceProductUseCase: CreateDetailSourceProductUseCase,
 		private readonly updateDetailSourceProductUseCase: UpdateDetailSourceProductUseCase,
-	) { }
+		@Inject(SellerProfileRepository)
+		private readonly sellerProfileRepository: SellerProfileRepository,
+	) {}
 
 	async handle(
 		productId: string,
 		dto: CreateSuperfoodDto,
+		requestingUserId: string,
+		roles: AccountRole[],
 	): Promise<SuperfoodProduct> {
 		// 1. Validar que el producto existe
 		const existingProduct =
 			await this.superfoodProductRepository.getSuperfoodProductById(productId);
 		if (!existingProduct) {
 			throw new NotFoundException(`Product with id ${productId} not found`);
+		}
+
+		// Ownership check
+		const isAdmin = roles.includes(AccountRole.ADMIN);
+		if (!isAdmin) {
+			if (existingProduct.baseInfo.ownerType === SuperfoodOwnerType.COMMUNITY) {
+				throw new ForbiddenException('You can only modify your own resource');
+			}
+			const seller =
+				await this.sellerProfileRepository.getSellerByUserId(requestingUserId);
+			if (!seller)
+				throw new ForbiddenException('You can only modify your own resource');
+			const shops = await this.shopRepository.getAllBySellerId(seller.id);
+			const shopIds = shops.map((s) => s.id);
+			if (!shopIds.includes(existingProduct.baseInfo.ownerId)) {
+				throw new ForbiddenException('You can only modify your own resource');
+			}
 		}
 
 		// 2. Validar categoryId solo si existe en el DTO

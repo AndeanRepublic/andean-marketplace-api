@@ -8,7 +8,11 @@ import {
 	Put,
 	HttpCode,
 	HttpStatus,
+	UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from '../core/jwtAuth.guard';
+import { CurrentUser } from '../core/current-user.decorator';
+import { AccountRole } from '../../domain/enums/AccountRole';
 import {
 	ApiTags,
 	ApiOperation,
@@ -38,6 +42,7 @@ export class ShippingAddressController {
 		private readonly getShippingAddressByIdUseCase: GetShippingAddressByIdUseCase,
 	) {}
 
+	@UseGuards(JwtAuthGuard)
 	@Post('/customer/:customerId')
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -64,6 +69,7 @@ export class ShippingAddressController {
 		return this.createShippingAddressUseCase.handle(customerId, body);
 	}
 
+	@UseGuards(JwtAuthGuard)
 	@Get('/customer/:customerId')
 	@ApiOperation({
 		summary: 'Obtener direcciones de envío por cliente',
@@ -106,6 +112,7 @@ export class ShippingAddressController {
 		return this.getShippingAddressByIdUseCase.handle(id);
 	}
 
+	@UseGuards(JwtAuthGuard)
 	@Put('/:id')
 	@ApiOperation({
 		summary: 'Actualizar dirección de envío',
@@ -122,14 +129,25 @@ export class ShippingAddressController {
 		description: 'Dirección de envío actualizada exitosamente',
 		type: ShippingAddress,
 	})
+	@ApiResponse({
+		status: 403,
+		description: 'No autorizado para modificar esta dirección',
+	})
 	@ApiResponse({ status: 404, description: 'Dirección de envío no encontrada' })
 	async update(
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
 		@Param('id') id: string,
 		@Body() body: UpdateShippingAddressDto,
 	): Promise<ShippingAddress> {
-		return this.updateShippingAddressUseCase.handle(id, body);
+		return this.updateShippingAddressUseCase.handle(
+			id,
+			requestingUser.userId,
+			requestingUser.roles,
+			body,
+		);
 	}
 
+	@UseGuards(JwtAuthGuard)
 	@Delete('/:id')
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@ApiOperation({
@@ -145,15 +163,27 @@ export class ShippingAddressController {
 		status: 204,
 		description: 'Dirección de envío eliminada exitosamente',
 	})
+	@ApiResponse({
+		status: 403,
+		description: 'No autorizado para eliminar esta dirección',
+	})
 	@ApiResponse({ status: 404, description: 'Dirección de envío no encontrada' })
-	async delete(@Param('id') id: string): Promise<void> {
-		return this.deleteShippingAddressUseCase.handle(id);
+	async delete(
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
+		@Param('id') id: string,
+	): Promise<void> {
+		return this.deleteShippingAddressUseCase.handle(
+			id,
+			requestingUser.userId,
+			requestingUser.roles,
+		);
 	}
 
 	@Put('/:id/set-default')
 	@ApiOperation({
 		summary: 'Marcar dirección como predeterminada',
-		description: 'Marca una dirección de envío como predeterminada para el cliente',
+		description:
+			'Marca una dirección de envío como predeterminada para el cliente',
 	})
 	@ApiParam({
 		name: 'id',

@@ -8,8 +8,13 @@ import {
 	Delete,
 	HttpCode,
 	HttpStatus,
+	UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../../core/jwtAuth.guard';
+import { RolesGuard } from '../../core/roles.guard';
+import { Roles } from '../../core/roles.decorator';
+import { AccountRole } from '../../../domain/enums/AccountRole';
 import { TextileTypeResponse } from 'src/andean/app/modules/textile/TextileTypeResponse';
 import { CreateTextileTypeUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileTypeUseCase';
 import { CreateManyTextileTypesUseCase } from 'src/andean/app/use_cases/textileProducts/CreateManyTextileTypesUseCase';
@@ -33,6 +38,8 @@ export class TextileTypeController {
 		private readonly deleteTextileTypeUseCase: DeleteTextileTypeUseCase,
 	) {}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post('/bulk')
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -55,6 +62,8 @@ export class TextileTypeController {
 		return this.createManyTextileTypesUseCase.handle(body);
 	}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({

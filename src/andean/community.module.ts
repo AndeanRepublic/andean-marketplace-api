@@ -29,6 +29,7 @@ import { DeleteSealUseCase } from './app/use_cases/community/DeleteSealUseCase';
 
 // Modules
 import { MediaItemModule } from './mediaItem.module';
+import { AuthModule } from './auth.module';
 
 // Controller
 import { CommunityController } from './infra/controllers/community.controller';
@@ -41,6 +42,7 @@ import { CommunityController } from './infra/controllers/community.controller';
 			{ name: 'ProviderInfo', schema: ProviderInfoSchema },
 		]),
 		MediaItemModule,
+		AuthModule,
 	],
 	controllers: [CommunityController],
 	providers: [

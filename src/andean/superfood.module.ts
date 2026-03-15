@@ -128,6 +128,7 @@ import { DecrementLikesUseCase } from './app/use_cases/DecrementLikesUseCase';
 import { DecrementDislikesUseCase } from './app/use_cases/DecrementDislikesUseCase';
 import { UsersModule } from './users.module';
 import { TextileProductModule } from './textileProduct.module';
+import { AuthModule } from './auth.module';
 
 @Module({
 	imports: [
@@ -158,6 +159,7 @@ import { TextileProductModule } from './textileProduct.module';
 		MediaItemModule,
 		DetailSourceProductModule,
 		forwardRef(() => TextileProductModule),
+		AuthModule,
 	],
 	controllers: [
 		SuperfoodController,
