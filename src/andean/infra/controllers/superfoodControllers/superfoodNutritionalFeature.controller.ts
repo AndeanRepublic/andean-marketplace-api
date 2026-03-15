@@ -14,6 +14,7 @@ import { JwtAuthGuard } from '../../core/jwtAuth.guard';
 import { RolesGuard } from '../../core/roles.guard';
 import { Roles } from '../../core/roles.decorator';
 import { AccountRole } from '../../../domain/enums/AccountRole';
+import { Public } from '../../core/public.decorator';
 import { CreateSuperfoodNutritionalFeatureDto } from '../dto/superfoods/CreateSuperfoodNutritionalFeatureDto';
 import { CreateManySuperfoodNutritionalFeaturesDto } from '../dto/superfoods/CreateManySuperfoodNutritionalFeaturesDto';
 import { SuperfoodNutritionalFeatureResponse } from '../../../app/modules/superfoods/SuperfoodNutritionalFeatureResponse';
@@ -82,6 +83,7 @@ export class SuperfoodNutritionalFeatureController {
 		return await this.createSuperfoodNutritionalFeatureUseCase.handle(dto);
 	}
 
+	@Public()
 	@Get()
 	@ApiOperation({
 		summary: 'Listar todas las características nutricionales',

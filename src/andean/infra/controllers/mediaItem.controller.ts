@@ -29,6 +29,7 @@ import {
 	ApiConsumes,
 	ApiBody,
 } from '@nestjs/swagger';
+import { Public } from '../core/public.decorator';
 import { UploadMediaItemUseCase } from '../../app/use_cases/media/UploadMediaItemUseCase';
 import { UpdateMediaItemUseCase } from '../../app/use_cases/media/UpdateMediaItemUseCase';
 import { GetMediaItemByIdUseCase } from '../../app/use_cases/media/GetMediaItemByIdUseCase';
@@ -147,6 +148,7 @@ export class MediaItemController {
 	// 	return this.toResponse(mediaItem);
 	// }
 
+	@Public()
 	@Get(':id')
 	@ApiOperation({ summary: 'Obtener un media item por ID' })
 	@ApiParam({ name: 'id', description: 'ID del media item' })

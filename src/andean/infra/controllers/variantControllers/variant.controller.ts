@@ -16,6 +16,7 @@ import { RolesGuard } from '../../core/roles.guard';
 import { Roles } from '../../core/roles.decorator';
 import { CurrentUser } from '../../core/current-user.decorator';
 import { AccountRole } from '../../../domain/enums/AccountRole';
+import { Public } from '../../core/public.decorator';
 import { VariantResponse } from 'src/andean/app/modules/variant/VariantResponse';
 import { CreateVariantUseCase } from 'src/andean/app/use_cases/variant/CreateVariantUseCase';
 import { CreateManyVariantsUseCase } from 'src/andean/app/use_cases/variant/CreateManyVariantsUseCase';
@@ -79,6 +80,7 @@ export class VariantController {
 		return this.syncVariantsUseCase.execute(body);
 	}
 
+	@Public()
 	@Get()
 	@ApiOperation({
 		summary: 'Obtener todas las variantes',
@@ -93,6 +95,7 @@ export class VariantController {
 		return this.getAllVariantsUseCase.execute();
 	}
 
+	@Public()
 	@Get('/product/:productId')
 	@ApiOperation({
 		summary: 'Obtener variantes por producto',
@@ -112,6 +115,7 @@ export class VariantController {
 		return this.getVariantsByProductIdUseCase.execute(productId);
 	}
 
+	@Public()
 	@Get('/:id')
 	@ApiOperation({
 		summary: 'Obtener variante por ID',
@@ -165,6 +169,8 @@ export class VariantController {
 		);
 	}
 
+	// TODO: add owner-or-admin authorization check
+	@UseGuards(JwtAuthGuard)
 	@Delete('/product/:productId')
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@ApiOperation({ summary: 'Delete variants by product id' })

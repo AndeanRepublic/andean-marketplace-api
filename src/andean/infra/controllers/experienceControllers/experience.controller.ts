@@ -24,6 +24,7 @@ import {
 	ApiParam,
 	ApiQuery,
 } from '@nestjs/swagger';
+import { Public } from '../../core/public.decorator';
 import { CreateExperienceUseCase } from 'src/andean/app/use_cases/experiences/CreateExperienceUseCase';
 import { UpdateExperienceUseCase } from 'src/andean/app/use_cases/experiences/UpdateExperienceUseCase';
 import { DeleteExperienceUseCase } from 'src/andean/app/use_cases/experiences/DeleteExperienceUseCase';
@@ -107,6 +108,7 @@ export class ExperienceController {
 		);
 	}
 
+	@Public()
 	@Get('/:id')
 	@ApiOperation({
 		summary: 'Obtener experiencia por ID',
@@ -131,6 +133,7 @@ export class ExperienceController {
 		return this.getByIdExperienceUseCase.handle(id);
 	}
 
+	@Public()
 	@Get()
 	@ApiOperation({
 		summary: 'Listar experiencias con filtros',

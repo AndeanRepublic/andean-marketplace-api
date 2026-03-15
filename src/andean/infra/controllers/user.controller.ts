@@ -34,6 +34,7 @@ import { SellerProfileResponse } from '../../app/modules/users/SellerProfileResp
 import { JwtAuthGuard } from '../core/jwtAuth.guard';
 import { CurrentUser } from '../core/current-user.decorator';
 import { AccountRole } from '../../domain/enums/AccountRole';
+import { Public } from '../core/public.decorator';
 
 const path_customers: string = '/customers';
 const path_sellers: string = '/sellers';
@@ -149,6 +150,7 @@ export class UserController {
 		);
 	}
 
+	@Public()
 	@Post(path_customers)
 	@ApiOperation({
 		summary: 'Crear un nuevo cliente',
@@ -178,6 +180,7 @@ export class UserController {
 	// 	return this.getAllSellersUseCase.handle();
 	// }
 
+	@Public()
 	@Post(path_sellers)
 	@ApiOperation({
 		summary: 'Crear un nuevo vendedor',

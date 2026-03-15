@@ -24,6 +24,7 @@ import {
 	ApiParam,
 	ApiQuery,
 } from '@nestjs/swagger';
+import { Public } from '../../core/public.decorator';
 import { CreateSuperfoodDto } from '../dto/superfoods/CreateSuperfoodDto';
 import { UpdateSuperfoodDto } from '../dto/superfoods/UpdateSuperfoodDto';
 import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
@@ -78,6 +79,7 @@ export class SuperfoodController {
 		return this.createSuperfoodProductUseCase.handle(dto);
 	}
 
+	@Public()
 	@Get()
 	@ApiOperation({
 		summary: 'Listar productos superfood con filtros',
@@ -165,6 +167,7 @@ export class SuperfoodController {
 		);
 	}
 
+	@Public()
 	@Get('/:productId')
 	@ApiOperation({
 		summary: 'Obtener detalle completo de producto superfood por ID',
