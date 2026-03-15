@@ -37,7 +37,6 @@
 		"updatedAt": "2026-01-01T00:00:00.000Z"
 	},
 	"createDto": {
-		"status": "PUBLISHED",
 		"baseInfo": {
 			"title": "Poncho Andino Premium",
 			"mediaIds": [],

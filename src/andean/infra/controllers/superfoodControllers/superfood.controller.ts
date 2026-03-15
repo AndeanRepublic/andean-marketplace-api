@@ -10,7 +10,13 @@ import {
 	HttpStatus,
 	Query,
 	ParseIntPipe,
+	UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from '../../core/jwtAuth.guard';
+import { RolesGuard } from '../../core/roles.guard';
+import { Roles } from '../../core/roles.decorator';
+import { CurrentUser } from '../../core/current-user.decorator';
+import { AccountRole } from '../../../domain/enums/AccountRole';
 import {
 	ApiTags,
 	ApiOperation,
@@ -43,6 +49,8 @@ export class SuperfoodController {
 		private readonly getByIdSuperfoodProductDetailUseCase: GetByIdSuperfoodProductDetailUseCase,
 	) {}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -183,6 +191,8 @@ export class SuperfoodController {
 		return this.getByIdSuperfoodProductDetailUseCase.handle(productId);
 	}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Put('/:productId')
 	@ApiOperation({
 		summary: 'Actualizar producto superfood',
@@ -211,10 +221,18 @@ export class SuperfoodController {
 	async updateSuperfood(
 		@Param('productId') productId: string,
 		@Body() dto: CreateSuperfoodDto,
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
 	): Promise<SuperfoodProduct> {
-		return this.updateSuperfoodProductUseCase.handle(productId, dto);
+		return this.updateSuperfoodProductUseCase.handle(
+			productId,
+			dto,
+			requestingUser.userId,
+			requestingUser.roles,
+		);
 	}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Delete('/:productId')
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@ApiOperation({
@@ -236,7 +254,14 @@ export class SuperfoodController {
 		status: 404,
 		description: 'Producto no encontrado',
 	})
-	async deleteSuperfood(@Param('productId') productId: string): Promise<void> {
-		return this.deleteSuperfoodProductUseCase.handle(productId);
+	async deleteSuperfood(
+		@Param('productId') productId: string,
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
+	): Promise<void> {
+		return this.deleteSuperfoodProductUseCase.handle(
+			productId,
+			requestingUser.userId,
+			requestingUser.roles,
+		);
 	}
 }

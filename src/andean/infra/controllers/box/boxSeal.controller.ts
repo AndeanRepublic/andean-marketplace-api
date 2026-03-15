@@ -8,7 +8,12 @@ import {
 	Param,
 	Post,
 	Put,
+	UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from '../../core/jwtAuth.guard';
+import { RolesGuard } from '../../core/roles.guard';
+import { Roles } from '../../core/roles.decorator';
+import { AccountRole } from '../../../domain/enums/AccountRole';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { BoxSealResponse } from '../../../app/modules/box/BoxSealResponse';
 import { CreateBoxSealUseCase } from '../../../app/use_cases/boxSeals/CreateBoxSealUseCase';
@@ -34,6 +39,8 @@ export class BoxSealController {
 		private readonly deleteBoxSealUseCase: DeleteBoxSealUseCase,
 	) {}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
 	@Post('')
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -55,6 +62,8 @@ export class BoxSealController {
 		return this.createBoxSealUseCase.handle(dto);
 	}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
 	@Post('/bulk')
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({

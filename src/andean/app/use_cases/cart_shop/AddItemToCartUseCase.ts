@@ -3,7 +3,9 @@ import {
 	Injectable,
 	NotFoundException,
 	BadRequestException,
+	ForbiddenException,
 } from '@nestjs/common';
+import { AccountRole } from '../../../domain/enums/AccountRole';
 import { CustomerProfileRepository } from '../../datastore/Customer.repo';
 import { CartShopRepository } from '../../datastore/CartShop.repo';
 import { AddCartItemDto } from '../../../infra/controllers/dto/AddCartItemDto';
@@ -30,22 +32,37 @@ export class AddItemToCartUseCase {
 		private readonly cartItemRepository: CartShopItemRepository,
 		private readonly productInfoRegistry: ProductInfoProviderRegistry,
 		private readonly ownerNameResolver: OwnerNameResolver,
-	) { }
+	) {}
 
 	async handle(
-		customerId: string,
+		requestingUserId: string,
+		roles: AccountRole[],
 		itemDto: AddCartItemDto,
+		targetCustomerId?: string,
 	): Promise<ShoppingCartItemResponse> {
-		// 1. Validar que customerId esté presente
-		if (!customerId) {
-			throw new BadRequestException('customerId must be provided');
+		// Pattern H — 2-hop ownership check with ADMIN bypass
+		let customerId: string | null;
+		const isAdmin = roles.includes(AccountRole.ADMIN);
+		if (isAdmin && targetCustomerId) {
+			// ADMIN targeting a specific customer's cart
+			customerId = targetCustomerId;
+		} else if (!isAdmin) {
+			const customer =
+				await this.customerRepository.getCustomerByUserId(requestingUserId);
+			if (!customer) {
+				throw new ForbiddenException('You can only access your own cart');
+			}
+			customerId = customer.id;
+		} else {
+			// ADMIN with no targetCustomerId: resolve own customer profile
+			const customer =
+				await this.customerRepository.getCustomerByUserId(requestingUserId);
+			customerId = customer?.id ?? null;
 		}
 
-		// 2. Validar que el customer existe
-		const customerFound =
-			await this.customerRepository.getCustomerById(customerId);
-		if (!customerFound) {
-			throw new NotFoundException('CustomerProfile not found');
+		// ADMIN with no CustomerProfile cannot add items (no cart to add to)
+		if (!customerId) {
+			throw new ForbiddenException('You can only access your own cart');
 		}
 
 		// 2. Obtener la variante

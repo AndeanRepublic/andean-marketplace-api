@@ -29,6 +29,7 @@ import { ProductInfoProviderRegistry } from './infra/services/products/ProductIn
 import { OwnerNameResolver } from './infra/services/OwnerNameResolver';
 import { BoxCartContentResolver } from './infra/services/cart/BoxCartContentResolver';
 import { BoxModule } from './box.module';
+import { AuthModule } from './auth.module';
 
 @Module({
 	imports: [
@@ -49,7 +50,9 @@ import { BoxModule } from './box.module';
 		SuperfoodModule,
 		CommunityModule,
 		BoxModule,
-	], controllers: [CartShopController],
+		AuthModule,
+	],
+	controllers: [CartShopController],
 	providers: [
 		AddItemToCartUseCase,
 		CleanCartUseCase,
@@ -77,9 +80,6 @@ import { BoxModule } from './box.module';
 		OwnerNameResolver,
 		BoxCartContentResolver,
 	],
-	exports: [
-		CartShopRepository,
-		CartShopItemRepository,
-	],
+	exports: [CartShopRepository, CartShopItemRepository],
 })
-export class CartShopModule { }
+export class CartShopModule {}

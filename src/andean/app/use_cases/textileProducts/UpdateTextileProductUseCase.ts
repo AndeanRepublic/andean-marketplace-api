@@ -1,5 +1,6 @@
 import {
 	BadRequestException,
+	ForbiddenException,
 	Inject,
 	Injectable,
 	NotFoundException,
@@ -21,6 +22,8 @@ import { OwnerType } from 'src/andean/domain/enums/OwnerType';
 import { CommunityRepository } from '../../datastore/community/community.repo';
 import { ColorOptionAlternativeRepository } from '../../datastore/textileProducts/ColorOptionAlternative.repo';
 import { SizeOptionAlternativeRepository } from '../../datastore/textileProducts/SizeOptionAlternative.repo';
+import { SellerProfileRepository } from '../../datastore/Seller.repo';
+import { AccountRole } from 'src/andean/domain/enums/AccountRole';
 
 @Injectable()
 export class UpdateTextileProductUseCase {
@@ -49,16 +52,37 @@ export class UpdateTextileProductUseCase {
 		private readonly colorOptionAlternativeRepository: ColorOptionAlternativeRepository,
 		@Inject(SizeOptionAlternativeRepository)
 		private readonly sizeOptionAlternativeRepository: SizeOptionAlternativeRepository,
+		@Inject(SellerProfileRepository)
+		private readonly sellerProfileRepository: SellerProfileRepository,
 	) {}
 
 	async handle(
 		id: string,
 		dto: UpdateTextileProductDto,
+		requestingUserId: string,
+		roles: AccountRole[],
 	): Promise<TextileProduct> {
 		const productFound =
 			await this.textileProductRepository.getTextileProductById(id);
 		if (!productFound) {
 			throw new NotFoundException('Textile product not found');
+		}
+
+		// Ownership check
+		const isAdmin = roles.includes(AccountRole.ADMIN);
+		if (!isAdmin) {
+			if (productFound.baseInfo.ownerType === OwnerType.COMMUNITY) {
+				throw new ForbiddenException('You can only modify your own resource');
+			}
+			const seller =
+				await this.sellerProfileRepository.getSellerByUserId(requestingUserId);
+			if (!seller)
+				throw new ForbiddenException('You can only modify your own resource');
+			const shops = await this.shopRepository.getAllBySellerId(seller.id);
+			const shopIds = shops.map((s) => s.id);
+			if (!shopIds.includes(productFound.baseInfo.ownerId)) {
+				throw new ForbiddenException('You can only modify your own resource');
+			}
 		}
 
 		// Validate categoryId solo si existe
@@ -122,7 +146,10 @@ export class UpdateTextileProductUseCase {
 					await this.textileCertificationRepository.getByIds(
 						dto.detailTraceability.certificationIds,
 					);
-				if (certificationsFound.length !== dto.detailTraceability.certificationIds.length) {
+				if (
+					certificationsFound.length !==
+					dto.detailTraceability.certificationIds.length
+				) {
 					throw new NotFoundException(
 						'One or more TextileCertification IDs not found',
 					);
