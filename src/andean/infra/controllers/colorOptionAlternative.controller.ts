@@ -15,6 +15,7 @@ import { JwtAuthGuard } from 'src/andean/infra/core/jwtAuth.guard';
 import { RolesGuard } from 'src/andean/infra/core/roles.guard';
 import { Roles } from 'src/andean/infra/core/roles.decorator';
 import { AccountRole } from 'src/andean/domain/enums/AccountRole';
+import { Public } from 'src/andean/infra/core/public.decorator';
 import { CreateColorOptionAlternativeUseCase } from 'src/andean/app/use_cases/textileProducts/CreateColorOptionAlternativeUseCase';
 import { ColorOptionAlternative } from 'src/andean/domain/entities/textileProducts/ColorOptionAlternative';
 import { CreateColorOptionAlternativeDto } from './dto/textileProducts/CreateColorOptionAlternativeDto';
@@ -112,6 +113,7 @@ export class ColorOptionAlternativeController {
 	// 	return this.updateColorOptionAlternativeUseCase.handle(id, body);
 	// }
 
+	@Public()
 	@Get()
 	@ApiOperation({
 		summary: 'Listar todas las opciones de color',

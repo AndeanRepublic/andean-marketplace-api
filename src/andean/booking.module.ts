@@ -23,7 +23,6 @@ import { CreatePayPalOrderService } from './infra/services/paypal/CreatePayPalOr
 import { CapturePayPalOrderService } from './infra/services/paypal/CapturePayPalOrderService';
 import { BookingRepository } from './app/datastore/booking/Booking.repo';
 import { BookingRepositoryImpl } from './infra/datastore/booking/booking.repo.impl';
-import { AuthModule } from './auth.module';
 
 @Module({
 	imports: [
@@ -33,7 +32,6 @@ import { AuthModule } from './auth.module';
 		]),
 		UsersModule,
 		forwardRef(() => ExperienceModule),
-		AuthModule,
 	],
 	controllers: [BookingController],
 	providers: [

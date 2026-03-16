@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AuthModule } from './auth.module';
 
 // Schema
 import { MediaItemSchema } from './infra/persistence/mediaItem.schema';
@@ -24,7 +23,6 @@ import { MediaItemController } from './infra/controllers/mediaItem.controller';
 @Module({
 	imports: [
 		MongooseModule.forFeature([{ name: 'MediaItem', schema: MediaItemSchema }]),
-		AuthModule,
 	],
 	controllers: [MediaItemController],
 	providers: [

@@ -15,6 +15,7 @@ import { JwtAuthGuard } from '../../core/jwtAuth.guard';
 import { RolesGuard } from '../../core/roles.guard';
 import { Roles } from '../../core/roles.decorator';
 import { AccountRole } from '../../../domain/enums/AccountRole';
+import { Public } from '../../core/public.decorator';
 import { TextileCertificationResponse } from 'src/andean/app/modules/textile/TextileCertificationResponse';
 import { CreateTextileCertificationUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileCertificationUseCase';
 import { CreateManyTextileCertificationsUseCase } from 'src/andean/app/use_cases/textileProducts/CreateManyTextileCertificationsUseCase';
@@ -112,6 +113,7 @@ export class TextileCertificationController {
 	// 	return this.updateTextileCertificationUseCase.handle(id, body);
 	// }
 
+	@Public()
 	@Get()
 	@ApiOperation({
 		summary: 'Listar todas las certificaciones textiles',

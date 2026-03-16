@@ -15,6 +15,7 @@ import { RolesGuard } from '../../core/roles.guard';
 import { Roles } from '../../core/roles.decorator';
 import { AccountRole } from '../../../domain/enums/AccountRole';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import { Public } from '../../core/public.decorator';
 import { BoxSealResponse } from '../../../app/modules/box/BoxSealResponse';
 import { CreateBoxSealUseCase } from '../../../app/use_cases/boxSeals/CreateBoxSealUseCase';
 import { GetAllBoxSealsUseCase } from '../../../app/use_cases/boxSeals/GetAllBoxSealsUseCase';
@@ -86,6 +87,7 @@ export class BoxSealController {
 		return this.createManyBoxSealsUseCase.handle(dto);
 	}
 
+	@Public()
 	@Get('')
 	@ApiOperation({ summary: 'Obtener todos los sellos de box' })
 	@ApiResponse({

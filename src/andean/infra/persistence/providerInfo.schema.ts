@@ -9,7 +9,6 @@ export const ProviderInfoSchema = new Schema({
 	originPlace: { type: String, required: false },
 	testimonialsOrAwards: { type: String, required: false },
 
-	artisanPhotoMediaId: { type: String, required: false },
 	workplacePhotoMediaId: { type: String, required: false },
 	presentationVideoMediaId: { type: String, required: false },
 
@@ -63,7 +62,6 @@ export interface ProviderInfoDocument extends Document {
 	originPlace?: string;
 	testimonialsOrAwards?: string;
 
-	artisanPhotoMediaId?: string;
 	workplacePhotoMediaId?: string;
 	presentationVideoMediaId?: string;
 

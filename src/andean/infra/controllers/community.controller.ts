@@ -2,7 +2,7 @@ import {
 	Controller,
 	Get,
 	Post,
-	Put,
+	Patch,
 	Delete,
 	Body,
 	Param,
@@ -22,6 +22,7 @@ import {
 	ApiParam,
 	ApiBody,
 } from '@nestjs/swagger';
+import { Public } from '../core/public.decorator';
 import { CreateCommunityUseCase } from '../../app/use_cases/community/CreateCommunityUseCase';
 import { UpdateCommunityUseCase } from '../../app/use_cases/community/UpdateCommunityUseCase';
 import { GetCommunityByIdUseCase } from '../../app/use_cases/community/GetCommunityByIdUseCase';
@@ -81,20 +82,22 @@ export class CommunityController {
 		return this.toResponse(community);
 	}
 
-	// @Get(':id')
-	// @ApiOperation({ summary: 'Get community by ID' })
-	// @ApiParam({ name: 'id', description: 'Community ID' })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'The community has been found.',
-	// 	type: CommunityResponse,
-	// })
-	// @ApiResponse({ status: 404, description: 'Community not found.' })
-	// async getById(@Param('id') id: string): Promise<CommunityResponse> {
-	// 	const community = await this.getCommunityByIdUseCase.execute(id);
-	// 	return this.toResponse(community);
-	// }
+	@Public()
+	@Get(':id')
+	@ApiOperation({ summary: 'Get community by ID' })
+	@ApiParam({ name: 'id', description: 'Community ID' })
+	@ApiResponse({
+		status: 200,
+		description: 'The community has been found.',
+		type: CommunityResponse,
+	})
+	@ApiResponse({ status: 404, description: 'Community not found.' })
+	async getById(@Param('id') id: string): Promise<CommunityResponse> {
+		const community = await this.getCommunityByIdUseCase.execute(id);
+		return this.toResponse(community);
+	}
 
+	@Public()
 	@Get()
 	@ApiOperation({ summary: 'List all communities' })
 	@ApiResponse({
@@ -107,26 +110,28 @@ export class CommunityController {
 		return communities.map((c) => this.toResponse(c));
 	}
 
-	// @Put(':id')
-	// @ApiOperation({ summary: 'Update community' })
-	// @ApiParam({ name: 'id', description: 'Community ID' })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'The community has been successfully updated.',
-	// 	type: CommunityResponse,
-	// })
-	// @ApiResponse({ status: 404, description: 'Community not found.' })
-	// @ApiResponse({
-	// 	status: 400,
-	// 	description: 'Bad Request - Community name already exists.',
-	// })
-	// async update(
-	// 	@Param('id') id: string,
-	// 	@Body() dto: UpdateCommunityDto,
-	// ): Promise<CommunityResponse> {
-	// 	const community = await this.updateCommunityUseCase.execute(id, dto);
-	// 	return this.toResponse(community);
-	// }
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Patch(':id')
+	@ApiOperation({ summary: 'Update community' })
+	@ApiParam({ name: 'id', description: 'Community ID' })
+	@ApiResponse({
+		status: 200,
+		description: 'The community has been successfully updated.',
+		type: CommunityResponse,
+	})
+	@ApiResponse({ status: 404, description: 'Community not found.' })
+	@ApiResponse({
+		status: 400,
+		description: 'Bad Request - Community name already exists.',
+	})
+	async update(
+		@Param('id') id: string,
+		@Body() dto: UpdateCommunityDto,
+	): Promise<CommunityResponse> {
+		const community = await this.updateCommunityUseCase.execute(id, dto);
+		return this.toResponse(community);
+	}
 
 	// @Delete(':id')
 	// @HttpCode(HttpStatus.NO_CONTENT)
@@ -180,6 +185,7 @@ export class CommunityController {
 		return this.createSealUseCase.handle(body);
 	}
 
+	@Public()
 	@Get(path_seals)
 	@ApiOperation({
 		summary: 'Listar todos los sellos',

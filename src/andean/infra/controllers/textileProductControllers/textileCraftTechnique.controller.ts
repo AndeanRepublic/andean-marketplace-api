@@ -15,6 +15,7 @@ import { JwtAuthGuard } from '../../core/jwtAuth.guard';
 import { RolesGuard } from '../../core/roles.guard';
 import { Roles } from '../../core/roles.decorator';
 import { AccountRole } from '../../../domain/enums/AccountRole';
+import { Public } from '../../core/public.decorator';
 import { TextileCraftTechniqueResponse } from 'src/andean/app/modules/textile/TextileCraftTechniqueResponse';
 import { CreateTextileCraftTechniqueUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileCraftTechniqueUseCase';
 import { CreateManyTextileCraftTechniquesUseCase } from 'src/andean/app/use_cases/textileProducts/CreateManyTextileCraftTechniquesUseCase';
@@ -112,6 +113,7 @@ export class TextileCraftTechniqueController {
 	// 	return this.updateTextileCraftTechniqueUseCase.handle(id, body);
 	// }
 
+	@Public()
 	@Get()
 	@ApiOperation({
 		summary: 'Listar todas las técnicas de elaboración',

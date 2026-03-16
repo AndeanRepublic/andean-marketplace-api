@@ -15,6 +15,7 @@ import { JwtAuthGuard } from '../core/jwtAuth.guard';
 import { RolesGuard } from '../core/roles.guard';
 import { Roles } from '../core/roles.decorator';
 import { AccountRole } from '../../domain/enums/AccountRole';
+import { Public } from '../core/public.decorator';
 import { CreateOriginProductRegionUseCase } from '../../app/use_cases/origin/CreateOriginProductRegionUseCase';
 import { CreateManyOriginProductRegionsUseCase } from '../../app/use_cases/origin/CreateManyOriginProductRegionsUseCase';
 import { UpdateOriginProductRegionUseCase } from '../../app/use_cases/origin/UpdateOriginProductRegionUseCase';
@@ -95,6 +96,7 @@ export class OriginProductRegionController {
 	// 	return this.toResponse(region);
 	// }
 
+	@Public()
 	@Get()
 	@ApiOperation({ summary: 'List all origin product regions' })
 	@ApiResponse({

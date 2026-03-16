@@ -22,6 +22,7 @@ import {
 	ApiParam,
 	ApiQuery,
 } from '@nestjs/swagger';
+import { Public } from '../../core/public.decorator';
 import { CreateBoxUseCase } from '../../../app/use_cases/boxes/CreateBoxUseCase';
 import { GetAllBoxesUseCase } from '../../../app/use_cases/boxes/GetAllBoxesUseCase';
 import { GetBoxDetailUseCase } from '../../../app/use_cases/boxes/GetBoxDetailUseCase';
@@ -61,6 +62,7 @@ export class BoxController {
 		return this.createBoxUseCase.handle(createBoxDto);
 	}
 
+	@Public()
 	@Get('')
 	@ApiOperation({
 		summary: 'Listar boxes paginados',
@@ -93,6 +95,7 @@ export class BoxController {
 		return this.getAllBoxesUseCase.handle(page, perPage);
 	}
 
+	@Public()
 	@Get('/:boxId')
 	@ApiOperation({
 		summary: 'Obtener detalle de un box',

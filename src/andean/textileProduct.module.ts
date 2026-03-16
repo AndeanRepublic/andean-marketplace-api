@@ -117,7 +117,6 @@ import { DecrementLikesUseCase } from './app/use_cases/DecrementLikesUseCase';
 import { DecrementDislikesUseCase } from './app/use_cases/DecrementDislikesUseCase';
 import { SuperfoodModule } from './superfood.module';
 import { VariantModule } from './variant.module';
-import { AuthModule } from './auth.module';
 import { VariantSchema } from './infra/persistence/variant.schema';
 import { MediaItemSchema } from './infra/persistence/mediaItem.schema';
 import { TextileProductAttributesAssembler } from './infra/services/textileProducts/TextileProductAttributesAssembler';
@@ -183,10 +182,9 @@ import { MediaUrlResolver } from './infra/services/textileProducts/MediaUrlResol
 		ShopsModule,
 		CommunityModule,
 		OriginProductModule,
-		VariantModule,
+		forwardRef(() => VariantModule),
 		MediaItemModule,
 		forwardRef(() => SuperfoodModule),
-		AuthModule,
 	],
 	controllers: [
 		TextileCategoryController,
