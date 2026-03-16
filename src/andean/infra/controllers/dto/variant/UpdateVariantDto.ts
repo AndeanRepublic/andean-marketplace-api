@@ -36,12 +36,4 @@ export class UpdateVariantDto {
 	@Min(0)
 	@IsOptional()
 	stock?: number;
-
-	@ApiPropertyOptional({
-		description: 'Código SKU único de esta variante',
-		example: 'PONCHO-AND-001-RED-M',
-	})
-	@IsString()
-	@IsOptional()
-	sku?: string;
 }

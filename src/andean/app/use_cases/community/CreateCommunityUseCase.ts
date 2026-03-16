@@ -7,7 +7,6 @@ import {
 import { CommunityRepository } from '../../datastore/community/community.repo';
 import { SealRepository } from '../../datastore/community/Seal.repo';
 import { MediaItemRepository } from '../../datastore/MediaItem.repo';
-import { CreateProviderInfoUseCase } from '../providerInfo/CreateProviderInfoUseCase';
 import { Community } from '../../../domain/entities/community/Community';
 import { CreateCommunityDto } from '../../../infra/controllers/dto/community/CreateCommunityDto';
 import { CommunityMapper } from '../../../infra/services/community/CommunityMapper';
@@ -20,8 +19,7 @@ export class CreateCommunityUseCase {
 		private readonly sealRepository: SealRepository,
 		@Inject(MediaItemRepository)
 		private readonly mediaItemRepository: MediaItemRepository,
-		private readonly createProviderInfoUseCase: CreateProviderInfoUseCase,
-	) {}
+	) { }
 
 	async execute(dto: CreateCommunityDto): Promise<Community> {
 		// Validar que no exista una comunidad con el mismo nombre
@@ -54,19 +52,8 @@ export class CreateCommunityUseCase {
 			}
 		}
 
-		// Crear ProviderInfo si viene embebido y asignar su id
-		let providerInfoId: string | undefined;
-		if (dto.providerInfo) {
-			const created = await this.createProviderInfoUseCase.handle(
-				dto.providerInfo,
-			);
-			providerInfoId = created.id;
-		}
-
-		// Crear entidad de dominio (sin providerInfo, con providerInfoId si aplica)
-		const communityDto = { ...dto, providerInfoId };
-		delete (communityDto as any).providerInfo;
-		const community = CommunityMapper.fromCreateDto(communityDto);
+		// Crear entidad de dominio
+		const community = CommunityMapper.fromCreateDto(dto);
 
 		// Persistir
 		return await this.communityRepository.create(community);

@@ -2,9 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, HttpStatus, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { OriginProductCommunityController } from '../src/andean/infra/controllers/originProductCommunity.controller';
-import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';
-import { RolesGuard } from '../src/andean/infra/core/roles.guard';
-import { createAllowAllGuard, mockAuthUsers } from './helpers/auth-test.helper';
 import { CreateOriginProductCommunityUseCase } from '../src/andean/app/use_cases/origin/CreateOriginProductCommunityUseCase';
 import { UpdateOriginProductCommunityUseCase } from '../src/andean/app/use_cases/origin/UpdateOriginProductCommunityUseCase';
 import { GetOriginProductCommunityByIdUseCase } from '../src/andean/app/use_cases/origin/GetOriginProductCommunityByIdUseCase';
@@ -65,12 +62,7 @@ describe('OriginProductCommunityController (e2e)', () => {
 					useValue: { execute: jest.fn().mockResolvedValue(undefined) },
 				},
 			],
-		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue(createAllowAllGuard(mockAuthUsers.seller))
-			.overrideGuard(RolesGuard)
-			.useValue({ canActivate: () => true })
-			.compile();
+		}).compile();
 
 		app = moduleFixture.createNestApplication();
 		app.useGlobalPipes(

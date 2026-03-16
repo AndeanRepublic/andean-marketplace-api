@@ -52,7 +52,7 @@ export class CreateTextileProductUseCase {
 	) {}
 
 	async handle(dto: CreateTextileProductDto): Promise<TextileProduct> {
-		// Validate categoryId if it exists
+		// Validar categoryId solo si existe
 		if (dto.categoryId) {
 			const categoryFound =
 				await this.textileCategoryRepository.getCategoryById(dto.categoryId);
@@ -61,7 +61,7 @@ export class CreateTextileProductUseCase {
 			}
 		}
 
-		// Validate ownerId according to ownerType
+		// Validar ownerId según ownerType
 		if (dto.baseInfo.ownerType === OwnerType.SHOP) {
 			const shopFound = await this.shopRepository.getById(dto.baseInfo.ownerId);
 			if (!shopFound) {
@@ -79,9 +79,9 @@ export class CreateTextileProductUseCase {
 			}
 		}
 
-		// Validate detailTraceability if it exists
+		// Validar detailTraceability solo si existe
 		if (dto.detailTraceability) {
-			// Validate originProductCommunityId if it exists
+			// Validar originProductCommunityId solo si existe
 			if (dto.detailTraceability.originProductCommunityId) {
 				const originCommunityFound =
 					await this.originProductCommunityRepository.getById(
@@ -92,7 +92,7 @@ export class CreateTextileProductUseCase {
 				}
 			}
 
-			// Validate craftTechniqueId if it exists
+			// Validar craftTechniqueId solo si existe
 			if (dto.detailTraceability.craftTechniqueId) {
 				const craftTechniqueFound =
 					await this.textileCraftTechniqueRepository.getTextileCraftTechniqueById(
@@ -103,30 +103,21 @@ export class CreateTextileProductUseCase {
 				}
 			}
 
-			// Validar certificationIds solo si hasCertifications es true y hay IDs
-			if (
-				dto.detailTraceability.hasCertifications &&
-				dto.detailTraceability.certificationIds &&
-				dto.detailTraceability.certificationIds.length > 0
-			) {
-				const certificationsFound =
-					await this.textileCertificationRepository.getByIds(
-						dto.detailTraceability.certificationIds,
+			// Validar certificationId solo si existe
+			if (dto.detailTraceability.certificationId) {
+				const certificationFound =
+					await this.textileCertificationRepository.getTextileCertificationById(
+						dto.detailTraceability.certificationId,
 					);
-				if (
-					certificationsFound.length !==
-					dto.detailTraceability.certificationIds.length
-				) {
-					throw new NotFoundException(
-						'One or more TextileCertification IDs not found',
-					);
+				if (!certificationFound) {
+					throw new NotFoundException('TextileCertification not found');
 				}
 			}
 		}
 
-		// Validate attributes if they exist
+		// Validar atributos si existen
 		if (dto.atribute) {
-			// Validate textileTypeId if it exists
+			// Validar textileTypeId solo si existe
 			if (dto.atribute.textileTypeId) {
 				const typeFound = await this.textileTypeRepository.getTextileTypeById(
 					dto.atribute.textileTypeId,
@@ -147,7 +138,7 @@ export class CreateTextileProductUseCase {
 				}
 			}
 
-			// Validate principalUse (array) if it exists and has elements
+			// Validar principalUse (array) solo si existe y tiene elementos
 			if (dto.atribute.principalUse && dto.atribute.principalUse.length > 0) {
 				for (const principalUseId of dto.atribute.principalUse) {
 					const principalUseFound =
@@ -163,9 +154,9 @@ export class CreateTextileProductUseCase {
 			}
 		}
 
-		// Validate options if they exist
+		// Validar options si existen
 		if (dto.options && dto.options.length > 0) {
-			// Validate that there are no duplicate options by name
+			// Validar que no haya opciones duplicadas por name
 			const optionNames = dto.options.map((opt) => opt.name);
 			const uniqueOptionNames = new Set(optionNames);
 			if (optionNames.length !== uniqueOptionNames.size) {
@@ -173,7 +164,7 @@ export class CreateTextileProductUseCase {
 			}
 
 			for (const option of dto.options) {
-				// Validate idOpcionAlternative in each value according to the name of the option
+				// Validar idOpcionAlternative en cada value según el name de la opción
 				if (option.values && option.values.length > 0) {
 					// Validar que no haya labels duplicados en la misma opción
 					const labels = option.values.map((v) => v.label);

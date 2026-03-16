@@ -12,7 +12,7 @@ export class CreateSealUseCase {
 		private readonly sealRepository: SealRepository,
 		@Inject(MediaItemRepository)
 		private readonly mediaItemRepository: MediaItemRepository,
-	) {}
+	) { }
 
 	async handle(dto: CreateSealDto): Promise<Seal> {
 		// Validar que el MediaItem del logo existe

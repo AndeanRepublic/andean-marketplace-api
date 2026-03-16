@@ -13,13 +13,8 @@ import {
 	ParseFilePipe,
 	MaxFileSizeValidator,
 	FileTypeValidator,
-	UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { JwtAuthGuard } from '../core/jwtAuth.guard';
-import { RolesGuard } from '../core/roles.guard';
-import { Roles } from '../core/roles.decorator';
-import { AccountRole } from '../../domain/enums/AccountRole';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
 	ApiTags,
@@ -29,7 +24,6 @@ import {
 	ApiConsumes,
 	ApiBody,
 } from '@nestjs/swagger';
-import { Public } from '../core/public.decorator';
 import { UploadMediaItemUseCase } from '../../app/use_cases/media/UploadMediaItemUseCase';
 import { UpdateMediaItemUseCase } from '../../app/use_cases/media/UpdateMediaItemUseCase';
 import { GetMediaItemByIdUseCase } from '../../app/use_cases/media/GetMediaItemByIdUseCase';
@@ -62,8 +56,6 @@ export class MediaItemController {
 		);
 	}
 
-	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post()
 	@UseInterceptors(FileInterceptor('file'))
 	@ApiConsumes('multipart/form-data')
@@ -148,7 +140,6 @@ export class MediaItemController {
 	// 	return this.toResponse(mediaItem);
 	// }
 
-	@Public()
 	@Get(':id')
 	@ApiOperation({ summary: 'Obtener un media item por ID' })
 	@ApiParam({ name: 'id', description: 'ID del media item' })

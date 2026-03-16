@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Patch, UseGuards } from '@nestjs/common';
+import { Body, Controller, Param, Patch } from '@nestjs/common';
 import {
 	ApiTags,
 	ApiOperation,
@@ -6,11 +6,6 @@ import {
 	ApiParam,
 	ApiBody,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../../core/jwtAuth.guard';
-import { RolesGuard } from '../../core/roles.guard';
-import { Roles } from '../../core/roles.decorator';
-import { CurrentUser } from '../../core/current-user.decorator';
-import { AccountRole } from '../../../domain/enums/AccountRole';
 import { UpdatePriceByAgeGroupUseCase } from 'src/andean/app/use_cases/experiences/prices/UpdatePriceByAgeGroupUseCase';
 import { PatchAgeGroupPriceDto } from '../dto/experiences/PatchExperiencePricesDto';
 import { ExperiencePricesPatchResponse } from 'src/andean/app/modules/experiences/ExperiencePatchResponse';
@@ -22,8 +17,6 @@ export class ExperiencePricesController {
 		private readonly updatePriceByAgeGroupUseCase: UpdatePriceByAgeGroupUseCase,
 	) {}
 
-	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Patch('age-group')
 	@ApiOperation({
 		summary: 'Actualizar precio de un grupo de edad',
@@ -50,15 +43,9 @@ export class ExperiencePricesController {
 		description: 'Experiencia o precios no encontrados',
 	})
 	async updateAgeGroupPrice(
-		@CurrentUser() user: { userId: string; roles: AccountRole[] },
 		@Param('experienceId') experienceId: string,
 		@Body() body: PatchAgeGroupPriceDto,
 	): Promise<ExperiencePricesPatchResponse> {
-		return this.updatePriceByAgeGroupUseCase.handle(
-			experienceId,
-			body,
-			user.userId,
-			user.roles,
-		);
+		return this.updatePriceByAgeGroupUseCase.handle(experienceId, body);
 	}
 }

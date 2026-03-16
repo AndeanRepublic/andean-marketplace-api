@@ -59,7 +59,6 @@ export class SyncVariantsUseCase {
 					{
 						price: userVariant.price,
 						stock: userVariant.stock,
-						...(userVariant.sku !== undefined && { sku: userVariant.sku }),
 						updatedAt: new Date(),
 					},
 				);
@@ -74,7 +73,6 @@ export class SyncVariantsUseCase {
 					combination: userVariant.combination,
 					price: userVariant.price,
 					stock: userVariant.stock,
-					...(userVariant.sku && { sku: userVariant.sku }),
 				});
 				newVariants.push(newVariant);
 			}

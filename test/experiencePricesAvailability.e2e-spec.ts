@@ -1,10 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	INestApplication,
-	HttpStatus,
-	ValidationPipe,
-	ForbiddenException,
-} from '@nestjs/common';
+import { INestApplication, HttpStatus, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 
 import { ExperiencePricesController } from '../src/andean/infra/controllers/experienceControllers/experience-prices.controller';
@@ -17,13 +12,6 @@ import { ExperiencePrices } from '../src/andean/domain/entities/experiences/Expe
 import { ExperienceAvailability } from '../src/andean/domain/entities/experiences/ExperienceAvailability';
 
 import { FixtureLoader } from './helpers/fixture-loader';
-import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';
-import { RolesGuard } from '../src/andean/infra/core/roles.guard';
-import {
-	createAllowAllGuard,
-	createDenyAllGuard,
-	mockAuthUsers,
-} from './helpers/auth-test.helper';
 
 describe('ExperiencePricesController & ExperienceAvailabilityController (e2e)', () => {
 	let app: INestApplication;
@@ -80,12 +68,7 @@ describe('ExperiencePricesController & ExperienceAvailabilityController (e2e)', 
 					},
 				},
 			],
-		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue(createAllowAllGuard(mockAuthUsers.seller))
-			.overrideGuard(RolesGuard)
-			.useValue({ canActivate: () => true })
-			.compile();
+		}).compile();
 
 		app = moduleFixture.createNestApplication();
 
@@ -181,8 +164,6 @@ describe('ExperiencePricesController & ExperienceAvailabilityController (e2e)', 
 					code: patchAdultsPriceDto.code,
 					price: patchAdultsPriceDto.price,
 				}),
-				mockAuthUsers.seller.userId,
-				mockAuthUsers.seller.roles,
 			);
 		});
 
@@ -277,8 +258,6 @@ describe('ExperiencePricesController & ExperienceAvailabilityController (e2e)', 
 				expect.objectContaining({
 					excludedDates: patchExcludedDatesDto.excludedDates,
 				}),
-				mockAuthUsers.seller.userId,
-				mockAuthUsers.seller.roles,
 			);
 		});
 
@@ -376,8 +355,6 @@ describe('ExperiencePricesController & ExperienceAvailabilityController (e2e)', 
 					specificAvailableStartDates:
 						patchAvailableDatesDto.specificAvailableStartDates,
 				}),
-				mockAuthUsers.seller.userId,
-				mockAuthUsers.seller.roles,
 			);
 		});
 
@@ -439,289 +416,6 @@ describe('ExperiencePricesController & ExperienceAvailabilityController (e2e)', 
 					excludedDates: ['2026-12-25'],
 				})
 				.expect(HttpStatus.BAD_REQUEST);
-		});
-	});
-
-	// ─── Auth enforcement — PATCH sub-resources ──────────────────────
-
-	describe('Auth enforcement — PATCH sub-resources', () => {
-		async function buildApp(
-			authUser: { userId: string; email: string; roles: any[] } | null,
-			allowRoles: boolean = true,
-		): Promise<INestApplication> {
-			const module: TestingModule = await Test.createTestingModule({
-				controllers: [
-					ExperiencePricesController,
-					ExperienceAvailabilityController,
-				],
-				providers: [
-					{
-						provide: UpdatePriceByAgeGroupUseCase,
-						useValue: {
-							handle: jest.fn().mockResolvedValue(mockPricesAfterAdultsPatch),
-						},
-					},
-					{
-						provide: UpdateExcludedDatesUseCase,
-						useValue: {
-							handle: jest
-								.fn()
-								.mockResolvedValue(mockAvailabilityAfterExcludedPatch),
-						},
-					},
-					{
-						provide: UpdateAvailableDatesUseCase,
-						useValue: {
-							handle: jest
-								.fn()
-								.mockResolvedValue(mockAvailabilityAfterAvailablePatch),
-						},
-					},
-				],
-			})
-				.overrideGuard(JwtAuthGuard)
-				.useValue(
-					authUser ? createAllowAllGuard(authUser) : createDenyAllGuard(),
-				)
-				.overrideGuard(RolesGuard)
-				.useValue({ canActivate: () => allowRoles })
-				.compile();
-
-			const testApp = module.createNestApplication();
-			testApp.useGlobalPipes(
-				new ValidationPipe({
-					whitelist: true,
-					forbidNonWhitelisted: true,
-					transform: true,
-				}),
-			);
-			await testApp.init();
-			return testApp;
-		}
-
-		// ── PATCH /experiences/:id/prices/age-group — auth scenarios ──────
-
-		describe('PATCH /experiences/:experienceId/prices/age-group', () => {
-			const url = `/experiences/${experienceId}/prices/age-group`;
-
-			it('should return 401 when no token is provided', async () => {
-				const unauthApp = await buildApp(null);
-
-				await request(unauthApp.getHttpServer())
-					.patch(url)
-					.send(patchAdultsPriceDto)
-					.expect(HttpStatus.UNAUTHORIZED);
-
-				await unauthApp.close();
-			});
-
-			it('should return 403 when USER role is used', async () => {
-				const userApp = await buildApp(mockAuthUsers.customer, false);
-
-				await request(userApp.getHttpServer())
-					.patch(url)
-					.send(patchAdultsPriceDto)
-					.expect(HttpStatus.FORBIDDEN);
-
-				await userApp.close();
-			});
-
-			it('should return 403 when SELLER is non-owner (use case rejects)', async () => {
-				const sellerApp = await buildApp(mockAuthUsers.seller, true);
-				const uc = sellerApp.get(UpdatePriceByAgeGroupUseCase);
-				jest
-					.spyOn(uc, 'handle')
-					.mockRejectedValueOnce(
-						new ForbiddenException('You can only modify your own resource'),
-					);
-
-				await request(sellerApp.getHttpServer())
-					.patch(url)
-					.send(patchAdultsPriceDto)
-					.expect(HttpStatus.FORBIDDEN);
-
-				await sellerApp.close();
-			});
-
-			it('should return 200 when SELLER is the owner', async () => {
-				const sellerApp = await buildApp(mockAuthUsers.seller, true);
-				const uc = sellerApp.get(UpdatePriceByAgeGroupUseCase);
-				jest
-					.spyOn(uc, 'handle')
-					.mockResolvedValueOnce(mockPricesAfterAdultsPatch);
-
-				await request(sellerApp.getHttpServer())
-					.patch(url)
-					.send(patchAdultsPriceDto)
-					.expect(HttpStatus.OK);
-
-				await sellerApp.close();
-			});
-
-			it('should return 200 when ADMIN updates any experience (ownership bypass)', async () => {
-				const adminApp = await buildApp(mockAuthUsers.admin, true);
-				const uc = adminApp.get(UpdatePriceByAgeGroupUseCase);
-				jest
-					.spyOn(uc, 'handle')
-					.mockResolvedValueOnce(mockPricesAfterAdultsPatch);
-
-				await request(adminApp.getHttpServer())
-					.patch(url)
-					.send(patchAdultsPriceDto)
-					.expect(HttpStatus.OK);
-
-				await adminApp.close();
-			});
-		});
-
-		// ── PATCH /experiences/:id/availability/excluded-dates — auth scenarios ─
-
-		describe('PATCH /experiences/:experienceId/availability/excluded-dates', () => {
-			const url = `/experiences/${experienceId}/availability/excluded-dates`;
-
-			it('should return 401 when no token is provided', async () => {
-				const unauthApp = await buildApp(null);
-
-				await request(unauthApp.getHttpServer())
-					.patch(url)
-					.send(patchExcludedDatesDto)
-					.expect(HttpStatus.UNAUTHORIZED);
-
-				await unauthApp.close();
-			});
-
-			it('should return 403 when USER role is used', async () => {
-				const userApp = await buildApp(mockAuthUsers.customer, false);
-
-				await request(userApp.getHttpServer())
-					.patch(url)
-					.send(patchExcludedDatesDto)
-					.expect(HttpStatus.FORBIDDEN);
-
-				await userApp.close();
-			});
-
-			it('should return 403 when SELLER is non-owner (use case rejects)', async () => {
-				const sellerApp = await buildApp(mockAuthUsers.seller, true);
-				const uc = sellerApp.get(UpdateExcludedDatesUseCase);
-				jest
-					.spyOn(uc, 'handle')
-					.mockRejectedValueOnce(
-						new ForbiddenException('You can only modify your own resource'),
-					);
-
-				await request(sellerApp.getHttpServer())
-					.patch(url)
-					.send(patchExcludedDatesDto)
-					.expect(HttpStatus.FORBIDDEN);
-
-				await sellerApp.close();
-			});
-
-			it('should return 200 when SELLER is the owner', async () => {
-				const sellerApp = await buildApp(mockAuthUsers.seller, true);
-				const uc = sellerApp.get(UpdateExcludedDatesUseCase);
-				jest
-					.spyOn(uc, 'handle')
-					.mockResolvedValueOnce(mockAvailabilityAfterExcludedPatch);
-
-				await request(sellerApp.getHttpServer())
-					.patch(url)
-					.send(patchExcludedDatesDto)
-					.expect(HttpStatus.OK);
-
-				await sellerApp.close();
-			});
-
-			it('should return 200 when ADMIN updates any experience (ownership bypass)', async () => {
-				const adminApp = await buildApp(mockAuthUsers.admin, true);
-				const uc = adminApp.get(UpdateExcludedDatesUseCase);
-				jest
-					.spyOn(uc, 'handle')
-					.mockResolvedValueOnce(mockAvailabilityAfterExcludedPatch);
-
-				await request(adminApp.getHttpServer())
-					.patch(url)
-					.send(patchExcludedDatesDto)
-					.expect(HttpStatus.OK);
-
-				await adminApp.close();
-			});
-		});
-
-		// ── PATCH /experiences/:id/availability/available-dates — auth scenarios ─
-
-		describe('PATCH /experiences/:experienceId/availability/available-dates', () => {
-			const url = `/experiences/${experienceId}/availability/available-dates`;
-
-			it('should return 401 when no token is provided', async () => {
-				const unauthApp = await buildApp(null);
-
-				await request(unauthApp.getHttpServer())
-					.patch(url)
-					.send(patchAvailableDatesDto)
-					.expect(HttpStatus.UNAUTHORIZED);
-
-				await unauthApp.close();
-			});
-
-			it('should return 403 when USER role is used', async () => {
-				const userApp = await buildApp(mockAuthUsers.customer, false);
-
-				await request(userApp.getHttpServer())
-					.patch(url)
-					.send(patchAvailableDatesDto)
-					.expect(HttpStatus.FORBIDDEN);
-
-				await userApp.close();
-			});
-
-			it('should return 403 when SELLER is non-owner (use case rejects)', async () => {
-				const sellerApp = await buildApp(mockAuthUsers.seller, true);
-				const uc = sellerApp.get(UpdateAvailableDatesUseCase);
-				jest
-					.spyOn(uc, 'handle')
-					.mockRejectedValueOnce(
-						new ForbiddenException('You can only modify your own resource'),
-					);
-
-				await request(sellerApp.getHttpServer())
-					.patch(url)
-					.send(patchAvailableDatesDto)
-					.expect(HttpStatus.FORBIDDEN);
-
-				await sellerApp.close();
-			});
-
-			it('should return 200 when SELLER is the owner', async () => {
-				const sellerApp = await buildApp(mockAuthUsers.seller, true);
-				const uc = sellerApp.get(UpdateAvailableDatesUseCase);
-				jest
-					.spyOn(uc, 'handle')
-					.mockResolvedValueOnce(mockAvailabilityAfterAvailablePatch);
-
-				await request(sellerApp.getHttpServer())
-					.patch(url)
-					.send(patchAvailableDatesDto)
-					.expect(HttpStatus.OK);
-
-				await sellerApp.close();
-			});
-
-			it('should return 200 when ADMIN updates any experience (ownership bypass)', async () => {
-				const adminApp = await buildApp(mockAuthUsers.admin, true);
-				const uc = adminApp.get(UpdateAvailableDatesUseCase);
-				jest
-					.spyOn(uc, 'handle')
-					.mockResolvedValueOnce(mockAvailabilityAfterAvailablePatch);
-
-				await request(adminApp.getHttpServer())
-					.patch(url)
-					.send(patchAvailableDatesDto)
-					.expect(HttpStatus.OK);
-
-				await adminApp.close();
-			});
 		});
 	});
 });

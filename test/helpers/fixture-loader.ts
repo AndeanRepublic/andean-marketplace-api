@@ -120,10 +120,6 @@ export class FixtureLoader {
 		return this.load('review.fixture.json');
 	}
 
-	static loadShippingAddress() {
-		return this.load('shipping-address.fixture.json');
-	}
-
 	// ─── Order fixtures ─────────────────────────────────────────────
 	static loadOrder() {
 		return this.load('order.fixture.json');

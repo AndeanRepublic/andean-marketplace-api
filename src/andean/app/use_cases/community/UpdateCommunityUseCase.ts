@@ -10,8 +10,6 @@ import { MediaItemRepository } from '../../datastore/MediaItem.repo';
 import { Community } from '../../../domain/entities/community/Community';
 import { UpdateCommunityDto } from '../../../infra/controllers/dto/community/UpdateCommunityDto';
 import { CommunityMapper } from '../../../infra/services/community/CommunityMapper';
-import { CreateProviderInfoUseCase } from '../providerInfo/CreateProviderInfoUseCase';
-import { UpdateProviderInfoUseCase } from '../providerInfo/UpdateProviderInfoUseCase';
 
 @Injectable()
 export class UpdateCommunityUseCase {
@@ -21,9 +19,7 @@ export class UpdateCommunityUseCase {
 		private readonly sealRepository: SealRepository,
 		@Inject(MediaItemRepository)
 		private readonly mediaItemRepository: MediaItemRepository,
-		private readonly createProviderInfoUseCase: CreateProviderInfoUseCase,
-		private readonly updateProviderInfoUseCase: UpdateProviderInfoUseCase,
-	) {}
+	) { }
 
 	async execute(id: string, dto: UpdateCommunityDto): Promise<Community> {
 		// Verificar existencia
@@ -66,28 +62,10 @@ export class UpdateCommunityUseCase {
 			}
 		}
 
-		// Upsert de ProviderInfo si viene embebido
-		let providerInfoId = existing.providerInfoId;
-		if (dto.providerInfo) {
-			if (existing.providerInfoId) {
-				await this.updateProviderInfoUseCase.handle(
-					existing.providerInfoId,
-					dto.providerInfo,
-				);
-			} else {
-				const pi = await this.createProviderInfoUseCase.handle(
-					dto.providerInfo,
-				);
-				providerInfoId = pi.id;
-			}
-		}
-
-		// Strip providerInfo from the spread to avoid persisting the DTO object
-		const { providerInfo: _pi, ...dtoRest } = dto;
+		// Construir objeto de actualización combinando datos existentes con nuevos
 		const updateData: Partial<Community> = {
 			...existing,
-			...dtoRest,
-			providerInfoId,
+			...dto,
 		};
 
 		// Actualizar

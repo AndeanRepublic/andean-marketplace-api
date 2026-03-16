@@ -174,19 +174,25 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 	}
 
 	/**
-	 * Construye los lookups para shop (nombre de tienda) o community
+	 * Construye los lookups para seller (shop o community)
 	 */
 	private buildSellerLookups(): PipelineStage[] {
 		return [
 			{
 				$lookup: {
-					from: 'shops',
-					let: { ownerId: '$baseInfo.ownerId' },
-					pipeline: [
-						{ $match: { $expr: { $eq: ['$sellerId', '$$ownerId'] } } },
-						{ $limit: 1 },
-					],
-					as: 'shop',
+					from: 'sellerprofiles',
+					let: {
+						ownId: {
+							$convert: {
+								input: '$baseInfo.ownerId',
+								to: 'objectId',
+								onError: null,
+								onNull: null,
+							},
+						},
+					},
+					pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$ownId'] } } }],
+					as: 'seller',
 				},
 			},
 			{
@@ -255,8 +261,8 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 				title: '$baseInfo.title',
 				ownerName: {
 					$cond: {
-						if: { $gt: [{ $size: '$shop' }, 0] },
-						then: { $arrayElemAt: ['$shop.name', 0] },
+						if: { $gt: [{ $size: '$seller' }, 0] },
+						then: { $arrayElemAt: ['$seller.commercialName', 0] },
 						else: {
 							$cond: {
 								if: { $gt: [{ $size: '$community' }, 0] },

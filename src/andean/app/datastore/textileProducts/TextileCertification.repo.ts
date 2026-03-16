@@ -5,7 +5,6 @@ export abstract class TextileCertificationRepository {
 	abstract getTextileCertificationById(
 		id: string,
 	): Promise<TextileCertification | null>;
-	abstract getByIds(ids: string[]): Promise<TextileCertification[]>;
 	abstract getTextileCertificationByName(
 		name: string,
 	): Promise<TextileCertification | null>;

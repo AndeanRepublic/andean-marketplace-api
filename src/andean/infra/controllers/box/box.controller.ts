@@ -9,12 +9,7 @@ import {
 	ParseIntPipe,
 	Post,
 	Query,
-	UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../../core/jwtAuth.guard';
-import { RolesGuard } from '../../core/roles.guard';
-import { Roles } from '../../core/roles.decorator';
-import { AccountRole } from '../../../domain/enums/AccountRole';
 import {
 	ApiTags,
 	ApiOperation,
@@ -22,7 +17,6 @@ import {
 	ApiParam,
 	ApiQuery,
 } from '@nestjs/swagger';
-import { Public } from '../../core/public.decorator';
 import { CreateBoxUseCase } from '../../../app/use_cases/boxes/CreateBoxUseCase';
 import { GetAllBoxesUseCase } from '../../../app/use_cases/boxes/GetAllBoxesUseCase';
 import { GetBoxDetailUseCase } from '../../../app/use_cases/boxes/GetBoxDetailUseCase';
@@ -39,8 +33,6 @@ export class BoxController {
 		private readonly getBoxDetailUseCase: GetBoxDetailUseCase,
 	) {}
 
-	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.ADMIN)
 	@Post('')
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -62,7 +54,6 @@ export class BoxController {
 		return this.createBoxUseCase.handle(createBoxDto);
 	}
 
-	@Public()
 	@Get('')
 	@ApiOperation({
 		summary: 'Listar boxes paginados',
@@ -95,7 +86,6 @@ export class BoxController {
 		return this.getAllBoxesUseCase.handle(page, perPage);
 	}
 
-	@Public()
 	@Get('/:boxId')
 	@ApiOperation({
 		summary: 'Obtener detalle de un box',

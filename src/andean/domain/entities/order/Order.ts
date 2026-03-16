@@ -9,7 +9,6 @@ import { PaymentProvider } from '../../enums/PaymentProvider';
  */
 export interface OrderItem {
 	productId: string;
-	variantId?: string;
 	color?: string;
 	size?: string;
 	material?: string;

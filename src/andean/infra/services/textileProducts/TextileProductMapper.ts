@@ -2,7 +2,6 @@ import { TextileProduct } from 'src/andean/domain/entities/textileProducts/Texti
 import { TextileProductDocument } from '../../persistence/textileProducts/textileProduct.schema';
 import { plainToInstance, instanceToPlain } from 'class-transformer';
 import { CreateTextileProductDto } from '../../controllers/dto/textileProducts/CreateTextileProductDto';
-import { UpdateTextileProductDto } from '../../controllers/dto/textileProducts/UpdateTextileProductDto';
 import { BaseInfo } from 'src/andean/domain/entities/textileProducts/BaseInfo';
 import { PriceInventary } from 'src/andean/domain/entities/textileProducts/PriceInventary';
 import { Atribute } from 'src/andean/domain/entities/textileProducts/Atribute';
@@ -11,21 +10,17 @@ import { DetailTraceability } from 'src/andean/domain/entities/textileProducts/D
 import { TextileOptions } from 'src/andean/domain/entities/textileProducts/TextileOptions';
 import { TextileOptionsItem } from 'src/andean/domain/entities/textileProducts/TextileOptionsItem';
 import { ProductTraceability } from 'src/andean/domain/entities/ProductTraceability';
-import { TextileProductStatus } from 'src/andean/domain/enums/TextileProductStatus';
-import { ProductCurrency } from 'src/andean/domain/enums/ProductCurrency';
 import { Types } from 'mongoose';
 
 export class TextileProductMapper {
 	static fromDocument(doc: TextileProductDocument): TextileProduct {
 		const plain = doc.toObject();
 
-		// Backwards compatibility: default currency for legacy documents
-		const priceInventaryPlain = {
-			...plain.priceInventary,
-			currency: plain.priceInventary?.currency ?? ProductCurrency.USD,
-		};
 		const baseInfo = plainToInstance(BaseInfo, plain.baseInfo);
-		const priceInventary = plainToInstance(PriceInventary, priceInventaryPlain);
+		const priceInventary = plainToInstance(
+			PriceInventary,
+			plain.priceInventary,
+		);
 
 		let atribute: Atribute | undefined;
 		if (plain.atribute) {
@@ -42,24 +37,11 @@ export class TextileProductMapper {
 			});
 		}
 
-		// Backwards compatibility: migrate isBackorderAvailable -> availableUponRequest, certificationId -> certificationIds
-		let detailTraceabilityPlain = plain.detailTraceability;
-		if (detailTraceabilityPlain) {
-			const dt = detailTraceabilityPlain as Record<string, unknown>;
-			detailTraceabilityPlain = {
-				...detailTraceabilityPlain,
-				availableUponRequest:
-					dt.availableUponRequest ?? dt.isBackorderAvailable,
-				certificationIds:
-					dt.certificationIds ??
-					(dt.certificationId ? [dt.certificationId] : undefined),
-			};
-		}
 		let detailTraceability: DetailTraceability | undefined;
-		if (detailTraceabilityPlain) {
+		if (plain.detailTraceability) {
 			detailTraceability = plainToInstance(
 				DetailTraceability,
-				detailTraceabilityPlain,
+				plain.detailTraceability,
 			);
 		}
 
@@ -139,7 +121,6 @@ export class TextileProductMapper {
 		const plain = {
 			id: new Types.ObjectId().toString(),
 			...textileProductData,
-			status: TextileProductStatus.PUBLISHED,
 			baseInfo,
 			priceInventary,
 			atribute,
@@ -156,8 +137,7 @@ export class TextileProductMapper {
 
 	static fromUpdateDto(
 		id: string,
-		dto: UpdateTextileProductDto,
-		existingStatus: TextileProductStatus,
+		dto: CreateTextileProductDto,
 	): TextileProduct {
 		const { ...textileProductData } = dto;
 		const baseInfo = plainToInstance(BaseInfo, dto.baseInfo);
@@ -207,7 +187,6 @@ export class TextileProductMapper {
 		const plain = {
 			id: id,
 			...textileProductData,
-			status: dto.status ?? existingStatus,
 			baseInfo,
 			priceInventary,
 			atribute,

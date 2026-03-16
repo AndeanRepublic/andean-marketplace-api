@@ -5,9 +5,8 @@ import {
 	IsInt,
 	Min,
 	IsObject,
-	IsOptional,
 } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 /**
  * DTO para cada variante en la sincronización.
@@ -42,12 +41,4 @@ export class SyncVariantItemDto {
 	@Min(0)
 	@IsNotEmpty()
 	stock: number;
-
-	@ApiPropertyOptional({
-		description: 'Código SKU único de esta variante (opcional)',
-		example: 'PONCHO-AND-001-RED-M',
-	})
-	@IsString()
-	@IsOptional()
-	sku?: string;
 }

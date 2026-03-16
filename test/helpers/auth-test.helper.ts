@@ -1,35 +1,24 @@
-import {
-	CanActivate,
-	ExecutionContext,
-	UnauthorizedException,
-} from '@nestjs/common';
-import { AccountRole } from '../../src/andean/domain/enums/AccountRole';
+import { CanActivate, ExecutionContext } from '@nestjs/common';
 
 /**
  * Mock JWT auth user profiles for e2e tests.
- *
- * IMPORTANT: `roles` must be an array of `AccountRole` values — this matches
- * what `JwtAuthGuard` sets on `request.user` after verifying a real JWT:
- *   `request['user'] = { userId: payload.sub, roles: payload.roles }`
- *
- * And what `RolesGuard` reads:
- *   `user.roles.includes(role)`
+ * Use these when testing endpoints that require authentication.
  */
 export const mockAuthUsers = {
 	admin: {
-		userId: 'admin-uuid-001',
+		sub: 'admin-uuid-001',
 		email: 'admin@andean-marketplace.com',
-		roles: [AccountRole.ADMIN],
+		role: 'admin',
 	},
 	seller: {
-		userId: 'seller-uuid-001',
+		sub: 'seller-uuid-001',
 		email: 'seller@andean-marketplace.com',
-		roles: [AccountRole.SELLER],
+		role: 'seller',
 	},
 	customer: {
-		userId: 'customer-uuid-789',
+		sub: 'customer-uuid-789',
 		email: 'juan.perez@example.com',
-		roles: [AccountRole.USER],
+		role: 'customer',
 	},
 };
 
@@ -47,15 +36,15 @@ export const mockAuthUsers = {
  * To test unauthorized access:
  * ```ts
  * .overrideGuard(JwtAuthGuard)
- * .useValue(new MockAuthGuard(null)) // will reject with false
+ * .useValue(new MockAuthGuard(null)) // will reject
  * ```
  */
 export class MockAuthGuard implements CanActivate {
-	constructor(private readonly user: Record<string, any> | null) {}
+	constructor(private readonly user: Record<string, any> | null) { }
 
 	canActivate(context: ExecutionContext): boolean {
 		if (!this.user) {
-			throw new UnauthorizedException();
+			return false;
 		}
 		const req = context.switchToHttp().getRequest();
 		req.user = this.user;
@@ -66,9 +55,6 @@ export class MockAuthGuard implements CanActivate {
 /**
  * Factory to create a mock guard that always allows access
  * and injects the given user into `request.user`.
- *
- * The user shape must match what JwtAuthGuard sets:
- *   `{ userId: string, roles: AccountRole[] }`
  */
 export function createAllowAllGuard(user = mockAuthUsers.admin): MockAuthGuard {
 	return new MockAuthGuard(user);

@@ -8,14 +8,8 @@ import {
 	Delete,
 	HttpCode,
 	HttpStatus,
-	UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/andean/infra/core/jwtAuth.guard';
-import { RolesGuard } from 'src/andean/infra/core/roles.guard';
-import { Roles } from 'src/andean/infra/core/roles.decorator';
-import { AccountRole } from 'src/andean/domain/enums/AccountRole';
-import { Public } from 'src/andean/infra/core/public.decorator';
 import { CreateSizeOptionAlternativeUseCase } from 'src/andean/app/use_cases/textileProducts/CreateSizeOptionAlternativeUseCase';
 import { SizeOptionAlternative } from 'src/andean/domain/entities/textileProducts/SizeOptionAlternative';
 import { CreateSizeOptionAlternativeDto } from './dto/textileProducts/CreateSizeOptionAlternativeDto';
@@ -40,8 +34,6 @@ export class SizeOptionAlternativeController {
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
-	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@ApiOperation({
 		summary: 'Crear nueva opción de talla',
 		description:
@@ -64,8 +56,6 @@ export class SizeOptionAlternativeController {
 
 	@Post('/bulk')
 	@HttpCode(HttpStatus.CREATED)
-	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@ApiOperation({
 		summary: 'Crear múltiples opciones de talla',
 		description:
@@ -112,7 +102,6 @@ export class SizeOptionAlternativeController {
 	// 	return this.updateSizeOptionAlternativeUseCase.handle(id, body);
 	// }
 
-	@Public()
 	@Get()
 	@ApiOperation({
 		summary: 'Listar todas las opciones de talla',

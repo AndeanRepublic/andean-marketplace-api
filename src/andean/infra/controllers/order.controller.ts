@@ -8,12 +8,7 @@ import {
 	Query,
 	HttpCode,
 	HttpStatus,
-	UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../core/jwtAuth.guard';
-import { RolesGuard } from '../core/roles.guard';
-import { Roles } from '../core/roles.decorator';
-import { AccountRole } from '../../domain/enums/AccountRole';
 import {
 	ApiTags,
 	ApiOperation,
@@ -22,7 +17,6 @@ import {
 	ApiBody,
 	ApiQuery,
 } from '@nestjs/swagger';
-import { Public } from '../core/public.decorator';
 import { CreateOrderUseCase } from '../../app/use_cases/orders/CreateOrderUseCase';
 import { GetOrderByIdUseCase } from '../../app/use_cases/orders/GetOrderByIdUseCase';
 import { GetOrdersByCustomerUseCase } from '../../app/use_cases/orders/GetOrdersByCustomerUseCase';
@@ -53,7 +47,6 @@ export class OrderController {
 		private readonly capturePayPalOrderUseCase: CapturePayPalOrderUseCase,
 	) {}
 
-	@Public()
 	@Post('')
 	@ApiOperation({
 		summary: 'Crear orden',
@@ -74,14 +67,19 @@ export class OrderController {
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
 		summary: 'Crear orden desde carrito',
-		description:
-			'Crea una orden a partir del carrito del cliente (solo usuarios logueados)',
+		description: 'Crea una orden a partir del carrito del cliente',
 	})
 	@ApiQuery({
 		name: 'customerId',
-		description: 'ID del cliente (requerido)',
+		description: 'ID del cliente (opcional si se proporciona customerEmail)',
 		type: String,
-		required: true,
+		required: false,
+	})
+	@ApiQuery({
+		name: 'customerEmail',
+		description: 'Email del cliente (opcional si se proporciona customerId)',
+		type: String,
+		required: false,
 	})
 	@ApiBody({ type: CreateOrderFromCartDto })
 	@ApiResponse({
@@ -92,13 +90,17 @@ export class OrderController {
 	@ApiResponse({ status: 400, description: 'Carrito vacío o datos inválidos' })
 	@ApiResponse({ status: 404, description: 'Carrito no encontrado' })
 	async createOrderFromCart(
-		@Query('customerId') customerId: string,
+		@Query('customerId') customerId: string | undefined,
+		@Query('customerEmail') customerEmail: string | undefined,
 		@Body() body: CreateOrderFromCartDto,
 	): Promise<Order> {
-		return this.createOrderFromCartUseCase.handle(customerId, body);
+		return this.createOrderFromCartUseCase.handle(
+			customerId,
+			customerEmail,
+			body,
+		);
 	}
 
-	@Public()
 	@Get('/:id')
 	@ApiOperation({
 		summary: 'Obtener orden por ID',
@@ -129,7 +131,6 @@ export class OrderController {
 		return this.getOrderByIdUseCase.handle(id);
 	}
 
-	@Public()
 	@Get('/by-customer/:customerId')
 	@ApiOperation({
 		summary: 'Obtener órdenes por cliente',
@@ -162,8 +163,6 @@ export class OrderController {
 		return this.getOrdersByCustomerUseCase.handle(customerId);
 	}
 
-	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.ADMIN)
 	@Put('/:id/status')
 	@ApiOperation({
 		summary: 'Actualizar estado de la orden',
@@ -198,7 +197,6 @@ export class OrderController {
 		return this.updateOrderStatusUseCase.handle(id, body);
 	}
 
-	@Public()
 	@Post('/paypal/create-order')
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -226,7 +224,6 @@ export class OrderController {
 		return this.createPayPalOrderUseCase.handle(body);
 	}
 
-	@Public()
 	@Post('/paypal/capture-order')
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({

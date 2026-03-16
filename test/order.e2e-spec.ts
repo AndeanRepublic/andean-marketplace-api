@@ -5,9 +5,6 @@ import { FixtureLoader } from './helpers/fixture-loader';
 
 // ─── Controller ─────────────────────────────────────────────────────────────
 import { OrderController } from '../src/andean/infra/controllers/order.controller';
-import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';
-import { RolesGuard } from '../src/andean/infra/core/roles.guard';
-import { createAllowAllGuard, mockAuthUsers } from './helpers/auth-test.helper';
 
 // ─── Use Cases ──────────────────────────────────────────────────────────────
 import { CreateOrderUseCase } from '../src/andean/app/use_cases/orders/CreateOrderUseCase';
@@ -94,12 +91,7 @@ describe('OrderController (e2e)', () => {
 					},
 				},
 			],
-		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue(createAllowAllGuard(mockAuthUsers.admin))
-			.overrideGuard(RolesGuard)
-			.useValue({ canActivate: () => true })
-			.compile();
+		}).compile();
 
 		app = moduleFixture.createNestApplication();
 		app.useGlobalPipes(
@@ -331,6 +323,16 @@ describe('OrderController (e2e)', () => {
 				});
 		});
 
+		it('should create an order from cart with customerEmail query', () => {
+			jest
+				.spyOn(createOrderFromCartUseCase, 'handle')
+				.mockResolvedValueOnce(mockOrder);
+			return request(app.getHttpServer())
+				.post('/orders/from-cart?customerEmail=juan.perez@example.com')
+				.send(createFromCartDto)
+				.expect(HttpStatus.CREATED);
+		});
+
 		it('should call the use case with correct parameters', async () => {
 			jest
 				.spyOn(createOrderFromCartUseCase, 'handle')
@@ -341,29 +343,11 @@ describe('OrderController (e2e)', () => {
 				.expect(HttpStatus.CREATED);
 			expect(createOrderFromCartUseCase.handle).toHaveBeenCalledWith(
 				'customer-uuid-789',
+				undefined,
 				expect.objectContaining({
 					currency: createFromCartDto.currency,
 				}),
 			);
-		});
-
-		it('should return 400 when customerId is missing', async () => {
-			jest
-				.spyOn(createOrderFromCartUseCase, 'handle')
-				.mockImplementationOnce((customerId: string | undefined) => {
-					if (!customerId) {
-						return Promise.reject(
-							new (require('@nestjs/common').BadRequestException)(
-								'customerId must be provided',
-							),
-						);
-					}
-					return Promise.resolve(mockOrder);
-				});
-			await request(app.getHttpServer())
-				.post('/orders/from-cart')
-				.send(createFromCartDto)
-				.expect(HttpStatus.BAD_REQUEST);
 		});
 
 		it('should return 400 when shippingInfo is missing from cart order', () => {

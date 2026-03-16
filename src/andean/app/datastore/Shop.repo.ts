@@ -7,5 +7,4 @@ export abstract class ShopRepository {
 	abstract saveShop(shop: Shop): Promise<Shop>;
 	abstract deleteShop(id: string): Promise<void>;
 	abstract getAllByCategory(category: ShopCategory): Promise<Shop[]>;
-	abstract updateShop(id: string, data: Partial<Shop>): Promise<Shop>;
 }

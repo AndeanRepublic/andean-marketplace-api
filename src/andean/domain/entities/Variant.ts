@@ -15,6 +15,5 @@ export class Variant {
 		public stock: number,
 		public createdAt: Date,
 		public updatedAt: Date,
-		public sku?: string,
 	) {}
 }

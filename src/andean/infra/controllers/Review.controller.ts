@@ -14,11 +14,7 @@ import {
 	ParseFilePipe,
 	MaxFileSizeValidator,
 	FileTypeValidator,
-	UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../core/jwtAuth.guard';
-import { CurrentUser } from '../core/current-user.decorator';
-import { AccountRole } from 'src/andean/domain/enums/AccountRole';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
 	ApiTags,
@@ -28,7 +24,6 @@ import {
 	ApiBody,
 	ApiConsumes,
 } from '@nestjs/swagger';
-import { Public } from '../core/public.decorator';
 import { CreateReviewUseCase } from 'src/andean/app/use_cases/CreateReviewUseCase';
 import { Review } from 'src/andean/domain/entities/Review';
 import { CreateReviewDto } from './dto/CreateReviewDto';
@@ -61,7 +56,6 @@ export class ReviewController {
 		private readonly decrementDislikesUseCase: DecrementDislikesUseCase,
 	) {}
 
-	@UseGuards(JwtAuthGuard)
 	@Post(path_reviews)
 	@HttpCode(HttpStatus.CREATED)
 	@UseInterceptors(FileInterceptor('file'))
@@ -97,7 +91,6 @@ export class ReviewController {
 		return this.createReviewUseCase.handle(body, file);
 	}
 
-	@Public()
 	@Get(path_reviews)
 	@ApiOperation({
 		summary: 'Obtener todas las reseñas',
@@ -112,7 +105,6 @@ export class ReviewController {
 		return this.getAllReviewsUseCase.handle();
 	}
 
-	@Public()
 	@Get(path_reviews_id)
 	@ApiOperation({
 		summary: 'Obtener reseña por ID',
@@ -129,7 +121,6 @@ export class ReviewController {
 		return this.getByIdReviewUseCase.handle(id);
 	}
 
-	@UseGuards(JwtAuthGuard)
 	@Put(path_reviews_id)
 	@ApiOperation({
 		summary: 'Actualizar reseña',
@@ -143,20 +134,14 @@ export class ReviewController {
 		type: ReviewResponse,
 	})
 	@ApiResponse({ status: 400, description: 'Datos de entrada inválidos' })
-	@ApiResponse({
-		status: 403,
-		description: 'No autorizado para modificar esta reseña',
-	})
 	@ApiResponse({ status: 404, description: 'Reseña no encontrada' })
 	async updateReview(
-		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
 		@Param('id') id: string,
 		@Body() body: UpdateReviewDto,
 	): Promise<Review> {
-		return this.updateReviewUseCase.handle(id, requestingUser.userId, body);
+		return this.updateReviewUseCase.handle(id, body);
 	}
 
-	@UseGuards(JwtAuthGuard)
 	@Delete(path_reviews_id)
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@ApiOperation({
@@ -165,23 +150,11 @@ export class ReviewController {
 	})
 	@ApiParam({ name: 'id', description: 'ID de la reseña', type: String })
 	@ApiResponse({ status: 204, description: 'Reseña eliminada exitosamente' })
-	@ApiResponse({
-		status: 403,
-		description: 'No autorizado para eliminar esta reseña',
-	})
 	@ApiResponse({ status: 404, description: 'Reseña no encontrada' })
-	async deleteReview(
-		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
-		@Param('id') id: string,
-	): Promise<void> {
-		return this.deleteReviewUseCase.handle(
-			id,
-			requestingUser.userId,
-			requestingUser.roles,
-		);
+	async deleteReview(@Param('id') id: string): Promise<void> {
+		return this.deleteReviewUseCase.handle(id);
 	}
 
-	@UseGuards(JwtAuthGuard)
 	@Patch(`${path_reviews_id}/likes`)
 	@ApiOperation({
 		summary: 'Incrementar likes',
@@ -198,7 +171,6 @@ export class ReviewController {
 		return this.incrementLikesUseCase.handle(id);
 	}
 
-	@UseGuards(JwtAuthGuard)
 	@Patch(`${path_reviews_id}/dislikes`)
 	@ApiOperation({
 		summary: 'Incrementar dislikes',
@@ -215,7 +187,6 @@ export class ReviewController {
 		return this.incrementDislikesUseCase.handle(id);
 	}
 
-	@UseGuards(JwtAuthGuard)
 	@Delete(`${path_reviews_id}/likes`)
 	@ApiOperation({
 		summary: 'Decrementar likes',
@@ -232,7 +203,6 @@ export class ReviewController {
 		return this.decrementLikesUseCase.handle(id);
 	}
 
-	@UseGuards(JwtAuthGuard)
 	@Delete(`${path_reviews_id}/dislikes`)
 	@ApiOperation({
 		summary: 'Decrementar dislikes',

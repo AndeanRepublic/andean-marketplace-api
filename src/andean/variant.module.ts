@@ -1,8 +1,5 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { TextileProductModule } from './textileProduct.module';
-import { ShopsModule } from './shop.module';
-import { UsersModule } from './users.module';
 
 // Schema
 import { VariantSchema } from './infra/persistence/variant.schema';
@@ -27,9 +24,6 @@ import { VariantController } from './infra/controllers/variantControllers/varian
 @Module({
 	imports: [
 		MongooseModule.forFeature([{ name: 'Variant', schema: VariantSchema }]),
-		forwardRef(() => TextileProductModule),
-		ShopsModule,
-		UsersModule,
 	],
 	controllers: [VariantController],
 	providers: [
@@ -63,4 +57,4 @@ import { VariantController } from './infra/controllers/variantControllers/varian
 		SyncVariantsUseCase,
 	],
 })
-export class VariantModule {}
+export class VariantModule { }

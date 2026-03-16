@@ -1,5 +1,4 @@
-import { Inject, Injectable, ForbiddenException } from '@nestjs/common';
-import { AccountRole } from '../../../domain/enums/AccountRole';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CustomerProfileRepository } from '../../datastore/Customer.repo';
 import { CartShopItemRepository } from '../../datastore/CartShopItem.repo';
 import { CartShopRepository } from '../../datastore/CartShop.repo';
@@ -15,37 +14,23 @@ export class CleanCartUseCase {
 		private readonly cartShopRepository: CartShopRepository,
 	) {}
 
-	async handle(
-		requestingUserId: string,
-		roles: AccountRole[],
-		targetCustomerId?: string,
-	): Promise<void> {
-		// Pattern H — 2-hop ownership check with ADMIN bypass
-		let customerId: string | null;
-		const isAdmin = roles.includes(AccountRole.ADMIN);
-		if (isAdmin && targetCustomerId) {
-			// ADMIN targeting a specific customer's cart
-			customerId = targetCustomerId;
-		} else if (!isAdmin) {
-			const customer =
-				await this.customerRepository.getCustomerByUserId(requestingUserId);
-			if (!customer) {
-				throw new ForbiddenException('You can only access your own cart');
-			}
-			customerId = customer.id;
-		} else {
-			// ADMIN with no targetCustomerId: resolve own customer profile
-			const customer =
-				await this.customerRepository.getCustomerByUserId(requestingUserId);
-			customerId = customer?.id ?? null;
+	async handle(customerId?: string, customerEmail?: string): Promise<void> {
+		// Validar que al menos uno de los identificadores esté presente
+		if (!customerId && !customerEmail) {
+			throw new NotFoundException('Either customerId or customerEmail must be provided');
 		}
 
-		if (!customerId) {
-			return;
+		// Si hay customerId, validar que el customer existe
+		if (customerId) {
+			const customerFound =
+				await this.customerRepository.getCustomerById(customerId);
+			if (!customerFound) {
+				throw new NotFoundException('CustomerProfile not found');
+			}
 		}
 
 		const cartFound =
-			await this.cartShopRepository.getCartByCustomerId(customerId);
+			await this.cartShopRepository.getCartByIdentifier(customerId, customerEmail);
 		if (cartFound) {
 			await this.cartItemRepository.deleteItemsByCartShopId(cartFound.id);
 		}
