@@ -7,8 +7,14 @@ import {
 	Param,
 	HttpCode,
 	HttpStatus,
+	UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../../core/jwtAuth.guard';
+import { RolesGuard } from '../../core/roles.guard';
+import { Roles } from '../../core/roles.decorator';
+import { AccountRole } from '../../../domain/enums/AccountRole';
+import { Public } from '../../core/public.decorator';
 import { CreateSuperfoodSalesUnitSizeDto } from '../dto/superfoods/CreateSuperfoodSalesUnitSizeDto';
 import { CreateManySuperfoodSalesUnitSizesDto } from '../dto/superfoods/CreateManySuperfoodSalesUnitSizesDto';
 import { SuperfoodSalesUnitSizeResponse } from '../../../app/modules/superfoods/SuperfoodSalesUnitSizeResponse';
@@ -29,6 +35,8 @@ export class SuperfoodSalesUnitSizeController {
 		private readonly deleteSuperfoodSalesUnitSizeUseCase: DeleteSuperfoodSalesUnitSizeUseCase,
 	) {}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post('/bulk')
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -51,6 +59,8 @@ export class SuperfoodSalesUnitSizeController {
 		return await this.createManySuperfoodSalesUnitSizesUseCase.handle(dto);
 	}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -72,6 +82,7 @@ export class SuperfoodSalesUnitSizeController {
 		return await this.createSuperfoodSalesUnitSizeUseCase.handle(dto);
 	}
 
+	@Public()
 	@Get()
 	@ApiOperation({
 		summary: 'Listar todos los tamaños de unidad',

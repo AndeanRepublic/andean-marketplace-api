@@ -10,7 +10,13 @@ import {
 	ParseIntPipe,
 	HttpCode,
 	HttpStatus,
+	UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from '../../core/jwtAuth.guard';
+import { RolesGuard } from '../../core/roles.guard';
+import { Roles } from '../../core/roles.decorator';
+import { CurrentUser } from '../../core/current-user.decorator';
+import { AccountRole } from '../../../domain/enums/AccountRole';
 import {
 	ApiTags,
 	ApiOperation,
@@ -18,9 +24,11 @@ import {
 	ApiParam,
 	ApiQuery,
 } from '@nestjs/swagger';
+import { Public } from '../../core/public.decorator';
 import { CreateTextileProductUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileProductUseCase';
 import { TextileProduct } from 'src/andean/domain/entities/textileProducts/TextileProduct';
 import { CreateTextileProductDto } from '../dto/textileProducts/CreateTextileProductDto';
+import { UpdateTextileProductDto } from '../dto/textileProducts/UpdateTextileProductDto';
 import { UpdateTextileProductUseCase } from 'src/andean/app/use_cases/textileProducts/UpdateTextileProductUseCase';
 import { GetAllTextileProductsUseCase } from 'src/andean/app/use_cases/textileProducts/GetAllTextileProductsUseCase';
 import { GetByIdTextileProductUseCase } from 'src/andean/app/use_cases/textileProducts/GetByIdTextileProductUseCase';
@@ -46,6 +54,8 @@ export class TextileProductController {
 		private readonly getByIdTextileProductDetailUseCase: GetByIdTextileProductDetailUseCase,
 	) {}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -73,6 +83,8 @@ export class TextileProductController {
 		return this.createTextileProductUseCase.handle(body);
 	}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Put('/:id')
 	@ApiOperation({
 		summary: 'Actualizar producto textil',
@@ -95,11 +107,18 @@ export class TextileProductController {
 	})
 	async updateTextileProduct(
 		@Param('id') id: string,
-		@Body() body: CreateTextileProductDto,
+		@Body() body: UpdateTextileProductDto,
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
 	): Promise<TextileProduct> {
-		return this.updateTextileProductUseCase.handle(id, body);
+		return this.updateTextileProductUseCase.handle(
+			id,
+			body,
+			requestingUser.userId,
+			requestingUser.roles,
+		);
 	}
 
+	@Public()
 	@Get()
 	@ApiOperation({
 		summary: 'Listar productos textiles con filtros',
@@ -212,6 +231,7 @@ export class TextileProductController {
 	// 	return this.getByIdTextileProductUseCase.handle(id);
 	// }
 
+	@Public()
 	@Get('/:id/details')
 	@ApiOperation({
 		summary: 'Obtener producto textil por ID',
@@ -238,6 +258,8 @@ export class TextileProductController {
 		return this.getByIdTextileProductDetailUseCase.handle(id);
 	}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Delete('/:id')
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@ApiOperation({
@@ -257,7 +279,14 @@ export class TextileProductController {
 		status: 404,
 		description: 'Producto no encontrado',
 	})
-	async deleteTextileProduct(@Param('id') id: string): Promise<void> {
-		return this.deleteTextileProductUseCase.handle(id);
+	async deleteTextileProduct(
+		@Param('id') id: string,
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
+	): Promise<void> {
+		return this.deleteTextileProductUseCase.handle(
+			id,
+			requestingUser.userId,
+			requestingUser.roles,
+		);
 	}
 }

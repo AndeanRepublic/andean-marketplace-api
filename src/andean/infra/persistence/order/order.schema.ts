@@ -9,6 +9,7 @@ import { PaymentProvider } from '../../../domain/enums/PaymentProvider';
 const OrderItemSchema = new Schema(
 	{
 		productId: { type: String, required: true },
+		variantId: { type: String, required: false },
 		color: { type: String, required: false },
 		size: { type: String, required: false },
 		material: { type: String, required: false },
@@ -113,6 +114,7 @@ export interface OrderDocument extends Document {
 	status: OrderStatus;
 	items: Array<{
 		productId: string;
+		variantId?: string;
 		color?: string;
 		size?: string;
 		material?: string;

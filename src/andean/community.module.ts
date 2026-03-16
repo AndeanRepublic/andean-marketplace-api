@@ -28,6 +28,7 @@ import { DeleteSealUseCase } from './app/use_cases/community/DeleteSealUseCase';
 
 // Modules
 import { MediaItemModule } from './mediaItem.module';
+import { ProviderInfoModule } from './providerInfo.module';
 
 // Controller
 import { CommunityController } from './infra/controllers/community.controller';
@@ -39,6 +40,7 @@ import { CommunityController } from './infra/controllers/community.controller';
 			{ name: 'Seal', schema: SealSchema },
 		]),
 		MediaItemModule,
+		ProviderInfoModule,
 	],
 	controllers: [CommunityController],
 	providers: [
@@ -67,7 +69,7 @@ import { CommunityController } from './infra/controllers/community.controller';
 	exports: [CommunityRepository, SealRepository],
 })
 export class CommunityModule implements OnModuleInit {
-	constructor(@InjectConnection() private readonly connection: Connection) { }
+	constructor(@InjectConnection() private readonly connection: Connection) {}
 
 	async onModuleInit() {
 		try {

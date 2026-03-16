@@ -5,17 +5,23 @@ import {
 	IsArray,
 	ArrayNotEmpty,
 	IsEnum,
+	IsOptional,
+	IsMongoId,
+	ValidateNested,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { CreateProviderInfoDto } from './providerInfo/CreateProviderInfoDto';
 
 export class CreateShopDto {
-	@ApiProperty({
-		description: 'ID del vendedor propietario de la tienda',
+	@ApiPropertyOptional({
+		description:
+			'ID del vendedor propietario de la tienda (opcional para emprendedores sin usuario)',
 		example: '64b1f2c3d4e5f6a7b8c9d0e1',
 	})
 	@IsString()
-	@IsNotEmpty()
-	sellerId: string;
+	@IsOptional()
+	sellerId?: string;
 
 	@ApiProperty({
 		description: 'Nombre de la tienda',
@@ -24,13 +30,6 @@ export class CreateShopDto {
 	@IsString()
 	@IsNotEmpty()
 	name: string;
-
-	@ApiPropertyOptional({
-		description: 'Descripción de la tienda',
-		example: 'Tienda de textiles y artesanías tradicionales del Cusco',
-	})
-	@IsString()
-	description: string;
 
 	@ApiProperty({
 		description: 'Categorías de la tienda',
@@ -43,28 +42,21 @@ export class CreateShopDto {
 	@IsEnum(ShopCategory, { each: true })
 	categories: ShopCategory[];
 
-	@ApiProperty({
-		description: 'Políticas de la tienda (devoluciones, envíos, etc.)',
-		example:
-			'Se aceptan devoluciones dentro de los 7 días posteriores a la compra.',
+	@ApiPropertyOptional({
+		description: 'ID del MediaItem para la foto del artesano/emprendedor',
+		example: '67890abcdef1234567890126',
 	})
 	@IsString()
-	@IsNotEmpty()
-	policies: string;
+	@IsMongoId()
+	@IsOptional()
+	artisanPhotoMediaId?: string;
 
-	@ApiProperty({
-		description: 'Ciudad o región de origen de los envíos',
-		example: 'Cusco, Peru',
+	@ApiPropertyOptional({
+		description: 'Datos de ProviderInfo para crear y asociar a la tienda',
+		type: CreateProviderInfoDto,
 	})
-	@IsString()
-	@IsNotEmpty()
-	shippingOrigin: string;
-
-	@ApiProperty({
-		description: 'Área de cobertura de envíos',
-		example: 'Nacional e Internacional',
-	})
-	@IsString()
-	@IsNotEmpty()
-	shippingArea: string;
+	@IsOptional()
+	@ValidateNested()
+	@Type(() => CreateProviderInfoDto)
+	providerInfo?: CreateProviderInfoDto;
 }

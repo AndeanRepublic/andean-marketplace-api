@@ -12,6 +12,7 @@
 		"priceInventary": {
 			"basePrice": 150.0,
 			"totalStock": 50,
+			"currency": "USD",
 			"SKU": "PONCHO-AND-001"
 		},
 		"isDiscountActive": false,
@@ -36,7 +37,6 @@
 		"updatedAt": "2026-01-01T00:00:00.000Z"
 	},
 	"createDto": {
-		"status": "PUBLISHED",
 		"baseInfo": {
 			"title": "Poncho Andino Premium",
 			"mediaIds": [],
@@ -47,6 +47,7 @@
 		"priceInventary": {
 			"basePrice": 150.0,
 			"totalStock": 50,
+			"currency": "USD",
 			"SKU": "PONCHO-AND-001"
 		},
 		"categoryId": "category-poncho-001"
@@ -63,6 +64,7 @@
 		"priceInventary": {
 			"basePrice": 180.0,
 			"totalStock": 75,
+			"currency": "USD",
 			"SKU": "PONCHO-AND-001"
 		},
 		"categoryId": "category-poncho-001"

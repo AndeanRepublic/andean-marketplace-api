@@ -2,14 +2,19 @@ import {
 	Controller,
 	Get,
 	Post,
-	Put,
+	Patch,
 	Delete,
 	Body,
 	Param,
 	HttpCode,
 	HttpStatus,
 	Inject,
+	UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from '../core/jwtAuth.guard';
+import { RolesGuard } from '../core/roles.guard';
+import { Roles } from '../core/roles.decorator';
+import { AccountRole } from '../../domain/enums/AccountRole';
 import {
 	ApiTags,
 	ApiOperation,
@@ -17,6 +22,7 @@ import {
 	ApiParam,
 	ApiBody,
 } from '@nestjs/swagger';
+import { Public } from '../core/public.decorator';
 import { CreateCommunityUseCase } from '../../app/use_cases/community/CreateCommunityUseCase';
 import { UpdateCommunityUseCase } from '../../app/use_cases/community/UpdateCommunityUseCase';
 import { GetCommunityByIdUseCase } from '../../app/use_cases/community/GetCommunityByIdUseCase';
@@ -57,6 +63,23 @@ export class CommunityController {
 		private readonly deleteSealUseCase: DeleteSealUseCase,
 	) {}
 
+	@Public()
+	@Get(path_seals)
+	@ApiOperation({
+		summary: 'Listar todos los sellos',
+		description: 'Retorna la lista completa de sellos de comunidad disponibles',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista de sellos',
+		type: [SealResponse],
+	})
+	async getAllSeals(): Promise<Seal[]> {
+		return this.getAllSealsUseCase.handle();
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({ summary: 'Create a new community' })
@@ -74,20 +97,22 @@ export class CommunityController {
 		return this.toResponse(community);
 	}
 
-	// @Get(':id')
-	// @ApiOperation({ summary: 'Get community by ID' })
-	// @ApiParam({ name: 'id', description: 'Community ID' })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'The community has been found.',
-	// 	type: CommunityResponse,
-	// })
-	// @ApiResponse({ status: 404, description: 'Community not found.' })
-	// async getById(@Param('id') id: string): Promise<CommunityResponse> {
-	// 	const community = await this.getCommunityByIdUseCase.execute(id);
-	// 	return this.toResponse(community);
-	// }
+	@Public()
+	@Get(':id')
+	@ApiOperation({ summary: 'Get community by ID' })
+	@ApiParam({ name: 'id', description: 'Community ID' })
+	@ApiResponse({
+		status: 200,
+		description: 'The community has been found.',
+		type: CommunityResponse,
+	})
+	@ApiResponse({ status: 404, description: 'Community not found.' })
+	async getById(@Param('id') id: string): Promise<CommunityResponse> {
+		const community = await this.getCommunityByIdUseCase.execute(id);
+		return this.toResponse(community);
+	}
 
+	@Public()
 	@Get()
 	@ApiOperation({ summary: 'List all communities' })
 	@ApiResponse({
@@ -100,26 +125,28 @@ export class CommunityController {
 		return communities.map((c) => this.toResponse(c));
 	}
 
-	// @Put(':id')
-	// @ApiOperation({ summary: 'Update community' })
-	// @ApiParam({ name: 'id', description: 'Community ID' })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'The community has been successfully updated.',
-	// 	type: CommunityResponse,
-	// })
-	// @ApiResponse({ status: 404, description: 'Community not found.' })
-	// @ApiResponse({
-	// 	status: 400,
-	// 	description: 'Bad Request - Community name already exists.',
-	// })
-	// async update(
-	// 	@Param('id') id: string,
-	// 	@Body() dto: UpdateCommunityDto,
-	// ): Promise<CommunityResponse> {
-	// 	const community = await this.updateCommunityUseCase.execute(id, dto);
-	// 	return this.toResponse(community);
-	// }
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Patch(':id')
+	@ApiOperation({ summary: 'Update community' })
+	@ApiParam({ name: 'id', description: 'Community ID' })
+	@ApiResponse({
+		status: 200,
+		description: 'The community has been successfully updated.',
+		type: CommunityResponse,
+	})
+	@ApiResponse({ status: 404, description: 'Community not found.' })
+	@ApiResponse({
+		status: 400,
+		description: 'Bad Request - Community name already exists.',
+	})
+	async update(
+		@Param('id') id: string,
+		@Body() dto: UpdateCommunityDto,
+	): Promise<CommunityResponse> {
+		const community = await this.updateCommunityUseCase.execute(id, dto);
+		return this.toResponse(community);
+	}
 
 	// @Delete(':id')
 	// @HttpCode(HttpStatus.NO_CONTENT)
@@ -131,6 +158,8 @@ export class CommunityController {
 	// 	await this.deleteCommunityUseCase.execute(id);
 	// }
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post(`${path_seals}/bulk`)
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -150,6 +179,8 @@ export class CommunityController {
 		return this.createManySealsUseCase.handle(body);
 	}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post(path_seals)
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -167,20 +198,6 @@ export class CommunityController {
 	@ApiResponse({ status: 404, description: 'MediaItem no encontrado' })
 	async createSeal(@Body() body: CreateSealDto): Promise<Seal> {
 		return this.createSealUseCase.handle(body);
-	}
-
-	@Get(path_seals)
-	@ApiOperation({
-		summary: 'Listar todos los sellos',
-		description: 'Retorna la lista completa de sellos de comunidad disponibles',
-	})
-	@ApiResponse({
-		status: 200,
-		description: 'Lista de sellos',
-		type: [SealResponse],
-	})
-	async getAllSeals(): Promise<Seal[]> {
-		return this.getAllSealsUseCase.handle();
 	}
 
 	// @Get(path_seals_id)

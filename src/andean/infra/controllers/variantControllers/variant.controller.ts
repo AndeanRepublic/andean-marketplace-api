@@ -8,8 +8,15 @@ import {
 	Delete,
 	HttpCode,
 	HttpStatus,
+	UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../../core/jwtAuth.guard';
+import { RolesGuard } from '../../core/roles.guard';
+import { Roles } from '../../core/roles.decorator';
+import { CurrentUser } from '../../core/current-user.decorator';
+import { AccountRole } from '../../../domain/enums/AccountRole';
+import { Public } from '../../core/public.decorator';
 import { VariantResponse } from 'src/andean/app/modules/variant/VariantResponse';
 import { CreateVariantUseCase } from 'src/andean/app/use_cases/variant/CreateVariantUseCase';
 import { CreateManyVariantsUseCase } from 'src/andean/app/use_cases/variant/CreateManyVariantsUseCase';
@@ -41,6 +48,8 @@ export class VariantController {
 		private readonly syncVariantsUseCase: SyncVariantsUseCase,
 	) {}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({ summary: 'Create a new variant' })
@@ -61,6 +70,8 @@ export class VariantController {
 	// 	return this.createManyVariantsUseCase.execute(body);
 	// }
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Put('/sync')
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({ summary: 'Sync variants for a product' })
@@ -69,6 +80,7 @@ export class VariantController {
 		return this.syncVariantsUseCase.execute(body);
 	}
 
+	@Public()
 	@Get()
 	@ApiOperation({
 		summary: 'Obtener todas las variantes',
@@ -83,6 +95,7 @@ export class VariantController {
 		return this.getAllVariantsUseCase.execute();
 	}
 
+	@Public()
 	@Get('/product/:productId')
 	@ApiOperation({
 		summary: 'Obtener variantes por producto',
@@ -102,6 +115,7 @@ export class VariantController {
 		return this.getVariantsByProductIdUseCase.execute(productId);
 	}
 
+	@Public()
 	@Get('/:id')
 	@ApiOperation({
 		summary: 'Obtener variante por ID',
@@ -118,6 +132,8 @@ export class VariantController {
 		return this.getVariantByIdUseCase.execute(id);
 	}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Put('/:id')
 	@ApiOperation({ summary: 'Update variant' })
 	@ApiParam({ name: 'id', description: 'Variant id' })
@@ -125,19 +141,36 @@ export class VariantController {
 	async update(
 		@Param('id') id: string,
 		@Body() body: UpdateVariantDto,
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
 	): Promise<Variant> {
-		return this.updateVariantUseCase.execute(id, body);
+		return this.updateVariantUseCase.execute(
+			id,
+			body,
+			requestingUser.userId,
+			requestingUser.roles,
+		);
 	}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Delete('/:id')
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@ApiOperation({ summary: 'Delete variant' })
 	@ApiParam({ name: 'id', description: 'Variant id' })
 	@ApiResponse({ status: 204, description: 'Variant deleted' })
-	async delete(@Param('id') id: string): Promise<void> {
-		return this.deleteVariantUseCase.execute(id);
+	async delete(
+		@Param('id') id: string,
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
+	): Promise<void> {
+		return this.deleteVariantUseCase.execute(
+			id,
+			requestingUser.userId,
+			requestingUser.roles,
+		);
 	}
 
+	// TODO: add owner-or-admin authorization check
+	@UseGuards(JwtAuthGuard)
 	@Delete('/product/:productId')
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@ApiOperation({ summary: 'Delete variants by product id' })

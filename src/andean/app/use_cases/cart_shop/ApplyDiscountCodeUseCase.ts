@@ -3,11 +3,15 @@ import {
 	Injectable,
 	NotFoundException,
 	BadRequestException,
+	ForbiddenException,
 } from '@nestjs/common';
 import { CartShopItemRepository } from '../../datastore/CartShopItem.repo';
 import { CartShopRepository } from '../../datastore/CartShop.repo';
+import { CustomerProfileRepository } from '../../datastore/Customer.repo';
 import { DiscountCodeService } from '../../../infra/services/DiscountCodeService';
+import { AccountRole } from '../../../domain/enums/AccountRole';
 import { ApplyDiscountResponse } from '../../modules/cart/ApplyDiscountResponse';
+import { CartItem } from '../../../domain/entities/CartItem';
 
 @Injectable()
 export class ApplyDiscountCodeUseCase {
@@ -16,6 +20,8 @@ export class ApplyDiscountCodeUseCase {
 		private readonly cartItemRepository: CartShopItemRepository,
 		@Inject(CartShopRepository)
 		private readonly cartShopRepository: CartShopRepository,
+		@Inject(CustomerProfileRepository)
+		private readonly customerRepository: CustomerProfileRepository,
 		@Inject(DiscountCodeService)
 		private readonly discountCodeService: DiscountCodeService,
 	) {}
@@ -23,9 +29,41 @@ export class ApplyDiscountCodeUseCase {
 	async handle(
 		cartItemId: string,
 		code: string,
+		requestingUserId: string,
+		roles: AccountRole[],
 	): Promise<ApplyDiscountResponse> {
-		// 1. Validar que el CartItem existe
-		const cartItem = await this.cartItemRepository.getById(cartItemId);
+		// Pattern H 3-hop ownership block — MUST run as FIRST action (spec: ownership before discount validation)
+		const isAdmin = roles.includes(AccountRole.ADMIN);
+		let cartItemForOwnership: CartItem | null = null;
+		if (!isAdmin) {
+			// Step 1: resolve caller's customer profile
+			const customer =
+				await this.customerRepository.getCustomerByUserId(requestingUserId);
+			if (!customer) {
+				throw new ForbiddenException('You can only access your own cart');
+			}
+			// Step 2: fetch cartItem (reuse below to avoid double fetch)
+			cartItemForOwnership = await this.cartItemRepository.getById(cartItemId);
+			if (!cartItemForOwnership) {
+				throw new NotFoundException('CartItem not found');
+			}
+			// Step 3: resolve parent cart
+			const cartShop = await this.cartShopRepository.getCartById(
+				cartItemForOwnership.cartShopId,
+			);
+			if (!cartShop) {
+				throw new NotFoundException('CartShop not found');
+			}
+			// Step 4: compare ownership
+			if (cartShop.customerId !== customer.id) {
+				throw new ForbiddenException('You can only access your own cart');
+			}
+		}
+
+		// 1. Validar que el CartItem existe — reuse from ownership block for non-ADMIN
+		const cartItem =
+			cartItemForOwnership ??
+			(await this.cartItemRepository.getById(cartItemId));
 		if (!cartItem) {
 			throw new NotFoundException('CartItem not found');
 		}
@@ -36,9 +74,7 @@ export class ApplyDiscountCodeUseCase {
 		);
 
 		// 3. Validar que ningún CartItem tenga discount > 0 (incluso el actual)
-		const hasExistingDiscount = allCartItems.some(
-			(item) => item.discount > 0,
-		);
+		const hasExistingDiscount = allCartItems.some((item) => item.discount > 0);
 
 		if (hasExistingDiscount) {
 			throw new BadRequestException(
@@ -56,12 +92,16 @@ export class ApplyDiscountCodeUseCase {
 
 		// Validar que el carrito tenga un identificador válido
 		if (!cartShop.customerId && !cartShop.customerEmail) {
-			throw new BadRequestException('CartShop must have either customerId or customerEmail');
+			throw new BadRequestException(
+				'CartShop must have either customerId or customerEmail',
+			);
 		}
 
 		// 5. Validar el código con la API externa (solo si hay customerId)
 		if (!cartShop.customerId) {
-			throw new BadRequestException('Discount codes can only be applied to carts with a registered customer');
+			throw new BadRequestException(
+				'Discount codes can only be applied to carts with a registered customer',
+			);
 		}
 
 		const validationResult =

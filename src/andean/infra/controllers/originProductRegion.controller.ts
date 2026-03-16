@@ -8,8 +8,14 @@ import {
 	Param,
 	HttpCode,
 	HttpStatus,
+	UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../core/jwtAuth.guard';
+import { RolesGuard } from '../core/roles.guard';
+import { Roles } from '../core/roles.decorator';
+import { AccountRole } from '../../domain/enums/AccountRole';
+import { Public } from '../core/public.decorator';
 import { CreateOriginProductRegionUseCase } from '../../app/use_cases/origin/CreateOriginProductRegionUseCase';
 import { CreateManyOriginProductRegionsUseCase } from '../../app/use_cases/origin/CreateManyOriginProductRegionsUseCase';
 import { UpdateOriginProductRegionUseCase } from '../../app/use_cases/origin/UpdateOriginProductRegionUseCase';
@@ -34,6 +40,8 @@ export class OriginProductRegionController {
 		private readonly deleteRegionUseCase: DeleteOriginProductRegionUseCase,
 	) {}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post('/bulk')
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({ summary: 'Create multiple origin product regions' })
@@ -53,6 +61,8 @@ export class OriginProductRegionController {
 		return regions.map((r) => this.toResponse(r));
 	}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({ summary: 'Create a new origin product region' })
@@ -86,6 +96,7 @@ export class OriginProductRegionController {
 	// 	return this.toResponse(region);
 	// }
 
+	@Public()
 	@Get()
 	@ApiOperation({ summary: 'List all origin product regions' })
 	@ApiResponse({
