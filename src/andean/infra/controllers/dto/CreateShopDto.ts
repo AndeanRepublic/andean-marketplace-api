@@ -31,13 +31,6 @@ export class CreateShopDto {
 	@IsNotEmpty()
 	name: string;
 
-	@ApiPropertyOptional({
-		description: 'Descripción de la tienda',
-		example: 'Tienda de textiles y artesanías tradicionales del Cusco',
-	})
-	@IsString()
-	description: string;
-
 	@ApiProperty({
 		description: 'Categorías de la tienda',
 		enum: ShopCategory,

@@ -6,7 +6,6 @@ export class Shop {
 		public sellerId: string | undefined,
 		public name: string,
 		public categories: ShopCategory[],
-		public description?: string,
 		public providerInfoId?: string,
 		public artisanPhotoMediaId?: string,
 	) {}

@@ -21,12 +21,6 @@ export class ShopResponse {
 	name: string;
 
 	@ApiProperty({
-		description: 'Descripción de la tienda',
-		example: 'Tienda de textiles y artesanías tradicionales del Cusco',
-	})
-	description: string;
-
-	@ApiProperty({
 		description: 'Categorías de la tienda',
 		enum: ShopCategory,
 		isArray: true,

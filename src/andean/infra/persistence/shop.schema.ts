@@ -6,7 +6,6 @@ export const ShopSchema = new Schema({
 	id: String,
 	sellerId: String,
 	name: String,
-	description: String,
 	categories: [
 		{
 			type: String,
@@ -22,7 +21,6 @@ export interface ShopDocument extends Document<string> {
 	id: string;
 	sellerId?: string;
 	name: string;
-	description: string;
 	categories: ShopCategory[];
 	providerInfoId?: string;
 	artisanPhotoMediaId?: string;

@@ -12,7 +12,7 @@ export class MediaItemRepoImpl implements MediaItemRepository {
 	constructor(
 		@InjectModel('MediaItem')
 		private readonly model: Model<MediaItemDocument>,
-	) { }
+	) {}
 
 	async getById(id: string): Promise<MediaItem | null> {
 		const objectId = MongoIdUtils.stringToObjectId(id);
