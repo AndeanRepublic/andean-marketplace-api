@@ -13,9 +13,6 @@ export const ShopSchema = new Schema({
 			enum: Object.values(ShopCategory),
 		},
 	],
-	policies: String,
-	shippingOrigin: String,
-	shippingArea: String,
 	providerInfoId: { type: String, required: false },
 });
 
@@ -26,8 +23,5 @@ export interface ShopDocument extends Document<string> {
 	name: string;
 	description: string;
 	categories: ShopCategory[];
-	policies: string;
-	shippingOrigin: string;
-	shippingArea: string;
 	providerInfoId?: string;
 }

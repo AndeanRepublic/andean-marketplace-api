@@ -21,6 +21,7 @@ import { VariantModule } from './variant.module';
 import { TextileProductModule } from './textileProduct.module';
 import { SuperfoodModule } from './superfood.module';
 import { CommunityModule } from './community.module';
+import { ShopsModule } from './shop.module';
 import { DiscountCodeService } from './infra/services/DiscountCodeService';
 import { TextileProductInfoProvider } from './infra/services/products/TextileProductInfoProvider';
 import { SuperfoodProductInfoProvider } from './infra/services/products/SuperfoodProductInfoProvider';
@@ -48,6 +49,7 @@ import { BoxModule } from './box.module';
 		forwardRef(() => TextileProductModule),
 		forwardRef(() => SuperfoodModule),
 		CommunityModule,
+		ShopsModule,
 		BoxModule,
 	],
 	controllers: [CartShopController],

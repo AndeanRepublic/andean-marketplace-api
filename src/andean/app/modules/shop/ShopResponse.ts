@@ -33,23 +33,4 @@ export class ShopResponse {
 		example: [ShopCategory.UNKNOWN],
 	})
 	categories: ShopCategory[];
-
-	@ApiProperty({
-		description: 'Políticas de la tienda (devoluciones, envíos, etc.)',
-		example:
-			'Se aceptan devoluciones dentro de los 7 días posteriores a la compra.',
-	})
-	policies: string;
-
-	@ApiProperty({
-		description: 'Ciudad o región de origen de los envíos',
-		example: 'Cusco, Peru',
-	})
-	shippingOrigin: string;
-
-	@ApiProperty({
-		description: 'Área de cobertura de envíos',
-		example: 'Nacional e Internacional',
-	})
-	shippingArea: string;
 }

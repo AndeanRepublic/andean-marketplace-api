@@ -3,6 +3,7 @@ import { ShopRepository } from '../../datastore/Shop.repo';
 import { CreateShopDto } from '../../../infra/controllers/dto/CreateShopDto';
 import { Shop } from '../../../domain/entities/Shop';
 import { SellerProfileRepository } from '../../datastore/Seller.repo';
+import { ShopMapper } from '../../../infra/services/ShopMapper';
 
 @Injectable()
 export class CreateShopUseCase {
@@ -20,17 +21,7 @@ export class CreateShopUseCase {
 		if (!sellerFound) {
 			throw new NotFoundException();
 		}
-		const shopToSave = new Shop(
-			crypto.randomUUID(),
-			shopDto.sellerId,
-			shopDto.name,
-			shopDto.categories,
-			shopDto.description,
-			shopDto.policies,
-			shopDto.shippingOrigin,
-			shopDto.shippingArea,
-			shopDto.providerInfoId,
-		);
+		const shopToSave = ShopMapper.fromCreateDto(shopDto);
 		return this.shopRepository.saveShop(shopToSave);
 	}
 }
