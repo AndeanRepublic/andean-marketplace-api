@@ -26,18 +26,8 @@ export class ShopRepoImpl extends ShopRepository {
 	}
 
 	async saveShop(shop: Shop): Promise<Shop> {
-		const created = new this.shopModel({
-			_id: crypto.randomUUID(),
-			id: shop.id,
-			sellerId: shop.sellerId,
-			name: shop.name,
-			description: shop.description,
-			categories: shop.categories,
-			policies: shop.policies,
-			shippingOrigin: shop.shippingOrigin,
-			shippingArea: shop.shippingArea,
-			providerInfoId: shop.providerInfoId,
-		});
+		const plain = ShopMapper.toPersistence(shop);
+		const created = new this.shopModel(plain);
 		const savedShop = await created.save();
 		return ShopMapper.fromDocument(savedShop);
 	}

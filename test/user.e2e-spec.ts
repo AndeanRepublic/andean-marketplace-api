@@ -37,7 +37,6 @@ describe('UserController (e2e) — ownership', () => {
 		ruc: '20123456789',
 		typePerson: PersonType.NATURAL,
 		country: 'Peru',
-		commercialName: 'Artesanías Andinas',
 		address: 'Av. El Sol 123, Cusco',
 	};
 

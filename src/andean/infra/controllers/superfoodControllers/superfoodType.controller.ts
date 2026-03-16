@@ -14,6 +14,7 @@ import { JwtAuthGuard } from '../../core/jwtAuth.guard';
 import { RolesGuard } from '../../core/roles.guard';
 import { Roles } from '../../core/roles.decorator';
 import { AccountRole } from '../../../domain/enums/AccountRole';
+import { Public } from '../../core/public.decorator';
 import { CreateSuperfoodTypeDto } from '../dto/superfoods/CreateSuperfoodTypeDto';
 import { CreateManySuperfoodTypesDto } from '../dto/superfoods/CreateManySuperfoodTypesDto';
 import { SuperfoodTypeResponse } from '../../../app/modules/superfoods/SuperfoodTypeResponse';
@@ -81,6 +82,7 @@ export class SuperfoodTypeController {
 		return await this.createSuperfoodTypeUseCase.handle(dto);
 	}
 
+	@Public()
 	@Get()
 	@ApiOperation({
 		summary: 'Listar todos los tipos',

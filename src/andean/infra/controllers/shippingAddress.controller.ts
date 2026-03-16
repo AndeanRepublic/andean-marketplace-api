@@ -20,6 +20,7 @@ import {
 	ApiParam,
 	ApiBody,
 } from '@nestjs/swagger';
+import { Public } from '../core/public.decorator';
 import { CreateShippingAddressUseCase } from '../../app/use_cases/shipping/CreateShippingAddressUseCase';
 import { GetShippingAddressesByCustomerUseCase } from '../../app/use_cases/shipping/GetShippingAddressesByCustomerUseCase';
 import { UpdateShippingAddressUseCase } from '../../app/use_cases/shipping/UpdateShippingAddressUseCase';
@@ -92,6 +93,7 @@ export class ShippingAddressController {
 		return this.getShippingAddressesByCustomerUseCase.handle(customerId);
 	}
 
+	@Public()
 	@Get('/:id')
 	@ApiOperation({
 		summary: 'Obtener dirección de envío por ID',

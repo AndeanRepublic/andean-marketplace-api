@@ -20,6 +20,7 @@ import {
 	ApiParam,
 	ApiBody,
 } from '@nestjs/swagger';
+import { Public } from '../core/public.decorator';
 import { GetShopByIdUseCase } from '../../app/use_cases/shops/GetShopByIdUseCase';
 import { GetShopsByCategoryUseCase } from '../../app/use_cases/shops/GetShopsByCategoryUseCase';
 import { GetShopsBySellerIdUseCase } from '../../app/use_cases/shops/GetShopsBySellerIdUseCase';
@@ -41,6 +42,7 @@ export class ShopController {
 		private readonly deleteShopUseCase: DeleteShopUseCase,
 	) {}
 
+	@Public()
 	@Get('/:shopId')
 	@ApiOperation({
 		summary: 'Obtener tienda por ID',
@@ -57,6 +59,7 @@ export class ShopController {
 		return this.getShopsByIdUseCase.handle(shopId);
 	}
 
+	@Public()
 	@Get('/by-seller/:sellerId')
 	@ApiOperation({
 		summary: 'Obtener tiendas por vendedor',
@@ -73,6 +76,7 @@ export class ShopController {
 		return this.getShopsBySellerIdUseCase.handle(sellerId);
 	}
 
+	@Public()
 	@Get('/by-category/:categoryName')
 	@ApiOperation({
 		summary: 'Obtener tiendas por categoría',

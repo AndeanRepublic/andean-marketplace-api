@@ -14,6 +14,7 @@ import { JwtAuthGuard } from '../../core/jwtAuth.guard';
 import { RolesGuard } from '../../core/roles.guard';
 import { Roles } from '../../core/roles.decorator';
 import { AccountRole } from '../../../domain/enums/AccountRole';
+import { Public } from '../../core/public.decorator';
 import { CreateSuperfoodPreservationMethodDto } from '../dto/superfoods/CreateSuperfoodPreservationMethodDto';
 import { CreateManySuperfoodPreservationMethodsDto } from '../dto/superfoods/CreateManySuperfoodPreservationMethodsDto';
 import { SuperfoodPreservationMethodResponse } from '../../../app/modules/superfoods/SuperfoodPreservationMethodResponse';
@@ -82,6 +83,7 @@ export class SuperfoodPreservationMethodController {
 		return await this.createSuperfoodPreservationMethodUseCase.handle(dto);
 	}
 
+	@Public()
 	@Get()
 	@ApiOperation({
 		summary: 'Listar todos los métodos de preservación',

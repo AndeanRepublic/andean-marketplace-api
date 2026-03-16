@@ -15,10 +15,9 @@ import { MediaItemModule } from './mediaItem.module';
 
 // TextileProduct (necesitamos TextileProductRepository para buscar el producto y su baseInfo)
 import { TextileProductModule } from './textileProduct.module';
-import { AuthModule } from './auth.module';
 
 @Module({
-	imports: [MediaItemModule, TextileProductModule, AuthModule],
+	imports: [MediaItemModule, TextileProductModule],
 	controllers: [TryOnController],
 	providers: [
 		{

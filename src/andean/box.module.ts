@@ -26,7 +26,6 @@ import { TextileProductModule } from './textileProduct.module';
 import { VariantModule } from './variant.module';
 import { MediaItemModule } from './mediaItem.module';
 import { CommunityModule } from './community.module';
-import { AuthModule } from './auth.module';
 
 @Module({
 	imports: [
@@ -37,7 +36,6 @@ import { AuthModule } from './auth.module';
 		VariantModule,
 		MediaItemModule,
 		CommunityModule,
-		AuthModule,
 	],
 	controllers: [BoxController],
 	providers: [

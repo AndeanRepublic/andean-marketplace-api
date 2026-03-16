@@ -13,7 +13,6 @@ export const SellerProfileSchema = new Schema({
 	},
 	numberDocument: String,
 	ruc: String,
-	commercialName: String,
 	address: String,
 	phoneNumber: String,
 });
@@ -26,7 +25,6 @@ export interface SellerProfileDocument extends Document<string> {
 	typePerson: PersonType;
 	numberDocument: string;
 	ruc: string;
-	commercialName: string;
 	address: string;
 	phoneNumber: string;
 }

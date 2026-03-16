@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { AuthController } from './infra/controllers/auth.controller';
 import { LoginUseCase } from './app/use_cases/auth/LoginUseCase';
 import { UsersModule } from './users.module';
@@ -11,6 +12,7 @@ import { JwtAuthGuard } from './infra/core/jwtAuth.guard';
 	imports: [
 		ConfigModule,
 		JwtModule.registerAsync({
+			global: true,
 			imports: [ConfigModule],
 			inject: [ConfigService],
 
@@ -32,7 +34,14 @@ import { JwtAuthGuard } from './infra/core/jwtAuth.guard';
 		UsersModule,
 	],
 	controllers: [AuthController],
-	providers: [LoginUseCase, HashService, JwtAuthGuard],
-	exports: [JwtAuthGuard, JwtModule], // Export both the guard and JwtModule
+	providers: [
+		LoginUseCase,
+		HashService,
+		{
+			provide: APP_GUARD,
+			useClass: JwtAuthGuard,
+		},
+	],
+	exports: [JwtModule],
 })
 export class AuthModule {}

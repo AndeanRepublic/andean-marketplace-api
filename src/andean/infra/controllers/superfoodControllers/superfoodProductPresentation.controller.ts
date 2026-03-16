@@ -14,6 +14,7 @@ import { JwtAuthGuard } from '../../core/jwtAuth.guard';
 import { RolesGuard } from '../../core/roles.guard';
 import { Roles } from '../../core/roles.decorator';
 import { AccountRole } from '../../../domain/enums/AccountRole';
+import { Public } from '../../core/public.decorator';
 import { CreateSuperfoodProductPresentationDto } from '../dto/superfoods/CreateSuperfoodProductPresentationDto';
 import { CreateManySuperfoodProductPresentationsDto } from '../dto/superfoods/CreateManySuperfoodProductPresentationsDto';
 import { SuperfoodProductPresentationResponse } from '../../../app/modules/superfoods/SuperfoodProductPresentationResponse';
@@ -84,6 +85,7 @@ export class SuperfoodProductPresentationController {
 		return await this.createSuperfoodProductPresentationUseCase.handle(dto);
 	}
 
+	@Public()
 	@Get()
 	@ApiOperation({
 		summary: 'Listar todas las presentaciones',

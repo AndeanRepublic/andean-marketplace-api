@@ -11,7 +11,6 @@ import { GetShippingAddressByIdUseCase } from './app/use_cases/shipping/GetShipp
 import { ShippingAddressRepository } from './app/datastore/ShippingAddress.repo';
 import { ShippingAddressRepositoryImpl } from './infra/datastore/shippingAddress.repo.impl';
 import { UsersModule } from './users.module';
-import { AuthModule } from './auth.module';
 
 @Module({
 	imports: [
@@ -22,7 +21,6 @@ import { AuthModule } from './auth.module';
 			},
 		]),
 		UsersModule,
-		AuthModule,
 	],
 	controllers: [ShippingAddressController],
 	providers: [

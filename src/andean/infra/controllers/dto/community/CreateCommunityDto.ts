@@ -6,8 +6,11 @@ import {
 	IsArray,
 	IsOptional,
 	IsMongoId,
+	ValidateNested,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { CreateProviderInfoDto } from '../providerInfo/CreateProviderInfoDto';
 
 export class CreateCommunityDto {
 	@ApiProperty({
@@ -49,4 +52,13 @@ export class CreateCommunityDto {
 	@IsMongoId()
 	@IsOptional()
 	providerInfoId?: string;
+
+	@ApiPropertyOptional({
+		description: 'Datos de ProviderInfo para crear y asociar a la comunidad',
+		type: CreateProviderInfoDto,
+	})
+	@IsOptional()
+	@ValidateNested()
+	@Type(() => CreateProviderInfoDto)
+	providerInfo?: CreateProviderInfoDto;
 }

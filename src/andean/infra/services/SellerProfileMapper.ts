@@ -12,7 +12,6 @@ export class SellerProfileMapper {
 			doc.typePerson,
 			doc.numberDocument,
 			doc.ruc,
-			doc.commercialName,
 			doc.address,
 			doc.phoneNumber,
 		);
@@ -26,7 +25,6 @@ export class SellerProfileMapper {
 			dto.typePerson,
 			dto.numberDocument,
 			dto.ruc ?? '',
-			dto.commercialName,
 			dto.address,
 			dto.phoneNumber,
 		);
@@ -44,7 +42,6 @@ export class SellerProfileMapper {
 			dto.typePerson,
 			dto.numberDocument,
 			dto.ruc ?? '',
-			dto.commercialName,
 			dto.address,
 			dto.phoneNumber,
 		);
@@ -59,7 +56,6 @@ export class SellerProfileMapper {
 			typePerson: profile.typePerson,
 			numberDocument: profile.numberDocument,
 			ruc: profile.ruc,
-			commercialName: profile.commercialName,
 			address: profile.address,
 			phoneNumber: profile.phoneNumber,
 		};

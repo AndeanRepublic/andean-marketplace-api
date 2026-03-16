@@ -14,6 +14,7 @@ import { JwtAuthGuard } from '../../core/jwtAuth.guard';
 import { RolesGuard } from '../../core/roles.guard';
 import { Roles } from '../../core/roles.decorator';
 import { AccountRole } from '../../../domain/enums/AccountRole';
+import { Public } from '../../core/public.decorator';
 import { CreateSuperfoodBenefitDto } from '../dto/superfoods/CreateSuperfoodBenefitDto';
 import { CreateManySuperfoodBenefitsDto } from '../dto/superfoods/CreateManySuperfoodBenefitsDto';
 import { SuperfoodBenefitResponse } from '../../../app/modules/superfoods/SuperfoodBenefitResponse';
@@ -82,6 +83,7 @@ export class SuperfoodBenefitController {
 		return await this.createSuperfoodBenefitUseCase.handle(dto);
 	}
 
+	@Public()
 	@Get()
 	@ApiOperation({
 		summary: 'Listar todos los beneficios',
