@@ -15,6 +15,7 @@ import { JwtAuthGuard } from 'src/andean/infra/core/jwtAuth.guard';
 import { RolesGuard } from 'src/andean/infra/core/roles.guard';
 import { Roles } from 'src/andean/infra/core/roles.decorator';
 import { AccountRole } from 'src/andean/domain/enums/AccountRole';
+import { Public } from 'src/andean/infra/core/public.decorator';
 import { CreateSizeOptionAlternativeUseCase } from 'src/andean/app/use_cases/textileProducts/CreateSizeOptionAlternativeUseCase';
 import { SizeOptionAlternative } from 'src/andean/domain/entities/textileProducts/SizeOptionAlternative';
 import { CreateSizeOptionAlternativeDto } from './dto/textileProducts/CreateSizeOptionAlternativeDto';
@@ -111,6 +112,7 @@ export class SizeOptionAlternativeController {
 	// 	return this.updateSizeOptionAlternativeUseCase.handle(id, body);
 	// }
 
+	@Public()
 	@Get()
 	@ApiOperation({
 		summary: 'Listar todas las opciones de talla',

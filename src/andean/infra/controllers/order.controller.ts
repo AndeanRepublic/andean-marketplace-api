@@ -22,6 +22,7 @@ import {
 	ApiBody,
 	ApiQuery,
 } from '@nestjs/swagger';
+import { Public } from '../core/public.decorator';
 import { CreateOrderUseCase } from '../../app/use_cases/orders/CreateOrderUseCase';
 import { GetOrderByIdUseCase } from '../../app/use_cases/orders/GetOrderByIdUseCase';
 import { GetOrdersByCustomerUseCase } from '../../app/use_cases/orders/GetOrdersByCustomerUseCase';
@@ -52,6 +53,7 @@ export class OrderController {
 		private readonly capturePayPalOrderUseCase: CapturePayPalOrderUseCase,
 	) {}
 
+	@Public()
 	@Post('')
 	@ApiOperation({
 		summary: 'Crear orden',
@@ -72,7 +74,8 @@ export class OrderController {
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
 		summary: 'Crear orden desde carrito',
-		description: 'Crea una orden a partir del carrito del cliente (solo usuarios logueados)',
+		description:
+			'Crea una orden a partir del carrito del cliente (solo usuarios logueados)',
 	})
 	@ApiQuery({
 		name: 'customerId',
@@ -95,6 +98,7 @@ export class OrderController {
 		return this.createOrderFromCartUseCase.handle(customerId, body);
 	}
 
+	@Public()
 	@Get('/:id')
 	@ApiOperation({
 		summary: 'Obtener orden por ID',
@@ -125,6 +129,7 @@ export class OrderController {
 		return this.getOrderByIdUseCase.handle(id);
 	}
 
+	@Public()
 	@Get('/by-customer/:customerId')
 	@ApiOperation({
 		summary: 'Obtener órdenes por cliente',
@@ -193,6 +198,7 @@ export class OrderController {
 		return this.updateOrderStatusUseCase.handle(id, body);
 	}
 
+	@Public()
 	@Post('/paypal/create-order')
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -220,6 +226,7 @@ export class OrderController {
 		return this.createPayPalOrderUseCase.handle(body);
 	}
 
+	@Public()
 	@Post('/paypal/capture-order')
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({

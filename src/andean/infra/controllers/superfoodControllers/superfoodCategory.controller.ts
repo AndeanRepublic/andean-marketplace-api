@@ -14,6 +14,7 @@ import { JwtAuthGuard } from '../../core/jwtAuth.guard';
 import { RolesGuard } from '../../core/roles.guard';
 import { Roles } from '../../core/roles.decorator';
 import { AccountRole } from '../../../domain/enums/AccountRole';
+import { Public } from '../../core/public.decorator';
 import { CreateSuperfoodCategoryDto } from '../dto/superfoods/CreateSuperfoodCategoryDto';
 import { CreateManySuperfoodCategoriesDto } from '../dto/superfoods/CreateManySuperfoodCategoriesDto';
 import { SuperfoodCategoryResponse } from '../../../app/modules/superfoods/SuperfoodCategoryResponse';
@@ -82,6 +83,7 @@ export class SuperfoodCategoryController {
 		return await this.createSuperfoodCategoryUseCase.handle(dto);
 	}
 
+	@Public()
 	@Get()
 	@ApiOperation({
 		summary: 'Listar todas las categorías',

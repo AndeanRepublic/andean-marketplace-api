@@ -24,6 +24,7 @@ import {
 	ApiParam,
 	ApiQuery,
 } from '@nestjs/swagger';
+import { Public } from '../../core/public.decorator';
 import { CreateTextileProductUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileProductUseCase';
 import { TextileProduct } from 'src/andean/domain/entities/textileProducts/TextileProduct';
 import { CreateTextileProductDto } from '../dto/textileProducts/CreateTextileProductDto';
@@ -117,6 +118,7 @@ export class TextileProductController {
 		);
 	}
 
+	@Public()
 	@Get()
 	@ApiOperation({
 		summary: 'Listar productos textiles con filtros',
@@ -229,6 +231,7 @@ export class TextileProductController {
 	// 	return this.getByIdTextileProductUseCase.handle(id);
 	// }
 
+	@Public()
 	@Get('/:id/details')
 	@ApiOperation({
 		summary: 'Obtener producto textil por ID',

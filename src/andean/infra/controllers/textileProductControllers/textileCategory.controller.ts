@@ -15,6 +15,7 @@ import { JwtAuthGuard } from '../../core/jwtAuth.guard';
 import { RolesGuard } from '../../core/roles.guard';
 import { Roles } from '../../core/roles.decorator';
 import { AccountRole } from '../../../domain/enums/AccountRole';
+import { Public } from '../../core/public.decorator';
 import { TextileCategoryResponse } from 'src/andean/app/modules/textile/TextileCategoryResponse';
 import { CreateTextileCategoryUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileCategoryUseCase';
 import { CreateManyTextileCategoriesUseCase } from 'src/andean/app/use_cases/textileProducts/CreateManyTextileCategoriesUseCase';
@@ -112,6 +113,7 @@ export class TextileCategoryController {
 	// 	return this.updateTextileCategoryUseCase.handle(id, body);
 	// }
 
+	@Public()
 	@Get()
 	@ApiOperation({
 		summary: 'Listar todas las categorías textiles',

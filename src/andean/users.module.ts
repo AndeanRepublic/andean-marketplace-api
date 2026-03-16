@@ -20,7 +20,6 @@ import { UpdateSellerProfileUseCase } from './app/use_cases/users/UpdateSellerPr
 import { GetCustomerProfileUseCase } from './app/use_cases/users/GetCustomerProfileUseCase';
 import { GetSellerProfileUseCase } from './app/use_cases/users/GetSellerProfileUseCase';
 import { MediaItemModule } from './mediaItem.module';
-import { AuthModule } from './auth.module';
 
 @Module({
 	imports: [
@@ -39,7 +38,6 @@ import { AuthModule } from './auth.module';
 			},
 		]),
 		MediaItemModule,
-		AuthModule,
 	],
 	controllers: [UserController],
 	providers: [

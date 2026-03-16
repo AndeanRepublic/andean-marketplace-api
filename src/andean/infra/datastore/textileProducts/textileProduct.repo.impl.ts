@@ -230,7 +230,7 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 	}
 
 	/**
-	 * Construye los lookups para categoría y seller
+	 * Construye los lookups para categoría, shop (nombre tienda) y community
 	 */
 	private buildCategoryAndSellerLookups(): PipelineStage[] {
 		return [
@@ -252,22 +252,16 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 					as: 'category',
 				},
 			},
-			// Lookup para seller/productor (cuando ownerType es SHOP)
+			// Lookup para shop/productor (cuando ownerType es SHOP; nombre viene de la tienda)
 			{
 				$lookup: {
-					from: 'sellerprofiles',
-					let: {
-						ownId: {
-							$convert: {
-								input: '$baseInfo.ownerId',
-								to: 'objectId',
-								onError: null,
-								onNull: null,
-							},
-						},
-					},
-					pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$ownId'] } } }],
-					as: 'seller',
+					from: 'shops',
+					let: { ownerId: '$baseInfo.ownerId' },
+					pipeline: [
+						{ $match: { $expr: { $eq: ['$sellerId', '$$ownerId'] } } },
+						{ $limit: 1 },
+					],
+					as: 'shop',
 				},
 			},
 			// Lookup para community/productor (cuando ownerType es COMMUNITY)
@@ -376,8 +370,8 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 				},
 				productorName: {
 					$cond: {
-						if: { $gt: [{ $size: '$seller' }, 0] },
-						then: { $arrayElemAt: ['$seller.commercialName', 0] },
+						if: { $gt: [{ $size: '$shop' }, 0] },
+						then: { $arrayElemAt: ['$shop.name', 0] },
 						else: {
 							$cond: {
 								if: { $gt: [{ $size: '$community' }, 0] },
@@ -472,8 +466,8 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 				},
 				productorName: {
 					$cond: {
-						if: { $gt: [{ $size: '$seller' }, 0] },
-						then: { $arrayElemAt: ['$seller.commercialName', 0] },
+						if: { $gt: [{ $size: '$shop' }, 0] },
+						then: { $arrayElemAt: ['$shop.name', 0] },
 						else: {
 							$cond: {
 								if: { $gt: [{ $size: '$community' }, 0] },

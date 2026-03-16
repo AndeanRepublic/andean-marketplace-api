@@ -30,9 +30,6 @@ describe('ShopController (e2e) — ownership', () => {
 		name: 'Tienda Andina',
 		description: 'Tienda de productos andinos',
 		categories: ['UNKNOWN'],
-		policies: 'Política de devoluciones: 30 días',
-		shippingOrigin: 'Cusco, Perú',
-		shippingArea: 'Nacional',
 	};
 
 	// ─── Helper to build app with a given auth user ──────────────────

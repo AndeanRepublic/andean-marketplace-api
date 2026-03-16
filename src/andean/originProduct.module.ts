@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AuthModule } from './auth.module';
 
 // Schemas
 import { OriginProductRegionSchema } from './infra/persistence/originProductRegion.schema';
@@ -38,7 +37,6 @@ import { OriginProductCommunityController } from './infra/controllers/originProd
 			{ name: 'OriginProductRegion', schema: OriginProductRegionSchema },
 			{ name: 'OriginProductCommunity', schema: OriginProductCommunitySchema },
 		]),
-		AuthModule,
 	],
 	controllers: [
 		OriginProductRegionController,
