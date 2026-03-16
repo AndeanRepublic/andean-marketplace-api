@@ -27,7 +27,7 @@ export class CreateShopUseCase {
 		}
 
 		// Crear ProviderInfo si viene embebido y asignar su id
-		let providerInfoId = shopDto.providerInfoId;
+		let providerInfoId: string | undefined;
 		if (shopDto.providerInfo) {
 			const created = await this.createProviderInfoUseCase.handle(
 				shopDto.providerInfo,

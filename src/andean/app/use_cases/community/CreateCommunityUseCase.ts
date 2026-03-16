@@ -55,9 +55,11 @@ export class CreateCommunityUseCase {
 		}
 
 		// Crear ProviderInfo si viene embebido y asignar su id
-		let providerInfoId = dto.providerInfoId;
+		let providerInfoId: string | undefined;
 		if (dto.providerInfo) {
-			const created = await this.createProviderInfoUseCase.handle(dto.providerInfo);
+			const created = await this.createProviderInfoUseCase.handle(
+				dto.providerInfo,
+			);
 			providerInfoId = created.id;
 		}
 

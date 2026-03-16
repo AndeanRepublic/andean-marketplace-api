@@ -20,6 +20,7 @@ import { GetShopsByCategoryUseCase } from '../src/andean/app/use_cases/shops/Get
 import { GetShopsBySellerIdUseCase } from '../src/andean/app/use_cases/shops/GetShopsBySellerIdUseCase';
 import { CreateShopUseCase } from '../src/andean/app/use_cases/shops/CreateShopUseCase';
 import { DeleteShopUseCase } from '../src/andean/app/use_cases/shops/DeleteShopUseCase';
+import { UpdateShopUseCase } from '../src/andean/app/use_cases/shops/UpdateShopUseCase';
 
 describe('ShopController (e2e) — ownership', () => {
 	const mockShopId = 'shop-uuid-001';
@@ -58,6 +59,10 @@ describe('ShopController (e2e) — ownership', () => {
 				{
 					provide: DeleteShopUseCase,
 					useValue: { handle: jest.fn().mockResolvedValue(undefined) },
+				},
+				{
+					provide: UpdateShopUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue(mockShop) },
 				},
 			],
 		})

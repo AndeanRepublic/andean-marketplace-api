@@ -1,5 +1,5 @@
 import { Model } from 'mongoose';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ShopRepository } from '../../app/datastore/Shop.repo';
 import { InjectModel } from '@nestjs/mongoose';
 import { ShopDocument } from '../persistence/shop.schema';
@@ -39,5 +39,15 @@ export class ShopRepoImpl extends ShopRepository {
 	async getAllByCategory(category: ShopCategory): Promise<Shop[]> {
 		const docs = await this.shopModel.find({ categories: category }).exec();
 		return docs.map((doc: ShopDocument) => ShopMapper.fromDocument(doc));
+	}
+
+	async updateShop(id: string, data: Partial<Shop>): Promise<Shop> {
+		const doc = await this.shopModel
+			.findOneAndUpdate({ id }, { $set: ShopMapper.toPersistence(data) }, { new: true })
+			.exec();
+		if (!doc) {
+			throw new NotFoundException('Shop not found');
+		}
+		return ShopMapper.fromDocument(doc);
 	}
 }
