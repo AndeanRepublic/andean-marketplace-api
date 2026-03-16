@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { HttpModule } from '@nestjs/axios';
 import { CartShopSchema } from './infra/persistence/cartShop.schema';
@@ -21,6 +21,7 @@ import { VariantModule } from './variant.module';
 import { TextileProductModule } from './textileProduct.module';
 import { SuperfoodModule } from './superfood.module';
 import { CommunityModule } from './community.module';
+import { ShopsModule } from './shop.module';
 import { DiscountCodeService } from './infra/services/DiscountCodeService';
 import { TextileProductInfoProvider } from './infra/services/products/TextileProductInfoProvider';
 import { SuperfoodProductInfoProvider } from './infra/services/products/SuperfoodProductInfoProvider';
@@ -29,7 +30,6 @@ import { ProductInfoProviderRegistry } from './infra/services/products/ProductIn
 import { OwnerNameResolver } from './infra/services/OwnerNameResolver';
 import { BoxCartContentResolver } from './infra/services/cart/BoxCartContentResolver';
 import { BoxModule } from './box.module';
-import { AuthModule } from './auth.module';
 
 @Module({
 	imports: [
@@ -45,12 +45,12 @@ import { AuthModule } from './auth.module';
 		]),
 		HttpModule,
 		UsersModule,
-		VariantModule,
-		TextileProductModule,
-		SuperfoodModule,
+		forwardRef(() => VariantModule),
+		forwardRef(() => TextileProductModule),
+		forwardRef(() => SuperfoodModule),
 		CommunityModule,
+		ShopsModule,
 		BoxModule,
-		AuthModule,
 	],
 	controllers: [CartShopController],
 	providers: [

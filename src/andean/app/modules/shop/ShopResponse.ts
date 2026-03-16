@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ShopCategory } from '../../../domain/enums/ShopCategory';
 
 export class ShopResponse {
@@ -8,11 +8,11 @@ export class ShopResponse {
 	})
 	id: string;
 
-	@ApiProperty({
-		description: 'ID del vendedor propietario de la tienda',
+	@ApiPropertyOptional({
+		description: 'ID del vendedor propietario de la tienda (opcional para emprendedores)',
 		example: '64b1f2c3d4e5f6a7b8c9d0e2',
 	})
-	sellerId: string;
+	sellerId?: string;
 
 	@ApiProperty({
 		description: 'Nombre de la tienda',
@@ -34,22 +34,8 @@ export class ShopResponse {
 	})
 	categories: ShopCategory[];
 
-	@ApiProperty({
-		description: 'Políticas de la tienda (devoluciones, envíos, etc.)',
-		example:
-			'Se aceptan devoluciones dentro de los 7 días posteriores a la compra.',
+	@ApiPropertyOptional({
+		description: 'ID del MediaItem para la foto del artesano/emprendedor',
 	})
-	policies: string;
-
-	@ApiProperty({
-		description: 'Ciudad o región de origen de los envíos',
-		example: 'Cusco, Peru',
-	})
-	shippingOrigin: string;
-
-	@ApiProperty({
-		description: 'Área de cobertura de envíos',
-		example: 'Nacional e Internacional',
-	})
-	shippingArea: string;
+	artisanPhotoMediaId?: string;
 }

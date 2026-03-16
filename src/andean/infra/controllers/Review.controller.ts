@@ -28,6 +28,7 @@ import {
 	ApiBody,
 	ApiConsumes,
 } from '@nestjs/swagger';
+import { Public } from '../core/public.decorator';
 import { CreateReviewUseCase } from 'src/andean/app/use_cases/CreateReviewUseCase';
 import { Review } from 'src/andean/domain/entities/Review';
 import { CreateReviewDto } from './dto/CreateReviewDto';
@@ -96,6 +97,7 @@ export class ReviewController {
 		return this.createReviewUseCase.handle(body, file);
 	}
 
+	@Public()
 	@Get(path_reviews)
 	@ApiOperation({
 		summary: 'Obtener todas las reseñas',
@@ -110,6 +112,7 @@ export class ReviewController {
 		return this.getAllReviewsUseCase.handle();
 	}
 
+	@Public()
 	@Get(path_reviews_id)
 	@ApiOperation({
 		summary: 'Obtener reseña por ID',

@@ -22,6 +22,7 @@ import {
 	ApiParam,
 	ApiQuery,
 } from '@nestjs/swagger';
+import { Public } from '../core/public.decorator';
 import { CreateOriginProductCommunityUseCase } from '../../app/use_cases/origin/CreateOriginProductCommunityUseCase';
 import { CreateManyOriginProductCommunitiesUseCase } from '../../app/use_cases/origin/CreateManyOriginProductCommunitiesUseCase';
 import { UpdateOriginProductCommunityUseCase } from '../../app/use_cases/origin/UpdateOriginProductCommunityUseCase';
@@ -106,6 +107,7 @@ export class OriginProductCommunityController {
 	// 	return this.toResponse(community);
 	// }
 
+	@Public()
 	@Get()
 	@ApiOperation({ summary: 'List all origin product communities' })
 	@ApiQuery({
