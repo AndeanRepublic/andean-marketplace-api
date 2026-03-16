@@ -2,8 +2,6 @@ import { Document, Schema } from 'mongoose';
 import { ShopCategory } from '../../domain/enums/ShopCategory';
 
 export const ShopSchema = new Schema({
-	_id: String,
-	id: String,
 	sellerId: String,
 	name: String,
 	categories: [
@@ -17,8 +15,6 @@ export const ShopSchema = new Schema({
 });
 
 export interface ShopDocument extends Document<string> {
-	_id: string;
-	id: string;
 	sellerId?: string;
 	name: string;
 	categories: ShopCategory[];
