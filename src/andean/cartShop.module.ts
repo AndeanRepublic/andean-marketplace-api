@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { HttpModule } from '@nestjs/axios';
 import { CartShopSchema } from './infra/persistence/cartShop.schema';
@@ -21,6 +21,7 @@ import { VariantModule } from './variant.module';
 import { TextileProductModule } from './textileProduct.module';
 import { SuperfoodModule } from './superfood.module';
 import { CommunityModule } from './community.module';
+import { ShopsModule } from './shop.module';
 import { DiscountCodeService } from './infra/services/DiscountCodeService';
 import { TextileProductInfoProvider } from './infra/services/products/TextileProductInfoProvider';
 import { SuperfoodProductInfoProvider } from './infra/services/products/SuperfoodProductInfoProvider';
@@ -44,12 +45,14 @@ import { BoxModule } from './box.module';
 		]),
 		HttpModule,
 		UsersModule,
-		VariantModule,
-		TextileProductModule,
-		SuperfoodModule,
+		forwardRef(() => VariantModule),
+		forwardRef(() => TextileProductModule),
+		forwardRef(() => SuperfoodModule),
 		CommunityModule,
+		ShopsModule,
 		BoxModule,
-	], controllers: [CartShopController],
+	],
+	controllers: [CartShopController],
 	providers: [
 		AddItemToCartUseCase,
 		CleanCartUseCase,
@@ -77,9 +80,6 @@ import { BoxModule } from './box.module';
 		OwnerNameResolver,
 		BoxCartContentResolver,
 	],
-	exports: [
-		CartShopRepository,
-		CartShopItemRepository,
-	],
+	exports: [CartShopRepository, CartShopItemRepository],
 })
-export class CartShopModule { }
+export class CartShopModule {}

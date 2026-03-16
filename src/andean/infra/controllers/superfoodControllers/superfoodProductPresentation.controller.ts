@@ -7,8 +7,14 @@ import {
 	Param,
 	HttpCode,
 	HttpStatus,
+	UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../../core/jwtAuth.guard';
+import { RolesGuard } from '../../core/roles.guard';
+import { Roles } from '../../core/roles.decorator';
+import { AccountRole } from '../../../domain/enums/AccountRole';
+import { Public } from '../../core/public.decorator';
 import { CreateSuperfoodProductPresentationDto } from '../dto/superfoods/CreateSuperfoodProductPresentationDto';
 import { CreateManySuperfoodProductPresentationsDto } from '../dto/superfoods/CreateManySuperfoodProductPresentationsDto';
 import { SuperfoodProductPresentationResponse } from '../../../app/modules/superfoods/SuperfoodProductPresentationResponse';
@@ -29,6 +35,8 @@ export class SuperfoodProductPresentationController {
 		private readonly deleteSuperfoodProductPresentationUseCase: DeleteSuperfoodProductPresentationUseCase,
 	) {}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post('/bulk')
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -53,6 +61,8 @@ export class SuperfoodProductPresentationController {
 		);
 	}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -75,6 +85,7 @@ export class SuperfoodProductPresentationController {
 		return await this.createSuperfoodProductPresentationUseCase.handle(dto);
 	}
 
+	@Public()
 	@Get()
 	@ApiOperation({
 		summary: 'Listar todas las presentaciones',

@@ -7,8 +7,14 @@ import {
 	Param,
 	HttpCode,
 	HttpStatus,
+	UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../../core/jwtAuth.guard';
+import { RolesGuard } from '../../core/roles.guard';
+import { Roles } from '../../core/roles.decorator';
+import { AccountRole } from '../../../domain/enums/AccountRole';
+import { Public } from '../../core/public.decorator';
 import { CreateSuperfoodPreservationMethodDto } from '../dto/superfoods/CreateSuperfoodPreservationMethodDto';
 import { CreateManySuperfoodPreservationMethodsDto } from '../dto/superfoods/CreateManySuperfoodPreservationMethodsDto';
 import { SuperfoodPreservationMethodResponse } from '../../../app/modules/superfoods/SuperfoodPreservationMethodResponse';
@@ -29,6 +35,8 @@ export class SuperfoodPreservationMethodController {
 		private readonly deleteSuperfoodPreservationMethodUseCase: DeleteSuperfoodPreservationMethodUseCase,
 	) {}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post('/bulk')
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -51,6 +59,8 @@ export class SuperfoodPreservationMethodController {
 		return await this.createManySuperfoodPreservationMethodsUseCase.handle(dto);
 	}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -73,6 +83,7 @@ export class SuperfoodPreservationMethodController {
 		return await this.createSuperfoodPreservationMethodUseCase.handle(dto);
 	}
 
+	@Public()
 	@Get()
 	@ApiOperation({
 		summary: 'Listar todos los métodos de preservación',

@@ -2,6 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, HttpStatus, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { SuperfoodCategoryController } from '../src/andean/infra/controllers/superfoodControllers/superfoodCategory.controller';
+import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';
+import { RolesGuard } from '../src/andean/infra/core/roles.guard';
+import { createAllowAllGuard, mockAuthUsers } from './helpers/auth-test.helper';
 import { CreateSuperfoodCategoryUseCase } from '../src/andean/app/use_cases/superfoods/category/CreateSuperfoodCategoryUseCase';
 import { CreateManySuperfoodCategoriesUseCase } from '../src/andean/app/use_cases/superfoods/category/CreateManySuperfoodCategoriesUseCase';
 import { GetSuperfoodCategoryByIdUseCase } from '../src/andean/app/use_cases/superfoods/category/GetSuperfoodCategoryByIdUseCase';
@@ -52,7 +55,12 @@ describe('SuperfoodCategoryController (e2e)', () => {
 					useValue: { handle: jest.fn().mockResolvedValue(undefined) },
 				},
 			],
-		}).compile();
+		})
+			.overrideGuard(JwtAuthGuard)
+			.useValue(createAllowAllGuard(mockAuthUsers.seller))
+			.overrideGuard(RolesGuard)
+			.useValue({ canActivate: () => true })
+			.compile();
 
 		app = moduleFixture.createNestApplication();
 		app.useGlobalPipes(

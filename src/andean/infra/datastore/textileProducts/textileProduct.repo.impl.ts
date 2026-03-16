@@ -230,7 +230,7 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 	}
 
 	/**
-	 * Construye los lookups para categoría y seller
+	 * Construye los lookups para categoría, shop (nombre tienda) y community
 	 */
 	private buildCategoryAndSellerLookups(): PipelineStage[] {
 		return [
@@ -252,10 +252,22 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 					as: 'category',
 				},
 			},
-			// Lookup para seller/productor
+			// Lookup para shop/productor (cuando ownerType es SHOP; nombre viene de la tienda)
 			{
 				$lookup: {
-					from: 'sellerprofiles',
+					from: 'shops',
+					let: { ownerId: '$baseInfo.ownerId' },
+					pipeline: [
+						{ $match: { $expr: { $eq: ['$sellerId', '$$ownerId'] } } },
+						{ $limit: 1 },
+					],
+					as: 'shop',
+				},
+			},
+			// Lookup para community/productor (cuando ownerType es COMMUNITY)
+			{
+				$lookup: {
+					from: 'communities',
 					let: {
 						ownId: {
 							$convert: {
@@ -267,7 +279,7 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 						},
 					},
 					pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$ownId'] } } }],
-					as: 'seller',
+					as: 'community',
 				},
 			},
 		];
@@ -357,10 +369,17 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 					$ifNull: [{ $arrayElemAt: ['$category.name', 0] }, 'Sin categoría'],
 				},
 				productorName: {
-					$ifNull: [
-						{ $arrayElemAt: ['$seller.commercialName', 0] },
-						'Productor desconocido',
-					],
+					$cond: {
+						if: { $gt: [{ $size: '$shop' }, 0] },
+						then: { $arrayElemAt: ['$shop.name', 0] },
+						else: {
+							$cond: {
+								if: { $gt: [{ $size: '$community' }, 0] },
+								then: { $arrayElemAt: ['$community.name', 0] },
+								else: 'Productor desconocido',
+							},
+						},
+					},
 				},
 				principalImgUrl: {
 					$ifNull: [{ $arrayElemAt: ['$baseInfo.mediaIds', 0] }, ''],
@@ -446,10 +465,17 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 					$ifNull: [{ $arrayElemAt: ['$category.name', 0] }, 'Sin categoría'],
 				},
 				productorName: {
-					$ifNull: [
-						{ $arrayElemAt: ['$seller.commercialName', 0] },
-						'Productor desconocido',
-					],
+					$cond: {
+						if: { $gt: [{ $size: '$shop' }, 0] },
+						then: { $arrayElemAt: ['$shop.name', 0] },
+						else: {
+							$cond: {
+								if: { $gt: [{ $size: '$community' }, 0] },
+								then: { $arrayElemAt: ['$community.name', 0] },
+								else: 'Productor desconocido',
+							},
+						},
+					},
 				},
 				principalImgUrl: {
 					$ifNull: [{ $arrayElemAt: ['$baseInfo.mediaIds', 0] }, ''],

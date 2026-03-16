@@ -45,4 +45,4 @@ import { MediaItemController } from './infra/controllers/mediaItem.controller';
 	],
 	exports: [MediaItemRepository, StorageRepository, MongooseModule],
 })
-export class MediaItemModule { }
+export class MediaItemModule {}
