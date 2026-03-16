@@ -63,6 +63,21 @@ export class CommunityController {
 		private readonly deleteSealUseCase: DeleteSealUseCase,
 	) {}
 
+	@Public()
+	@Get(path_seals)
+	@ApiOperation({
+		summary: 'Listar todos los sellos',
+		description: 'Retorna la lista completa de sellos de comunidad disponibles',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista de sellos',
+		type: [SealResponse],
+	})
+	async getAllSeals(): Promise<Seal[]> {
+		return this.getAllSealsUseCase.handle();
+	}
+
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post()
@@ -183,21 +198,6 @@ export class CommunityController {
 	@ApiResponse({ status: 404, description: 'MediaItem no encontrado' })
 	async createSeal(@Body() body: CreateSealDto): Promise<Seal> {
 		return this.createSealUseCase.handle(body);
-	}
-
-	@Public()
-	@Get(path_seals)
-	@ApiOperation({
-		summary: 'Listar todos los sellos',
-		description: 'Retorna la lista completa de sellos de comunidad disponibles',
-	})
-	@ApiResponse({
-		status: 200,
-		description: 'Lista de sellos',
-		type: [SealResponse],
-	})
-	async getAllSeals(): Promise<Seal[]> {
-		return this.getAllSealsUseCase.handle();
 	}
 
 	// @Get(path_seals_id)
