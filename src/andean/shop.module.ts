@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ShopSchema } from './infra/persistence/shop.schema';
-import { ProviderInfoSchema } from './infra/persistence/providerInfo.schema';
 import { ShopController } from './infra/controllers/shop.controller';
+import { ProviderInfoModule } from './providerInfo.module';
 import { CreateShopUseCase } from './app/use_cases/shops/CreateShopUseCase';
 import { ShopRepository } from './app/datastore/Shop.repo';
 import { ShopRepoImpl } from './infra/datastore/shop.repo.impl';
@@ -16,11 +16,9 @@ import { UsersModule } from './users.module';
 
 @Module({
 	imports: [
-		MongooseModule.forFeature([
-			{ name: 'Shop', schema: ShopSchema },
-			{ name: 'ProviderInfo', schema: ProviderInfoSchema },
-		]),
+		MongooseModule.forFeature([{ name: 'Shop', schema: ShopSchema }]),
 		UsersModule,
+		ProviderInfoModule,
 	],
 	controllers: [ShopController],
 	providers: [
