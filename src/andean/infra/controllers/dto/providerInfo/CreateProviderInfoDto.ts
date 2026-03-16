@@ -39,11 +39,6 @@ export class CreateProviderInfoDto {
 	@ApiPropertyOptional()
 	@IsOptional()
 	@IsString()
-	artisanPhotoMediaId?: string;
-
-	@ApiPropertyOptional()
-	@IsOptional()
-	@IsString()
 	workplacePhotoMediaId?: string;
 
 	@ApiPropertyOptional()

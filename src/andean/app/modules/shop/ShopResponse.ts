@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ShopCategory } from '../../../domain/enums/ShopCategory';
 
 export class ShopResponse {
@@ -8,11 +8,11 @@ export class ShopResponse {
 	})
 	id: string;
 
-	@ApiProperty({
-		description: 'ID del vendedor propietario de la tienda',
+	@ApiPropertyOptional({
+		description: 'ID del vendedor propietario de la tienda (opcional para emprendedores)',
 		example: '64b1f2c3d4e5f6a7b8c9d0e2',
 	})
-	sellerId: string;
+	sellerId?: string;
 
 	@ApiProperty({
 		description: 'Nombre de la tienda',
@@ -33,4 +33,9 @@ export class ShopResponse {
 		example: [ShopCategory.UNKNOWN],
 	})
 	categories: ShopCategory[];
+
+	@ApiPropertyOptional({
+		description: 'ID del MediaItem para la foto del artesano/emprendedor',
+	})
+	artisanPhotoMediaId?: string;
 }

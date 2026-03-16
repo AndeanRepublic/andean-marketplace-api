@@ -10,7 +10,6 @@ export class ProviderInfo {
 		public originPlace?: string,
 		public testimonialsOrAwards?: string,
 
-		public artisanPhotoMediaId?: string,
 		public workplacePhotoMediaId?: string,
 		public presentationVideoMediaId?: string,
 

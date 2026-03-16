@@ -14,14 +14,16 @@ export const ShopSchema = new Schema({
 		},
 	],
 	providerInfoId: { type: String, required: false },
+	artisanPhotoMediaId: { type: String, required: false },
 });
 
 export interface ShopDocument extends Document<string> {
 	_id: string;
 	id: string;
-	sellerId: string;
+	sellerId?: string;
 	name: string;
 	description: string;
 	categories: ShopCategory[];
 	providerInfoId?: string;
+	artisanPhotoMediaId?: string;
 }
