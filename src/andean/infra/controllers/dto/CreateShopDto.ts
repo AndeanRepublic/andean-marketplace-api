@@ -15,7 +15,8 @@ import { CreateProviderInfoDto } from './providerInfo/CreateProviderInfoDto';
 
 export class CreateShopDto {
 	@ApiPropertyOptional({
-		description: 'ID del vendedor propietario de la tienda (opcional para emprendedores sin usuario)',
+		description:
+			'ID del vendedor propietario de la tienda (opcional para emprendedores sin usuario)',
 		example: '64b1f2c3d4e5f6a7b8c9d0e1',
 	})
 	@IsString()
@@ -47,15 +48,6 @@ export class CreateShopDto {
 	@ArrayNotEmpty()
 	@IsEnum(ShopCategory, { each: true })
 	categories: ShopCategory[];
-
-	@ApiPropertyOptional({
-		description: 'ID del ProviderInfo asociado a la tienda',
-		example: '67890abcdef1234567890125',
-	})
-	@IsString()
-	@IsMongoId()
-	@IsOptional()
-	providerInfoId?: string;
 
 	@ApiPropertyOptional({
 		description: 'ID del MediaItem para la foto del artesano/emprendedor',
