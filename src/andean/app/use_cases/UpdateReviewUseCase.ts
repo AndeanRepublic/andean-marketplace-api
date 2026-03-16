@@ -1,4 +1,9 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+	Inject,
+	Injectable,
+	NotFoundException,
+	ForbiddenException,
+} from '@nestjs/common';
 import { ReviewRepository } from '../datastore/Review.repo';
 import { Review } from 'src/andean/domain/entities/Review';
 import { ReviewMapper } from 'src/andean/infra/services/ReviewMapper';
@@ -20,12 +25,25 @@ export class UpdateReviewUseCase {
 		private readonly textileProductRepository: TextileProductRepository,
 		@Inject(SuperfoodProductRepository)
 		private readonly superfoodProductRepository: SuperfoodProductRepository,
-	) { }
+	) {}
 
-	async handle(id: string, dto: UpdateReviewDto): Promise<Review> {
+	async handle(
+		id: string,
+		requestingUserId: string,
+		dto: UpdateReviewDto,
+	): Promise<Review> {
 		const reviewFound = await this.reviewRepository.getById(id);
 		if (!reviewFound) {
 			throw new NotFoundException('Review not found');
+		}
+
+		// Pattern E ownership check — NO admin bypass on PUT /reviews/:id
+		const customer =
+			await this.customerProfileRepository.getCustomerByUserId(
+				requestingUserId,
+			);
+		if (!customer || customer.id !== reviewFound.customerId) {
+			throw new ForbiddenException('You can only modify your own resource');
 		}
 
 		// Validar customerId

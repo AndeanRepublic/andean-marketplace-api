@@ -9,7 +9,12 @@ import {
 	ParseIntPipe,
 	Post,
 	Query,
+	UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from '../../core/jwtAuth.guard';
+import { RolesGuard } from '../../core/roles.guard';
+import { Roles } from '../../core/roles.decorator';
+import { AccountRole } from '../../../domain/enums/AccountRole';
 import {
 	ApiTags,
 	ApiOperation,
@@ -22,8 +27,8 @@ import { GetAllBoxesUseCase } from '../../../app/use_cases/boxes/GetAllBoxesUseC
 import { GetBoxDetailUseCase } from '../../../app/use_cases/boxes/GetBoxDetailUseCase';
 import { Box } from '../../../domain/entities/box/Box';
 import { CreateBoxDto } from '../dto/box/CreateBoxDto';
-import { BoxListPaginatedResponse } from '../../../app/models/box/BoxListResponse';
-import { BoxDetailResponse } from '../../../app/models/box/BoxDetailResponse';
+import { BoxListPaginatedResponse } from '../../../app/modules/box/BoxListResponse';
+import { BoxDetailResponse } from '../../../app/modules/box/BoxDetailResponse';
 
 @Controller('boxes')
 export class BoxController {
@@ -31,8 +36,10 @@ export class BoxController {
 		private readonly createBoxUseCase: CreateBoxUseCase,
 		private readonly getAllBoxesUseCase: GetAllBoxesUseCase,
 		private readonly getBoxDetailUseCase: GetBoxDetailUseCase,
-	) { }
+	) {}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
 	@Post('')
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -106,7 +113,9 @@ export class BoxController {
 		status: 404,
 		description: 'Box no encontrado',
 	})
-	async getBoxDetail(@Param('boxId') boxId: string): Promise<BoxDetailResponse> {
+	async getBoxDetail(
+		@Param('boxId') boxId: string,
+	): Promise<BoxDetailResponse> {
 		return this.getBoxDetailUseCase.handle(boxId);
 	}
 }

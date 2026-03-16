@@ -12,6 +12,7 @@
 		"priceInventary": {
 			"basePrice": 150.0,
 			"totalStock": 50,
+			"currency": "USD",
 			"SKU": "PONCHO-AND-001"
 		},
 		"isDiscountActive": false,
@@ -36,7 +37,6 @@
 		"updatedAt": "2026-01-01T00:00:00.000Z"
 	},
 	"createDto": {
-		"status": "PUBLISHED",
 		"baseInfo": {
 			"title": "Poncho Andino Premium",
 			"mediaIds": [],
@@ -47,6 +47,7 @@
 		"priceInventary": {
 			"basePrice": 150.0,
 			"totalStock": 50,
+			"currency": "USD",
 			"SKU": "PONCHO-AND-001"
 		},
 		"categoryId": "category-poncho-001"
@@ -63,37 +64,66 @@
 		"priceInventary": {
 			"basePrice": 180.0,
 			"totalStock": 75,
+			"currency": "USD",
 			"SKU": "PONCHO-AND-001"
 		},
 		"categoryId": "category-poncho-001"
 	},
 	"listItem": {
 		"id": "textile-uuid-123",
-		"titulo": "Poncho Andino Premium",
+		"title": "Poncho Andino Premium",
 		"categoryName": "Ponchos",
 		"productorName": "Artesanos Andinos",
-		"colors": [
-			{ "name": "Rojo", "colorHexCode": "#FF0000" },
-			{ "name": "Azul", "colorHexCode": "#0000FF" }
+		"variantInfo": [
+			{
+				"variantId": "variant-uuid-1",
+				"size": "M",
+				"color": { "color": "Rojo", "hexCode": "#FF0000", "imgUrl": "" },
+				"material": "",
+				"price": 150,
+				"stock": 10
+			},
+			{
+				"variantId": "variant-uuid-2",
+				"size": "L",
+				"color": { "color": "Azul", "hexCode": "#0000FF", "imgUrl": "" },
+				"material": "",
+				"price": 150,
+				"stock": 15
+			}
 		],
-		"tallas": ["M", "L"],
 		"principalImgUrl": "https://example.com/poncho.jpg",
-		"price": 150.0
+		"price": 150.0,
+		"stock": 25
 	},
 	"paginatedResponse": {
 		"products": [
 			{
 				"id": "textile-uuid-123",
-				"titulo": "Poncho Andino Premium",
+				"title": "Poncho Andino Premium",
 				"categoryName": "Ponchos",
 				"productorName": "Artesanos Andinos",
-				"colors": [
-					{ "name": "Rojo", "colorHexCode": "#FF0000" },
-					{ "name": "Azul", "colorHexCode": "#0000FF" }
+				"variantInfo": [
+					{
+						"variantId": "variant-uuid-1",
+						"size": "M",
+						"color": { "color": "Rojo", "hexCode": "#FF0000", "imgUrl": "" },
+						"material": "",
+						"price": 150,
+						"stock": 10
+					},
+					{
+						"variantId": "variant-uuid-2",
+						"size": "L",
+						"color": { "color": "Azul", "hexCode": "#0000FF", "imgUrl": "" },
+						"material": "",
+						"price": 150,
+						"stock": 15
+					}
 				],
-				"tallas": ["M", "L"],
 				"principalImgUrl": "https://example.com/poncho.jpg",
-				"price": 150.0
+				"price": 150.0,
+				"stock": 25
 			}
 		],
 		"pagination": {
@@ -124,7 +154,7 @@
 	},
 	"detailResponse": {
 		"id": "textile-uuid-123",
-		"name": "Poncho Andino Premium",
+		"title": "Poncho Andino Premium",
 		"images": [
 			{
 				"name": "poncho-rojo.jpg",
@@ -132,20 +162,19 @@
 				"url": "https://cdn.example.com/poncho-rojo.jpg"
 			}
 		],
-		"availableSizes": ["M", "L"],
-		"availableColors": ["Rojo", "Azul"],
-		"availableMaterials": [],
 		"variantInfo": [
 			{
+				"variantId": "variant-uuid-1",
 				"size": "M",
-				"color": "Rojo",
+				"color": { "color": "Rojo", "hexCode": "#FF0000", "imgUrl": "" },
 				"material": "",
 				"price": 150,
 				"stock": 10
 			},
 			{
+				"variantId": "variant-uuid-2",
 				"size": "L",
-				"color": "Azul",
+				"color": { "color": "Azul", "hexCode": "#0000FF", "imgUrl": "" },
 				"material": "",
 				"price": 150,
 				"stock": 15
@@ -178,8 +207,24 @@
 				"title": "Manta Andina Tradicional",
 				"categoryName": "Ponchos",
 				"productorName": "Artesanos del Sur",
-				"colors": [{ "colorName": "Verde", "colorHexCode": "#00FF00" }],
-				"sizes": ["S", "M"],
+				"variantInfo": [
+					{
+						"variantId": "similar-variant-1",
+						"size": "S",
+						"color": { "color": "Verde", "hexCode": "#00FF00", "imgUrl": "" },
+						"material": "",
+						"price": 120,
+						"stock": 8
+					},
+					{
+						"variantId": "similar-variant-2",
+						"size": "M",
+						"color": { "color": "Verde", "hexCode": "#00FF00", "imgUrl": "" },
+						"material": "",
+						"price": 120,
+						"stock": 5
+					}
+				],
 				"principalImgUrl": "https://cdn.example.com/manta.jpg",
 				"price": 120
 			}

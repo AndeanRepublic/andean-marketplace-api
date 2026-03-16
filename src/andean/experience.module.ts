@@ -29,6 +29,9 @@ import { CreateExperienceItineraryUseCase } from './app/use_cases/experiences/it
 import { UpdateExperiencePricesUseCase } from './app/use_cases/experiences/prices/UpdateExperiencePricesUseCase';
 import { UpdateExperienceAvailabilityUseCase } from './app/use_cases/experiences/availability/UpdateExperienceAvailabilityUseCase';
 import { UpdateExperienceItineraryUseCase } from './app/use_cases/experiences/itinerary/UpdateExperienceItineraryUseCase';
+import { UpdatePriceByAgeGroupUseCase } from './app/use_cases/experiences/prices/UpdatePriceByAgeGroupUseCase';
+import { UpdateExcludedDatesUseCase } from './app/use_cases/experiences/availability/UpdateExcludedDatesUseCase';
+import { UpdateAvailableDatesUseCase } from './app/use_cases/experiences/availability/UpdateAvailableDatesUseCase';
 
 // Main Use Cases
 import { CreateExperienceUseCase } from './app/use_cases/experiences/CreateExperienceUseCase';
@@ -42,8 +45,10 @@ import { GetFutureUnavailableDatesUseCase } from './app/use_cases/experiences/Ge
 // Strategy
 import { OwnerStrategyResolver } from './infra/services/experiences/OwnerStrategyResolver';
 
-// Controller
+// Controllers
 import { ExperienceController } from './infra/controllers/experienceControllers/experience.controller';
+import { ExperiencePricesController } from './infra/controllers/experienceControllers/experience-prices.controller';
+import { ExperienceAvailabilityController } from './infra/controllers/experienceControllers/experience-availability.controller';
 
 // External Modules
 import { CommunityModule } from './community.module';
@@ -51,6 +56,7 @@ import { MediaItemModule } from './mediaItem.module';
 import { UsersModule } from './users.module';
 import { ShopsModule } from './shop.module';
 import { BookingModule } from './booking.module';
+import { AuthModule } from './auth.module';
 
 @Module({
 	imports: [
@@ -66,8 +72,13 @@ import { BookingModule } from './booking.module';
 		UsersModule,
 		ShopsModule,
 		forwardRef(() => BookingModule),
+		AuthModule,
 	],
-	controllers: [ExperienceController],
+	controllers: [
+		ExperienceController,
+		ExperiencePricesController,
+		ExperienceAvailabilityController,
+	],
 	providers: [
 		// Repository bindings
 		{
@@ -101,6 +112,11 @@ import { BookingModule } from './booking.module';
 		UpdateExperiencePricesUseCase,
 		UpdateExperienceAvailabilityUseCase,
 		UpdateExperienceItineraryUseCase,
+
+		// Granular Patch Use Cases
+		UpdatePriceByAgeGroupUseCase,
+		UpdateExcludedDatesUseCase,
+		UpdateAvailableDatesUseCase,
 
 		// Main Use Cases
 		CreateExperienceUseCase,

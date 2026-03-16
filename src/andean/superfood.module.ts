@@ -33,48 +33,56 @@ import { GetByIdSuperfoodProductDetailUseCase } from './app/use_cases/superfoods
 
 // Use Cases - Category
 import { CreateSuperfoodCategoryUseCase } from './app/use_cases/superfoods/category/CreateSuperfoodCategoryUseCase';
+import { CreateManySuperfoodCategoriesUseCase } from './app/use_cases/superfoods/category/CreateManySuperfoodCategoriesUseCase';
 import { GetSuperfoodCategoryByIdUseCase } from './app/use_cases/superfoods/category/GetSuperfoodCategoryByIdUseCase';
 import { ListSuperfoodCategoriesUseCase } from './app/use_cases/superfoods/category/ListSuperfoodCategoriesUseCase';
 import { DeleteSuperfoodCategoryUseCase } from './app/use_cases/superfoods/category/DeleteSuperfoodCategoryUseCase';
 
 // Use Cases - Certification
 import { CreateSuperfoodCertificationUseCase } from './app/use_cases/superfoods/certification/CreateSuperfoodCertificationUseCase';
+import { CreateManySuperfoodCertificationsUseCase } from './app/use_cases/superfoods/certification/CreateManySuperfoodCertificationsUseCase';
 import { GetSuperfoodCertificationByIdUseCase } from './app/use_cases/superfoods/certification/GetSuperfoodCertificationByIdUseCase';
 import { ListSuperfoodCertificationsUseCase } from './app/use_cases/superfoods/certification/ListSuperfoodCertificationsUseCase';
 import { DeleteSuperfoodCertificationUseCase } from './app/use_cases/superfoods/certification/DeleteSuperfoodCertificationUseCase';
 
 // Use Cases - Type
 import { CreateSuperfoodTypeUseCase } from './app/use_cases/superfoods/type/CreateSuperfoodTypeUseCase';
+import { CreateManySuperfoodTypesUseCase } from './app/use_cases/superfoods/type/CreateManySuperfoodTypesUseCase';
 import { GetSuperfoodTypeByIdUseCase } from './app/use_cases/superfoods/type/GetSuperfoodTypeByIdUseCase';
 import { ListSuperfoodTypesUseCase } from './app/use_cases/superfoods/type/ListSuperfoodTypesUseCase';
 import { DeleteSuperfoodTypeUseCase } from './app/use_cases/superfoods/type/DeleteSuperfoodTypeUseCase';
 
 // Use Cases - Preservation Method
 import { CreateSuperfoodPreservationMethodUseCase } from './app/use_cases/superfoods/preservationMethod/CreateSuperfoodPreservationMethodUseCase';
+import { CreateManySuperfoodPreservationMethodsUseCase } from './app/use_cases/superfoods/preservationMethod/CreateManySuperfoodPreservationMethodsUseCase';
 import { GetSuperfoodPreservationMethodByIdUseCase } from './app/use_cases/superfoods/preservationMethod/GetSuperfoodPreservationMethodByIdUseCase';
 import { ListSuperfoodPreservationMethodsUseCase } from './app/use_cases/superfoods/preservationMethod/ListSuperfoodPreservationMethodsUseCase';
 import { DeleteSuperfoodPreservationMethodUseCase } from './app/use_cases/superfoods/preservationMethod/DeleteSuperfoodPreservationMethodUseCase';
 
 // Use Cases - Nutritional Feature
 import { CreateSuperfoodNutritionalFeatureUseCase } from './app/use_cases/superfoods/nutritionalFeature/CreateSuperfoodNutritionalFeatureUseCase';
+import { CreateManySuperfoodNutritionalFeaturesUseCase } from './app/use_cases/superfoods/nutritionalFeature/CreateManySuperfoodNutritionalFeaturesUseCase';
 import { GetSuperfoodNutritionalFeatureByIdUseCase } from './app/use_cases/superfoods/nutritionalFeature/GetSuperfoodNutritionalFeatureByIdUseCase';
 import { ListSuperfoodNutritionalFeaturesUseCase } from './app/use_cases/superfoods/nutritionalFeature/ListSuperfoodNutritionalFeaturesUseCase';
 import { DeleteSuperfoodNutritionalFeatureUseCase } from './app/use_cases/superfoods/nutritionalFeature/DeleteSuperfoodNutritionalFeatureUseCase';
 
 // Use Cases - Benefit
 import { CreateSuperfoodBenefitUseCase } from './app/use_cases/superfoods/benefit/CreateSuperfoodBenefitUseCase';
+import { CreateManySuperfoodBenefitsUseCase } from './app/use_cases/superfoods/benefit/CreateManySuperfoodBenefitsUseCase';
 import { GetSuperfoodBenefitByIdUseCase } from './app/use_cases/superfoods/benefit/GetSuperfoodBenefitByIdUseCase';
 import { ListSuperfoodBenefitsUseCase } from './app/use_cases/superfoods/benefit/ListSuperfoodBenefitsUseCase';
 import { DeleteSuperfoodBenefitUseCase } from './app/use_cases/superfoods/benefit/DeleteSuperfoodBenefitUseCase';
 
 // Use Cases - Product Presentation
 import { CreateSuperfoodProductPresentationUseCase } from './app/use_cases/superfoods/productPresentation/CreateSuperfoodProductPresentationUseCase';
+import { CreateManySuperfoodProductPresentationsUseCase } from './app/use_cases/superfoods/productPresentation/CreateManySuperfoodProductPresentationsUseCase';
 import { GetSuperfoodProductPresentationByIdUseCase } from './app/use_cases/superfoods/productPresentation/GetSuperfoodProductPresentationByIdUseCase';
 import { ListSuperfoodProductPresentationsUseCase } from './app/use_cases/superfoods/productPresentation/ListSuperfoodProductPresentationsUseCase';
 import { DeleteSuperfoodProductPresentationUseCase } from './app/use_cases/superfoods/productPresentation/DeleteSuperfoodProductPresentationUseCase';
 
 // Use Cases - Sales Unit Size
 import { CreateSuperfoodSalesUnitSizeUseCase } from './app/use_cases/superfoods/salesUnitSize/CreateSuperfoodSalesUnitSizeUseCase';
+import { CreateManySuperfoodSalesUnitSizesUseCase } from './app/use_cases/superfoods/salesUnitSize/CreateManySuperfoodSalesUnitSizesUseCase';
 import { GetSuperfoodSalesUnitSizeByIdUseCase } from './app/use_cases/superfoods/salesUnitSize/GetSuperfoodSalesUnitSizeByIdUseCase';
 import { ListSuperfoodSalesUnitSizesUseCase } from './app/use_cases/superfoods/salesUnitSize/ListSuperfoodSalesUnitSizesUseCase';
 import { DeleteSuperfoodSalesUnitSizeUseCase } from './app/use_cases/superfoods/salesUnitSize/DeleteSuperfoodSalesUnitSizeUseCase';
@@ -120,6 +128,7 @@ import { DecrementLikesUseCase } from './app/use_cases/DecrementLikesUseCase';
 import { DecrementDislikesUseCase } from './app/use_cases/DecrementDislikesUseCase';
 import { UsersModule } from './users.module';
 import { TextileProductModule } from './textileProduct.module';
+import { AuthModule } from './auth.module';
 
 @Module({
 	imports: [
@@ -150,6 +159,7 @@ import { TextileProductModule } from './textileProduct.module';
 		MediaItemModule,
 		DetailSourceProductModule,
 		forwardRef(() => TextileProductModule),
+		AuthModule,
 	],
 	controllers: [
 		SuperfoodController,
@@ -173,48 +183,56 @@ import { TextileProductModule } from './textileProduct.module';
 
 		// Use Cases - Category
 		CreateSuperfoodCategoryUseCase,
+		CreateManySuperfoodCategoriesUseCase,
 		GetSuperfoodCategoryByIdUseCase,
 		ListSuperfoodCategoriesUseCase,
 		DeleteSuperfoodCategoryUseCase,
 
 		// Use Cases - Certification
 		CreateSuperfoodCertificationUseCase,
+		CreateManySuperfoodCertificationsUseCase,
 		GetSuperfoodCertificationByIdUseCase,
 		ListSuperfoodCertificationsUseCase,
 		DeleteSuperfoodCertificationUseCase,
 
 		// Use Cases - Type
 		CreateSuperfoodTypeUseCase,
+		CreateManySuperfoodTypesUseCase,
 		GetSuperfoodTypeByIdUseCase,
 		ListSuperfoodTypesUseCase,
 		DeleteSuperfoodTypeUseCase,
 
 		// Use Cases - Preservation Method
 		CreateSuperfoodPreservationMethodUseCase,
+		CreateManySuperfoodPreservationMethodsUseCase,
 		GetSuperfoodPreservationMethodByIdUseCase,
 		ListSuperfoodPreservationMethodsUseCase,
 		DeleteSuperfoodPreservationMethodUseCase,
 
 		// Use Cases - Nutritional Feature
 		CreateSuperfoodNutritionalFeatureUseCase,
+		CreateManySuperfoodNutritionalFeaturesUseCase,
 		GetSuperfoodNutritionalFeatureByIdUseCase,
 		ListSuperfoodNutritionalFeaturesUseCase,
 		DeleteSuperfoodNutritionalFeatureUseCase,
 
 		// Use Cases - Benefit
 		CreateSuperfoodBenefitUseCase,
+		CreateManySuperfoodBenefitsUseCase,
 		GetSuperfoodBenefitByIdUseCase,
 		ListSuperfoodBenefitsUseCase,
 		DeleteSuperfoodBenefitUseCase,
 
 		// Use Cases - Product Presentation
 		CreateSuperfoodProductPresentationUseCase,
+		CreateManySuperfoodProductPresentationsUseCase,
 		GetSuperfoodProductPresentationByIdUseCase,
 		ListSuperfoodProductPresentationsUseCase,
 		DeleteSuperfoodProductPresentationUseCase,
 
 		// Use Cases - Sales Unit Size
 		CreateSuperfoodSalesUnitSizeUseCase,
+		CreateManySuperfoodSalesUnitSizesUseCase,
 		GetSuperfoodSalesUnitSizeByIdUseCase,
 		ListSuperfoodSalesUnitSizesUseCase,
 		DeleteSuperfoodSalesUnitSizeUseCase,
@@ -286,4 +304,4 @@ import { TextileProductModule } from './textileProduct.module';
 		MongooseModule,
 	],
 })
-export class SuperfoodModule { }
+export class SuperfoodModule {}

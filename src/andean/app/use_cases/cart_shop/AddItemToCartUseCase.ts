@@ -3,7 +3,9 @@ import {
 	Injectable,
 	NotFoundException,
 	BadRequestException,
+	ForbiddenException,
 } from '@nestjs/common';
+import { AccountRole } from '../../../domain/enums/AccountRole';
 import { CustomerProfileRepository } from '../../datastore/Customer.repo';
 import { CartShopRepository } from '../../datastore/CartShop.repo';
 import { AddCartItemDto } from '../../../infra/controllers/dto/AddCartItemDto';
@@ -12,7 +14,7 @@ import { CartShopItemRepository } from '../../datastore/CartShopItem.repo';
 import { VariantRepository } from '../../datastore/Variant.repo';
 import { CartItem } from '../../../domain/entities/CartItem';
 import { Types } from 'mongoose';
-import { ShoppingCartItemResponse } from '../../models/cart/ShoppingCartItemResponse';
+import { ShoppingCartItemResponse } from '../../modules/cart/ShoppingCartItemResponse';
 import { ProductInfoProviderRegistry } from '../../../infra/services/products/ProductInfoProviderRegistry';
 import { OwnerNameResolver } from '../../../infra/services/OwnerNameResolver';
 import { ShoppingCartItemMapper } from '../../../infra/services/cart/ShoppingCartItemMapper';
@@ -30,25 +32,37 @@ export class AddItemToCartUseCase {
 		private readonly cartItemRepository: CartShopItemRepository,
 		private readonly productInfoRegistry: ProductInfoProviderRegistry,
 		private readonly ownerNameResolver: OwnerNameResolver,
-	) { }
+	) {}
 
 	async handle(
-		customerId: string | undefined,
-		customerEmail: string | undefined,
+		requestingUserId: string,
+		roles: AccountRole[],
 		itemDto: AddCartItemDto,
+		targetCustomerId?: string,
 	): Promise<ShoppingCartItemResponse> {
-		// 1. Validar que al menos uno de los identificadores esté presente
-		if (!customerId && !customerEmail) {
-			throw new NotFoundException('Either customerId or customerEmail must be provided');
+		// Pattern H — 2-hop ownership check with ADMIN bypass
+		let customerId: string | null;
+		const isAdmin = roles.includes(AccountRole.ADMIN);
+		if (isAdmin && targetCustomerId) {
+			// ADMIN targeting a specific customer's cart
+			customerId = targetCustomerId;
+		} else if (!isAdmin) {
+			const customer =
+				await this.customerRepository.getCustomerByUserId(requestingUserId);
+			if (!customer) {
+				throw new ForbiddenException('You can only access your own cart');
+			}
+			customerId = customer.id;
+		} else {
+			// ADMIN with no targetCustomerId: resolve own customer profile
+			const customer =
+				await this.customerRepository.getCustomerByUserId(requestingUserId);
+			customerId = customer?.id ?? null;
 		}
 
-		// 2. Si hay customerId, validar que el customer existe
-		if (customerId) {
-			const customerFound =
-				await this.customerRepository.getCustomerById(customerId);
-			if (!customerFound) {
-				throw new NotFoundException('CustomerProfile not found');
-			}
+		// ADMIN with no CustomerProfile cannot add items (no cart to add to)
+		if (!customerId) {
+			throw new ForbiddenException('You can only access your own cart');
 		}
 
 		// 2. Obtener la variante
@@ -77,7 +91,7 @@ export class AddItemToCartUseCase {
 		);
 
 		// 5. Obtener o crear el carrito del customer
-		let cart = await this.cartShopRepository.getCartByIdentifier(customerId, customerEmail);
+		let cart = await this.cartShopRepository.getCartByCustomerId(customerId);
 		if (!cart) {
 			cart = new CartShop(
 				new Types.ObjectId().toString(),
@@ -87,7 +101,7 @@ export class AddItemToCartUseCase {
 				0, // discount
 				new Date(),
 				new Date(),
-				customerEmail,
+				undefined, // customerEmail - not used for logged-in users
 			);
 			await this.cartShopRepository.createCart(cart);
 		}

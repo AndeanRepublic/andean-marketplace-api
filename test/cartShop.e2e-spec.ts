@@ -1,7 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, HttpStatus, ValidationPipe } from '@nestjs/common';
+import {
+	INestApplication,
+	HttpStatus,
+	ValidationPipe,
+	ForbiddenException,
+	NotFoundException,
+} from '@nestjs/common';
 import * as request from 'supertest';
 import { CartShopController } from '../src/andean/infra/controllers/cartShop.controller';
+import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';
+import {
+	createAllowAllGuard,
+	createDenyAllGuard,
+	mockAuthUsers,
+} from './helpers/auth-test.helper';
 import { AddItemToCartUseCase } from '../src/andean/app/use_cases/cart_shop/AddItemToCartUseCase';
 import { GetCartByCustomerUseCase } from '../src/andean/app/use_cases/cart_shop/GetCartByCustomerUseCase';
 import { UpdateCartItemQuantityUseCase } from '../src/andean/app/use_cases/cart_shop/UpdateCartItemQuantityUseCase';
@@ -12,12 +24,6 @@ import { FixtureLoader } from './helpers/fixture-loader';
 import { ProductType } from '../src/andean/domain/enums/ProductType';
 
 describe('CartShopController (e2e)', () => {
-	let app: INestApplication;
-	let addItemToCartUseCase: AddItemToCartUseCase;
-	let getCartByCustomerUseCase: GetCartByCustomerUseCase;
-	let updateCartItemQuantityUseCase: UpdateCartItemQuantityUseCase;
-	let removeItemFromCartUseCase: RemoveItemFromCartUseCase;
-
 	// Load fixtures
 	const textileFixtures = FixtureLoader.loadTextileProduct();
 	const superfoodFixtures = FixtureLoader.loadSuperfood();
@@ -28,7 +34,7 @@ describe('CartShopController (e2e)', () => {
 	// Mock responses using fixtures
 	const mockAddItemResponse = {
 		ownerName: textileFixtures.shop.name,
-		titulo: textileFixtures.entity.baseInfo.title,
+		title: textileFixtures.entity.baseInfo.title,
 		combinationVariant: textileFixtures.variants[0].combination,
 		thumbnailImgUrl: textileFixtures.mediaItems[0].url,
 		unitPrice: textileFixtures.variants[0].price,
@@ -43,7 +49,7 @@ describe('CartShopController (e2e)', () => {
 		items: [
 			{
 				ownerName: textileFixtures.shop.name,
-				titulo: textileFixtures.entity.baseInfo.title,
+				title: textileFixtures.entity.baseInfo.title,
 				combinationVariant: textileFixtures.variants[0].combination,
 				thumbnailImgUrl: textileFixtures.mediaItems[0].url,
 				unitPrice: textileFixtures.variants[0].price,
@@ -55,7 +61,7 @@ describe('CartShopController (e2e)', () => {
 			},
 			{
 				ownerName: superfoodFixtures.community.name,
-				titulo: superfoodFixtures.superfood.baseInfo.title,
+				title: superfoodFixtures.superfood.baseInfo.title,
 				combinationVariant: superfoodFixtures.variants[0].combination,
 				thumbnailImgUrl: superfoodFixtures.mediaItems[0].url,
 				unitPrice: superfoodFixtures.variants[0].price,
@@ -81,7 +87,7 @@ describe('CartShopController (e2e)', () => {
 	// Mock response for adding a box item to the cart
 	const mockAddBoxItemResponse = {
 		ownerName: '',
-		titulo: boxFixtures.entity.title,
+		title: boxFixtures.entity.title,
 		combinationVariant: {},
 		thumbnailImgUrl: boxFixtures.entity.thumbnailImageId,
 		unitPrice: boxFixtures.entity.price,
@@ -111,7 +117,7 @@ describe('CartShopController (e2e)', () => {
 		items: [
 			{
 				ownerName: textileFixtures.shop.name,
-				titulo: textileFixtures.entity.baseInfo.title,
+				title: textileFixtures.entity.baseInfo.title,
 				combinationVariant: textileFixtures.variants[0].combination,
 				thumbnailImgUrl: textileFixtures.mediaItems[0].url,
 				unitPrice: textileFixtures.variants[0].price,
@@ -123,7 +129,7 @@ describe('CartShopController (e2e)', () => {
 			},
 			{
 				ownerName: '',
-				titulo: boxFixtures.entity.title,
+				title: boxFixtures.entity.title,
 				combinationVariant: {},
 				thumbnailImgUrl: boxFixtures.entity.thumbnailImageId,
 				unitPrice: boxFixtures.entity.price,
@@ -154,54 +160,77 @@ describe('CartShopController (e2e)', () => {
 		taxOrFee: 27.0,
 	};
 
-	beforeAll(async () => {
-		const moduleFixture: TestingModule = await Test.createTestingModule({
+	// ─── Helper to build isolated app per test ────────────────────────
+	async function buildApp(
+		authUser: { userId: string; email: string; roles: any[] } | null,
+		useCaseMocks: {
+			getCart?: any;
+			addItem?: any;
+			cleanCart?: any;
+			removeItem?: any;
+			updateQuantity?: any;
+			applyDiscount?: any;
+		} = {},
+	): Promise<INestApplication> {
+		const module: TestingModule = await Test.createTestingModule({
 			controllers: [CartShopController],
 			providers: [
 				{
 					provide: AddItemToCartUseCase,
 					useValue: {
-						handle: jest.fn().mockResolvedValue(mockAddItemResponse),
+						handle:
+							useCaseMocks.addItem ??
+							jest.fn().mockResolvedValue(mockAddItemResponse),
 					},
 				},
 				{
 					provide: CleanCartUseCase,
 					useValue: {
-						handle: jest.fn().mockResolvedValue(undefined),
+						handle:
+							useCaseMocks.cleanCart ?? jest.fn().mockResolvedValue(undefined),
 					},
 				},
 				{
 					provide: GetCartByCustomerUseCase,
 					useValue: {
-						handle: jest.fn().mockResolvedValue(mockGetCartResponse),
+						handle:
+							useCaseMocks.getCart ??
+							jest.fn().mockResolvedValue(mockGetCartResponse),
 					},
 				},
 				{
 					provide: UpdateCartItemQuantityUseCase,
 					useValue: {
-						handle: jest.fn().mockResolvedValue(undefined),
+						handle:
+							useCaseMocks.updateQuantity ??
+							jest.fn().mockResolvedValue(undefined),
 					},
 				},
 				{
 					provide: RemoveItemFromCartUseCase,
 					useValue: {
-						handle: jest.fn().mockResolvedValue(undefined),
+						handle:
+							useCaseMocks.removeItem ?? jest.fn().mockResolvedValue(undefined),
 					},
 				},
 				{
 					provide: ApplyDiscountCodeUseCase,
 					useValue: {
-						handle: jest.fn().mockResolvedValue({
-							success: true,
-							discountApplied: 10,
-						}),
+						handle:
+							useCaseMocks.applyDiscount ??
+							jest.fn().mockResolvedValue({
+								success: true,
+								discountApplied: 10,
+							}),
 					},
 				},
 			],
-		}).compile();
+		})
+			.overrideGuard(JwtAuthGuard)
+			.useValue(authUser ? createAllowAllGuard(authUser) : createDenyAllGuard())
+			.compile();
 
-		app = moduleFixture.createNestApplication();
-
+		const app = module.createNestApplication();
 		app.useGlobalPipes(
 			new ValidationPipe({
 				whitelist: true,
@@ -209,51 +238,36 @@ describe('CartShopController (e2e)', () => {
 				transform: true,
 			}),
 		);
-
 		await app.init();
-
-		addItemToCartUseCase =
-			moduleFixture.get<AddItemToCartUseCase>(AddItemToCartUseCase);
-		getCartByCustomerUseCase = moduleFixture.get<GetCartByCustomerUseCase>(
-			GetCartByCustomerUseCase,
-		);
-		updateCartItemQuantityUseCase =
-			moduleFixture.get<UpdateCartItemQuantityUseCase>(
-				UpdateCartItemQuantityUseCase,
-			);
-		removeItemFromCartUseCase = moduleFixture.get<RemoveItemFromCartUseCase>(
-			RemoveItemFromCartUseCase,
-		);
-	});
-
-	afterAll(async () => {
-		await app.close();
-	});
+		return app;
+	}
 
 	afterEach(() => {
 		jest.clearAllMocks();
 	});
 
+	// ─── POST /cart/items ─────────────────────────────────────────────
 	describe('POST /cart/items', () => {
-		const customerId = customerFixtures.customer.id;
 		const addItemDto = {
 			variantId: textileFixtures.variants[0].id,
 			quantity: 2,
 		};
 
-		it('should add an item to cart and return enriched product info', () => {
+		it('should add an item to cart and return enriched product info', async () => {
+			const app = await buildApp(mockAuthUsers.customer);
+			const addUseCase = app.get(AddItemToCartUseCase);
 			jest
-				.spyOn(addItemToCartUseCase, 'handle')
+				.spyOn(addUseCase, 'handle')
 				.mockResolvedValueOnce(mockAddItemResponse);
 
-			return request(app.getHttpServer())
-				.post(`/cart/items?customerId=${customerId}`)
+			await request(app.getHttpServer())
+				.post('/cart/items')
 				.send(addItemDto)
 				.expect(HttpStatus.CREATED)
 				.expect((res) => {
 					expect(res.body).toMatchObject({
 						ownerName: textileFixtures.shop.name,
-						titulo: textileFixtures.entity.baseInfo.title,
+						title: textileFixtures.entity.baseInfo.title,
 						combinationVariant: expect.any(Object),
 						thumbnailImgUrl: textileFixtures.mediaItems[0].url,
 						unitPrice: textileFixtures.variants[0].price,
@@ -263,57 +277,77 @@ describe('CartShopController (e2e)', () => {
 						isDiscountActive: false,
 					});
 				});
+
+			await app.close();
 		});
 
 		it('should call the use case with correct parameters', async () => {
-			const spy = jest.spyOn(addItemToCartUseCase, 'handle');
+			const app = await buildApp(mockAuthUsers.customer);
+			const addUseCase = app.get(AddItemToCartUseCase);
+			const spy = jest.spyOn(addUseCase, 'handle');
 
 			await request(app.getHttpServer())
-				.post(`/cart/items?customerId=${customerId}`)
+				.post('/cart/items')
 				.send(addItemDto)
 				.expect(HttpStatus.CREATED);
 
-			expect(spy).toHaveBeenCalledWith(customerId, undefined, addItemDto);
+			expect(spy).toHaveBeenCalledWith(
+				mockAuthUsers.customer.userId,
+				mockAuthUsers.customer.roles,
+				addItemDto,
+				undefined,
+			);
+
+			await app.close();
 		});
 
-		it('should return 400 when quantity is less than 1', () => {
+		it('should return 400 when quantity is less than 1', async () => {
+			const app = await buildApp(mockAuthUsers.customer);
 			const invalidDto = {
 				variantId: textileFixtures.variants[0].id,
 				quantity: 0,
 			};
 
-			return request(app.getHttpServer())
-				.post(`/cart/items?customerId=${customerId}`)
+			await request(app.getHttpServer())
+				.post('/cart/items')
 				.send(invalidDto)
 				.expect(HttpStatus.BAD_REQUEST);
+
+			await app.close();
 		});
 
-		it('should return 400 when quantity is missing', () => {
+		it('should return 400 when quantity is missing', async () => {
+			const app = await buildApp(mockAuthUsers.customer);
 			const invalidDto = {
 				variantId: textileFixtures.variants[0].id,
 			};
 
-			return request(app.getHttpServer())
-				.post(`/cart/items?customerId=${customerId}`)
+			await request(app.getHttpServer())
+				.post('/cart/items')
 				.send(invalidDto)
 				.expect(HttpStatus.BAD_REQUEST);
+
+			await app.close();
 		});
 
-		it('should return 400 when variantId is missing', () => {
+		it('should return 400 when variantId is missing', async () => {
+			const app = await buildApp(mockAuthUsers.customer);
 			const invalidDto = {
 				quantity: 2,
 			};
 
-			return request(app.getHttpServer())
-				.post(`/cart/items?customerId=${customerId}`)
+			await request(app.getHttpServer())
+				.post('/cart/items')
 				.send(invalidDto)
 				.expect(HttpStatus.BAD_REQUEST);
+
+			await app.close();
 		});
 
-		it('should handle adding superfood items', () => {
+		it('should handle adding superfood items', async () => {
 			const superfoodResponse = {
 				ownerName: superfoodFixtures.community.name,
-				titulo: superfoodFixtures.superfood.baseInfo.title,
+				title: superfoodFixtures.superfood.baseInfo.title,
 				combinationVariant: superfoodFixtures.variants[0].combination,
 				thumbnailImgUrl: superfoodFixtures.mediaItems[0].url,
 				unitPrice: superfoodFixtures.variants[0].price,
@@ -324,12 +358,12 @@ describe('CartShopController (e2e)', () => {
 				productType: ProductType.SUPERFOOD,
 			};
 
-			jest
-				.spyOn(addItemToCartUseCase, 'handle')
-				.mockResolvedValueOnce(superfoodResponse);
+			const app = await buildApp(mockAuthUsers.customer, {
+				addItem: jest.fn().mockResolvedValue(superfoodResponse),
+			});
 
-			return request(app.getHttpServer())
-				.post(`/cart/items?customerId=${customerId}`)
+			await request(app.getHttpServer())
+				.post('/cart/items')
 				.send({
 					variantId: superfoodFixtures.variants[0].id,
 					quantity: 1,
@@ -341,19 +375,21 @@ describe('CartShopController (e2e)', () => {
 						superfoodFixtures.community.name,
 					);
 					expect(res.body).toHaveProperty(
-						'titulo',
+						'title',
 						superfoodFixtures.superfood.baseInfo.title,
 					);
 				});
+
+			await app.close();
 		});
 
-		it('should handle adding a box item with boxContent', () => {
-			jest
-				.spyOn(addItemToCartUseCase, 'handle')
-				.mockResolvedValueOnce(mockAddBoxItemResponse);
+		it('should handle adding a box item with boxContent', async () => {
+			const app = await buildApp(mockAuthUsers.customer, {
+				addItem: jest.fn().mockResolvedValue(mockAddBoxItemResponse),
+			});
 
-			return request(app.getHttpServer())
-				.post(`/cart/items?customerId=${customerId}`)
+			await request(app.getHttpServer())
+				.post('/cart/items')
 				.send({
 					variantId: boxFixtures.entity.id,
 					quantity: 1,
@@ -362,7 +398,7 @@ describe('CartShopController (e2e)', () => {
 				.expect((res) => {
 					expect(res.body).toMatchObject({
 						ownerName: '',
-						titulo: boxFixtures.entity.title,
+						title: boxFixtures.entity.title,
 						combinationVariant: {},
 						unitPrice: boxFixtures.entity.price,
 						quantity: 1,
@@ -374,15 +410,17 @@ describe('CartShopController (e2e)', () => {
 					expect(Array.isArray(res.body.boxContent)).toBe(true);
 					expect(res.body.boxContent).toHaveLength(3);
 				});
+
+			await app.close();
 		});
 
-		it('should return box item with correct boxContent product types', () => {
-			jest
-				.spyOn(addItemToCartUseCase, 'handle')
-				.mockResolvedValueOnce(mockAddBoxItemResponse);
+		it('should return box item with correct boxContent product types', async () => {
+			const app = await buildApp(mockAuthUsers.customer, {
+				addItem: jest.fn().mockResolvedValue(mockAddBoxItemResponse),
+			});
 
-			return request(app.getHttpServer())
-				.post(`/cart/items?customerId=${customerId}`)
+			await request(app.getHttpServer())
+				.post('/cart/items')
 				.send({
 					variantId: boxFixtures.entity.id,
 					quantity: 1,
@@ -404,19 +442,78 @@ describe('CartShopController (e2e)', () => {
 						productType: ProductType.TEXTILE,
 					});
 				});
+
+			await app.close();
 		});
 	});
 
+	// ─── POST /cart/items — Auth ──────────────────────────────────────
+	describe('POST /cart/items — Auth', () => {
+		const addItemDto = {
+			variantId: textileFixtures.variants[0].id,
+			quantity: 2,
+		};
+
+		it('should return 401 when no token is provided', async () => {
+			const app = await buildApp(null);
+
+			await request(app.getHttpServer())
+				.post('/cart/items')
+				.send(addItemDto)
+				.expect(HttpStatus.UNAUTHORIZED);
+
+			await app.close();
+		});
+
+		it('should return 403 when SELLER has no CustomerProfile', async () => {
+			const app = await buildApp(mockAuthUsers.seller, {
+				addItem: jest
+					.fn()
+					.mockRejectedValue(
+						new ForbiddenException('You can only access your own cart'),
+					),
+			});
+
+			await request(app.getHttpServer())
+				.post('/cart/items')
+				.send(addItemDto)
+				.expect(HttpStatus.FORBIDDEN);
+
+			await app.close();
+		});
+
+		it('should return 201 when ADMIN bypasses ownership check', async () => {
+			const app = await buildApp(mockAuthUsers.admin, {
+				addItem: jest.fn().mockResolvedValue(mockAddItemResponse),
+			});
+			const addUseCase = app.get(AddItemToCartUseCase);
+			const spy = jest.spyOn(addUseCase, 'handle');
+
+			await request(app.getHttpServer())
+				.post('/cart/items')
+				.send(addItemDto)
+				.expect(HttpStatus.CREATED);
+
+			expect(spy).toHaveBeenCalledWith(
+				mockAuthUsers.admin.userId,
+				mockAuthUsers.admin.roles,
+				addItemDto,
+				undefined,
+			);
+
+			await app.close();
+		});
+	});
+
+	// ─── GET /cart ────────────────────────────────────────────────────
 	describe('GET /cart', () => {
-		const customerId = customerFixtures.customer.id;
+		it('should get cart with enriched items list', async () => {
+			const app = await buildApp(mockAuthUsers.customer, {
+				getCart: jest.fn().mockResolvedValue(mockGetCartResponse),
+			});
 
-		it('should get cart with enriched items list', () => {
-			jest
-				.spyOn(getCartByCustomerUseCase, 'handle')
-				.mockResolvedValueOnce(mockGetCartResponse);
-
-			return request(app.getHttpServer())
-				.get(`/cart?customerId=${customerId}`)
+			await request(app.getHttpServer())
+				.get('/cart')
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					expect(res.body).toHaveProperty('items');
@@ -426,20 +523,22 @@ describe('CartShopController (e2e)', () => {
 					expect(Array.isArray(res.body.items)).toBe(true);
 					expect(res.body.items).toHaveLength(2);
 				});
+
+			await app.close();
 		});
 
-		it('should return items with complete product information', () => {
-			jest
-				.spyOn(getCartByCustomerUseCase, 'handle')
-				.mockResolvedValueOnce(mockGetCartResponse);
+		it('should return items with complete product information', async () => {
+			const app = await buildApp(mockAuthUsers.customer, {
+				getCart: jest.fn().mockResolvedValue(mockGetCartResponse),
+			});
 
-			return request(app.getHttpServer())
-				.get(`/cart?customerId=${customerId}`)
+			await request(app.getHttpServer())
+				.get('/cart')
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					const firstItem = res.body.items[0];
 					expect(firstItem).toHaveProperty('ownerName');
-					expect(firstItem).toHaveProperty('titulo');
+					expect(firstItem).toHaveProperty('title');
 					expect(firstItem).toHaveProperty('combinationVariant');
 					expect(firstItem).toHaveProperty('thumbnailImgUrl');
 					expect(firstItem).toHaveProperty('unitPrice');
@@ -448,67 +547,77 @@ describe('CartShopController (e2e)', () => {
 					expect(firstItem).toHaveProperty('maxStock');
 					expect(firstItem).toHaveProperty('isDiscountActive');
 				});
+
+			await app.close();
 		});
 
-		it('should return textile product with shop owner name', () => {
-			jest
-				.spyOn(getCartByCustomerUseCase, 'handle')
-				.mockResolvedValueOnce(mockGetCartResponse);
+		it('should return textile product with shop owner name', async () => {
+			const app = await buildApp(mockAuthUsers.customer, {
+				getCart: jest.fn().mockResolvedValue(mockGetCartResponse),
+			});
 
-			return request(app.getHttpServer())
-				.get(`/cart?customerId=${customerId}`)
+			await request(app.getHttpServer())
+				.get('/cart')
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					const textileItem = res.body.items[0];
 					expect(textileItem.ownerName).toBe(textileFixtures.shop.name);
-					expect(textileItem.titulo).toBe(
-						textileFixtures.entity.baseInfo.title,
-					);
+					expect(textileItem.title).toBe(textileFixtures.entity.baseInfo.title);
 					expect(textileItem.combinationVariant).toEqual(
 						textileFixtures.variants[0].combination,
 					);
 				});
+
+			await app.close();
 		});
 
-		it('should return superfood with community owner name', () => {
-			jest
-				.spyOn(getCartByCustomerUseCase, 'handle')
-				.mockResolvedValueOnce(mockGetCartResponse);
+		it('should return superfood with community owner name', async () => {
+			const app = await buildApp(mockAuthUsers.customer, {
+				getCart: jest.fn().mockResolvedValue(mockGetCartResponse),
+			});
 
-			return request(app.getHttpServer())
-				.get(`/cart?customerId=${customerId}`)
+			await request(app.getHttpServer())
+				.get('/cart')
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					const superfoodItem = res.body.items[1];
 					expect(superfoodItem.ownerName).toBe(
 						superfoodFixtures.community.name,
 					);
-					expect(superfoodItem.titulo).toBe(
+					expect(superfoodItem.title).toBe(
 						superfoodFixtures.superfood.baseInfo.title,
 					);
 					expect(superfoodItem.combinationVariant).toEqual(
 						superfoodFixtures.variants[0].combination,
 					);
 				});
+
+			await app.close();
 		});
 
-		it('should call the use case with correct customerId', async () => {
-			const spy = jest.spyOn(getCartByCustomerUseCase, 'handle');
+		it('should call the use case with correct parameters', async () => {
+			const app = await buildApp(mockAuthUsers.customer);
+			const getCartUseCase = app.get(GetCartByCustomerUseCase);
+			const spy = jest.spyOn(getCartUseCase, 'handle');
+
+			await request(app.getHttpServer()).get('/cart').expect(HttpStatus.OK);
+
+			expect(spy).toHaveBeenCalledWith(
+				mockAuthUsers.customer.userId,
+				mockAuthUsers.customer.roles,
+				undefined,
+			);
+
+			await app.close();
+		});
+
+		it('should return empty cart for new customer', async () => {
+			const app = await buildApp(mockAuthUsers.customer, {
+				getCart: jest.fn().mockResolvedValue(mockEmptyCartResponse),
+			});
 
 			await request(app.getHttpServer())
-				.get(`/cart?customerId=${customerId}`)
-				.expect(HttpStatus.OK);
-
-			expect(spy).toHaveBeenCalledWith(customerId, undefined);
-		});
-
-		it('should return empty cart for new customer', () => {
-			jest
-				.spyOn(getCartByCustomerUseCase, 'handle')
-				.mockResolvedValueOnce(mockEmptyCartResponse);
-
-			return request(app.getHttpServer())
-				.get(`/cart?customerId=${customerId}`)
+				.get('/cart')
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					expect(res.body).toHaveProperty('items', []);
@@ -516,15 +625,17 @@ describe('CartShopController (e2e)', () => {
 					expect(res.body).toHaveProperty('discount', 0);
 					expect(res.body).toHaveProperty('taxOrFee', 0);
 				});
+
+			await app.close();
 		});
 
-		it('should return cart with correct calculated totals', () => {
-			jest
-				.spyOn(getCartByCustomerUseCase, 'handle')
-				.mockResolvedValueOnce(mockGetCartResponse);
+		it('should return cart with correct calculated totals', async () => {
+			const app = await buildApp(mockAuthUsers.customer, {
+				getCart: jest.fn().mockResolvedValue(mockGetCartResponse),
+			});
 
-			return request(app.getHttpServer())
-				.get(`/cart?customerId=${customerId}`)
+			await request(app.getHttpServer())
+				.get('/cart')
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					// Verify totals are numbers
@@ -537,15 +648,17 @@ describe('CartShopController (e2e)', () => {
 					expect(res.body.discount).toBe(0);
 					expect(res.body.taxOrFee).toBe(27.0);
 				});
+
+			await app.close();
 		});
 
-		it('should return cart with box item containing boxContent', () => {
-			jest
-				.spyOn(getCartByCustomerUseCase, 'handle')
-				.mockResolvedValueOnce(mockGetCartWithBoxResponse);
+		it('should return cart with box item containing boxContent', async () => {
+			const app = await buildApp(mockAuthUsers.customer, {
+				getCart: jest.fn().mockResolvedValue(mockGetCartWithBoxResponse),
+			});
 
-			return request(app.getHttpServer())
-				.get(`/cart?customerId=${customerId}`)
+			await request(app.getHttpServer())
+				.get('/cart')
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					expect(res.body.items).toHaveLength(2);
@@ -553,21 +666,23 @@ describe('CartShopController (e2e)', () => {
 					const boxItem = res.body.items[1];
 					expect(boxItem.productType).toBe(ProductType.BOX);
 					expect(boxItem.ownerName).toBe('');
-					expect(boxItem.titulo).toBe(boxFixtures.entity.title);
+					expect(boxItem.title).toBe(boxFixtures.entity.title);
 					expect(boxItem.combinationVariant).toEqual({});
 					expect(boxItem.quantity).toBe(1);
 					expect(boxItem.maxStock).toBe(1);
 					expect(boxItem.isDiscountActive).toBe(false);
 				});
+
+			await app.close();
 		});
 
-		it('should return box item with correct boxContent structure', () => {
-			jest
-				.spyOn(getCartByCustomerUseCase, 'handle')
-				.mockResolvedValueOnce(mockGetCartWithBoxResponse);
+		it('should return box item with correct boxContent structure', async () => {
+			const app = await buildApp(mockAuthUsers.customer, {
+				getCart: jest.fn().mockResolvedValue(mockGetCartWithBoxResponse),
+			});
 
-			return request(app.getHttpServer())
-				.get(`/cart?customerId=${customerId}`)
+			await request(app.getHttpServer())
+				.get('/cart')
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					const boxItem = res.body.items[1];
@@ -584,15 +699,17 @@ describe('CartShopController (e2e)', () => {
 						);
 					});
 				});
+
+			await app.close();
 		});
 
-		it('should return box item boxContent with correct product types per item', () => {
-			jest
-				.spyOn(getCartByCustomerUseCase, 'handle')
-				.mockResolvedValueOnce(mockGetCartWithBoxResponse);
+		it('should return box item boxContent with correct product types per item', async () => {
+			const app = await buildApp(mockAuthUsers.customer, {
+				getCart: jest.fn().mockResolvedValue(mockGetCartWithBoxResponse),
+			});
 
-			return request(app.getHttpServer())
-				.get(`/cart?customerId=${customerId}`)
+			await request(app.getHttpServer())
+				.get('/cart')
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					const boxContent = res.body.items[1].boxContent;
@@ -618,30 +735,160 @@ describe('CartShopController (e2e)', () => {
 						boxFixtures.relatedProducts.textiles[0].product.baseInfo.title,
 					);
 				});
+
+			await app.close();
 		});
 
-		it('should not include boxContent on non-box items', () => {
-			jest
-				.spyOn(getCartByCustomerUseCase, 'handle')
-				.mockResolvedValueOnce(mockGetCartWithBoxResponse);
+		it('should not include boxContent on non-box items', async () => {
+			const app = await buildApp(mockAuthUsers.customer, {
+				getCart: jest.fn().mockResolvedValue(mockGetCartWithBoxResponse),
+			});
 
-			return request(app.getHttpServer())
-				.get(`/cart?customerId=${customerId}`)
+			await request(app.getHttpServer())
+				.get('/cart')
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					const textileItem = res.body.items[0];
 					expect(textileItem.productType).toBe(ProductType.TEXTILE);
 					expect(textileItem.boxContent).toBeUndefined();
 				});
+
+			await app.close();
 		});
 	});
 
+	// ─── GET /cart — Auth ─────────────────────────────────────────────
+	describe('GET /cart — Auth', () => {
+		it('should return 401 when no token is provided', async () => {
+			const app = await buildApp(null);
+
+			await request(app.getHttpServer())
+				.get('/cart')
+				.expect(HttpStatus.UNAUTHORIZED);
+
+			await app.close();
+		});
+
+		it('should return 403 when SELLER has no CustomerProfile', async () => {
+			const app = await buildApp(mockAuthUsers.seller, {
+				getCart: jest
+					.fn()
+					.mockRejectedValue(
+						new ForbiddenException('You can only access your own cart'),
+					),
+			});
+
+			await request(app.getHttpServer())
+				.get('/cart')
+				.expect(HttpStatus.FORBIDDEN);
+
+			await app.close();
+		});
+
+		it('should return 200 when ADMIN bypasses ownership check', async () => {
+			const app = await buildApp(mockAuthUsers.admin, {
+				getCart: jest.fn().mockResolvedValue(mockEmptyCartResponse),
+			});
+			const getCartUseCase = app.get(GetCartByCustomerUseCase);
+			const spy = jest.spyOn(getCartUseCase, 'handle');
+
+			await request(app.getHttpServer()).get('/cart').expect(HttpStatus.OK);
+
+			expect(spy).toHaveBeenCalledWith(
+				mockAuthUsers.admin.userId,
+				mockAuthUsers.admin.roles,
+				undefined,
+			);
+
+			await app.close();
+		});
+	});
+
+	// ─── DELETE /cart ─────────────────────────────────────────────────
+	describe('DELETE /cart', () => {
+		it('should clean cart and return 204', async () => {
+			const app = await buildApp(mockAuthUsers.customer, {
+				cleanCart: jest.fn().mockResolvedValue(undefined),
+			});
+
+			await request(app.getHttpServer())
+				.delete('/cart')
+				.expect(HttpStatus.NO_CONTENT);
+
+			await app.close();
+		});
+
+		it('should call the use case with correct parameters', async () => {
+			const app = await buildApp(mockAuthUsers.customer);
+			const cleanUseCase = app.get(CleanCartUseCase);
+			const spy = jest.spyOn(cleanUseCase, 'handle');
+
+			await request(app.getHttpServer())
+				.delete('/cart')
+				.expect(HttpStatus.NO_CONTENT);
+
+			expect(spy).toHaveBeenCalledWith(
+				mockAuthUsers.customer.userId,
+				mockAuthUsers.customer.roles,
+				undefined,
+			);
+
+			await app.close();
+		});
+	});
+
+	// ─── DELETE /cart — Auth ──────────────────────────────────────────
+	describe('DELETE /cart — Auth', () => {
+		it('should return 401 when no token is provided', async () => {
+			const app = await buildApp(null);
+
+			await request(app.getHttpServer())
+				.delete('/cart')
+				.expect(HttpStatus.UNAUTHORIZED);
+
+			await app.close();
+		});
+
+		it('should return 403 when SELLER has no CustomerProfile', async () => {
+			const app = await buildApp(mockAuthUsers.seller, {
+				cleanCart: jest
+					.fn()
+					.mockRejectedValue(
+						new ForbiddenException('You can only access your own cart'),
+					),
+			});
+
+			await request(app.getHttpServer())
+				.delete('/cart')
+				.expect(HttpStatus.FORBIDDEN);
+
+			await app.close();
+		});
+
+		it('should return 204 when ADMIN bypasses ownership check', async () => {
+			const app = await buildApp(mockAuthUsers.admin, {
+				cleanCart: jest.fn().mockResolvedValue(undefined),
+			});
+			const cleanUseCase = app.get(CleanCartUseCase);
+			const spy = jest.spyOn(cleanUseCase, 'handle');
+
+			await request(app.getHttpServer())
+				.delete('/cart')
+				.expect(HttpStatus.NO_CONTENT);
+
+			expect(spy).toHaveBeenCalledWith(
+				mockAuthUsers.admin.userId,
+				mockAuthUsers.admin.roles,
+				undefined,
+			);
+
+			await app.close();
+		});
+	});
+
+	// ─── PATCH /cart/items/:itemId/quantity/:quantityDelta ────────────
 	describe('PATCH /cart/items/:itemId/quantity/:quantityDelta', () => {
-		const customerId = customerFixtures.customer.id;
 		const cartItemId = cartFixtures.cartItems[0].id;
-		const updateDto = {
-			quantity: 5,
-		};
 
 		const mockUpdateResponse = {
 			quantity: 5,
@@ -649,12 +896,12 @@ describe('CartShopController (e2e)', () => {
 			maxStock: textileFixtures.variants[0].stock,
 		};
 
-		it('should update cart item quantity', () => {
-			jest
-				.spyOn(updateCartItemQuantityUseCase, 'handle')
-				.mockResolvedValueOnce(mockUpdateResponse);
+		it('should update cart item quantity', async () => {
+			const app = await buildApp(mockAuthUsers.customer, {
+				updateQuantity: jest.fn().mockResolvedValue(mockUpdateResponse),
+			});
 
-			return request(app.getHttpServer())
+			await request(app.getHttpServer())
 				.patch(`/cart/items/${cartItemId}/quantity/5`)
 				.expect(HttpStatus.OK)
 				.expect((res) => {
@@ -662,47 +909,359 @@ describe('CartShopController (e2e)', () => {
 					expect(res.body).toHaveProperty('idShoppingCartItem', cartItemId);
 					expect(res.body).toHaveProperty('maxStock');
 				});
+
+			await app.close();
 		});
 
 		it('should call the use case with correct parameters', async () => {
-			const spy = jest.spyOn(updateCartItemQuantityUseCase, 'handle');
+			const app = await buildApp(mockAuthUsers.customer, {
+				updateQuantity: jest.fn().mockResolvedValue(mockUpdateResponse),
+			});
+			const updateUseCase = app.get(UpdateCartItemQuantityUseCase);
+			const spy = jest.spyOn(updateUseCase, 'handle');
 
 			await request(app.getHttpServer())
 				.patch(`/cart/items/${cartItemId}/quantity/5`)
 				.expect(HttpStatus.OK);
 
-			expect(spy).toHaveBeenCalledWith(cartItemId, 5);
+			expect(spy).toHaveBeenCalledWith(
+				cartItemId,
+				5,
+				mockAuthUsers.customer.userId,
+				mockAuthUsers.customer.roles,
+			);
+
+			await app.close();
 		});
 
-		it('should return 400 when quantity delta is invalid', () => {
-			return request(app.getHttpServer())
+		it('should return 400 when quantity delta is invalid', async () => {
+			const app = await buildApp(mockAuthUsers.customer);
+
+			await request(app.getHttpServer())
 				.patch(`/cart/items/${cartItemId}/quantity/invalid`)
 				.expect(HttpStatus.BAD_REQUEST);
+
+			await app.close();
 		});
 	});
 
-	describe('DELETE /cart/items/:itemId', () => {
-		const customerId = customerFixtures.customer.id;
+	// ─── PATCH /cart/items/:itemId/quantity/:delta — Auth ─────────────
+	describe('PATCH /cart/items/:itemId/quantity/:delta — Auth', () => {
 		const cartItemId = cartFixtures.cartItems[0].id;
 
-		it('should remove item from cart', () => {
-			jest
-				.spyOn(removeItemFromCartUseCase, 'handle')
-				.mockResolvedValueOnce(undefined);
+		it('should return 401 when no token is provided', async () => {
+			const app = await buildApp(null);
 
-			return request(app.getHttpServer())
-				.delete(`/cart/items/${cartItemId}`)
-				.expect(HttpStatus.NO_CONTENT);
+			await request(app.getHttpServer())
+				.patch(`/cart/items/${cartItemId}/quantity/1`)
+				.expect(HttpStatus.UNAUTHORIZED);
+
+			await app.close();
 		});
 
-		it('should call the use case with correct parameters', async () => {
-			const spy = jest.spyOn(removeItemFromCartUseCase, 'handle');
+		it('should return 403 when non-owner tries to update quantity', async () => {
+			const app = await buildApp(mockAuthUsers.customer, {
+				updateQuantity: jest
+					.fn()
+					.mockRejectedValue(
+						new ForbiddenException('You can only access your own cart'),
+					),
+			});
+
+			await request(app.getHttpServer())
+				.patch(`/cart/items/${cartItemId}/quantity/1`)
+				.expect(HttpStatus.FORBIDDEN);
+
+			await app.close();
+		});
+
+		it('should return 404 when cart item does not exist', async () => {
+			const app = await buildApp(mockAuthUsers.customer, {
+				updateQuantity: jest
+					.fn()
+					.mockRejectedValue(new NotFoundException('CartItem not found')),
+			});
+
+			await request(app.getHttpServer())
+				.patch(`/cart/items/non-existent-item/quantity/1`)
+				.expect(HttpStatus.NOT_FOUND);
+
+			await app.close();
+		});
+
+		it('should return 200 when ADMIN bypasses ownership check', async () => {
+			const mockUpdateResponse = {
+				quantity: 3,
+				idShoppingCartItem: cartItemId,
+				maxStock: textileFixtures.variants[0].stock,
+			};
+
+			const app = await buildApp(mockAuthUsers.admin, {
+				updateQuantity: jest.fn().mockResolvedValue(mockUpdateResponse),
+			});
+			const updateUseCase = app.get(UpdateCartItemQuantityUseCase);
+			const spy = jest.spyOn(updateUseCase, 'handle');
+
+			await request(app.getHttpServer())
+				.patch(`/cart/items/${cartItemId}/quantity/3`)
+				.expect(HttpStatus.OK);
+
+			expect(spy).toHaveBeenCalledWith(
+				cartItemId,
+				3,
+				mockAuthUsers.admin.userId,
+				mockAuthUsers.admin.roles,
+			);
+
+			await app.close();
+		});
+	});
+
+	// ─── DELETE /cart/items/:itemId ───────────────────────────────────
+	describe('DELETE /cart/items/:itemId', () => {
+		const cartItemId = cartFixtures.cartItems[0].id;
+
+		it('should remove item from cart', async () => {
+			const app = await buildApp(mockAuthUsers.customer, {
+				removeItem: jest.fn().mockResolvedValue(undefined),
+			});
 
 			await request(app.getHttpServer())
 				.delete(`/cart/items/${cartItemId}`)
 				.expect(HttpStatus.NO_CONTENT);
 
-			expect(spy).toHaveBeenCalledWith(cartItemId);
+			await app.close();
+		});
+
+		it('should call the use case with correct parameters', async () => {
+			const app = await buildApp(mockAuthUsers.customer, {
+				removeItem: jest.fn().mockResolvedValue(undefined),
+			});
+			const removeUseCase = app.get(RemoveItemFromCartUseCase);
+			const spy = jest.spyOn(removeUseCase, 'handle');
+
+			await request(app.getHttpServer())
+				.delete(`/cart/items/${cartItemId}`)
+				.expect(HttpStatus.NO_CONTENT);
+
+			expect(spy).toHaveBeenCalledWith(
+				cartItemId,
+				mockAuthUsers.customer.userId,
+				mockAuthUsers.customer.roles,
+			);
+
+			await app.close();
+		});
+	});
+
+	// ─── DELETE /cart/items/:itemId — Auth ────────────────────────────
+	describe('DELETE /cart/items/:itemId — Auth', () => {
+		const cartItemId = cartFixtures.cartItems[0].id;
+
+		it('should return 401 when no token is provided', async () => {
+			const app = await buildApp(null);
+
+			await request(app.getHttpServer())
+				.delete(`/cart/items/${cartItemId}`)
+				.expect(HttpStatus.UNAUTHORIZED);
+
+			await app.close();
+		});
+
+		it('should return 403 when non-owner tries to remove item', async () => {
+			const app = await buildApp(mockAuthUsers.customer, {
+				removeItem: jest
+					.fn()
+					.mockRejectedValue(
+						new ForbiddenException('You can only access your own cart'),
+					),
+			});
+
+			await request(app.getHttpServer())
+				.delete(`/cart/items/${cartItemId}`)
+				.expect(HttpStatus.FORBIDDEN);
+
+			await app.close();
+		});
+
+		it('should return 404 when cart item does not exist', async () => {
+			const app = await buildApp(mockAuthUsers.customer, {
+				removeItem: jest
+					.fn()
+					.mockRejectedValue(new NotFoundException('CartItem not found')),
+			});
+
+			await request(app.getHttpServer())
+				.delete(`/cart/items/non-existent-item`)
+				.expect(HttpStatus.NOT_FOUND);
+
+			await app.close();
+		});
+
+		it('should return 204 when ADMIN bypasses ownership check', async () => {
+			const app = await buildApp(mockAuthUsers.admin, {
+				removeItem: jest.fn().mockResolvedValue(undefined),
+			});
+			const removeUseCase = app.get(RemoveItemFromCartUseCase);
+			const spy = jest.spyOn(removeUseCase, 'handle');
+
+			await request(app.getHttpServer())
+				.delete(`/cart/items/${cartItemId}`)
+				.expect(HttpStatus.NO_CONTENT);
+
+			expect(spy).toHaveBeenCalledWith(
+				cartItemId,
+				mockAuthUsers.admin.userId,
+				mockAuthUsers.admin.roles,
+			);
+
+			await app.close();
+		});
+	});
+
+	// ─── POST /cart/items/:itemId/discount ────────────────────────────
+	describe('POST /cart/items/:itemId/discount', () => {
+		const cartItemId = 'item-1';
+		const discountDto = { code: 'CODE10' };
+		const mockDiscountResponse = {
+			percentage: 10,
+			discount: 5,
+			cartItemId,
+		};
+
+		it('should apply discount to cart item', async () => {
+			const app = await buildApp(mockAuthUsers.customer, {
+				applyDiscount: jest.fn().mockResolvedValue(mockDiscountResponse),
+			});
+
+			await request(app.getHttpServer())
+				.post(`/cart/items/${cartItemId}/discount`)
+				.send(discountDto)
+				.expect(HttpStatus.CREATED);
+
+			await app.close();
+		});
+
+		it('should call the use case with correct parameters', async () => {
+			const app = await buildApp(mockAuthUsers.customer, {
+				applyDiscount: jest.fn().mockResolvedValue(mockDiscountResponse),
+			});
+			const discountUseCase = app.get(ApplyDiscountCodeUseCase);
+			const spy = jest.spyOn(discountUseCase, 'handle');
+
+			await request(app.getHttpServer())
+				.post(`/cart/items/${cartItemId}/discount`)
+				.send(discountDto)
+				.expect(HttpStatus.CREATED);
+
+			expect(spy).toHaveBeenCalledWith(
+				cartItemId,
+				discountDto.code,
+				mockAuthUsers.customer.userId,
+				mockAuthUsers.customer.roles,
+			);
+
+			await app.close();
+		});
+	});
+
+	// ─── POST /cart/items/:itemId/discount — Auth ─────────────────────
+	describe('POST /cart/items/:itemId/discount — Auth', () => {
+		const cartItemId = 'item-1';
+		const discountDto = { code: 'CODE10' };
+
+		it('should return 401 when no token is provided', async () => {
+			const app = await buildApp(null);
+
+			await request(app.getHttpServer())
+				.post(`/cart/items/${cartItemId}/discount`)
+				.send(discountDto)
+				.expect(HttpStatus.UNAUTHORIZED);
+
+			await app.close();
+		});
+
+		it('should return 403 when non-owner tries to apply discount', async () => {
+			const app = await buildApp(mockAuthUsers.customer, {
+				applyDiscount: jest
+					.fn()
+					.mockRejectedValue(
+						new ForbiddenException('You can only access your own cart'),
+					),
+			});
+
+			await request(app.getHttpServer())
+				.post(`/cart/items/${cartItemId}/discount`)
+				.send(discountDto)
+				.expect(HttpStatus.FORBIDDEN);
+
+			await app.close();
+		});
+
+		it('should return 404 when cart item does not exist', async () => {
+			const app = await buildApp(mockAuthUsers.customer, {
+				applyDiscount: jest
+					.fn()
+					.mockRejectedValue(new NotFoundException('CartItem not found')),
+			});
+
+			await request(app.getHttpServer())
+				.post(`/cart/items/non-existent-item/discount`)
+				.send(discountDto)
+				.expect(HttpStatus.NOT_FOUND);
+
+			await app.close();
+		});
+
+		it('should return 201 when ADMIN bypasses ownership check', async () => {
+			const mockDiscountResponse = {
+				percentage: 10,
+				discount: 5,
+				cartItemId,
+			};
+
+			const app = await buildApp(mockAuthUsers.admin, {
+				applyDiscount: jest.fn().mockResolvedValue(mockDiscountResponse),
+			});
+			const discountUseCase = app.get(ApplyDiscountCodeUseCase);
+			const spy = jest.spyOn(discountUseCase, 'handle');
+
+			await request(app.getHttpServer())
+				.post(`/cart/items/${cartItemId}/discount`)
+				.send(discountDto)
+				.expect(HttpStatus.CREATED);
+
+			expect(spy).toHaveBeenCalledWith(
+				cartItemId,
+				discountDto.code,
+				mockAuthUsers.admin.userId,
+				mockAuthUsers.admin.roles,
+			);
+
+			await app.close();
+		});
+
+		it('should return 403 before discount validation when non-owner sends valid code', async () => {
+			// Ownership is checked BEFORE discount validation per spec
+			const app = await buildApp(mockAuthUsers.customer, {
+				applyDiscount: jest
+					.fn()
+					.mockRejectedValue(
+						new ForbiddenException('You can only access your own cart'),
+					),
+			});
+			const discountUseCase = app.get(ApplyDiscountCodeUseCase);
+			const spy = jest.spyOn(discountUseCase, 'handle');
+
+			await request(app.getHttpServer())
+				.post(`/cart/items/${cartItemId}/discount`)
+				.send(discountDto)
+				.expect(HttpStatus.FORBIDDEN);
+
+			// Use case was called (ownership enforced inside use case, before discount logic)
+			expect(spy).toHaveBeenCalled();
+
+			await app.close();
 		});
 	});
 });

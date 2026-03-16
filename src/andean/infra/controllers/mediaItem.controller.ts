@@ -13,8 +13,13 @@ import {
 	ParseFilePipe,
 	MaxFileSizeValidator,
 	FileTypeValidator,
+	UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { JwtAuthGuard } from '../core/jwtAuth.guard';
+import { RolesGuard } from '../core/roles.guard';
+import { Roles } from '../core/roles.decorator';
+import { AccountRole } from '../../domain/enums/AccountRole';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
 	ApiTags,
@@ -31,7 +36,7 @@ import { ListMediaItemsUseCase } from '../../app/use_cases/media/ListMediaItemsU
 import { DeleteMediaItemUseCase } from '../../app/use_cases/media/DeleteMediaItemUseCase';
 import { UploadMediaItemDto } from './dto/media/UploadMediaItemDto';
 import { UpdateMediaItemDto } from './dto/media/UpdateMediaItemDto';
-import { MediaItemResponse } from '../../app/modules/MediaItemResponse';
+import { MediaItemResponse } from '../../app/modules/shared/MediaItemResponse';
 import { MediaItem } from '../../domain/entities/MediaItem';
 import { MediaItemType } from '../../domain/enums/MediaItemType';
 import { MediaItemRole } from '../../domain/enums/MediaItemRole';
@@ -50,9 +55,14 @@ export class MediaItemController {
 		private readonly configService: ConfigService,
 	) {
 		// URL base para acceso a archivos (S3 o CloudFront)
-		this.storageBaseUrl = this.configService.get<string>('STORAGE_BASE_URL', '');
+		this.storageBaseUrl = this.configService.get<string>(
+			'STORAGE_BASE_URL',
+			'',
+		);
 	}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post()
 	@UseInterceptors(FileInterceptor('file'))
 	@ApiConsumes('multipart/form-data')

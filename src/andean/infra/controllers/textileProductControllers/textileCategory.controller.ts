@@ -8,8 +8,14 @@ import {
 	Delete,
 	HttpCode,
 	HttpStatus,
+	UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../../core/jwtAuth.guard';
+import { RolesGuard } from '../../core/roles.guard';
+import { Roles } from '../../core/roles.decorator';
+import { AccountRole } from '../../../domain/enums/AccountRole';
+import { TextileCategoryResponse } from 'src/andean/app/modules/textile/TextileCategoryResponse';
 import { CreateTextileCategoryUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileCategoryUseCase';
 import { CreateManyTextileCategoriesUseCase } from 'src/andean/app/use_cases/textileProducts/CreateManyTextileCategoriesUseCase';
 import { TextileCategory } from 'src/andean/domain/entities/textileProducts/TextileCategory';
@@ -32,6 +38,8 @@ export class TextileCategoryController {
 		private readonly deleteTextileCategoryUseCase: DeleteTextileCategoryUseCase,
 	) {}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post('/bulk')
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -54,6 +62,8 @@ export class TextileCategoryController {
 		return this.createManyTextileCategoriesUseCase.handle(body);
 	}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -111,7 +121,7 @@ export class TextileCategoryController {
 	@ApiResponse({
 		status: 200,
 		description: 'Lista de categorías',
-		type: [TextileCategory],
+		type: [TextileCategoryResponse],
 	})
 	async getAllTextileCategories(): Promise<TextileCategory[]> {
 		return this.getAllTextileCategoriesUseCase.handle();
