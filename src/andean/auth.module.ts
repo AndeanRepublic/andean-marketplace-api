@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthController } from './infra/controllers/auth.controller';
 import { LoginUseCase } from './app/use_cases/auth/LoginUseCase';
+import { AssignAdminUseCase } from './app/use_cases/auth/AssignAdminUseCase';
 import { UsersModule } from './users.module';
 import { HashService } from './infra/services/HashService';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -36,6 +37,7 @@ import { JwtAuthGuard } from './infra/core/jwtAuth.guard';
 	controllers: [AuthController],
 	providers: [
 		LoginUseCase,
+		AssignAdminUseCase,
 		HashService,
 		{
 			provide: APP_GUARD,
