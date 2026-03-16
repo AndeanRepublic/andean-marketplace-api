@@ -16,16 +16,13 @@ export interface TextileAvailableColor {
 export interface TextileVariantInfo {
 	variantId: string;
 	size: string;
-	color: string;
+	color: TextileAvailableColor;
 	material: string;
 	price: number;
 	stock: number;
 }
 
 export interface TextileProductAttributes {
-	availableSizes: string[];
-	availableColors: TextileAvailableColor[];
-	availableMaterials: string[];
 	variantInfo: TextileVariantInfo[];
 }
 
@@ -47,14 +44,7 @@ export class TextileProductAttributesAssembler {
 		variants: Variant[],
 	): Promise<TextileProductAttributes> {
 		const map = await this.buildForProducts([product], variants);
-		return (
-			map.get(product.id) || {
-				availableSizes: [],
-				availableColors: [],
-				availableMaterials: [],
-				variantInfo: [],
-			}
-		);
+		return map.get(product.id) || { variantInfo: [] };
 	}
 
 	async buildForProducts(
@@ -92,13 +82,6 @@ export class TextileProductAttributesAssembler {
 			const productVariants = variantsByProductId.get(product.id) || [];
 
 			result.set(product.id, {
-				availableSizes: this.buildAvailableSizes(sizeOption, sizeAltById),
-				availableColors: this.buildAvailableColors(
-					colorOption,
-					colorAltById,
-					mediaById,
-				),
-				availableMaterials: this.buildAvailableMaterials(materialOption),
 				variantInfo: this.buildVariantInfo(
 					productVariants,
 					sizeOption,
@@ -106,6 +89,7 @@ export class TextileProductAttributesAssembler {
 					materialOption,
 					sizeAltById,
 					colorAltById,
+					mediaById,
 				),
 			});
 		}
@@ -138,69 +122,6 @@ export class TextileProductAttributesAssembler {
 		return [...ids];
 	}
 
-	private buildAvailableSizes(
-		sizeOption: TextileOptions | undefined,
-		sizeAltById: Map<string, { nameLabel: string }>,
-	): string[] {
-		if (!sizeOption) return [];
-		const out: string[] = [];
-		const seen = new Set<string>();
-		for (const value of sizeOption.values) {
-			const sizeAlt = value.idOpcionAlternative
-				? sizeAltById.get(value.idOpcionAlternative)
-				: undefined;
-			const label = (sizeAlt?.nameLabel || value.label || '').trim();
-			const key = label.toLowerCase();
-			if (!key || seen.has(key)) continue;
-			out.push(label);
-			seen.add(key);
-		}
-		return out;
-	}
-
-	private buildAvailableColors(
-		colorOption: TextileOptions | undefined,
-		colorAltById: Map<string, { nameLabel: string; hexCode: string }>,
-		mediaById: Map<string, { key: string }>,
-	): TextileAvailableColor[] {
-		if (!colorOption) return [];
-		const out: TextileAvailableColor[] = [];
-		const seen = new Set<string>();
-		for (const value of colorOption.values) {
-			const colorAlt = value.idOpcionAlternative
-				? colorAltById.get(value.idOpcionAlternative)
-				: undefined;
-			const color = (colorAlt?.nameLabel || value.label || '').trim();
-			const key = color.toLowerCase();
-			if (!key || seen.has(key)) continue;
-			const firstMediaId = value.mediaIds?.[0];
-			const media = firstMediaId ? mediaById.get(firstMediaId) : undefined;
-			out.push({
-				color,
-				hexCode: colorAlt?.hexCode || '#000000',
-				imgUrl: media ? `${this.storageBaseUrl}/${media.key}` : '',
-			});
-			seen.add(key);
-		}
-		return out;
-	}
-
-	private buildAvailableMaterials(
-		materialOption: TextileOptions | undefined,
-	): string[] {
-		if (!materialOption) return [];
-		const out: string[] = [];
-		const seen = new Set<string>();
-		for (const value of materialOption.values) {
-			const label = (value.label || '').trim();
-			const key = label.toLowerCase();
-			if (!key || seen.has(key)) continue;
-			out.push(label);
-			seen.add(key);
-		}
-		return out;
-	}
-
 	private getCombinationValue(
 		combination: Record<string, string>,
 		keys: string[],
@@ -223,13 +144,42 @@ export class TextileProductAttributesAssembler {
 		};
 	}
 
+	private buildColorObject(
+		colorOption: TextileOptions | undefined,
+		combinationValue: string,
+		colorAltById: Map<string, { nameLabel: string; hexCode: string }>,
+		mediaById: Map<string, { key: string }>,
+	): TextileAvailableColor {
+		if (!colorOption || !combinationValue) {
+			return { color: '', hexCode: '#000000', imgUrl: '' };
+		}
+		const optionValue = colorOption.values.find(
+			(v) => v.label === combinationValue,
+		);
+		if (!optionValue) {
+			return { color: combinationValue, hexCode: '#000000', imgUrl: '' };
+		}
+		const colorAlt = optionValue.idOpcionAlternative
+			? colorAltById.get(optionValue.idOpcionAlternative)
+			: undefined;
+		const colorName = (colorAlt?.nameLabel || optionValue.label || '').trim();
+		const firstMediaId = optionValue.mediaIds?.[0];
+		const media = firstMediaId ? mediaById.get(firstMediaId) : undefined;
+		return {
+			color: colorName,
+			hexCode: colorAlt?.hexCode || '#000000',
+			imgUrl: media ? `${this.storageBaseUrl}/${media.key}` : '',
+		};
+	}
+
 	private buildVariantInfo(
 		variants: Variant[],
 		sizeOption: TextileOptions | undefined,
 		colorOption: TextileOptions | undefined,
 		materialOption: TextileOptions | undefined,
 		sizeAltById: Map<string, { nameLabel: string }>,
-		colorAltById: Map<string, { nameLabel: string }>,
+		colorAltById: Map<string, { nameLabel: string; hexCode: string }>,
+		mediaById: Map<string, { key: string }>,
 	): TextileVariantInfo[] {
 		return variants.map((variant) => {
 			const sizeCombo = this.getCombinationValue(variant.combination, [
@@ -251,7 +201,6 @@ export class TextileProductAttributesAssembler {
 			]);
 
 			const sizeResolved = this.resolveOptionLabel(sizeOption, sizeCombo);
-			const colorResolved = this.resolveOptionLabel(colorOption, colorCombo);
 			const materialResolved = this.resolveOptionLabel(
 				materialOption,
 				materialCombo,
@@ -263,10 +212,12 @@ export class TextileProductAttributesAssembler {
 					? sizeAltById.get(sizeResolved.alternativeId)?.nameLabel ||
 						sizeResolved.label
 					: sizeResolved.label,
-				color: colorResolved.alternativeId
-					? colorAltById.get(colorResolved.alternativeId)?.nameLabel ||
-						colorResolved.label
-					: colorResolved.label,
+				color: this.buildColorObject(
+					colorOption,
+					colorCombo,
+					colorAltById,
+					mediaById,
+				),
 				material: materialResolved.label,
 				price: variant.price,
 				stock: variant.stock,

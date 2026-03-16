@@ -2,9 +2,15 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CapturePayPalOrderService } from '../../../infra/services/paypal/CapturePayPalOrderService';
 import { CapturePayPalOrderDto } from '../../../infra/controllers/dto/payment/CapturePayPalOrderDto';
 import { CreateOrderFromCartUseCase } from '../orders/CreateOrderFromCartUseCase';
+import { CreateOrderUseCase } from '../orders/CreateOrderUseCase';
+import { ReduceStockFromOrderUseCase } from '../orders/ReduceStockFromOrderUseCase';
 import { PaymentMethod } from '../../../domain/enums/PaymentMethod';
 import { PaymentProvider } from '../../../domain/enums/PaymentProvider';
-import { CreateOrderFromCartDto } from 'src/andean/infra/controllers/dto/order/CreateOrderFromCartDto';
+import { ProductType } from '../../../domain/enums/ProductType';
+import { CreateOrderFromCartDto } from '../../../infra/controllers/dto/order/CreateOrderFromCartDto';
+import { CreateOrderDto } from '../../../infra/controllers/dto/order/CreateOrderDto';
+import { OrderStatus } from '../../../domain/enums/OrderStatus';
+import { DeliveryOption } from '../../../domain/enums/DeliveryOption';
 
 export interface CapturePayPalOrderResponse {
 	success: boolean;
@@ -19,6 +25,8 @@ export class CapturePayPalOrderUseCase {
 	constructor(
 		private readonly capturePayPalOrderService: CapturePayPalOrderService,
 		private readonly createOrderFromCartUseCase: CreateOrderFromCartUseCase,
+		private readonly createOrderUseCase: CreateOrderUseCase,
+		private readonly reduceStockFromOrderUseCase: ReduceStockFromOrderUseCase,
 	) {}
 
 	async handle(
@@ -35,25 +43,69 @@ export class CapturePayPalOrderUseCase {
 			};
 		}
 
-		// If the payment was successful, create the order from the cart
-		const orderDto: CreateOrderFromCartDto = {
-			shippingInfo: dto.shippingInfo,
-			payment: {
-				method: PaymentMethod.PAYPAL,
-				provider: PaymentProvider.PAYPAL,
-				transactionId: result.transactionId ?? undefined,
-				paidAt: new Date(),
-			},
-			currency: dto.currency,
-			deliveryOption: dto.deliveryOption,
+		const paymentInfo = {
+			method: PaymentMethod.PAYPAL as const,
+			provider: PaymentProvider.PAYPAL,
+			transactionId: result.transactionId ?? undefined,
+			paidAt: new Date(),
 		};
 
 		try {
-			const order = await this.createOrderFromCartUseCase.handle(
-				dto.customerId,
-				dto.customerEmail,
-				orderDto,
-			);
+			let order;
+
+			if (dto.customerId) {
+				// Logged-in user: create order from cart
+				const orderDto: CreateOrderFromCartDto = {
+					shippingInfo: dto.shippingInfo,
+					payment: paymentInfo,
+					currency: dto.currency,
+					deliveryOption: dto.deliveryOption,
+				};
+				order = await this.createOrderFromCartUseCase.handle(
+					dto.customerId,
+					orderDto,
+				);
+			} else if (dto.customerEmail && dto.items && dto.pricing) {
+				// Guest: create order from payload
+				if (!dto.items.length) {
+					throw new BadRequestException(
+						'Guest checkout requires at least one item',
+					);
+				}
+				// Validate variantId for TEXTILE products
+				for (const item of dto.items) {
+					if (
+						item.productType === ProductType.TEXTILE &&
+						!item.variantId
+					) {
+						throw new BadRequestException(
+							`variantId is required for TEXTILE product ${item.productId}`,
+						);
+					}
+				}
+				await this.reduceStockFromOrderUseCase.handleFromOrderItems(
+					dto.items.map((i) => ({
+						variantId: i.variantId,
+						productType: i.productType,
+						productId: i.productId,
+						quantity: i.quantity,
+					})),
+				);
+				const createOrderDto: CreateOrderDto = {
+					customerEmail: dto.customerEmail,
+					status: OrderStatus.PROCESSING,
+					items: dto.items,
+					pricing: dto.pricing,
+					shippingInfo: dto.shippingInfo,
+					payment: paymentInfo,
+					deliveryOption: dto.deliveryOption ?? DeliveryOption.DHL,
+				};
+				order = await this.createOrderUseCase.handle(createOrderDto);
+			} else {
+				throw new BadRequestException(
+					'Either customerId (for cart) or customerEmail with items and pricing (for guest) must be provided',
+				);
+			}
 
 			return {
 				success: true,
@@ -68,10 +120,10 @@ export class CapturePayPalOrderUseCase {
 			}
 			if (error instanceof Error) {
 				throw new BadRequestException(
-					`Failed to create order from cart: ${error.message}`,
+					`Failed to create order: ${error.message}`,
 				);
 			}
-			throw new BadRequestException('Failed to create order from cart');
+			throw new BadRequestException('Failed to create order');
 		}
 	}
 }

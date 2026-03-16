@@ -1,6 +1,7 @@
 import { createSuperfoodSubResourceTests } from './helpers/superfood-subresource-test.factory';
 import { SuperfoodCertificationController } from '../src/andean/infra/controllers/superfoodControllers/superfoodCertification.controller';
 import { CreateSuperfoodCertificationUseCase } from '../src/andean/app/use_cases/superfoods/certification/CreateSuperfoodCertificationUseCase';
+import { CreateManySuperfoodCertificationsUseCase } from '../src/andean/app/use_cases/superfoods/certification/CreateManySuperfoodCertificationsUseCase';
 import { GetSuperfoodCertificationByIdUseCase } from '../src/andean/app/use_cases/superfoods/certification/GetSuperfoodCertificationByIdUseCase';
 import { ListSuperfoodCertificationsUseCase } from '../src/andean/app/use_cases/superfoods/certification/ListSuperfoodCertificationsUseCase';
 import { DeleteSuperfoodCertificationUseCase } from '../src/andean/app/use_cases/superfoods/certification/DeleteSuperfoodCertificationUseCase';
@@ -12,8 +13,11 @@ createSuperfoodSubResourceTests({
 	controller: SuperfoodCertificationController,
 	useCases: {
 		create: CreateSuperfoodCertificationUseCase,
+		createMany: CreateManySuperfoodCertificationsUseCase,
 		getById: GetSuperfoodCertificationByIdUseCase,
 		list: ListSuperfoodCertificationsUseCase,
 		delete: DeleteSuperfoodCertificationUseCase,
 	},
+	hasAlreadyExistsTest: true,
+	hasNotStringTest: true,
 });

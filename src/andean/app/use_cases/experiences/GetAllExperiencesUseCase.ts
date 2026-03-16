@@ -6,7 +6,7 @@ import {
 import {
 	PaginatedExperiencesResponse,
 	ExperienceListItem,
-} from '../../models/experiences/ExperienceListItemResponse';
+} from '../../modules/experiences/ExperienceListItemResponse';
 
 @Injectable()
 export class GetAllExperiencesUseCase {

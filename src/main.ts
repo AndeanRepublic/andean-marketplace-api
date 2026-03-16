@@ -3,16 +3,14 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import * as express from 'express';
-import { join } from 'path';
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
 
 	const configService = app.get(ConfigService);
-	const port = configService.get<number>('PORT', 3000);
+	const port = configService.get<number>('PORT', 3001); // 3000
 	const allowedOrigins = configService
-		.get<string>('CORS_ORIGINS', 'http://localhost:3000')
+		.get<string>('CORS_ORIGINS', 'http://localhost:3001') // localhost:3000
 		.split(',')
 		.map((origin) => origin.trim());
 
@@ -24,7 +22,6 @@ async function bootstrap() {
 
 	app.useGlobalPipes(new ValidationPipe());
 	app.setGlobalPrefix('api/v1/andean');
-	app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
 
 	// Swagger Configuration
 	const config = new DocumentBuilder()

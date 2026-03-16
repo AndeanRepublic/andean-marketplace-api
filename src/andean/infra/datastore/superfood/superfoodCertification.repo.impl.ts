@@ -63,4 +63,18 @@ export class SuperfoodCertificationRepoImpl implements SuperfoodCertificationRep
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		await this.model.findByIdAndDelete(objectId).exec();
 	}
+
+	async saveMany(
+		certifications: SuperfoodCertification[],
+	): Promise<SuperfoodCertification[]> {
+		const persistenceData = certifications.map((certification) =>
+			SuperfoodCertificationMapper.toPersistence(certification),
+		);
+		const savedDocs = await this.model.insertMany(persistenceData);
+		return savedDocs.map((doc) =>
+			SuperfoodCertificationMapper.fromDocument(
+				doc as SuperfoodCertificationDocument,
+			),
+		);
+	}
 }

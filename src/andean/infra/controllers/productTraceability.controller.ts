@@ -17,7 +17,7 @@ import { ListProductTraceabilityUseCase } from '../../app/use_cases/traceability
 import { DeleteProductTraceabilityUseCase } from '../../app/use_cases/traceability/DeleteProductTraceabilityUseCase';
 import { CreateProductTraceabilityDto } from './dto/traceability/CreateProductTraceabilityDto';
 import { UpdateProductTraceabilityDto } from './dto/traceability/UpdateProductTraceabilityDto';
-import { ProductTraceabilityResponse } from '../../app/modules/ProductTraceabilityResponse';
+import { ProductTraceabilityResponse } from '../../app/modules/shared/ProductTraceabilityResponse';
 import { ProductTraceability } from '../../domain/entities/ProductTraceability';
 
 @ApiTags('Product Traceability')

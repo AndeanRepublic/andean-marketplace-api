@@ -6,4 +6,5 @@ export const ExperienceMediaInfoSchema = new Schema({
 	thumbnailImg: { type: String, required: true },
 	photos: { type: [String], default: [] },
 	videos: { type: [String], default: [] },
+	ubicationImg: { type: String, required: false },
 }, { _id: false });

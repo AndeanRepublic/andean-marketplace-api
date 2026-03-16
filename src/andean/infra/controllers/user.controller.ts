@@ -1,9 +1,18 @@
-import { Body, Controller, Post, Get, Param, Put } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Post,
+	Get,
+	Param,
+	Put,
+	UseGuards,
+} from '@nestjs/common';
 import {
 	ApiTags,
 	ApiOperation,
 	ApiResponse,
 	ApiParam,
+	ApiBody,
 	ApiBearerAuth,
 } from '@nestjs/swagger';
 import { CreateCustomerUseCase } from '../../app/use_cases/users/CreateCustomerUseCase';
@@ -20,8 +29,11 @@ import { UpdateCustomerProfileUseCase } from '../../app/use_cases/users/UpdateCu
 import { UpdateCustomerProfileDto } from './dto/UpdateCustomerProfileDto';
 import { UpdateSellerProfileDto } from './dto/UpdateSellerProfileDto';
 import { UpdateSellerProfileUseCase } from '../../app/use_cases/users/UpdateSellerProfileUseCase';
-import { CustomerProfileResponse } from '../../app/modules/CustomerProfileResponse';
-import { SellerProfileResponse } from '../../app/modules/SellerProfileResponse';
+import { CustomerProfileResponse } from '../../app/modules/users/CustomerProfileResponse';
+import { SellerProfileResponse } from '../../app/modules/users/SellerProfileResponse';
+import { JwtAuthGuard } from '../core/jwtAuth.guard';
+import { CurrentUser } from '../core/current-user.decorator';
+import { AccountRole } from '../../domain/enums/AccountRole';
 
 const path_customers: string = '/customers';
 const path_sellers: string = '/sellers';
@@ -84,41 +96,57 @@ export class UserController {
 	// }
 
 	@Put(path_customer_profile)
+	@UseGuards(JwtAuthGuard)
 	@ApiOperation({
 		summary: 'Actualizar perfil de cliente',
 		description: 'Actualiza la información del perfil de un cliente existente',
 	})
+	@ApiParam({ name: 'userId', description: 'ID del usuario', type: String })
+	@ApiBody({ type: UpdateCustomerProfileDto })
 	@ApiResponse({
 		status: 200,
 		description: 'Perfil del cliente actualizado exitosamente',
 	})
 	@ApiResponse({ status: 400, description: 'Datos de entrada inválidos' })
 	@ApiResponse({ status: 404, description: 'Cliente no encontrado' })
-	@ApiParam({ name: 'userId', description: 'ID del usuario' })
 	async updateCustomerProfile(
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
 		@Param('userId') userId: string,
 		@Body() body: UpdateCustomerProfileDto,
 	): Promise<void> {
-		return this.updateCustomerProfileUseCase.handle(userId, body);
+		return this.updateCustomerProfileUseCase.handle(
+			userId,
+			requestingUser.userId,
+			requestingUser.roles,
+			body,
+		);
 	}
 
 	@Put(path_seller_profile)
+	@UseGuards(JwtAuthGuard)
 	@ApiOperation({
 		summary: 'Actualizar perfil de vendedor',
 		description: 'Actualiza la información del perfil de un vendedor existente',
 	})
+	@ApiParam({ name: 'userId', description: 'ID del usuario', type: String })
+	@ApiBody({ type: UpdateSellerProfileDto })
 	@ApiResponse({
 		status: 200,
 		description: 'Perfil del vendedor actualizado exitosamente',
 	})
 	@ApiResponse({ status: 400, description: 'Datos de entrada inválidos' })
 	@ApiResponse({ status: 404, description: 'Vendedor no encontrado' })
-	@ApiParam({ name: 'userId', description: 'ID del usuario' })
 	async updateSellerProfile(
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
 		@Param('userId') userId: string,
 		@Body() body: UpdateSellerProfileDto,
 	): Promise<void> {
-		return this.updateSellerProfileUseCase.handle(userId, body);
+		return this.updateSellerProfileUseCase.handle(
+			userId,
+			requestingUser.userId,
+			requestingUser.roles,
+			body,
+		);
 	}
 
 	@Post(path_customers)

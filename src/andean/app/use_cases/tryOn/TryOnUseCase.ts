@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { MediaItemRepository } from '../../datastore/MediaItem.repo';
 import { SegmindRepository } from '../../datastore/Segmind.repo';
 import { TextileProductRepository } from '../../datastore/textileProducts/TextileProduct.repo';
-import { TryOnResponse } from '../../models/tryOn/TryOnResponse';
+import { TryOnResponse } from '../../modules/tryOn/TryOnResponse';
 import { MediaItemRole } from '../../../domain/enums/MediaItemRole';
 
 export interface TryOnInput {

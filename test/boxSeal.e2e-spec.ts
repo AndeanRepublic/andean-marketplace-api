@@ -5,9 +5,13 @@ import { FixtureLoader } from './helpers/fixture-loader';
 
 // ─── Controller ─────────────────────────────────────────────────────────────
 import { BoxSealController } from '../src/andean/infra/controllers/box/boxSeal.controller';
+import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';
+import { RolesGuard } from '../src/andean/infra/core/roles.guard';
+import { createAllowAllGuard, mockAuthUsers } from './helpers/auth-test.helper';
 
 // ─── Use Cases ──────────────────────────────────────────────────────────────
 import { CreateBoxSealUseCase } from '../src/andean/app/use_cases/boxSeals/CreateBoxSealUseCase';
+import { CreateManyBoxSealsUseCase } from '../src/andean/app/use_cases/boxSeals/CreateManyBoxSealsUseCase';
 import { GetAllBoxSealsUseCase } from '../src/andean/app/use_cases/boxSeals/GetAllBoxSealsUseCase';
 import { GetBoxSealByIdUseCase } from '../src/andean/app/use_cases/boxSeals/GetBoxSealByIdUseCase';
 import { UpdateBoxSealUseCase } from '../src/andean/app/use_cases/boxSeals/UpdateBoxSealUseCase';
@@ -19,6 +23,7 @@ import { BoxSeal } from '../src/andean/domain/entities/box/BoxSeal';
 describe('BoxSealController (e2e)', () => {
 	let app: INestApplication;
 	let createBoxSealUseCase: CreateBoxSealUseCase;
+	let createManyBoxSealsUseCase: CreateManyBoxSealsUseCase;
 	let getAllBoxSealsUseCase: GetAllBoxSealsUseCase;
 	let getBoxSealByIdUseCase: GetBoxSealByIdUseCase;
 	let updateBoxSealUseCase: UpdateBoxSealUseCase;
@@ -32,6 +37,7 @@ describe('BoxSealController (e2e)', () => {
 		updatedAt: new Date(fixture.entity.updatedAt),
 	} as BoxSeal;
 	const createDto = fixture.createDto;
+	const bulkCreateDto = fixture.bulkCreateDto;
 	const updateDto = fixture.updateDto;
 	const additionalEntities = fixture.additionalEntities;
 
@@ -44,8 +50,20 @@ describe('BoxSealController (e2e)', () => {
 					useValue: { handle: jest.fn().mockResolvedValue(mockBoxSeal) },
 				},
 				{
+					provide: CreateManyBoxSealsUseCase,
+					useValue: {
+						handle: jest
+							.fn()
+							.mockResolvedValue([mockBoxSeal, ...additionalEntities]),
+					},
+				},
+				{
 					provide: GetAllBoxSealsUseCase,
-					useValue: { handle: jest.fn().mockResolvedValue([mockBoxSeal, ...additionalEntities]) },
+					useValue: {
+						handle: jest
+							.fn()
+							.mockResolvedValue([mockBoxSeal, ...additionalEntities]),
+					},
 				},
 				{
 					provide: GetBoxSealByIdUseCase,
@@ -66,15 +84,25 @@ describe('BoxSealController (e2e)', () => {
 					useValue: { handle: jest.fn().mockResolvedValue(undefined) },
 				},
 			],
-		}).compile();
+		})
+			.overrideGuard(JwtAuthGuard)
+			.useValue(createAllowAllGuard(mockAuthUsers.admin))
+			.overrideGuard(RolesGuard)
+			.useValue({ canActivate: () => true })
+			.compile();
 
 		app = moduleFixture.createNestApplication();
 		app.useGlobalPipes(
-			new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }),
+			new ValidationPipe({
+				whitelist: true,
+				forbidNonWhitelisted: true,
+				transform: true,
+			}),
 		);
 		await app.init();
 
 		createBoxSealUseCase = moduleFixture.get(CreateBoxSealUseCase);
+		createManyBoxSealsUseCase = moduleFixture.get(CreateManyBoxSealsUseCase);
 		getAllBoxSealsUseCase = moduleFixture.get(GetAllBoxSealsUseCase);
 		getBoxSealByIdUseCase = moduleFixture.get(GetBoxSealByIdUseCase);
 		updateBoxSealUseCase = moduleFixture.get(UpdateBoxSealUseCase);
@@ -93,7 +121,9 @@ describe('BoxSealController (e2e)', () => {
 	// ═══════════════════════════════════════════════════════════════════════════
 	describe('POST /box-seals', () => {
 		it('should create a new box seal', () => {
-			jest.spyOn(createBoxSealUseCase, 'handle').mockResolvedValueOnce(mockBoxSeal);
+			jest
+				.spyOn(createBoxSealUseCase, 'handle')
+				.mockResolvedValueOnce(mockBoxSeal);
 			return request(app.getHttpServer())
 				.post('/box-seals')
 				.send(createDto)
@@ -111,7 +141,9 @@ describe('BoxSealController (e2e)', () => {
 		});
 
 		it('should call the use case with the correct DTO', async () => {
-			jest.spyOn(createBoxSealUseCase, 'handle').mockResolvedValueOnce(mockBoxSeal);
+			jest
+				.spyOn(createBoxSealUseCase, 'handle')
+				.mockResolvedValueOnce(mockBoxSeal);
 			await request(app.getHttpServer())
 				.post('/box-seals')
 				.send(createDto)
@@ -151,11 +183,48 @@ describe('BoxSealController (e2e)', () => {
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
+	// POST /box-seals/bulk  —  Bulk create BoxSeals
+	// ═══════════════════════════════════════════════════════════════════════════
+	describe('POST /box-seals/bulk', () => {
+		it('should create multiple box seals', () => {
+			const mockMany = [mockBoxSeal, ...additionalEntities];
+			jest
+				.spyOn(createManyBoxSealsUseCase, 'handle')
+				.mockResolvedValueOnce(mockMany as BoxSeal[]);
+			return request(app.getHttpServer())
+				.post('/box-seals/bulk')
+				.send(bulkCreateDto)
+				.expect(HttpStatus.CREATED)
+				.expect((res) => {
+					expect(Array.isArray(res.body)).toBe(true);
+					expect(res.body).toHaveLength(mockMany.length);
+					expect(res.body[0]).toMatchObject({ name: mockBoxSeal.name });
+				});
+		});
+
+		it('should return 400 when boxSeals array is empty', () => {
+			return request(app.getHttpServer())
+				.post('/box-seals/bulk')
+				.send({ boxSeals: [] })
+				.expect(HttpStatus.BAD_REQUEST);
+		});
+
+		it('should return 400 when boxSeals field is missing', () => {
+			return request(app.getHttpServer())
+				.post('/box-seals/bulk')
+				.send({})
+				.expect(HttpStatus.BAD_REQUEST);
+		});
+	});
+
+	// ═══════════════════════════════════════════════════════════════════════════
 	// GET /box-seals  —  List all BoxSeals
 	// ═══════════════════════════════════════════════════════════════════════════
-	describe.skip('GET /box-seals', () => {
+	describe('GET /box-seals', () => {
 		it('should return an array of box seals', () => {
-			jest.spyOn(getAllBoxSealsUseCase, 'handle').mockResolvedValueOnce([mockBoxSeal, ...additionalEntities]);
+			jest
+				.spyOn(getAllBoxSealsUseCase, 'handle')
+				.mockResolvedValueOnce([mockBoxSeal, ...additionalEntities]);
 			return request(app.getHttpServer())
 				.get('/box-seals')
 				.expect(HttpStatus.OK)
@@ -185,7 +254,9 @@ describe('BoxSealController (e2e)', () => {
 	// ═══════════════════════════════════════════════════════════════════════════
 	describe.skip('GET /box-seals/:id', () => {
 		it('should return a box seal by id', () => {
-			jest.spyOn(getBoxSealByIdUseCase, 'handle').mockResolvedValueOnce(mockBoxSeal);
+			jest
+				.spyOn(getBoxSealByIdUseCase, 'handle')
+				.mockResolvedValueOnce(mockBoxSeal);
 			return request(app.getHttpServer())
 				.get(`/box-seals/${mockBoxSeal.id}`)
 				.expect(HttpStatus.OK)
@@ -213,8 +284,14 @@ describe('BoxSealController (e2e)', () => {
 	// ═══════════════════════════════════════════════════════════════════════════
 	describe.skip('PUT /box-seals/:id', () => {
 		it('should update a box seal', () => {
-			const updatedSeal = { ...mockBoxSeal, name: updateDto.name, description: updateDto.description };
-			jest.spyOn(updateBoxSealUseCase, 'handle').mockResolvedValueOnce(updatedSeal as BoxSeal);
+			const updatedSeal = {
+				...mockBoxSeal,
+				name: updateDto.name,
+				description: updateDto.description,
+			};
+			jest
+				.spyOn(updateBoxSealUseCase, 'handle')
+				.mockResolvedValueOnce(updatedSeal as BoxSeal);
 			return request(app.getHttpServer())
 				.put(`/box-seals/${mockBoxSeal.id}`)
 				.send(updateDto)
@@ -229,8 +306,14 @@ describe('BoxSealController (e2e)', () => {
 		});
 
 		it('should call the use case with id and update data', async () => {
-			const updatedSeal = { ...mockBoxSeal, name: updateDto.name, description: updateDto.description };
-			jest.spyOn(updateBoxSealUseCase, 'handle').mockResolvedValueOnce(updatedSeal as BoxSeal);
+			const updatedSeal = {
+				...mockBoxSeal,
+				name: updateDto.name,
+				description: updateDto.description,
+			};
+			jest
+				.spyOn(updateBoxSealUseCase, 'handle')
+				.mockResolvedValueOnce(updatedSeal as BoxSeal);
 			await request(app.getHttpServer())
 				.put(`/box-seals/${mockBoxSeal.id}`)
 				.send(updateDto)
@@ -246,7 +329,9 @@ describe('BoxSealController (e2e)', () => {
 
 		it('should allow partial update (only name)', () => {
 			const updatedSeal = { ...mockBoxSeal, name: 'Solo Nombre Nuevo' };
-			jest.spyOn(updateBoxSealUseCase, 'handle').mockResolvedValueOnce(updatedSeal as BoxSeal);
+			jest
+				.spyOn(updateBoxSealUseCase, 'handle')
+				.mockResolvedValueOnce(updatedSeal as BoxSeal);
 			return request(app.getHttpServer())
 				.put(`/box-seals/${mockBoxSeal.id}`)
 				.send({ name: 'Solo Nombre Nuevo' })
@@ -259,7 +344,9 @@ describe('BoxSealController (e2e)', () => {
 	// ═══════════════════════════════════════════════════════════════════════════
 	describe.skip('DELETE /box-seals/:id', () => {
 		it('should delete a box seal', () => {
-			jest.spyOn(deleteBoxSealUseCase, 'handle').mockResolvedValueOnce(undefined);
+			jest
+				.spyOn(deleteBoxSealUseCase, 'handle')
+				.mockResolvedValueOnce(undefined);
 			return request(app.getHttpServer())
 				.delete(`/box-seals/${mockBoxSeal.id}`)
 				.expect(HttpStatus.OK);

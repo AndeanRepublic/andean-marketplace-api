@@ -10,6 +10,18 @@
 		"name": "Grano",
 		"icon": "https://example.com/icons/grano.svg"
 	},
+	"bulkCreateDto": {
+		"superfoodTypes": [
+			{
+				"name": "Semilla",
+				"icon": "https://example.com/icons/semilla.svg"
+			},
+			{
+				"name": "Raíz",
+				"icon": "https://example.com/icons/raiz.svg"
+			}
+		]
+	},
 	"optionalFieldName": "icon",
 	"additionalEntities": [
 		{

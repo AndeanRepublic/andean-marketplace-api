@@ -1,7 +1,7 @@
 import { SuperfoodNutritionalFeatureDocument } from '../../persistence/superfood/superfoodNutritionalFeature.schema';
 import { SuperfoodNutritionalFeature } from '../../../domain/entities/superfoods/SuperfoodNutritionalFeature';
 import { CreateSuperfoodNutritionalFeatureDto } from '../../controllers/dto/superfoods/CreateSuperfoodNutritionalFeatureDto';
-import { SuperfoodNutritionalFeatureResponse } from '../../../app/modules/SuperfoodNutritionalFeatureResponse';
+import { SuperfoodNutritionalFeatureResponse } from '../../../app/modules/superfoods/SuperfoodNutritionalFeatureResponse';
 import { MongoIdUtils } from '../../utils/MongoIdUtils';
 import { Types } from 'mongoose';
 

@@ -1,5 +1,5 @@
-import { ShoppingCartItemResponse } from '../../../app/models/cart/ShoppingCartItemResponse';
-import { BoxContentItemResponse } from '../../../app/models/cart/BoxContentItemResponse';
+import { ShoppingCartItemResponse } from '../../../app/modules/cart/ShoppingCartItemResponse';
+import { BoxContentItemResponse } from '../../../app/modules/cart/BoxContentItemResponse';
 import { CartItem } from '../../../domain/entities/CartItem';
 import { Variant } from '../../../domain/entities/Variant';
 import { ProductInfo } from '../../../domain/interfaces/ProductInfo';
@@ -26,7 +26,7 @@ export class ShoppingCartItemMapper {
 	): ShoppingCartItemResponse {
 		return {
 			ownerName,
-			titulo: productInfo.title,
+			title: productInfo.title,
 			combinationVariant: variant?.combination || {},
 			thumbnailImgUrl: productInfo.thumbnailImgUrl,
 			unitPrice: item.unitPrice,
@@ -50,7 +50,7 @@ export class ShoppingCartItemMapper {
 	): ShoppingCartItemResponse {
 		return {
 			ownerName: '',
-			titulo: productInfo.title,
+			title: productInfo.title,
 			combinationVariant: {},
 			thumbnailImgUrl: productInfo.thumbnailImgUrl,
 			unitPrice: item.unitPrice,
@@ -78,7 +78,7 @@ export class ShoppingCartItemMapper {
 	}): ShoppingCartItemResponse {
 		return {
 			ownerName: params.ownerName,
-			titulo: params.productInfo.title,
+			title: params.productInfo.title,
 			combinationVariant: params.variant.combination,
 			thumbnailImgUrl: params.productInfo.thumbnailImgUrl,
 			unitPrice: params.variant.price,

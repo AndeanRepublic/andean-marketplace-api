@@ -65,4 +65,18 @@ export class SuperfoodProductPresentationRepoImpl implements SuperfoodProductPre
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		await this.model.findByIdAndDelete(objectId).exec();
 	}
+
+	async saveMany(
+		presentations: SuperfoodProductPresentation[],
+	): Promise<SuperfoodProductPresentation[]> {
+		const persistenceData = presentations.map((presentation) =>
+			SuperfoodProductPresentationMapper.toPersistence(presentation),
+		);
+		const savedDocs = await this.model.insertMany(persistenceData);
+		return savedDocs.map((doc) =>
+			SuperfoodProductPresentationMapper.fromDocument(
+				doc as SuperfoodProductPresentationDocument,
+			),
+		);
+	}
 }

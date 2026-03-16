@@ -66,6 +66,7 @@ export class CreateExperienceUseCase {
 			dto.mediaInfo.thumbnailImg,
 			...(dto.mediaInfo.photos || []),
 			...(dto.mediaInfo.videos || []),
+			...(dto.mediaInfo.ubicationImg ? [dto.mediaInfo.ubicationImg] : []),
 		];
 
 		const uniqueIds = [...new Set(allIds)];

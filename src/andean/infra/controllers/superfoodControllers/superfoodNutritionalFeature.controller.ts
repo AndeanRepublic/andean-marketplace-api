@@ -7,11 +7,18 @@ import {
 	Param,
 	HttpCode,
 	HttpStatus,
+	UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../../core/jwtAuth.guard';
+import { RolesGuard } from '../../core/roles.guard';
+import { Roles } from '../../core/roles.decorator';
+import { AccountRole } from '../../../domain/enums/AccountRole';
 import { CreateSuperfoodNutritionalFeatureDto } from '../dto/superfoods/CreateSuperfoodNutritionalFeatureDto';
-import { SuperfoodNutritionalFeatureResponse } from '../../../app/modules/SuperfoodNutritionalFeatureResponse';
+import { CreateManySuperfoodNutritionalFeaturesDto } from '../dto/superfoods/CreateManySuperfoodNutritionalFeaturesDto';
+import { SuperfoodNutritionalFeatureResponse } from '../../../app/modules/superfoods/SuperfoodNutritionalFeatureResponse';
 import { CreateSuperfoodNutritionalFeatureUseCase } from '../../../app/use_cases/superfoods/nutritionalFeature/CreateSuperfoodNutritionalFeatureUseCase';
+import { CreateManySuperfoodNutritionalFeaturesUseCase } from '../../../app/use_cases/superfoods/nutritionalFeature/CreateManySuperfoodNutritionalFeaturesUseCase';
 import { GetSuperfoodNutritionalFeatureByIdUseCase } from '../../../app/use_cases/superfoods/nutritionalFeature/GetSuperfoodNutritionalFeatureByIdUseCase';
 import { ListSuperfoodNutritionalFeaturesUseCase } from '../../../app/use_cases/superfoods/nutritionalFeature/ListSuperfoodNutritionalFeaturesUseCase';
 import { DeleteSuperfoodNutritionalFeatureUseCase } from '../../../app/use_cases/superfoods/nutritionalFeature/DeleteSuperfoodNutritionalFeatureUseCase';
@@ -21,11 +28,38 @@ import { DeleteSuperfoodNutritionalFeatureUseCase } from '../../../app/use_cases
 export class SuperfoodNutritionalFeatureController {
 	constructor(
 		private readonly createSuperfoodNutritionalFeatureUseCase: CreateSuperfoodNutritionalFeatureUseCase,
+		private readonly createManySuperfoodNutritionalFeaturesUseCase: CreateManySuperfoodNutritionalFeaturesUseCase,
 		private readonly getSuperfoodNutritionalFeatureByIdUseCase: GetSuperfoodNutritionalFeatureByIdUseCase,
 		private readonly listSuperfoodNutritionalFeaturesUseCase: ListSuperfoodNutritionalFeaturesUseCase,
 		private readonly deleteSuperfoodNutritionalFeatureUseCase: DeleteSuperfoodNutritionalFeatureUseCase,
 	) {}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Post('/bulk')
+	@HttpCode(HttpStatus.CREATED)
+	@ApiOperation({
+		summary: 'Crear múltiples características nutricionales',
+		description:
+			'Crea múltiples características nutricionales en una sola operación. Útil para carga inicial de datos.',
+	})
+	@ApiResponse({
+		status: 201,
+		description: 'Características creadas exitosamente',
+		type: [SuperfoodNutritionalFeatureResponse],
+	})
+	@ApiResponse({
+		status: 400,
+		description: 'Datos de entrada inválidos',
+	})
+	async createManyNutritionalFeatures(
+		@Body() dto: CreateManySuperfoodNutritionalFeaturesDto,
+	): Promise<SuperfoodNutritionalFeatureResponse[]> {
+		return await this.createManySuperfoodNutritionalFeaturesUseCase.handle(dto);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -48,21 +82,21 @@ export class SuperfoodNutritionalFeatureController {
 		return await this.createSuperfoodNutritionalFeatureUseCase.handle(dto);
 	}
 
-	// @Get()
-	// @ApiOperation({
-	// 	summary: 'Listar todas las características nutricionales',
-	// 	description: 'Retorna todas las características nutricionales disponibles',
-	// })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'Lista de características',
-	// 	type: [SuperfoodNutritionalFeatureResponse],
-	// })
-	// async listNutritionalFeatures(): Promise<
-	// 	SuperfoodNutritionalFeatureResponse[]
-	// > {
-	// 	return await this.listSuperfoodNutritionalFeaturesUseCase.handle();
-	// }
+	@Get()
+	@ApiOperation({
+		summary: 'Listar todas las características nutricionales',
+		description: 'Retorna todas las características nutricionales disponibles',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista de características',
+		type: [SuperfoodNutritionalFeatureResponse],
+	})
+	async listNutritionalFeatures(): Promise<
+		SuperfoodNutritionalFeatureResponse[]
+	> {
+		return await this.listSuperfoodNutritionalFeaturesUseCase.handle();
+	}
 
 	// @Get('/:id')
 	// @ApiOperation({

@@ -10,7 +10,7 @@ import { TextileProduct } from '../../../domain/entities/textileProducts/Textile
 import { Community } from '../../../domain/entities/community/Community';
 import { MediaItem } from '../../../domain/entities/MediaItem';
 import { Box, BoxProduct } from '../../../domain/entities/box/Box';
-import { BoxImageResponse } from '../../../app/models/box/BoxImageResponse';
+import { BoxImageResponse } from '../../../app/modules/box/BoxImageResponse';
 
 export interface BoxDependencies {
 	superfoodMap: Map<string, SuperfoodProduct>;
@@ -28,7 +28,7 @@ export class BoxProductResolutionService {
 		private readonly textileProductRepository: TextileProductRepository,
 		private readonly communityRepository: CommunityRepository,
 		private readonly mediaItemRepository: MediaItemRepository,
-	) { }
+	) {}
 
 	/**
 	 * Bulk fetch all dependencies needed to resolve box products
@@ -58,24 +58,26 @@ export class BoxProductResolutionService {
 		const superfoodMap = new Map<string, SuperfoodProduct>(
 			superfoods.map((s) => [s.id, s]),
 		);
-		const variantMap = new Map<string, Variant>(
-			variants.map((v) => [v.id, v]),
-		);
+		const variantMap = new Map<string, Variant>(variants.map((v) => [v.id, v]));
 
 		// 3. Collect textile IDs from resolved variants + owner IDs + media IDs
 		const allTextileIds = new Set<string>();
 		const allOwnerIds = new Set<string>();
 
 		for (const superfood of superfoods) {
-			if (superfood.baseInfo?.ownerId) allOwnerIds.add(superfood.baseInfo.ownerId);
-			if (superfood.baseInfo?.mediaIds?.length) allMediaIds.add(superfood.baseInfo.mediaIds[0]);
+			if (superfood.baseInfo?.ownerId)
+				allOwnerIds.add(superfood.baseInfo.ownerId);
+			if (superfood.baseInfo?.mediaIds?.length)
+				allMediaIds.add(superfood.baseInfo.mediaIds[0]);
 		}
 		for (const variant of variants) {
 			if (variant.productId) allTextileIds.add(variant.productId);
 		}
 
 		// 4. Bulk fetch textiles
-		const textiles = await this.textileProductRepository.getByIds([...allTextileIds]);
+		const textiles = await this.textileProductRepository.getByIds([
+			...allTextileIds,
+		]);
 		const textileMap = new Map<string, TextileProduct>(
 			textiles.map((t) => [t.id, t]),
 		);
@@ -83,7 +85,8 @@ export class BoxProductResolutionService {
 		// 5. Collect owner/media IDs from textiles
 		for (const textile of textiles) {
 			if (textile.baseInfo?.ownerId) allOwnerIds.add(textile.baseInfo.ownerId);
-			if (textile.baseInfo?.mediaIds?.length) allMediaIds.add(textile.baseInfo.mediaIds[0]);
+			if (textile.baseInfo?.mediaIds?.length)
+				allMediaIds.add(textile.baseInfo.mediaIds[0]);
 		}
 
 		// 6. Bulk fetch communities and media items in parallel
@@ -111,7 +114,10 @@ export class BoxProductResolutionService {
 	/**
 	 * Resolve media item to image response
 	 */
-	resolveImage(mediaId: string | undefined, mediaMap: Map<string, MediaItem>): BoxImageResponse {
+	resolveImage(
+		mediaId: string | undefined,
+		mediaMap: Map<string, MediaItem>,
+	): BoxImageResponse {
 		if (!mediaId) return { url: '', name: '' };
 		const media = mediaMap.get(mediaId);
 		return media ? { url: media.key, name: media.name } : { url: '', name: '' };
@@ -134,7 +140,10 @@ export class BoxProductResolutionService {
 	/**
 	 * Resolve community name from owner ID
 	 */
-	resolveCommunityName(ownerId: string | undefined, communityMap: Map<string, Community>): string {
+	resolveCommunityName(
+		ownerId: string | undefined,
+		communityMap: Map<string, Community>,
+	): string {
 		if (!ownerId) return '';
 		return communityMap.get(ownerId)?.name || '';
 	}

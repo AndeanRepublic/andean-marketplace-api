@@ -19,7 +19,7 @@ import {
 	QuestionSectionResponse,
 	ExperienceAvailabilityResponse,
 	AgePricingInfoResponse,
-} from 'src/andean/app/models/experiences/ExperienceDetailResponse';
+} from 'src/andean/app/modules/experiences/ExperienceDetailResponse';
 import { ExperiencePrices } from 'src/andean/domain/entities/experiences/ExperiencePrices';
 
 interface OwnerInfo {

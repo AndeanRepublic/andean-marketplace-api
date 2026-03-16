@@ -6,6 +6,7 @@ import { Connection } from 'mongoose';
 // Schema
 import { CommunitySchema } from './infra/persistence/community/community.schema';
 import { SealSchema } from './infra/persistence/community/Seal.schema';
+import { ProviderInfoSchema } from './infra/persistence/providerInfo.schema';
 
 // Repository
 import { CommunityRepository } from './app/datastore/community/community.repo';
@@ -28,6 +29,7 @@ import { DeleteSealUseCase } from './app/use_cases/community/DeleteSealUseCase';
 
 // Modules
 import { MediaItemModule } from './mediaItem.module';
+import { AuthModule } from './auth.module';
 
 // Controller
 import { CommunityController } from './infra/controllers/community.controller';
@@ -37,8 +39,10 @@ import { CommunityController } from './infra/controllers/community.controller';
 		MongooseModule.forFeature([
 			{ name: 'Community', schema: CommunitySchema },
 			{ name: 'Seal', schema: SealSchema },
+			{ name: 'ProviderInfo', schema: ProviderInfoSchema },
 		]),
 		MediaItemModule,
+		AuthModule,
 	],
 	controllers: [CommunityController],
 	providers: [
@@ -67,7 +71,7 @@ import { CommunityController } from './infra/controllers/community.controller';
 	exports: [CommunityRepository, SealRepository],
 })
 export class CommunityModule implements OnModuleInit {
-	constructor(@InjectConnection() private readonly connection: Connection) { }
+	constructor(@InjectConnection() private readonly connection: Connection) {}
 
 	async onModuleInit() {
 		try {

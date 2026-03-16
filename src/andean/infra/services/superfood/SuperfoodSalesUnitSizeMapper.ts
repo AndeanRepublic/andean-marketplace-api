@@ -1,7 +1,7 @@
 import { SuperfoodSalesUnitSizeDocument } from '../../persistence/superfood/superfoodSalesUnitSize.schema';
 import { SuperfoodSalesUnitSize } from '../../../domain/entities/superfoods/SuperfoodSalesUnitSize';
 import { CreateSuperfoodSalesUnitSizeDto } from '../../controllers/dto/superfoods/CreateSuperfoodSalesUnitSizeDto';
-import { SuperfoodSalesUnitSizeResponse } from '../../../app/modules/SuperfoodSalesUnitSizeResponse';
+import { SuperfoodSalesUnitSizeResponse } from '../../../app/modules/superfoods/SuperfoodSalesUnitSizeResponse';
 import { MongoIdUtils } from '../../utils/MongoIdUtils';
 import { Types } from 'mongoose';
 

@@ -115,6 +115,14 @@ export class ExperienceMediaInfoDto {
 	@IsString({ each: true })
 	@IsOptional()
 	videos?: string[];
+
+	@ApiPropertyOptional({
+		description: 'ID del MediaItem para imagen de ubicación (mapa)',
+		example: '507f1f77bcf86cd799439018',
+	})
+	@IsString()
+	@IsOptional()
+	ubicationImg?: string;
 }
 
 // ─── DetailInfo DTO ───

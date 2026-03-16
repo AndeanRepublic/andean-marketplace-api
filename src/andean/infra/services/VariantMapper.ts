@@ -28,6 +28,7 @@ export class VariantMapper {
 			combination: dto.combination,
 			price: dto.price,
 			stock: dto.stock,
+			...(dto.sku !== undefined && dto.sku !== '' && { sku: dto.sku }),
 			createdAt: now,
 			updatedAt: now,
 		};
@@ -39,6 +40,7 @@ export class VariantMapper {
 			...(dto.combination !== undefined && { combination: dto.combination }),
 			...(dto.price !== undefined && { price: dto.price }),
 			...(dto.stock !== undefined && { stock: dto.stock }),
+			...(dto.sku !== undefined && { sku: dto.sku }),
 			updatedAt: new Date(),
 		};
 	}

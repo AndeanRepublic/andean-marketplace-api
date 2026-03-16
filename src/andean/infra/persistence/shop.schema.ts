@@ -16,6 +16,7 @@ export const ShopSchema = new Schema({
 	policies: String,
 	shippingOrigin: String,
 	shippingArea: String,
+	providerInfoId: { type: String, required: false },
 });
 
 export interface ShopDocument extends Document<string> {
@@ -28,4 +29,5 @@ export interface ShopDocument extends Document<string> {
 	policies: string;
 	shippingOrigin: string;
 	shippingArea: string;
+	providerInfoId?: string;
 }

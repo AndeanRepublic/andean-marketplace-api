@@ -3,19 +3,27 @@ import {
 	Injectable,
 	NotFoundException,
 	BadRequestException,
+	ForbiddenException,
 } from '@nestjs/common';
 import { CartShopItemRepository } from '../../datastore/CartShopItem.repo';
+import { CartShopRepository } from '../../datastore/CartShop.repo';
+import { CustomerProfileRepository } from '../../datastore/Customer.repo';
 import { VariantRepository } from '../../datastore/Variant.repo';
 import { TextileProductRepository } from '../../datastore/textileProducts/TextileProduct.repo';
 import { SuperfoodProductRepository } from '../../datastore/superfoods/SuperfoodProduct.repo';
 import { ProductType } from '../../../domain/enums/ProductType';
-import { CartItemQuantityResponse } from '../../models/cart/CartItemQuantityResponse';
+import { AccountRole } from '../../../domain/enums/AccountRole';
+import { CartItemQuantityResponse } from '../../modules/cart/CartItemQuantityResponse';
 
 @Injectable()
 export class UpdateCartItemQuantityUseCase {
 	constructor(
 		@Inject(CartShopItemRepository)
 		private readonly cartItemRepository: CartShopItemRepository,
+		@Inject(CartShopRepository)
+		private readonly cartShopRepository: CartShopRepository,
+		@Inject(CustomerProfileRepository)
+		private readonly customerRepository: CustomerProfileRepository,
 		@Inject(VariantRepository)
 		private readonly variantRepository: VariantRepository,
 		@Inject(TextileProductRepository)
@@ -27,18 +35,38 @@ export class UpdateCartItemQuantityUseCase {
 	async handle(
 		idShoppingCartItem: string,
 		quantityDelta: number = 1,
+		requestingUserId: string,
+		roles: AccountRole[],
 	): Promise<CartItemQuantityResponse> {
-		// 1. Validar que el CartItem existe
+		// -- Validate that the CartItem exists (always, for 404 check)
 		const cartItem = await this.cartItemRepository.getById(idShoppingCartItem);
 		if (!cartItem) {
 			throw new NotFoundException('CartItem not found');
 		}
 
-		// 2. Obtener maxStock
+		// -- Pattern H 3-hop ownership block (non-ADMIN only; reuses cartItem from above)
+		const isAdmin = roles.includes(AccountRole.ADMIN);
+		if (!isAdmin) {
+			const customer =
+				await this.customerRepository.getCustomerByUserId(requestingUserId);
+			if (!customer) {
+				throw new ForbiddenException('You can only access your own cart');
+			}
+			const cartShop = await this.cartShopRepository.getCartById(
+				cartItem.cartShopId,
+			);
+			if (!cartShop) {
+				throw new NotFoundException('CartShop not found');
+			}
+			if (cartShop.customerId !== customer.id) {
+				throw new ForbiddenException('You can only access your own cart');
+			}
+		}
+
+		// -- Get maxStock
 		let maxStock: number;
 
 		if (cartItem.variantProductId) {
-			// Si tiene variante, obtener stock de la variante
 			const variant = await this.variantRepository.getById(
 				cartItem.variantProductId,
 			);
@@ -47,7 +75,6 @@ export class UpdateCartItemQuantityUseCase {
 			}
 			maxStock = variant.stock;
 		} else {
-			// Si no tiene variante, obtener stock del producto según productType
 			if (cartItem.productType === ProductType.TEXTILE) {
 				const product =
 					await this.textileProductRepository.getTextileProductById(
@@ -73,21 +100,25 @@ export class UpdateCartItemQuantityUseCase {
 			}
 		}
 
-		// 3. Validar que la cantidad resultante no sea negativa antes de actualizar
+		// -- Validate that the resulting quantity is not negative before updating
 		const newQuantity = cartItem.quantity + quantityDelta;
-		if (newQuantity < 0) {
+		if (newQuantity <= 0) {
 			throw new BadRequestException(
-				'Quantity cannot be negative. The requested quantity delta would result in a negative quantity.',
+				'Quantity cannot be less than 1. The requested quantity delta would result in a quantity less than 1.',
+			);
+		}
+		if (newQuantity > maxStock) {
+			throw new BadRequestException(
+				'Quantity cannot be greater than the maximum stock. The requested quantity delta would result in a quantity greater than the maximum stock.',
 			);
 		}
 
-		// 4. Actualizar cantidad
+		// -- Update quantity
 		const updatedCartItem = await this.cartItemRepository.updateQuantity(
 			idShoppingCartItem,
 			quantityDelta,
 		);
 
-		// 5. Retornar response
 		return {
 			quantity: updatedCartItem.quantity,
 			idShoppingCartItem: updatedCartItem.id,

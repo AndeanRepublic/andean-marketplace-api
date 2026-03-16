@@ -4,8 +4,8 @@ import {
 	ProductFilters,
 } from '../../datastore/textileProducts/TextileProduct.repo';
 import { MediaUrlResolver } from '../../../infra/services/textileProducts/MediaUrlResolver';
-import { PaginatedProductsResponse } from '../../modules/PaginatedProductsResponse';
-import { TextileProductListItem } from '../../modules/TextileProductListItemResponse';
+import { PaginatedProductsResponse } from '../../modules/shared/PaginatedProductsResponse';
+import { TextileProductListItem } from '../../modules/textile/TextileProductListItemResponse';
 
 @Injectable()
 export class GetAllTextileProductsUseCase {
@@ -84,6 +84,7 @@ export class GetAllTextileProductsUseCase {
 			principalImgUrl: p.principalImgUrl
 				? (mediaIdToUrl.get(p.principalImgUrl) ?? '')
 				: '',
+			stock: p.stock ?? 0,
 		}));
 	}
 }

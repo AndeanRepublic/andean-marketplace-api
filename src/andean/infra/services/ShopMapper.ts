@@ -7,11 +7,12 @@ export class ShopMapper {
 			doc.id,
 			doc.sellerId,
 			doc.name,
-			doc.description,
 			doc.categories,
+			doc.description,
 			doc.policies,
 			doc.shippingOrigin,
 			doc.shippingArea,
+			doc.providerInfoId,
 		);
 	}
 }

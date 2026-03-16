@@ -6,8 +6,9 @@ import {
 	Min,
 	IsObject,
 	IsEnum,
+	IsOptional,
 } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ProductType } from 'src/andean/domain/enums/ProductType';
 
 export class CreateVariantDto {
@@ -55,4 +56,12 @@ export class CreateVariantDto {
 	@Min(0)
 	@IsNotEmpty()
 	stock!: number;
+
+	@ApiPropertyOptional({
+		description: 'Código SKU único de esta variante (opcional)',
+		example: 'PONCHO-AND-001-RED-M',
+	})
+	@IsString()
+	@IsOptional()
+	sku?: string;
 }

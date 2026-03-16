@@ -10,6 +10,18 @@
 		"name": "500g",
 		"icon": "https://example.com/icons/500g.svg"
 	},
+	"bulkCreateDto": {
+		"superfoodSalesUnitSizes": [
+			{
+				"name": "1kg",
+				"icon": "https://example.com/icons/1kg.svg"
+			},
+			{
+				"name": "250g",
+				"icon": "https://example.com/icons/250g.svg"
+			}
+		]
+	},
 	"optionalFieldName": "icon",
 	"additionalEntities": [
 		{

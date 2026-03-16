@@ -8,8 +8,14 @@ import {
 	Delete,
 	HttpCode,
 	HttpStatus,
+	UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../../core/jwtAuth.guard';
+import { RolesGuard } from '../../core/roles.guard';
+import { Roles } from '../../core/roles.decorator';
+import { AccountRole } from '../../../domain/enums/AccountRole';
+import { TextileCertificationResponse } from 'src/andean/app/modules/textile/TextileCertificationResponse';
 import { CreateTextileCertificationUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileCertificationUseCase';
 import { CreateManyTextileCertificationsUseCase } from 'src/andean/app/use_cases/textileProducts/CreateManyTextileCertificationsUseCase';
 import { TextileCertification } from 'src/andean/domain/entities/textileProducts/TextileCertification';
@@ -32,6 +38,8 @@ export class TextileCertificationController {
 		private readonly deleteTextileCertificationUseCase: DeleteTextileCertificationUseCase,
 	) {}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post('/bulk')
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -54,6 +62,8 @@ export class TextileCertificationController {
 		return this.createManyTextileCertificationsUseCase.handle(body);
 	}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -111,7 +121,7 @@ export class TextileCertificationController {
 	@ApiResponse({
 		status: 200,
 		description: 'Lista de certificaciones',
-		type: [TextileCertification],
+		type: [TextileCertificationResponse],
 	})
 	async getAllTextileCertifications(): Promise<TextileCertification[]> {
 		return this.getAllTextileCertificationsUseCase.handle();
