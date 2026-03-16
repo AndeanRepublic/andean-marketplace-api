@@ -8,12 +8,7 @@ import {
 	Query,
 	HttpCode,
 	HttpStatus,
-	UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../core/jwtAuth.guard';
-import { RolesGuard } from '../core/roles.guard';
-import { Roles } from '../core/roles.decorator';
-import { AccountRole } from '../../domain/enums/AccountRole';
 import {
 	ApiTags,
 	ApiOperation,
@@ -22,7 +17,6 @@ import {
 	ApiBody,
 	ApiQuery,
 } from '@nestjs/swagger';
-import { Public } from '../core/public.decorator';
 import { CreateBookingUseCase } from '../../app/use_cases/bookings/CreateBookingUseCase';
 import { CreatePayPalBookingOrderUseCase } from '../../app/use_cases/bookings/CreatePayPalBookingOrderUseCase';
 import { CapturePayPalBookingUseCase } from '../../app/use_cases/bookings/CapturePayPalBookingUseCase';
@@ -52,7 +46,6 @@ export class BookingController {
 		private readonly updateBookingStatusUseCase: UpdateBookingStatusUseCase,
 	) {}
 
-	@Public()
 	@Post('')
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -76,7 +69,6 @@ export class BookingController {
 		return this.createBookingUseCase.handle(body);
 	}
 
-	@Public()
 	@Post('/paypal/create-order')
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -105,7 +97,6 @@ export class BookingController {
 		return this.createPayPalBookingOrderUseCase.handle(body);
 	}
 
-	@Public()
 	@Post('/paypal/capture-order')
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({
@@ -136,7 +127,6 @@ export class BookingController {
 		return this.capturePayPalBookingUseCase.handle(body);
 	}
 
-	@Public()
 	@Get('/:id')
 	@ApiOperation({
 		summary: 'Obtener booking por ID',
@@ -167,7 +157,6 @@ export class BookingController {
 		return this.getBookingByIdUseCase.handle(id);
 	}
 
-	@Public()
 	@Get('/by-customer/:customerId')
 	@ApiOperation({
 		summary: 'Obtener bookings por cliente',
@@ -200,7 +189,6 @@ export class BookingController {
 		return this.getBookingsByCustomerUseCase.handle(customerId);
 	}
 
-	@Public()
 	@Get('/by-email')
 	@ApiOperation({
 		summary: 'Obtener bookings por email',
@@ -227,8 +215,6 @@ export class BookingController {
 		return this.getBookingsByEmailUseCase.handle(email);
 	}
 
-	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.ADMIN)
 	@Put('/:id/status')
 	@ApiOperation({
 		summary: 'Actualizar estado del booking',

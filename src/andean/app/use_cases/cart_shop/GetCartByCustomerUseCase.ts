@@ -1,10 +1,4 @@
-import {
-	Inject,
-	Injectable,
-	NotFoundException,
-	ForbiddenException,
-} from '@nestjs/common';
-import { AccountRole } from '../../../domain/enums/AccountRole';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CartShopRepository } from '../../datastore/CartShop.repo';
 import { CartShop } from '../../../domain/entities/CartShop';
 import { CustomerProfileRepository } from '../../datastore/Customer.repo';
@@ -34,45 +28,25 @@ export class GetCartByCustomerUseCase {
 		private readonly productInfoRegistry: ProductInfoProviderRegistry,
 		private readonly ownerNameResolver: OwnerNameResolver,
 		private readonly boxCartContentResolver: BoxCartContentResolver,
-	) {}
+	) { }
 
-	async handle(
-		requestingUserId: string,
-		roles: AccountRole[],
-		targetCustomerId?: string,
-	): Promise<GetCartResponse> {
-		// Pattern H — 2-hop ownership check with ADMIN bypass
-		let customerId: string | null;
-		const isAdmin = roles.includes(AccountRole.ADMIN);
-		if (isAdmin && targetCustomerId) {
-			// ADMIN targeting a specific customer's cart
-			customerId = targetCustomerId;
-		} else if (!isAdmin) {
-			const customer =
-				await this.customerRepository.getCustomerByUserId(requestingUserId);
-			if (!customer) {
-				throw new ForbiddenException('You can only access your own cart');
-			}
-			customerId = customer.id;
-		} else {
-			// ADMIN with no targetCustomerId: resolve own customer profile
-			const customer =
-				await this.customerRepository.getCustomerByUserId(requestingUserId);
-			customerId = customer?.id ?? null;
+	async handle(customerId?: string, customerEmail?: string): Promise<GetCartResponse> {
+		// 1. Validar que al menos uno de los identificadores esté presente
+		if (!customerId && !customerEmail) {
+			throw new NotFoundException('Either customerId or customerEmail must be provided');
 		}
 
-		// ADMIN with no CustomerProfile: return empty cart immediately
-		if (!customerId) {
-			return {
-				items: [],
-				delivery: 0,
-				discount: 0,
-				taxOrFee: 0,
-			};
+		// 2. Si hay customerId, validar que el customer existe
+		if (customerId) {
+			const customerFound =
+				await this.customerRepository.getCustomerById(customerId);
+			if (!customerFound) {
+				throw new NotFoundException('CustomerProfile not found');
+			}
 		}
 
 		// 3. Obtener o crear el carrito
-		let cart = await this.cartShopRepository.getCartByCustomerId(customerId);
+		let cart = await this.cartShopRepository.getCartByIdentifier(customerId, customerEmail);
 		if (!cart) {
 			cart = new CartShop(
 				new Types.ObjectId().toString(),
@@ -82,7 +56,7 @@ export class GetCartByCustomerUseCase {
 				0, // discount
 				new Date(),
 				new Date(),
-				undefined,
+				customerEmail,
 			);
 			await this.cartShopRepository.createCart(cart);
 
@@ -129,14 +103,8 @@ export class GetCartByCustomerUseCase {
 
 		// Flujo especial para BOX: sin variante, sin owner, con contenido de caja
 		if (item.productType === ProductType.BOX) {
-			const boxContent = await this.boxCartContentResolver.resolve(
-				item.productId,
-			);
-			return ShoppingCartItemMapper.toBoxResponse(
-				item,
-				productInfo,
-				boxContent,
-			);
+			const boxContent = await this.boxCartContentResolver.resolve(item.productId);
+			return ShoppingCartItemMapper.toBoxResponse(item, productInfo, boxContent);
 		}
 
 		// Flujo estándar para TEXTILE/SUPERFOOD
@@ -149,11 +117,6 @@ export class GetCartByCustomerUseCase {
 			productInfo.ownerId,
 		);
 
-		return ShoppingCartItemMapper.toResponse(
-			item,
-			variant,
-			productInfo,
-			ownerName,
-		);
+		return ShoppingCartItemMapper.toResponse(item, variant, productInfo, ownerName);
 	}
 }

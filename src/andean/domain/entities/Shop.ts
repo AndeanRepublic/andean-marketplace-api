@@ -3,10 +3,12 @@ import { ShopCategory } from '../enums/ShopCategory';
 export class Shop {
 	constructor(
 		public id: string,
-		public sellerId: string | undefined,
+		public sellerId: string,
 		public name: string,
+		public description: string,
 		public categories: ShopCategory[],
-		public providerInfoId?: string,
-		public artisanPhotoMediaId?: string,
+		public policies: string,
+		public shippingOrigin: string,
+		public shippingArea: string,
 	) {}
 }

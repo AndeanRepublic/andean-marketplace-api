@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { ProductType } from '../../../domain/enums/ProductType';
 
 export class VariantResponse {
@@ -38,12 +38,6 @@ export class VariantResponse {
 		example: 10,
 	})
 	stock: number;
-
-	@ApiPropertyOptional({
-		description: 'Código SKU de la variante (opcional)',
-		example: 'PONCHO-AND-001-RED-M',
-	})
-	sku?: string;
 
 	@ApiProperty({
 		description: 'Fecha de creación',

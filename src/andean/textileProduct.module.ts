@@ -182,7 +182,7 @@ import { MediaUrlResolver } from './infra/services/textileProducts/MediaUrlResol
 		ShopsModule,
 		CommunityModule,
 		OriginProductModule,
-		forwardRef(() => VariantModule),
+		VariantModule,
 		MediaItemModule,
 		forwardRef(() => SuperfoodModule),
 	],

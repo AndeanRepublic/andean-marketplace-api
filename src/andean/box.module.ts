@@ -53,4 +53,4 @@ import { CommunityModule } from './community.module';
 	],
 	exports: [BoxRepository, MongooseModule],
 })
-export class BoxModule {}
+export class BoxModule { }

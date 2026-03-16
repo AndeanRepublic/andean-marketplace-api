@@ -40,6 +40,12 @@ export class SellerProfileResponse {
 	ruc: string;
 
 	@ApiProperty({
+		description: 'Nombre comercial del negocio',
+		example: 'Textiles Andinos SAC',
+	})
+	commercialName: string;
+
+	@ApiProperty({
 		description: 'Dirección física del negocio',
 		example: 'Av. Los Artesanos 123, Cusco',
 	})

@@ -1,40 +1,25 @@
-import {
-	ForbiddenException,
-	Injectable,
-	NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { SellerProfileRepository } from '../../datastore/Seller.repo';
 import { UpdateSellerProfileDto } from '../../../infra/controllers/dto/UpdateSellerProfileDto';
 import { SellerProfileMapper } from '../../../infra/services/SellerProfileMapper';
-import { AccountRole } from '../../../domain/enums/AccountRole';
 
 @Injectable()
 export class UpdateSellerProfileUseCase {
 	constructor(private readonly sellerRepository: SellerProfileRepository) {}
 
 	async handle(
-		paramUserId: string,
-		requestingUserId: string,
-		roles: AccountRole[],
+		userId: string,
 		updateDto: UpdateSellerProfileDto,
 	): Promise<void> {
-		if (
-			requestingUserId !== paramUserId &&
-			!roles.includes(AccountRole.ADMIN)
-		) {
-			throw new ForbiddenException('You can only update your own profile');
-		}
-
-		const profileFound =
-			await this.sellerRepository.getSellerByUserId(paramUserId);
+		const profileFound = await this.sellerRepository.getSellerByUserId(userId);
 		if (!profileFound) {
 			throw new NotFoundException('Profile not found');
 		}
 		const toUpdate = SellerProfileMapper.fromUpdateDto(
 			profileFound.id,
-			paramUserId,
+			userId,
 			updateDto,
 		);
-		return this.sellerRepository.updateSellerByUserId(paramUserId, toUpdate);
+		return this.sellerRepository.updateSellerByUserId(userId, toUpdate);
 	}
 }

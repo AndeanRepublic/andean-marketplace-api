@@ -3,9 +3,7 @@ import {
 	Injectable,
 	NotFoundException,
 	BadRequestException,
-	ForbiddenException,
 } from '@nestjs/common';
-import { AccountRole } from '../../../domain/enums/AccountRole';
 import { CustomerProfileRepository } from '../../datastore/Customer.repo';
 import { CartShopRepository } from '../../datastore/CartShop.repo';
 import { AddCartItemDto } from '../../../infra/controllers/dto/AddCartItemDto';
@@ -32,37 +30,25 @@ export class AddItemToCartUseCase {
 		private readonly cartItemRepository: CartShopItemRepository,
 		private readonly productInfoRegistry: ProductInfoProviderRegistry,
 		private readonly ownerNameResolver: OwnerNameResolver,
-	) {}
+	) { }
 
 	async handle(
-		requestingUserId: string,
-		roles: AccountRole[],
+		customerId: string | undefined,
+		customerEmail: string | undefined,
 		itemDto: AddCartItemDto,
-		targetCustomerId?: string,
 	): Promise<ShoppingCartItemResponse> {
-		// Pattern H — 2-hop ownership check with ADMIN bypass
-		let customerId: string | null;
-		const isAdmin = roles.includes(AccountRole.ADMIN);
-		if (isAdmin && targetCustomerId) {
-			// ADMIN targeting a specific customer's cart
-			customerId = targetCustomerId;
-		} else if (!isAdmin) {
-			const customer =
-				await this.customerRepository.getCustomerByUserId(requestingUserId);
-			if (!customer) {
-				throw new ForbiddenException('You can only access your own cart');
-			}
-			customerId = customer.id;
-		} else {
-			// ADMIN with no targetCustomerId: resolve own customer profile
-			const customer =
-				await this.customerRepository.getCustomerByUserId(requestingUserId);
-			customerId = customer?.id ?? null;
+		// 1. Validar que al menos uno de los identificadores esté presente
+		if (!customerId && !customerEmail) {
+			throw new NotFoundException('Either customerId or customerEmail must be provided');
 		}
 
-		// ADMIN with no CustomerProfile cannot add items (no cart to add to)
-		if (!customerId) {
-			throw new ForbiddenException('You can only access your own cart');
+		// 2. Si hay customerId, validar que el customer existe
+		if (customerId) {
+			const customerFound =
+				await this.customerRepository.getCustomerById(customerId);
+			if (!customerFound) {
+				throw new NotFoundException('CustomerProfile not found');
+			}
 		}
 
 		// 2. Obtener la variante
@@ -91,7 +77,7 @@ export class AddItemToCartUseCase {
 		);
 
 		// 5. Obtener o crear el carrito del customer
-		let cart = await this.cartShopRepository.getCartByCustomerId(customerId);
+		let cart = await this.cartShopRepository.getCartByIdentifier(customerId, customerEmail);
 		if (!cart) {
 			cart = new CartShop(
 				new Types.ObjectId().toString(),
@@ -101,7 +87,7 @@ export class AddItemToCartUseCase {
 				0, // discount
 				new Date(),
 				new Date(),
-				undefined, // customerEmail - not used for logged-in users
+				customerEmail,
 			);
 			await this.cartShopRepository.createCart(cart);
 		}

@@ -97,13 +97,6 @@ export class OrderItemDto implements OrderItem {
 	@IsNotEmpty()
 	productId!: string;
 
-	@ApiPropertyOptional({
-		description: 'ID de la variante (requerido para productos con variantes en guest checkout)',
-	})
-	@IsString()
-	@IsOptional()
-	variantId?: string;
-
 	@ApiPropertyOptional({ description: 'Color del producto' })
 	@IsString()
 	@IsOptional()

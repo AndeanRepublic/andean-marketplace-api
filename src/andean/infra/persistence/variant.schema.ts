@@ -11,7 +11,6 @@ export const VariantSchema = new Schema({
 	combination: { type: Schema.Types.Mixed, required: true },
 	price: { type: Number, required: true },
 	stock: { type: Number, required: true },
-	sku: { type: String, required: false },
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 });
@@ -25,7 +24,6 @@ export interface VariantDocument extends Document {
 	combination: Record<string, string>;
 	price: number;
 	stock: number;
-	sku?: string;
 	createdAt: Date;
 	updatedAt: Date;
 }

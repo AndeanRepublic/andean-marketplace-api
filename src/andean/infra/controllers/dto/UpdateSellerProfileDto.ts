@@ -49,6 +49,14 @@ export class UpdateSellerProfileDto {
 	country: string;
 
 	@ApiProperty({
+		description: 'Nombre comercial del vendedor',
+		example: 'Artesanías Andinas',
+	})
+	@IsString()
+	@IsNotEmpty()
+	commercialName: string;
+
+	@ApiProperty({
 		description: 'Dirección del vendedor',
 		example: 'Av. El Sol 123, Cusco',
 	})

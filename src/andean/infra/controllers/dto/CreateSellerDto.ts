@@ -45,6 +45,14 @@ export class CreateSellerDto {
 	name: string;
 
 	@ApiProperty({
+		description: 'Nombre comercial de la tienda',
+		example: 'Textiles Andinos',
+	})
+	@IsString()
+	@IsNotEmpty()
+	commercialName: string;
+
+	@ApiProperty({
 		description: 'Dirección física',
 		example: 'Av. Los Incas 123, Cusco',
 	})
