@@ -8,8 +8,8 @@ export class TryOnResponse {
 	image!: string;
 
 	@ApiProperty({
-		description: 'Formato de la imagen (siempre jpeg para IDM-VTON)',
-		example: 'image/jpeg',
+		description: 'Formato de la imagen (siempre webp para segfit-v1.3)',
+		example: 'image/webp',
 	})
 	mimeType!: string;
 }

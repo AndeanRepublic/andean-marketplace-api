@@ -19,4 +19,15 @@ export abstract class StorageRepository {
 	 * @param key - Key (path) of the file to delete
 	 */
 	abstract deleteFile(key: string): Promise<void>;
+
+	/**
+	 * Generate a presigned GET URL for a file
+	 * @param key - Key (path) of the file
+	 * @param ttlSeconds - Time-to-live in seconds
+	 * @returns Presigned URL
+	 */
+	abstract generatePresignedGetUrl(
+		key: string,
+		ttlSeconds: number,
+	): Promise<string>;
 }
