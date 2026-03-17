@@ -1,7 +1,11 @@
+export interface SegmindTryOnResult {
+	image: string;
+	mimeType: string;
+}
+
 export abstract class SegmindRepository {
 	abstract tryOn(
-		humanImageBase64: string,
-		garmentImageUrl: string,
-		garmentDescription?: string,
-	): Promise<string>; // retorna imagen resultante en base64
+		modelImageUrl: string,
+		outfitImageUrl: string,
+	): Promise<SegmindTryOnResult>;
 }
