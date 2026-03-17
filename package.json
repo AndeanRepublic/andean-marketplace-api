@@ -80,7 +80,6 @@
 	},
 	"pnpm": {
 		"onlyBuiltDependencies": [
-			"sharp",
 			"argon2"
 		]
 	},

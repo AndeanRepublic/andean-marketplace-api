@@ -5,6 +5,9 @@ FROM node:24-alpine AS base
 
 WORKDIR /app
 
+# Decirle a sharp que NO use libvips global → usa el binario precompilado (musl)
+ENV SHARP_IGNORE_GLOBAL_LIBVIPS=1
+
 # Instalar pnpm con versión fija (misma que en local)
 RUN corepack enable && corepack prepare pnpm@10.15.1 --activate
 
@@ -17,6 +20,10 @@ COPY package.json pnpm-lock.yaml ./
 # ==============================================================================
 FROM base AS deps
 
+# Libs necesarias para compilar módulos nativos (argon2)
+RUN apk add --no-cache python3 make g++ && \
+    ln -sf python3 /usr/bin/python
+
 RUN pnpm install --frozen-lockfile --prod
 
 
@@ -24,6 +31,10 @@ RUN pnpm install --frozen-lockfile --prod
 # BUILD — compila el proyecto NestJS
 # ==============================================================================
 FROM base AS build
+
+# Libs necesarias para compilar módulos nativos (argon2)
+RUN apk add --no-cache python3 make g++ && \
+    ln -sf python3 /usr/bin/python
 
 # Instalar TODAS las deps (incluye devDependencies para compilar)
 RUN pnpm install --frozen-lockfile
@@ -41,6 +52,8 @@ RUN pnpm run build
 FROM node:24-alpine AS production
 
 WORKDIR /app
+
+ENV SHARP_IGNORE_GLOBAL_LIBVIPS=1
 
 # Crear usuario no-root (buena práctica de seguridad)
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
@@ -76,6 +89,10 @@ CMD ["node", "dist/main"]
 # DEVELOPMENT — igual que estaba, para uso con docker-compose local
 # ==============================================================================
 FROM base AS development
+
+# Libs necesarias para compilar módulos nativos (argon2)
+RUN apk add --no-cache python3 make g++ && \
+    ln -sf python3 /usr/bin/python
 
 # Instalar todas las deps (incluyendo devDependencies)
 RUN pnpm install --frozen-lockfile
