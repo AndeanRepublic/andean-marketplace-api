@@ -182,17 +182,18 @@ export class MediaItemController {
 	// @HttpCode(HttpStatus.NO_CONTENT)
 	// @ApiOperation({ summary: 'Eliminar un media item' })
 	// @ApiParam({ name: 'id', description: 'ID del media item' })
-	// @ApiResponse({
-	// 	status: HttpStatus.NO_CONTENT,
-	// 	description: 'Media item eliminado exitosamente',
-	// })
-	// @ApiResponse({
-	// 	status: HttpStatus.NOT_FOUND,
-	// 	description: 'Media item no encontrado',
-	// })
-	// async delete(@Param('id') id: string): Promise<void> {
-	// 	await this.deleteMediaItemUseCase.execute(id);
-	// }
+	@ApiResponse({
+		status: HttpStatus.NO_CONTENT,
+		description: 'Media item eliminado exitosamente',
+	})
+	@ApiResponse({
+		status: HttpStatus.NOT_FOUND,
+		description: 'Media item no encontrado',
+	})
+	@Delete(':id')
+	async delete(@Param('id') id: string): Promise<void> {
+		await this.deleteMediaItemUseCase.execute(id);
+	}
 
 	private toResponse(mediaItem: MediaItem): MediaItemResponse {
 		return {
