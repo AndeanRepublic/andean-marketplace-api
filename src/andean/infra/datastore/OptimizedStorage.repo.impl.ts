@@ -109,4 +109,11 @@ export class OptimizedStorageRepoImpl implements StorageRepository {
 	async deleteFile(key: string): Promise<void> {
 		return this.inner.deleteFile(key);
 	}
+
+	async generatePresignedGetUrl(
+		key: string,
+		ttlSeconds: number,
+	): Promise<string> {
+		return this.inner.generatePresignedGetUrl(key, ttlSeconds);
+	}
 }
