@@ -1,9 +1,12 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
-import { SegmindRepository } from '../../app/datastore/Segmind.repo';
+import {
+	SegmindRepository,
+	SegmindTryOnResult,
+} from '../../app/datastore/Segmind.repo';
 
-const SEGMIND_VTON_URL = 'https://api.segmind.com/v1/idm-vton';
+const SEGMIND_VTON_URL = 'https://api.segmind.com/v1/segfit-v1.3';
 
 @Injectable()
 export class SegmindRepoImpl implements SegmindRepository {
@@ -14,23 +17,22 @@ export class SegmindRepoImpl implements SegmindRepository {
 	}
 
 	async tryOn(
-		humanImageBase64: string,
-		garmentImageUrl: string,
-		garmentDescription?: string,
-	): Promise<string> {
+		modelImageUrl: string,
+		outfitImageUrl: string,
+	): Promise<SegmindTryOnResult> {
 		try {
 			const response = await axios.post(
 				SEGMIND_VTON_URL,
 				{
-					crop: false,
+					outfit_image: outfitImageUrl,
+					model_image: modelImageUrl,
+					model_type: 'Quality',
+					cn_strength: 0.9,
+					cn_end: 0.5,
+					image_format: 'webp',
+					image_quality: 90,
 					seed: 42,
-					steps: 30,
-					category: 'upper_body',
-					force_dc: false,
-					human_img: humanImageBase64,
-					garm_img: garmentImageUrl,
-					mask_only: false,
-					garment_des: garmentDescription ?? '',
+					base64: true,
 				},
 				{
 					headers: {
@@ -42,15 +44,15 @@ export class SegmindRepoImpl implements SegmindRepository {
 				},
 			);
 
-			const imageBase64: string = response.data?.image;
+			const image: string = response.data?.image;
 
-			if (!imageBase64) {
+			if (!image) {
 				throw new InternalServerErrorException(
 					'Segmind did not return an image in the response',
 				);
 			}
 
-			return imageBase64;
+			return { image, mimeType: 'image/webp' };
 		} catch (error: any) {
 			if (error instanceof InternalServerErrorException) throw error;
 

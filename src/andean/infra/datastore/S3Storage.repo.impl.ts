@@ -4,7 +4,9 @@ import {
 	S3Client,
 	PutObjectCommand,
 	DeleteObjectCommand,
+	GetObjectCommand,
 } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import * as crypto from 'crypto';
 import { StorageRepository } from '../../app/datastore/Storage.repo';
 
@@ -76,6 +78,17 @@ export class S3StorageRepoImpl implements StorageRepository {
 				`Error deleting file from S3: ${error.message}`,
 			);
 		}
+	}
+
+	async generatePresignedGetUrl(
+		key: string,
+		ttlSeconds: number,
+	): Promise<string> {
+		const command = new GetObjectCommand({
+			Bucket: this.bucket,
+			Key: key,
+		});
+		return getSignedUrl(this.s3Client, command, { expiresIn: ttlSeconds });
 	}
 
 	private sanitizeFileName(fileName: string): string {
