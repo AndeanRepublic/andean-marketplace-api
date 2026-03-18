@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, HttpStatus, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as request from 'supertest';
+import request from 'supertest';
 import { MediaItemController } from '../src/andean/infra/controllers/mediaItem.controller';
 import { UploadMediaItemUseCase } from '../src/andean/app/use_cases/media/UploadMediaItemUseCase';
 import { GetMediaItemByIdUseCase } from '../src/andean/app/use_cases/media/GetMediaItemByIdUseCase';

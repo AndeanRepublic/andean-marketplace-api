@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, HttpStatus, ValidationPipe } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { ColorOptionAlternativeController } from '../src/andean/infra/controllers/colorOptionAlternative.controller';
 import { SizeOptionAlternativeController } from '../src/andean/infra/controllers/sizeOptionAlternative.controller';
 import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';

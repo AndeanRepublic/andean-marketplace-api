@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, HttpStatus, ValidationPipe } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { FixtureLoader } from './fixture-loader';
 import { JwtAuthGuard } from '../../src/andean/infra/core/jwtAuth.guard';
 import { RolesGuard } from '../../src/andean/infra/core/roles.guard';
