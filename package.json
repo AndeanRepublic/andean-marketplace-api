@@ -55,6 +55,7 @@
 		"@nestjs/testing": "^11.0.1",
 		"@swc/cli": "^0.8.0",
 		"@swc/core": "^1.10.7",
+		"@swc/jest": "^0.2.39",
 		"@types/express": "^5.0.0",
 		"@types/jest": "^29.5.14",
 		"@types/multer": "^2.0.0",
@@ -86,7 +87,25 @@
 		"rootDir": "src",
 		"testRegex": ".*\\.spec\\.ts$",
 		"transform": {
-			"^.+\\.(t|j)s$": "ts-jest"
+			"^.+\\.(t|j)s$": [
+				"@swc/jest",
+				{
+					"jsc": {
+						"parser": {
+							"syntax": "typescript",
+							"decorators": true
+						},
+						"transform": {
+							"decoratorMetadata": true,
+							"legacyDecorator": true
+						},
+						"target": "es2021"
+					},
+					"module": {
+						"type": "commonjs"
+					}
+				}
+			]
 		},
 		"collectCoverageFrom": [
 			"**/*.(t|j)s"
