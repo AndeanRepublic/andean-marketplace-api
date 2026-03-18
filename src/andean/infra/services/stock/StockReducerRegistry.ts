@@ -1,23 +1,18 @@
-import {
-	Injectable,
-	NotFoundException,
-	forwardRef,
-	Inject,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { StockReductionItem } from '../../../domain/interfaces/StockReductionItem';
 import { StockReducerStrategy } from './StockReducerStrategy';
 import { TextileStockReducer } from './TextileStockReducer';
 import { SuperfoodStockReducer } from './SuperfoodStockReducer';
 import { BoxStockReducer } from './BoxStockReducer';
+import { IStockReducerRegistry } from './IStockReducerRegistry';
 
 @Injectable()
-export class StockReducerRegistry {
+export class StockReducerRegistry implements IStockReducerRegistry {
 	private readonly reducers: StockReducerStrategy[];
 
 	constructor(
 		private readonly textileReducer: TextileStockReducer,
 		private readonly superfoodReducer: SuperfoodStockReducer,
-		@Inject(forwardRef(() => BoxStockReducer))
 		private readonly boxReducer: BoxStockReducer,
 	) {
 		this.reducers = [

@@ -1,15 +1,10 @@
-import {
-	Injectable,
-	Inject,
-	NotFoundException,
-	forwardRef,
-} from '@nestjs/common';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { StockReducerStrategy } from './StockReducerStrategy';
 import { ProductType } from '../../../domain/enums/ProductType';
 import { BoxProductType } from '../../../domain/enums/BoxProductType';
 import { StockReductionItem } from '../../../domain/interfaces/StockReductionItem';
 import { BoxRepository } from '../../../app/datastore/box/Box.repo';
-import { StockReducerRegistry } from './StockReducerRegistry';
+import { IStockReducerRegistry } from './IStockReducerRegistry';
 
 const BOX_PRODUCT_TYPE_MAP: Record<BoxProductType, ProductType> = {
 	[BoxProductType.TEXTILE]: ProductType.TEXTILE,
@@ -23,8 +18,8 @@ export class BoxStockReducer extends StockReducerStrategy {
 	constructor(
 		@Inject(BoxRepository)
 		private readonly boxRepository: BoxRepository,
-		@Inject(forwardRef(() => StockReducerRegistry))
-		private readonly stockReducerRegistry: StockReducerRegistry,
+		@Inject(IStockReducerRegistry)
+		private readonly stockReducerRegistry: IStockReducerRegistry,
 	) {
 		super();
 	}
