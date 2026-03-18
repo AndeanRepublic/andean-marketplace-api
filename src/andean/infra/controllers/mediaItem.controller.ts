@@ -2,7 +2,6 @@ import {
 	Controller,
 	Get,
 	Post,
-	Put,
 	Delete,
 	Body,
 	Param,
@@ -10,10 +9,8 @@ import {
 	HttpStatus,
 	UseInterceptors,
 	UploadedFile,
-	ParseFilePipe,
-	MaxFileSizeValidator,
-	FileTypeValidator,
 	UseGuards,
+	BadRequestException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtAuthGuard } from '../core/jwtAuth.guard';
@@ -46,6 +43,7 @@ import { MediaItemRole } from '../../domain/enums/MediaItemRole';
 @Controller('media-items')
 export class MediaItemController {
 	private readonly storageBaseUrl: string;
+	private readonly maxFileSizeBytes: number;
 
 	constructor(
 		private readonly uploadMediaItemUseCase: UploadMediaItemUseCase,
@@ -55,11 +53,15 @@ export class MediaItemController {
 		private readonly deleteMediaItemUseCase: DeleteMediaItemUseCase,
 		private readonly configService: ConfigService,
 	) {
-		// URL base para acceso a archivos (S3 o CloudFront)
 		this.storageBaseUrl = this.configService.get<string>(
 			'STORAGE_BASE_URL',
 			'',
 		);
+		const maxSizeMB = parseInt(
+			this.configService.get<string>('UPLOAD_MAX_SIZE_MB', '5'),
+			10,
+		);
+		this.maxFileSizeBytes = maxSizeMB * 1024 * 1024;
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
@@ -108,17 +110,27 @@ export class MediaItemController {
 		description: 'Archivo inválido o datos incorrectos',
 	})
 	async upload(
-		@UploadedFile(
-			new ParseFilePipe({
-				validators: [
-					new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }), // 5MB
-					new FileTypeValidator({ fileType: /^image\/(jpeg|png|webp)$/ }),
-				],
-			}),
-		)
-		file: Express.Multer.File,
+		@UploadedFile() file: Express.Multer.File,
 		@Body() dto: UploadMediaItemDto,
 	): Promise<MediaItemResponse> {
+		if (!file) {
+			throw new BadRequestException('No file was provided');
+		}
+
+		const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
+		if (!allowedMimeTypes.includes(file.mimetype)) {
+			throw new BadRequestException(
+				`File type not allowed. Accepted types: ${allowedMimeTypes.join(', ')}`,
+			);
+		}
+
+		if (file.size > this.maxFileSizeBytes) {
+			const maxSizeMB = this.maxFileSizeBytes / (1024 * 1024);
+			throw new BadRequestException(
+				`File exceeds the maximum allowed size of ${maxSizeMB}MB`,
+			);
+		}
+
 		const mediaItem = await this.uploadMediaItemUseCase.execute({
 			file,
 			type: dto.type,
@@ -178,21 +190,33 @@ export class MediaItemController {
 	// 	return mediaItems.map((item) => this.toResponse(item));
 	// }
 
-	// @Delete(':id')
-	// @HttpCode(HttpStatus.NO_CONTENT)
-	// @ApiOperation({ summary: 'Eliminar un media item' })
-	// @ApiParam({ name: 'id', description: 'ID del media item' })
-	// @ApiResponse({
-	// 	status: HttpStatus.NO_CONTENT,
-	// 	description: 'Media item eliminado exitosamente',
-	// })
-	// @ApiResponse({
-	// 	status: HttpStatus.NOT_FOUND,
-	// 	description: 'Media item no encontrado',
-	// })
-	// async delete(@Param('id') id: string): Promise<void> {
-	// 	await this.deleteMediaItemUseCase.execute(id);
-	// }
+	@Delete(':id')
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({ summary: 'Eliminar un media item' })
+	@ApiParam({ name: 'id', description: 'ID del media item' })
+	@ApiResponse({
+		status: HttpStatus.OK,
+		description: 'Media item eliminado exitosamente',
+		schema: {
+			type: 'object',
+			properties: {
+				message: {
+					type: 'string',
+					example: 'Media item eliminado exitosamente',
+				},
+			},
+		},
+	})
+	@ApiResponse({
+		status: HttpStatus.NOT_FOUND,
+		description: 'Media item no encontrado',
+	})
+	async delete(@Param('id') id: string): Promise<{ message: string }> {
+		await this.deleteMediaItemUseCase.execute(id);
+		return { message: 'Media item eliminado exitosamente' };
+	}
 
 	private toResponse(mediaItem: MediaItem): MediaItemResponse {
 		return {
