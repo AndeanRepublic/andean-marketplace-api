@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, HttpStatus, ValidationPipe } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { SuperfoodCategoryController } from '../src/andean/infra/controllers/superfoodControllers/superfoodCategory.controller';
 import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';
 import { RolesGuard } from '../src/andean/infra/core/roles.guard';

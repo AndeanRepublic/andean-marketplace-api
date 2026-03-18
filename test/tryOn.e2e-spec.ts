@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, HttpStatus, ValidationPipe } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { TryOnController } from '../src/andean/infra/controllers/tryOn.controller';
 import { TryOnUseCase } from '../src/andean/app/use_cases/tryOn/TryOnUseCase';
 
