@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, HttpStatus, ValidationPipe } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { FixtureLoader } from './helpers/fixture-loader';
 
 // ─── Controller ─────────────────────────────────────────────────────────────

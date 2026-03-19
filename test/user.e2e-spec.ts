@@ -5,7 +5,7 @@ import {
 	ValidationPipe,
 	ForbiddenException,
 } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { UserController } from '../src/andean/infra/controllers/user.controller';
 import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';
 import {

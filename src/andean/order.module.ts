@@ -29,6 +29,7 @@ import { TextileStockReducer } from './infra/services/stock/TextileStockReducer'
 import { SuperfoodStockReducer } from './infra/services/stock/SuperfoodStockReducer';
 import { BoxStockReducer } from './infra/services/stock/BoxStockReducer';
 import { StockReducerRegistry } from './infra/services/stock/StockReducerRegistry';
+import { IStockReducerRegistry } from './infra/services/stock/IStockReducerRegistry';
 
 @Module({
 	imports: [
@@ -71,6 +72,10 @@ import { StockReducerRegistry } from './infra/services/stock/StockReducerRegistr
 		SuperfoodStockReducer,
 		BoxStockReducer,
 		StockReducerRegistry,
+		{
+			provide: IStockReducerRegistry,
+			useExisting: StockReducerRegistry,
+		},
 		ReduceStockFromOrderUseCase,
 	],
 	exports: [OrderRepository],
