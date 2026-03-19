@@ -18,6 +18,7 @@ import { TextileProductModule } from './textileProduct.module';
 import { SuperfoodModule } from './superfood.module';
 import { BoxModule } from './box.module';
 import { CreateOrderFromCartUseCase } from './app/use_cases/orders/CreateOrderFromCartUseCase';
+import { GetAllOrdersUseCase } from './app/use_cases/orders/GetAllOrdersUseCase';
 import { BoxProductInfoProvider } from './infra/services/products/BoxProductInfoProvider';
 import { PayPalClientService } from './infra/services/paypal/PayPalClientService';
 import { CreatePayPalOrderService } from './infra/services/paypal/CreatePayPalOrderService';
@@ -52,6 +53,7 @@ import { IStockReducerRegistry } from './infra/services/stock/IStockReducerRegis
 		CreateOrderFromCartUseCase,
 		GetOrderByIdUseCase,
 		GetOrdersByCustomerUseCase,
+		GetAllOrdersUseCase,
 		UpdateOrderStatusUseCase,
 		{
 			provide: OrderRepository,

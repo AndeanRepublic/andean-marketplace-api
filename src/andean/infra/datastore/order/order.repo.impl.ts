@@ -38,6 +38,11 @@ export class OrderRepositoryImpl extends OrderRepository {
 		return docs.map((doc) => OrderMapper.fromDocument(doc));
 	}
 
+	async getAllOrders(): Promise<Order[]> {
+		const docs = await this.orderModel.find().sort({ createdAt: -1 }).exec();
+		return docs.map((doc) => OrderMapper.fromDocument(doc));
+	}
+
 	async createOrder(order: Order): Promise<Order> {
 		const plain = OrderMapper.toPersistence(order);
 		const created = new this.orderModel({
