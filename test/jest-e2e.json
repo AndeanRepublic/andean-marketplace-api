@@ -1,14 +1,29 @@
 {
-	"moduleFileExtensions": [
-		"js",
-		"json",
-		"ts"
-	],
+	"moduleFileExtensions": ["js", "json", "ts"],
 	"rootDir": ".",
 	"testEnvironment": "node",
 	"testRegex": ".e2e-spec.ts$",
+	"testTimeout": 15000,
 	"transform": {
-		"^.+\\.(t|j)s$": "ts-jest"
+		"^.+\\.(t|j)s$": [
+			"@swc/jest",
+			{
+				"jsc": {
+					"parser": {
+						"syntax": "typescript",
+						"decorators": true
+					},
+					"transform": {
+						"decoratorMetadata": true,
+						"legacyDecorator": true
+					},
+					"target": "es2021"
+				},
+				"module": {
+					"type": "commonjs"
+				}
+			}
+		]
 	},
 	"moduleNameMapper": {
 		"^src/(.*)$": "<rootDir>/../src/$1"

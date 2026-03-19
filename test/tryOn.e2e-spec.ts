@@ -1,16 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, HttpStatus, ValidationPipe } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { TryOnController } from '../src/andean/infra/controllers/tryOn.controller';
-import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';
-import {
-	createAllowAllGuard,
-	createDenyAllGuard,
-	mockAuthUsers,
-} from './helpers/auth-test.helper';
 import { TryOnUseCase } from '../src/andean/app/use_cases/tryOn/TryOnUseCase';
 
-describe('TryOnController (e2e) — Pattern B authentication', () => {
+describe('TryOnController (e2e)', () => {
 	// Minimal valid 1x1 pixel PNG for file upload tests
 	const validPngBuffer = Buffer.from(
 		'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
@@ -22,10 +16,8 @@ describe('TryOnController (e2e) — Pattern B authentication', () => {
 		mimeType: 'image/jpeg',
 	};
 
-	// ─── Helper to build app with a given auth user ─────────────────────────────
-	async function buildApp(
-		authUser: { userId: string; email: string; roles: any[] } | null,
-	): Promise<INestApplication> {
+	// ─── Helper to build app without auth ─────────────────────────────────────────
+	async function buildApp(): Promise<INestApplication> {
 		const module: TestingModule = await Test.createTestingModule({
 			controllers: [TryOnController],
 			providers: [
@@ -36,10 +28,7 @@ describe('TryOnController (e2e) — Pattern B authentication', () => {
 					},
 				},
 			],
-		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue(authUser ? createAllowAllGuard(authUser) : createDenyAllGuard())
-			.compile();
+		}).compile();
 
 		const app = module.createNestApplication();
 		app.useGlobalPipes(
@@ -55,8 +44,8 @@ describe('TryOnController (e2e) — Pattern B authentication', () => {
 
 	// ─── POST /try-on ────────────────────────────────────────────────────────────
 	describe('POST /try-on', () => {
-		it('should return 201 when authenticated USER submits try-on', async () => {
-			const app = await buildApp(mockAuthUsers.customer);
+		it('should return 201 when submitting try-on without auth', async () => {
+			const app = await buildApp();
 			const uc = app.get(TryOnUseCase);
 			jest.spyOn(uc, 'execute').mockResolvedValueOnce(mockTryOnResult);
 
@@ -70,40 +59,6 @@ describe('TryOnController (e2e) — Pattern B authentication', () => {
 				.expect((res) => {
 					expect([HttpStatus.OK, HttpStatus.CREATED]).toContain(res.status);
 				});
-
-			await app.close();
-		});
-
-		it('should return 201 when authenticated SELLER submits try-on', async () => {
-			const app = await buildApp(mockAuthUsers.seller);
-			const uc = app.get(TryOnUseCase);
-			jest.spyOn(uc, 'execute').mockResolvedValueOnce(mockTryOnResult);
-
-			await request(app.getHttpServer())
-				.post('/try-on')
-				.attach('file', validPngBuffer, {
-					filename: 'person.png',
-					contentType: 'image/png',
-				})
-				.field('textileProductId', 'textile-product-uuid-001')
-				.expect((res) => {
-					expect([HttpStatus.OK, HttpStatus.CREATED]).toContain(res.status);
-				});
-
-			await app.close();
-		});
-
-		it('should return 401 when no token is provided', async () => {
-			const app = await buildApp(null);
-
-			await request(app.getHttpServer())
-				.post('/try-on')
-				.attach('file', validPngBuffer, {
-					filename: 'person.png',
-					contentType: 'image/png',
-				})
-				.field('textileProductId', 'textile-product-uuid-001')
-				.expect(HttpStatus.UNAUTHORIZED);
 
 			await app.close();
 		});

@@ -5,7 +5,7 @@ import {
 	ValidationPipe,
 	ForbiddenException,
 } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { ShippingAddressController } from '../src/andean/infra/controllers/shippingAddress.controller';
 import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';
 import {

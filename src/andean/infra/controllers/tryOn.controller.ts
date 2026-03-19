@@ -11,6 +11,7 @@ import {
 	UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../core/jwtAuth.guard';
+import { Public } from '../core/public.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
 	ApiTags,
@@ -28,14 +29,15 @@ import { TryOnResponse } from '../../app/modules/tryOn/TryOnResponse';
 export class TryOnController {
 	constructor(private readonly tryOnUseCase: TryOnUseCase) {}
 
-	@UseGuards(JwtAuthGuard)
+	// @UseGuards(JwtAuthGuard)
+	@Public()
 	@Post()
 	@UseInterceptors(FileInterceptor('file'))
 	@ApiConsumes('multipart/form-data')
 	@ApiOperation({
-		summary: 'Probar una prenda virtualmente usando IDM-VTON',
+		summary: 'Probar una prenda virtualmente usando segfit-v1.3',
 		description:
-			'Recibe una foto del usuario y el ID de un producto textil. La descripción de la prenda se obtiene automáticamente de baseInfo.description y la imagen del MediaItem con role PRODUCT.',
+			'Recibe una foto del usuario y el ID de un producto textil. La imagen de la prenda (outfit_image) se obtiene del MediaItem con role PRODUCT via presigned URL de S3; la imagen del usuario (model_image) se envía como data URL base64. El modelo segfit-v1.3 de Segmind retorna la imagen resultante en formato webp.',
 	})
 	@ApiBody({
 		schema: {

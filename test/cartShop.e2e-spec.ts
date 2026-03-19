@@ -6,7 +6,7 @@ import {
 	ForbiddenException,
 	NotFoundException,
 } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { CartShopController } from '../src/andean/infra/controllers/cartShop.controller';
 import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';
 import {
