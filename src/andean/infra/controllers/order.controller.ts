@@ -28,6 +28,7 @@ import { GetOrderByIdUseCase } from '../../app/use_cases/orders/GetOrderByIdUseC
 import { GetOrdersByCustomerUseCase } from '../../app/use_cases/orders/GetOrdersByCustomerUseCase';
 import { UpdateOrderStatusUseCase } from '../../app/use_cases/orders/UpdateOrderStatusUseCase';
 import { CreateOrderFromCartUseCase } from '../../app/use_cases/orders/CreateOrderFromCartUseCase';
+import { GetAllOrdersUseCase } from '../../app/use_cases/orders/GetAllOrdersUseCase';
 import { CreateOrderDto } from './dto/order/CreateOrderDto';
 import { CreateOrderFromCartDto } from './dto/order/CreateOrderFromCartDto';
 import { Order } from '../../domain/entities/order/Order';
@@ -51,51 +52,66 @@ export class OrderController {
 		private readonly createOrderFromCartUseCase: CreateOrderFromCartUseCase,
 		private readonly createPayPalOrderUseCase: CreatePayPalOrderUseCase,
 		private readonly capturePayPalOrderUseCase: CapturePayPalOrderUseCase,
+		private readonly getAllOrdersUseCase: GetAllOrdersUseCase,
 	) {}
 
 	@Public()
-	@Post('')
+	// @Post('')
+	// @ApiOperation({
+	// 	summary: 'Crear orden',
+	// 	description: 'Crea una nueva orden con la información proporcionada',
+	// })
+	// @ApiBody({ type: CreateOrderDto })
+	// @ApiResponse({
+	// 	status: 201,
+	// 	description: 'Orden creada exitosamente',
+	// 	type: Order,
+	// })
+	// @ApiResponse({ status: 400, description: 'Datos inválidos' })
+	// async createOrder(@Body() body: CreateOrderDto): Promise<Order> {
+	// 	return this.createOrderUseCase.handle(body);
+	// }
+	// @Post('/from-cart')
+	// @HttpCode(HttpStatus.CREATED)
+	// @ApiOperation({
+	// 	summary: 'Crear orden desde carrito',
+	// 	description:
+	// 		'Crea una orden a partir del carrito del cliente (solo usuarios logueados)',
+	// })
+	// @ApiQuery({
+	// 	name: 'customerId',
+	// 	description: 'ID del cliente (requerido)',
+	// 	type: String,
+	// 	required: true,
+	// })
+	// @ApiBody({ type: CreateOrderFromCartDto })
+	// @ApiResponse({
+	// 	status: 201,
+	// 	description: 'Orden creada exitosamente desde el carrito',
+	// 	type: Order,
+	// })
+	// @ApiResponse({ status: 400, description: 'Carrito vacío o datos inválidos' })
+	// @ApiResponse({ status: 404, description: 'Carrito no encontrado' })
+	// async createOrderFromCart(
+	// 	@Query('customerId') customerId: string,
+	// 	@Body() body: CreateOrderFromCartDto,
+	// ): Promise<Order> {
+	// 	return this.createOrderFromCartUseCase.handle(customerId, body);
+	// }
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
+	@Get('/')
 	@ApiOperation({
-		summary: 'Crear orden',
-		description: 'Crea una nueva orden con la información proporcionada',
+		summary: 'Obtener todas las órdenes',
+		description: 'Recupera todas las órdenes del sistema. Solo administradores.',
 	})
-	@ApiBody({ type: CreateOrderDto })
 	@ApiResponse({
-		status: 201,
-		description: 'Orden creada exitosamente',
-		type: Order,
+		status: 200,
+		description: 'Lista de órdenes obtenida exitosamente',
+		type: [OrderResponse],
 	})
-	@ApiResponse({ status: 400, description: 'Datos inválidos' })
-	async createOrder(@Body() body: CreateOrderDto): Promise<Order> {
-		return this.createOrderUseCase.handle(body);
-	}
-
-	@Post('/from-cart')
-	@HttpCode(HttpStatus.CREATED)
-	@ApiOperation({
-		summary: 'Crear orden desde carrito',
-		description:
-			'Crea una orden a partir del carrito del cliente (solo usuarios logueados)',
-	})
-	@ApiQuery({
-		name: 'customerId',
-		description: 'ID del cliente (requerido)',
-		type: String,
-		required: true,
-	})
-	@ApiBody({ type: CreateOrderFromCartDto })
-	@ApiResponse({
-		status: 201,
-		description: 'Orden creada exitosamente desde el carrito',
-		type: Order,
-	})
-	@ApiResponse({ status: 400, description: 'Carrito vacío o datos inválidos' })
-	@ApiResponse({ status: 404, description: 'Carrito no encontrado' })
-	async createOrderFromCart(
-		@Query('customerId') customerId: string,
-		@Body() body: CreateOrderFromCartDto,
-	): Promise<Order> {
-		return this.createOrderFromCartUseCase.handle(customerId, body);
+	async getAll(): Promise<Order[]> {
+		return this.getAllOrdersUseCase.handle();
 	}
 
 	@Public()
