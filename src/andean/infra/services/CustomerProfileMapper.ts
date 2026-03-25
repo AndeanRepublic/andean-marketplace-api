@@ -58,9 +58,11 @@ export class CustomerProfileMapper {
 
 	static toPersistence(profile: CustomerProfile) {
 		const plain = instanceToPlain(profile);
+		// Remove _id to avoid immutable field error during updates
+		const { id, userId, ...rest } = plain;
 		return {
-			_id: crypto.randomUUID(),
-			...plain,
+			userId,
+			...rest,
 		};
 	}
 }
