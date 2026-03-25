@@ -64,8 +64,7 @@ export class MediaItemController {
 		this.maxFileSizeBytes = maxSizeMB * 1024 * 1024;
 	}
 
-	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@UseGuards(JwtAuthGuard)
 	@Post()
 	@UseInterceptors(FileInterceptor('file'))
 	@ApiConsumes('multipart/form-data')
@@ -191,8 +190,7 @@ export class MediaItemController {
 	// }
 
 	@Delete(':id')
-	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@UseGuards(JwtAuthGuard)
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({ summary: 'Eliminar un media item' })
 	@ApiParam({ name: 'id', description: 'ID del media item' })
