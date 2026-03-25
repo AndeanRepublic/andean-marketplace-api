@@ -22,7 +22,7 @@ import {
 } from '@nestjs/swagger';
 import { TryOnUseCase } from '../../app/use_cases/tryOn/TryOnUseCase';
 import { TryOnDto } from './dto/tryOn/TryOnDto';
-import { TryOnResponse } from '../../app/modules/tryOn/TryOnResponse';
+import { TryOnResponse } from '../../app/models/tryOn/TryOnResponse';
 
 @ApiTags('Try On')
 @Controller('try-on')

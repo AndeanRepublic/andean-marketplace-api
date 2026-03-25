@@ -28,7 +28,7 @@ import { SuperfoodProductStatus } from '../src/andean/domain/enums/SuperfoodProd
 import { SuperfoodOwnerType } from '../src/andean/domain/enums/SuperfoodOwnerType';
 import { SuperfoodColor } from '../src/andean/domain/enums/SuperfoodColor';
 import { ProductSortBy } from '../src/andean/domain/enums/ProductSortBy';
-import { SuperfoodProductListItem } from '../src/andean/app/modules/superfoods/SuperfoodProductListItem';
+import { SuperfoodProductListItem } from '../src/andean/app/models/superfoods/SuperfoodProductListItem';
 import { FixtureLoader } from './helpers/fixture-loader';
 
 describe('SuperfoodController (e2e)', () => {

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { SuperfoodPreservationMethodRepository } from '../../../datastore/superfoods/SuperfoodPreservationMethod.repo';
 import { SuperfoodPreservationMethod } from '../../../../domain/entities/superfoods/SuperfoodPreservationMethod';
-import { SuperfoodPreservationMethodResponse } from '../../../modules/superfoods/SuperfoodPreservationMethodResponse';
+import { SuperfoodPreservationMethodResponse } from '../../../models/superfoods/SuperfoodPreservationMethodResponse';
 import { SuperfoodPreservationMethodMapper } from '../../../../infra/services/superfood/SuperfoodPreservationMethodMapper';
 
 @Injectable()

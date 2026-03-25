@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { SuperfoodTypeRepository } from '../../../datastore/superfoods/SuperfoodType.repo';
 import { SuperfoodType } from '../../../../domain/entities/superfoods/SuperfoodType';
 import { CreateSuperfoodTypeDto } from '../../../../infra/controllers/dto/superfoods/CreateSuperfoodTypeDto';
-import { SuperfoodTypeResponse } from '../../../modules/superfoods/SuperfoodTypeResponse';
+import { SuperfoodTypeResponse } from '../../../models/superfoods/SuperfoodTypeResponse';
 import { SuperfoodTypeMapper } from '../../../../infra/services/superfood/SuperfoodTypeMapper';
 
 @Injectable()

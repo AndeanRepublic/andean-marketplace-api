@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ProductInfoProvider } from '../../../app/datastore/products/ProductInfoProvider';
-import { ProductInfo } from '../../../domain/interfaces/ProductInfo';
+import { ProductInfo } from '../../../app/models/shared/ProductInfo';
 import { ProductType } from '../../../domain/enums/ProductType';
 import { TextileProductInfoProvider } from './TextileProductInfoProvider';
 import { SuperfoodProductInfoProvider } from './SuperfoodProductInfoProvider';

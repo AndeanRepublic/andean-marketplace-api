@@ -1,6 +1,6 @@
 import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
 import { ProductSortBy } from '../../../domain/enums/ProductSortBy';
-import { SuperfoodProductListItem } from '../../modules/superfoods/SuperfoodProductListItem';
+import { SuperfoodProductListItem } from '../../models/superfoods/SuperfoodProductListItem';
 
 export interface SuperfoodProductFilters {
 	minPrice?: number;

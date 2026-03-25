@@ -1,7 +1,7 @@
 import { Injectable, Inject, BadRequestException } from '@nestjs/common';
 import { StockReducerStrategy } from './StockReducerStrategy';
 import { ProductType } from '../../../domain/enums/ProductType';
-import { StockReductionItem } from '../../../domain/interfaces/StockReductionItem';
+import { StockReductionItem } from '../../../app/models/shop/StockReductionItem';
 import { TextileProductRepository } from '../../../app/datastore/textileProducts/TextileProduct.repo';
 import { VariantRepository } from '../../../app/datastore/Variant.repo';
 

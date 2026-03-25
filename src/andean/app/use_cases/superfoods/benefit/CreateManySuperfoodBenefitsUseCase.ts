@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { SuperfoodBenefitRepository } from '../../../datastore/superfoods/SuperfoodBenefit.repo';
 import { CreateManySuperfoodBenefitsDto } from '../../../../infra/controllers/dto/superfoods/CreateManySuperfoodBenefitsDto';
-import { SuperfoodBenefitResponse } from '../../../modules/superfoods/SuperfoodBenefitResponse';
+import { SuperfoodBenefitResponse } from '../../../models/superfoods/SuperfoodBenefitResponse';
 import { SuperfoodBenefitMapper } from '../../../../infra/services/superfood/SuperfoodBenefitMapper';
 
 @Injectable()

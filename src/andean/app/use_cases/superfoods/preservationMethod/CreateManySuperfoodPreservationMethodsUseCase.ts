@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { SuperfoodPreservationMethodRepository } from '../../../datastore/superfoods/SuperfoodPreservationMethod.repo';
 import { CreateManySuperfoodPreservationMethodsDto } from '../../../../infra/controllers/dto/superfoods/CreateManySuperfoodPreservationMethodsDto';
-import { SuperfoodPreservationMethodResponse } from '../../../modules/superfoods/SuperfoodPreservationMethodResponse';
+import { SuperfoodPreservationMethodResponse } from '../../../models/superfoods/SuperfoodPreservationMethodResponse';
 import { SuperfoodPreservationMethodMapper } from '../../../../infra/services/superfood/SuperfoodPreservationMethodMapper';
 
 @Injectable()

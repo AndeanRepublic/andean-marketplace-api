@@ -17,7 +17,7 @@ import { AccountRole } from '../../../domain/enums/AccountRole';
 import { Public } from '../../core/public.decorator';
 import { CreateSuperfoodTypeDto } from '../dto/superfoods/CreateSuperfoodTypeDto';
 import { CreateManySuperfoodTypesDto } from '../dto/superfoods/CreateManySuperfoodTypesDto';
-import { SuperfoodTypeResponse } from '../../../app/modules/superfoods/SuperfoodTypeResponse';
+import { SuperfoodTypeResponse } from '../../../app/models/superfoods/SuperfoodTypeResponse';
 import { CreateSuperfoodTypeUseCase } from '../../../app/use_cases/superfoods/type/CreateSuperfoodTypeUseCase';
 import { CreateManySuperfoodTypesUseCase } from '../../../app/use_cases/superfoods/type/CreateManySuperfoodTypesUseCase';
 import { GetSuperfoodTypeByIdUseCase } from '../../../app/use_cases/superfoods/type/GetSuperfoodTypeByIdUseCase';

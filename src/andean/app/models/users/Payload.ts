@@ -1,4 +1,4 @@
-import { AccountRole } from '../enums/AccountRole';
+import { AccountRole } from '../../../domain/enums/AccountRole';
 
 export interface Payload {
 	sub: string;

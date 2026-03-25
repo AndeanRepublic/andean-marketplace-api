@@ -10,7 +10,7 @@ import { SuperfoodProductDocument } from '../../persistence/superfood/superfood.
 import { SuperfoodProductMapper } from '../../services/superfood/SuperfoodProductMapper';
 import { MongoIdUtils } from '../../utils/MongoIdUtils';
 import { ProductSortBy } from '../../../domain/enums/ProductSortBy';
-import { SuperfoodProductListItem } from '../../../app/modules/superfoods/SuperfoodProductListItem';
+import { SuperfoodProductListItem } from '../../../app/models/superfoods/SuperfoodProductListItem';
 
 @Injectable()
 export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {

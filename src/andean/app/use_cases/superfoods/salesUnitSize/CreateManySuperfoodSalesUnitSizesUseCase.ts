@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { SuperfoodSalesUnitSizeRepository } from '../../../datastore/superfoods/SuperfoodSalesUnitSize.repo';
 import { CreateManySuperfoodSalesUnitSizesDto } from '../../../../infra/controllers/dto/superfoods/CreateManySuperfoodSalesUnitSizesDto';
-import { SuperfoodSalesUnitSizeResponse } from '../../../modules/superfoods/SuperfoodSalesUnitSizeResponse';
+import { SuperfoodSalesUnitSizeResponse } from '../../../models/superfoods/SuperfoodSalesUnitSizeResponse';
 import { SuperfoodSalesUnitSizeMapper } from '../../../../infra/services/superfood/SuperfoodSalesUnitSizeMapper';
 
 @Injectable()

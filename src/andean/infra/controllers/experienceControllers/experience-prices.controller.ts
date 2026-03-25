@@ -13,7 +13,7 @@ import { CurrentUser } from '../../core/current-user.decorator';
 import { AccountRole } from '../../../domain/enums/AccountRole';
 import { UpdatePriceByAgeGroupUseCase } from 'src/andean/app/use_cases/experiences/prices/UpdatePriceByAgeGroupUseCase';
 import { PatchAgeGroupPriceDto } from '../dto/experiences/PatchExperiencePricesDto';
-import { ExperiencePricesPatchResponse } from 'src/andean/app/modules/experiences/ExperiencePatchResponse';
+import { ExperiencePricesPatchResponse } from 'src/andean/app/models/experiences/ExperiencePatchResponse';
 
 @ApiTags('Experiences — Prices')
 @Controller('experiences/:experienceId/prices')

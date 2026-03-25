@@ -34,7 +34,7 @@ import { ListMediaItemsUseCase } from '../../app/use_cases/media/ListMediaItemsU
 import { DeleteMediaItemUseCase } from '../../app/use_cases/media/DeleteMediaItemUseCase';
 import { UploadMediaItemDto } from './dto/media/UploadMediaItemDto';
 import { UpdateMediaItemDto } from './dto/media/UpdateMediaItemDto';
-import { MediaItemResponse } from '../../app/modules/shared/MediaItemResponse';
+import { MediaItemResponse } from '../../app/models/shared/MediaItemResponse';
 import { MediaItem } from '../../domain/entities/MediaItem';
 import { MediaItemType } from '../../domain/enums/MediaItemType';
 import { MediaItemRole } from '../../domain/enums/MediaItemRole';

@@ -1,8 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BoxRepository } from '../../datastore/box/Box.repo';
 import { BoxSealRepository } from '../../datastore/box/BoxSeal.repo';
-import { BoxDetailResponse, BoxContainedProductResponse, BoxSealDetailResponse } from '../../modules/box/BoxDetailResponse';
-import { BoxImageResponse } from '../../modules/box/BoxImageResponse';
+import {
+	BoxDetailResponse,
+	BoxContainedProductResponse,
+	BoxSealDetailResponse,
+} from '../../models/box/BoxDetailResponse';
+import { BoxImageResponse } from '../../models/box/BoxImageResponse';
 import { ProductType } from '../../../domain/enums/ProductType';
 import { BoxProductResolutionService } from '../../../infra/services/box/BoxProductResolutionService';
 
@@ -12,7 +16,7 @@ export class GetBoxDetailUseCase {
 		private readonly boxRepository: BoxRepository,
 		private readonly boxSealRepository: BoxSealRepository,
 		private readonly boxResolutionService: BoxProductResolutionService,
-	) { }
+	) {}
 
 	async handle(boxId: string): Promise<BoxDetailResponse> {
 		const box = await this.boxRepository.getById(boxId);
@@ -30,8 +34,14 @@ export class GetBoxDetailUseCase {
 		const heroDetail = {
 			title: box.title,
 			subtitle: box.subtitle,
-			thumbnailImage: this.boxResolutionService.resolveImage(box.thumbnailImageId, dependencies.mediaMap),
-			mainImage: this.boxResolutionService.resolveImage(box.mainImageId, dependencies.mediaMap),
+			thumbnailImage: this.boxResolutionService.resolveImage(
+				box.thumbnailImageId,
+				dependencies.mediaMap,
+			),
+			mainImage: this.boxResolutionService.resolveImage(
+				box.mainImageId,
+				dependencies.mediaMap,
+			),
 		};
 
 		// Assemble detail section
@@ -93,15 +103,19 @@ export class GetBoxDetailUseCase {
 		}
 
 		// Assemble price detail
-		const discountPorcentage = discartedPrice > 0
-			? Math.round((1 - box.price / discartedPrice) * 100)
-			: 0;
+		const discountPorcentage =
+			discartedPrice > 0
+				? Math.round((1 - box.price / discartedPrice) * 100)
+				: 0;
 
 		// Assemble box seals
 		const boxSeals: BoxSealDetailResponse[] = seals.map((seal) => ({
 			name: seal.name,
 			description: seal.description,
-			logo: this.boxResolutionService.resolveImage(seal.logoMediaId, dependencies.mediaMap),
+			logo: this.boxResolutionService.resolveImage(
+				seal.logoMediaId,
+				dependencies.mediaMap,
+			),
 		}));
 
 		return {
@@ -109,7 +123,11 @@ export class GetBoxDetailUseCase {
 			heroDetail,
 			detail,
 			containedProducts,
-			priceDetail: { discartedPrice, totalPrice: box.price, discountPorcentage },
+			priceDetail: {
+				discartedPrice,
+				totalPrice: box.price,
+				discountPorcentage,
+			},
 			boxSeals,
 		};
 	}

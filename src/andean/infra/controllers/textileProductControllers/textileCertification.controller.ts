@@ -16,7 +16,7 @@ import { RolesGuard } from '../../core/roles.guard';
 import { Roles } from '../../core/roles.decorator';
 import { AccountRole } from '../../../domain/enums/AccountRole';
 import { Public } from '../../core/public.decorator';
-import { TextileCertificationResponse } from 'src/andean/app/modules/textile/TextileCertificationResponse';
+import { TextileCertificationResponse } from 'src/andean/app/models/textile/TextileCertificationResponse';
 import { CreateTextileCertificationUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileCertificationUseCase';
 import { CreateManyTextileCertificationsUseCase } from 'src/andean/app/use_cases/textileProducts/CreateManyTextileCertificationsUseCase';
 import { TextileCertification } from 'src/andean/domain/entities/textileProducts/TextileCertification';

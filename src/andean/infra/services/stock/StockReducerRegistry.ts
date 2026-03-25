@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { StockReductionItem } from '../../../domain/interfaces/StockReductionItem';
+import { StockReductionItem } from '../../../app/models/shop/StockReductionItem';
 import { StockReducerStrategy } from './StockReducerStrategy';
 import { TextileStockReducer } from './TextileStockReducer';
 import { SuperfoodStockReducer } from './SuperfoodStockReducer';

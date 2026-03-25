@@ -33,8 +33,8 @@ import { UpdateBookingStatusUseCase } from '../../app/use_cases/bookings/UpdateB
 import { CreateBookingDto } from './dto/booking/CreateBookingDto';
 import { UpdateBookingDto } from './dto/booking/UpdateBookingDto';
 import { Booking } from '../../domain/entities/booking/Booking';
-import { BookingResponse } from '../../app/modules/booking/BookingResponse';
-import { BookingErrorResponse } from '../../app/modules/booking/BookingErrorResponse';
+import { BookingResponse } from '../../app/models/booking/BookingResponse';
+import { BookingErrorResponse } from '../../app/models/booking/BookingErrorResponse';
 import { CreatePayPalBookingOrderDto } from './dto/booking/CreatePayPalBookingOrderDto';
 import { CapturePayPalBookingDto } from './dto/booking/CapturePayPalBookingDto';
 import { CapturePayPalBookingResponse } from '../../app/use_cases/bookings/CapturePayPalBookingUseCase';

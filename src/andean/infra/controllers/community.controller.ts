@@ -38,8 +38,8 @@ import { CreateCommunityDto } from './dto/community/CreateCommunityDto';
 import { UpdateCommunityDto } from './dto/community/UpdateCommunityDto';
 import { CreateSealDto } from './dto/community/CreateSealDto';
 import { CreateManySealsDto } from './dto/community/CreateManySealsDto';
-import { CommunityResponse } from '../../app/modules/community/CommunityResponse';
-import { SealResponse } from '../../app/modules/community/SealResponse';
+import { CommunityResponse } from '../../app/models/community/CommunityResponse';
+import { SealResponse } from '../../app/models/community/SealResponse';
 import { Community } from '../../domain/entities/community/Community';
 import { Seal } from '../../domain/entities/community/Seal';
 

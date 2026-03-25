@@ -22,7 +22,7 @@ import { ExperienceAvailabilityMode } from 'src/andean/domain/enums/ExperienceAv
 import {
 	ExperienceAvailabilityResponse,
 	ExperienceDetailResponse,
-} from '../../modules/experiences/ExperienceDetailResponse';
+} from '../../models/experiences/ExperienceDetailResponse';
 import { ExperienceDetailMapper } from 'src/andean/infra/services/experiences/ExperienceDetailMapper';
 import { GetFutureUnavailableDatesUseCase } from './GetFutureUnavailableDatesUseCase';
 

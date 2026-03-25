@@ -10,7 +10,7 @@ import { CartShopRepository } from '../../datastore/CartShop.repo';
 import { CustomerProfileRepository } from '../../datastore/Customer.repo';
 import { DiscountCodeService } from '../../../infra/services/DiscountCodeService';
 import { AccountRole } from '../../../domain/enums/AccountRole';
-import { ApplyDiscountResponse } from '../../modules/cart/ApplyDiscountResponse';
+import { ApplyDiscountResponse } from '../../models/cart/ApplyDiscountResponse';
 import { CartItem } from '../../../domain/entities/CartItem';
 
 @Injectable()

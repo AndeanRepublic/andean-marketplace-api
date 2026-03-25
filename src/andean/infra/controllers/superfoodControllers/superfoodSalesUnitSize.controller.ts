@@ -17,7 +17,7 @@ import { AccountRole } from '../../../domain/enums/AccountRole';
 import { Public } from '../../core/public.decorator';
 import { CreateSuperfoodSalesUnitSizeDto } from '../dto/superfoods/CreateSuperfoodSalesUnitSizeDto';
 import { CreateManySuperfoodSalesUnitSizesDto } from '../dto/superfoods/CreateManySuperfoodSalesUnitSizesDto';
-import { SuperfoodSalesUnitSizeResponse } from '../../../app/modules/superfoods/SuperfoodSalesUnitSizeResponse';
+import { SuperfoodSalesUnitSizeResponse } from '../../../app/models/superfoods/SuperfoodSalesUnitSizeResponse';
 import { CreateSuperfoodSalesUnitSizeUseCase } from '../../../app/use_cases/superfoods/salesUnitSize/CreateSuperfoodSalesUnitSizeUseCase';
 import { CreateManySuperfoodSalesUnitSizesUseCase } from '../../../app/use_cases/superfoods/salesUnitSize/CreateManySuperfoodSalesUnitSizesUseCase';
 import { GetSuperfoodSalesUnitSizeByIdUseCase } from '../../../app/use_cases/superfoods/salesUnitSize/GetSuperfoodSalesUnitSizeByIdUseCase';

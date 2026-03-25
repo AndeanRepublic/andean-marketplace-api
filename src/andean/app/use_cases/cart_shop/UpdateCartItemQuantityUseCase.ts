@@ -13,7 +13,7 @@ import { TextileProductRepository } from '../../datastore/textileProducts/Textil
 import { SuperfoodProductRepository } from '../../datastore/superfoods/SuperfoodProduct.repo';
 import { ProductType } from '../../../domain/enums/ProductType';
 import { AccountRole } from '../../../domain/enums/AccountRole';
-import { CartItemQuantityResponse } from '../../modules/cart/CartItemQuantityResponse';
+import { CartItemQuantityResponse } from '../../models/cart/CartItemQuantityResponse';
 
 @Injectable()
 export class UpdateCartItemQuantityUseCase {

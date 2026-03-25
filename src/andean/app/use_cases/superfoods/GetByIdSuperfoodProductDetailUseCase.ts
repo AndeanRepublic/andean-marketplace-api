@@ -20,8 +20,8 @@ import {
 	TraceabilityInfoResponse,
 	ReviewsResponse,
 	SuperfoodProductListItemCompact,
-} from '../../modules/superfoods/SuperfoodProductDetailResponse';
-import { SuperfoodProductListItem } from '../../modules/superfoods/SuperfoodProductListItem';
+} from '../../models/superfoods/SuperfoodProductDetailResponse';
+import { SuperfoodProductListItem } from '../../models/superfoods/SuperfoodProductListItem';
 
 @Injectable()
 export class GetByIdSuperfoodProductDetailUseCase {
@@ -303,7 +303,12 @@ export class GetByIdSuperfoodProductDetailUseCase {
 			merchandising: [],
 		};
 
-		const arrayKeys = ['origen', 'processing', 'development', 'merchandising'] as const;
+		const arrayKeys = [
+			'origen',
+			'processing',
+			'development',
+			'merchandising',
+		] as const;
 		const keyMap: Record<string, (typeof arrayKeys)[number]> = {
 			origin: 'origen',
 			processing: 'processing',

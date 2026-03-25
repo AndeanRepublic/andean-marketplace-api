@@ -1,7 +1,7 @@
 import { SuperfoodPreservationMethodDocument } from '../../persistence/superfood/superfoodPreservationMethod.schema';
 import { SuperfoodPreservationMethod } from '../../../domain/entities/superfoods/SuperfoodPreservationMethod';
 import { CreateSuperfoodPreservationMethodDto } from '../../controllers/dto/superfoods/CreateSuperfoodPreservationMethodDto';
-import { SuperfoodPreservationMethodResponse } from '../../../app/modules/superfoods/SuperfoodPreservationMethodResponse';
+import { SuperfoodPreservationMethodResponse } from '../../../app/models/superfoods/SuperfoodPreservationMethodResponse';
 import { MongoIdUtils } from '../../utils/MongoIdUtils';
 import { Types } from 'mongoose';
 

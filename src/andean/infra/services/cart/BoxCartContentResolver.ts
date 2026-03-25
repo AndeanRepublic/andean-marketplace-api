@@ -3,7 +3,7 @@ import { BoxRepository } from '../../../app/datastore/box/Box.repo';
 import { SuperfoodProductRepository } from '../../../app/datastore/superfoods/SuperfoodProduct.repo';
 import { TextileProductRepository } from '../../../app/datastore/textileProducts/TextileProduct.repo';
 import { VariantRepository } from '../../../app/datastore/Variant.repo';
-import { BoxContentItemResponse } from '../../../app/modules/cart/BoxContentItemResponse';
+import { BoxContentItemResponse } from '../../../app/models/cart/BoxContentItemResponse';
 import { ProductType } from '../../../domain/enums/ProductType';
 
 /**

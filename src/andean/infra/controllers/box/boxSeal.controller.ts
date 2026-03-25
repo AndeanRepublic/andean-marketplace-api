@@ -16,7 +16,7 @@ import { Roles } from '../../core/roles.decorator';
 import { AccountRole } from '../../../domain/enums/AccountRole';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { Public } from '../../core/public.decorator';
-import { BoxSealResponse } from '../../../app/modules/box/BoxSealResponse';
+import { BoxSealResponse } from '../../../app/models/box/BoxSealResponse';
 import { CreateBoxSealUseCase } from '../../../app/use_cases/boxSeals/CreateBoxSealUseCase';
 import { GetAllBoxSealsUseCase } from '../../../app/use_cases/boxSeals/GetAllBoxSealsUseCase';
 import { GetBoxSealByIdUseCase } from '../../../app/use_cases/boxSeals/GetBoxSealByIdUseCase';

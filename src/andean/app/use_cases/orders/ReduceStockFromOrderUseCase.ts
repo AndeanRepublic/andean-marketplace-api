@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { StockReducerRegistry } from '../../../infra/services/stock/StockReducerRegistry';
-import { StockReductionItem } from '../../../domain/interfaces/StockReductionItem';
+import { StockReductionItem } from '../../models/shop/StockReductionItem';
 import { CartItem } from '../../../domain/entities/CartItem';
 import { ProductType } from '../../../domain/enums/ProductType';
 

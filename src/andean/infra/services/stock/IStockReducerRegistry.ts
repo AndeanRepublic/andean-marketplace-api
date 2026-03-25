@@ -1,4 +1,4 @@
-import { StockReductionItem } from '../../../domain/interfaces/StockReductionItem';
+import { StockReductionItem } from '../../../app/models/shop/StockReductionItem';
 
 export const IStockReducerRegistry = Symbol('IStockReducerRegistry');
 
