@@ -31,10 +31,10 @@ import { UpdateCartItemQuantityUseCase } from '../../app/use_cases/cart_shop/Upd
 import { ApplyDiscountCodeUseCase } from '../../app/use_cases/cart_shop/ApplyDiscountCodeUseCase';
 import { AddCartItemDto } from './dto/AddCartItemDto';
 import { ApplyDiscountCodeDto } from './dto/ApplyDiscountCodeDto';
-import { CartItemQuantityResponse } from '../../app/modules/cart/CartItemQuantityResponse';
-import { ShoppingCartItemResponse } from '../../app/modules/cart/ShoppingCartItemResponse';
-import { GetCartResponse } from '../../app/modules/cart/GetCartResponse';
-import { ApplyDiscountResponse } from '../../app/modules/cart/ApplyDiscountResponse';
+import { CartItemQuantityResponse } from '../../app/models/cart/CartItemQuantityResponse';
+import { ShoppingCartItemResponse } from '../../app/models/cart/ShoppingCartItemResponse';
+import { GetCartResponse } from '../../app/models/cart/GetCartResponse';
+import { ApplyDiscountResponse } from '../../app/models/cart/ApplyDiscountResponse';
 
 const root_path = 'cart';
 const path_cart_items = '/items';

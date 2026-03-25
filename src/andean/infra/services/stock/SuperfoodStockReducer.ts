@@ -1,7 +1,7 @@
 import { Injectable, Inject, BadRequestException } from '@nestjs/common';
 import { StockReducerStrategy } from './StockReducerStrategy';
 import { ProductType } from '../../../domain/enums/ProductType';
-import { StockReductionItem } from '../../../domain/interfaces/StockReductionItem';
+import { StockReductionItem } from '../../../app/models/shop/StockReductionItem';
 import { SuperfoodProductRepository } from '../../../app/datastore/superfoods/SuperfoodProduct.repo';
 
 @Injectable()

@@ -1,7 +1,7 @@
 import { TextileProduct } from '../../../domain/entities/textileProducts/TextileProduct';
 import { ProductSortBy } from '../../../domain/enums/ProductSortBy';
-import { FilterCount } from '../../modules/shared/PaginatedProductsResponse';
-import { TextileProductListItem } from '../../modules/textile/TextileProductListItemResponse';
+import { FilterCount } from '../../models/shared/PaginatedProductsResponse';
+import { TextileProductListItem } from '../../models/textile/TextileProductListItemResponse';
 
 export interface ProductFilters {
 	color?: string;

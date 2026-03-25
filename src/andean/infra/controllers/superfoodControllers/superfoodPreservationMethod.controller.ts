@@ -17,7 +17,7 @@ import { AccountRole } from '../../../domain/enums/AccountRole';
 import { Public } from '../../core/public.decorator';
 import { CreateSuperfoodPreservationMethodDto } from '../dto/superfoods/CreateSuperfoodPreservationMethodDto';
 import { CreateManySuperfoodPreservationMethodsDto } from '../dto/superfoods/CreateManySuperfoodPreservationMethodsDto';
-import { SuperfoodPreservationMethodResponse } from '../../../app/modules/superfoods/SuperfoodPreservationMethodResponse';
+import { SuperfoodPreservationMethodResponse } from '../../../app/models/superfoods/SuperfoodPreservationMethodResponse';
 import { CreateSuperfoodPreservationMethodUseCase } from '../../../app/use_cases/superfoods/preservationMethod/CreateSuperfoodPreservationMethodUseCase';
 import { CreateManySuperfoodPreservationMethodsUseCase } from '../../../app/use_cases/superfoods/preservationMethod/CreateManySuperfoodPreservationMethodsUseCase';
 import { GetSuperfoodPreservationMethodByIdUseCase } from '../../../app/use_cases/superfoods/preservationMethod/GetSuperfoodPreservationMethodByIdUseCase';

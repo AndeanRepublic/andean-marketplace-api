@@ -17,7 +17,7 @@ import {
 	PatchExcludedDatesDto,
 	PatchAvailableDatesDto,
 } from '../dto/experiences/PatchExperiencePricesDto';
-import { ExperienceAvailabilityPatchResponse } from 'src/andean/app/modules/experiences/ExperiencePatchResponse';
+import { ExperienceAvailabilityPatchResponse } from 'src/andean/app/models/experiences/ExperiencePatchResponse';
 
 @ApiTags('Experiences — Availability')
 @Controller('experiences/:experienceId/availability')

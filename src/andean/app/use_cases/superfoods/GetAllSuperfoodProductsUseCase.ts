@@ -3,8 +3,8 @@ import {
 	SuperfoodProductFilters,
 	SuperfoodProductRepository,
 } from '../../datastore/superfoods/SuperfoodProduct.repo';
-import { PaginatedProductsResponse } from '../../modules/shared/PaginatedProductsResponse';
-import { SuperfoodProductListItem } from '../../modules/superfoods/SuperfoodProductListItem';
+import { PaginatedProductsResponse } from '../../models/shared/PaginatedProductsResponse';
+import { SuperfoodProductListItem } from '../../models/superfoods/SuperfoodProductListItem';
 
 @Injectable()
 export class GetAllSuperfoodProductsUseCase {

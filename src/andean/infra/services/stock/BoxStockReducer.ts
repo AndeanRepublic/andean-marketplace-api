@@ -3,7 +3,7 @@ import { ModuleRef } from '@nestjs/core';
 import { StockReducerStrategy } from './StockReducerStrategy';
 import { ProductType } from '../../../domain/enums/ProductType';
 import { BoxProductType } from '../../../domain/enums/BoxProductType';
-import { StockReductionItem } from '../../../domain/interfaces/StockReductionItem';
+import { StockReductionItem } from '../../../app/models/shop/StockReductionItem';
 import { BoxRepository } from '../../../app/datastore/box/Box.repo';
 import { IStockReducerRegistry } from './IStockReducerRegistry';
 

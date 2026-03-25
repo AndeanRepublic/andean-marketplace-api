@@ -1,4 +1,4 @@
-import { ProductType } from '../enums/ProductType';
+import { ProductType } from '../../../domain/enums/ProductType';
 
 export interface StockReductionItem {
 	productType: ProductType;

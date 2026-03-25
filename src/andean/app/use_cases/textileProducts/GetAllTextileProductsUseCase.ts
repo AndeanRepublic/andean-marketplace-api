@@ -4,8 +4,8 @@ import {
 	ProductFilters,
 } from '../../datastore/textileProducts/TextileProduct.repo';
 import { MediaUrlResolver } from '../../../infra/services/textileProducts/MediaUrlResolver';
-import { PaginatedProductsResponse } from '../../modules/shared/PaginatedProductsResponse';
-import { TextileProductListItem } from '../../modules/textile/TextileProductListItemResponse';
+import { PaginatedProductsResponse } from '../../models/shared/PaginatedProductsResponse';
+import { TextileProductListItem } from '../../models/textile/TextileProductListItemResponse';
 
 @Injectable()
 export class GetAllTextileProductsUseCase {

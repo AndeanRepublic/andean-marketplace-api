@@ -17,7 +17,7 @@ import { AccountRole } from '../../../domain/enums/AccountRole';
 import { Public } from '../../core/public.decorator';
 import { CreateSuperfoodNutritionalFeatureDto } from '../dto/superfoods/CreateSuperfoodNutritionalFeatureDto';
 import { CreateManySuperfoodNutritionalFeaturesDto } from '../dto/superfoods/CreateManySuperfoodNutritionalFeaturesDto';
-import { SuperfoodNutritionalFeatureResponse } from '../../../app/modules/superfoods/SuperfoodNutritionalFeatureResponse';
+import { SuperfoodNutritionalFeatureResponse } from '../../../app/models/superfoods/SuperfoodNutritionalFeatureResponse';
 import { CreateSuperfoodNutritionalFeatureUseCase } from '../../../app/use_cases/superfoods/nutritionalFeature/CreateSuperfoodNutritionalFeatureUseCase';
 import { CreateManySuperfoodNutritionalFeaturesUseCase } from '../../../app/use_cases/superfoods/nutritionalFeature/CreateManySuperfoodNutritionalFeaturesUseCase';
 import { GetSuperfoodNutritionalFeatureByIdUseCase } from '../../../app/use_cases/superfoods/nutritionalFeature/GetSuperfoodNutritionalFeatureByIdUseCase';

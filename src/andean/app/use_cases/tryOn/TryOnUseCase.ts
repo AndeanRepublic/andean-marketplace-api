@@ -8,7 +8,7 @@ import {
 } from '../../datastore/Segmind.repo';
 import { StorageRepository } from '../../datastore/Storage.repo';
 import { TextileProductRepository } from '../../datastore/textileProducts/TextileProduct.repo';
-import { TryOnResponse } from '../../modules/tryOn/TryOnResponse';
+import { TryOnResponse } from '../../models/tryOn/TryOnResponse';
 import { MediaItemRole } from '../../../domain/enums/MediaItemRole';
 
 const PRESIGNED_URL_TTL_SECONDS = 300; // 5 minutes

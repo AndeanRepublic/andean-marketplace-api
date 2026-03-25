@@ -16,7 +16,7 @@ import { RolesGuard } from '../../core/roles.guard';
 import { Roles } from '../../core/roles.decorator';
 import { AccountRole } from '../../../domain/enums/AccountRole';
 import { Public } from '../../core/public.decorator';
-import { TextileCraftTechniqueResponse } from 'src/andean/app/modules/textile/TextileCraftTechniqueResponse';
+import { TextileCraftTechniqueResponse } from 'src/andean/app/models/textile/TextileCraftTechniqueResponse';
 import { CreateTextileCraftTechniqueUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileCraftTechniqueUseCase';
 import { CreateManyTextileCraftTechniquesUseCase } from 'src/andean/app/use_cases/textileProducts/CreateManyTextileCraftTechniquesUseCase';
 import { TextileCraftTechnique } from 'src/andean/domain/entities/textileProducts/TextileCraftTechnique';

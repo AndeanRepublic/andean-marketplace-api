@@ -28,8 +28,8 @@ import { GetAllBoxesUseCase } from '../../../app/use_cases/boxes/GetAllBoxesUseC
 import { GetBoxDetailUseCase } from '../../../app/use_cases/boxes/GetBoxDetailUseCase';
 import { Box } from '../../../domain/entities/box/Box';
 import { CreateBoxDto } from '../dto/box/CreateBoxDto';
-import { BoxListPaginatedResponse } from '../../../app/modules/box/BoxListResponse';
-import { BoxDetailResponse } from '../../../app/modules/box/BoxDetailResponse';
+import { BoxListPaginatedResponse } from '../../../app/models/box/BoxListResponse';
+import { BoxDetailResponse } from '../../../app/models/box/BoxDetailResponse';
 
 @Controller('boxes')
 export class BoxController {

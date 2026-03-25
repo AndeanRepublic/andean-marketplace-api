@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { SuperfoodNutritionalFeatureRepository } from '../../../datastore/superfoods/SuperfoodNutritionalFeature.repo';
 import { CreateManySuperfoodNutritionalFeaturesDto } from '../../../../infra/controllers/dto/superfoods/CreateManySuperfoodNutritionalFeaturesDto';
-import { SuperfoodNutritionalFeatureResponse } from '../../../modules/superfoods/SuperfoodNutritionalFeatureResponse';
+import { SuperfoodNutritionalFeatureResponse } from '../../../models/superfoods/SuperfoodNutritionalFeatureResponse';
 import { SuperfoodNutritionalFeatureMapper } from '../../../../infra/services/superfood/SuperfoodNutritionalFeatureMapper';
 
 @Injectable()

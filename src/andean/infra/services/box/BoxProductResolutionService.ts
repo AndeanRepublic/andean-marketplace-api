@@ -10,7 +10,7 @@ import { TextileProduct } from '../../../domain/entities/textileProducts/Textile
 import { Community } from '../../../domain/entities/community/Community';
 import { MediaItem } from '../../../domain/entities/MediaItem';
 import { Box, BoxProduct } from '../../../domain/entities/box/Box';
-import { BoxImageResponse } from '../../../app/modules/box/BoxImageResponse';
+import { BoxImageResponse } from '../../../app/models/box/BoxImageResponse';
 
 export interface BoxDependencies {
 	superfoodMap: Map<string, SuperfoodProduct>;

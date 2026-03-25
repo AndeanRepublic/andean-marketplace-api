@@ -31,7 +31,7 @@ import { Shop } from '../../domain/entities/Shop';
 import { CreateShopDto } from './dto/CreateShopDto';
 import { UpdateShopDto } from './dto/UpdateShopDto';
 import { UpdateShopUseCase } from '../../app/use_cases/shops/UpdateShopUseCase';
-import { ShopResponse } from '../../app/modules/shop/ShopResponse';
+import { ShopResponse } from '../../app/models/shop/ShopResponse';
 import { CurrentUser } from '../core/current-user.decorator';
 
 @ApiTags('shops')

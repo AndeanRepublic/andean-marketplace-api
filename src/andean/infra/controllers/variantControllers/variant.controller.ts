@@ -17,7 +17,7 @@ import { Roles } from '../../core/roles.decorator';
 import { CurrentUser } from '../../core/current-user.decorator';
 import { AccountRole } from '../../../domain/enums/AccountRole';
 import { Public } from '../../core/public.decorator';
-import { VariantResponse } from 'src/andean/app/modules/variant/VariantResponse';
+import { VariantResponse } from 'src/andean/app/models/variant/VariantResponse';
 import { CreateVariantUseCase } from 'src/andean/app/use_cases/variant/CreateVariantUseCase';
 import { CreateManyVariantsUseCase } from 'src/andean/app/use_cases/variant/CreateManyVariantsUseCase';
 import { GetAllVariantsUseCase } from 'src/andean/app/use_cases/variant/GetAllVariantsUseCase';
