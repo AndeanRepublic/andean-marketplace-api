@@ -4,6 +4,7 @@ import { AuthController } from './infra/controllers/auth.controller';
 import { LoginUseCase } from './app/use_cases/auth/LoginUseCase';
 import { AssignAdminUseCase } from './app/use_cases/auth/AssignAdminUseCase';
 import { UsersModule } from './users.module';
+import { MediaItemModule } from './mediaItem.module';
 import { HashService } from './infra/services/HashService';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
@@ -33,6 +34,7 @@ import { JwtAuthGuard } from './infra/core/jwtAuth.guard';
 			},
 		}),
 		UsersModule,
+		MediaItemModule,
 	],
 	controllers: [AuthController],
 	providers: [
