@@ -10,7 +10,7 @@ import {
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LoginDto } from './dto/LoginDto';
 import { AssignAdminDto } from './dto/AssignAdminDto';
-import { SessionToken } from '../../domain/entities/SessionToken';
+import { SessionToken } from '../../app/models/users/SessionToken';
 import { LoginUseCase } from '../../app/use_cases/auth/LoginUseCase';
 import { AssignAdminUseCase } from '../../app/use_cases/auth/AssignAdminUseCase';
 import { Public } from '../core/public.decorator';
