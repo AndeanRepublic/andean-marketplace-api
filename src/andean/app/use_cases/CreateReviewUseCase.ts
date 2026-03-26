@@ -2,11 +2,11 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ReviewRepository } from '../datastore/Review.repo';
 import { MediaItemRepository } from '../datastore/MediaItem.repo';
 import { StorageRepository } from '../datastore/Storage.repo';
+import { AccountRepository } from '../datastore/Account.repo';
 import { CreateReviewDto } from 'src/andean/infra/controllers/dto/CreateReviewDto';
 import { Review } from 'src/andean/domain/entities/Review';
 import { ReviewMapper } from 'src/andean/infra/services/ReviewMapper';
 import { MediaItemMapper } from 'src/andean/infra/services/MediaItemMapper';
-import { CustomerProfileRepository } from '../datastore/Customer.repo';
 import { TextileProductRepository } from '../datastore/textileProducts/TextileProduct.repo';
 import { SuperfoodProductRepository } from '../datastore/superfoods/SuperfoodProduct.repo';
 import { ProductType } from 'src/andean/domain/enums/ProductType';
@@ -18,8 +18,8 @@ export class CreateReviewUseCase {
 	constructor(
 		@Inject(ReviewRepository)
 		private readonly reviewRepository: ReviewRepository,
-		@Inject(CustomerProfileRepository)
-		private readonly customerProfileRepository: CustomerProfileRepository,
+		@Inject(AccountRepository)
+		private readonly accountRepository: AccountRepository,
 		@Inject(TextileProductRepository)
 		private readonly textileProductRepository: TextileProductRepository,
 		@Inject(SuperfoodProductRepository)
@@ -28,15 +28,18 @@ export class CreateReviewUseCase {
 		private readonly mediaItemRepository: MediaItemRepository,
 		@Inject(StorageRepository)
 		private readonly storageRepository: StorageRepository,
-	) { }
+	) {}
 
-	async handle(dto: CreateReviewDto, file?: Express.Multer.File): Promise<Review> {
-		// Validar customerId
-		const customerFound = await this.customerProfileRepository.getCustomerById(
-			dto.customerId,
+	async handle(
+		dto: CreateReviewDto,
+		file?: Express.Multer.File,
+	): Promise<Review> {
+		// Validar accountId
+		const accountFound = await this.accountRepository.getAccountById(
+			dto.accountId,
 		);
-		if (!customerFound) {
-			throw new NotFoundException('Customer not found');
+		if (!accountFound) {
+			throw new NotFoundException('Account not found');
 		}
 
 		// Validar productId según productType
