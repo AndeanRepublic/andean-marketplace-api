@@ -19,15 +19,15 @@ export class UpdateReviewDto {
 	@Transform(({ value }) => (value ? parseInt(value) : value))
 	@IsInt()
 	@IsOptional()
-	numberStarts?: number;
+	numberStars?: number;
 
 	@ApiPropertyOptional({
-		description: 'ID del cliente',
+		description: 'ID de la cuenta del usuario',
 		example: '507f1f77bcf86cd799439022',
 	})
 	@IsString()
 	@IsOptional()
-	customerId?: string;
+	accountId?: string;
 
 	@ApiPropertyOptional({
 		description: 'ID del producto',
