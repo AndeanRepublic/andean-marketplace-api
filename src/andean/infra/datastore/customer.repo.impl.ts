@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CustomerProfileRepository } from '../../app/datastore/Customer.repo';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CustomerProfileDocument } from '../persistence/customerProfileSchema';
 import { CustomerProfile } from '../../domain/entities/CustomerProfile';
 import { CustomerProfileMapper } from '../services/CustomerProfileMapper';
@@ -24,7 +24,8 @@ export class CustomerProfileRepositoryImpl extends CustomerProfileRepository {
 	}
 
 	async getCustomerById(id: string): Promise<CustomerProfile | null> {
-		return this.userModel.findOne({ id }).exec();
+		const doc = await this.userModel.findById(id).exec();
+		return doc ? CustomerProfileMapper.fromDocument(doc) : null;
 	}
 
 	async getAllCustomers(): Promise<CustomerProfile[]> {
@@ -33,13 +34,15 @@ export class CustomerProfileRepositoryImpl extends CustomerProfileRepository {
 	}
 
 	async getCustomerByUserId(userId: string): Promise<CustomerProfile | null> {
-		return this.userModel.findOne({ userId: userId }).exec();
+		const doc = await this.userModel.findOne({ userId }).exec();
+		return doc ? CustomerProfileMapper.fromDocument(doc) : null;
 	}
 
 	async getCustomerByPhoneNumber(
 		phoneNumber: string,
 	): Promise<CustomerProfile | null> {
-		return this.userModel.findOne({ phoneNumber }).exec();
+		const doc = await this.userModel.findOne({ phoneNumber }).exec();
+		return doc ? CustomerProfileMapper.fromDocument(doc) : null;
 	}
 
 	async updateCustomerById(

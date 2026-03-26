@@ -200,7 +200,7 @@ export class GetByIdExperienceUseCase {
 		const accounts = await Promise.all(
 			customers.map((c) =>
 				c
-					? this.accountRepository.getAccountByUserId(c.userId)
+					? this.accountRepository.getAccountById(c.userId)
 					: Promise.resolve(null),
 			),
 		);

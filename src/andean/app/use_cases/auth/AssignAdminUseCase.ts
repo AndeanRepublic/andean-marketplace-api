@@ -22,9 +22,6 @@ export class AssignAdminUseCase {
 		}
 
 		const updatedRoles = [...account.roles, AccountRole.ADMIN];
-		await this.accountRepository.updateAccountRoles(
-			account.userId,
-			updatedRoles,
-		);
+		await this.accountRepository.updateAccountRoles(account.id, updatedRoles);
 	}
 }

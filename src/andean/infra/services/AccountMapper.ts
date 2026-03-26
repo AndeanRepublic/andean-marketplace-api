@@ -4,7 +4,7 @@ import { Account } from '../../domain/entities/Account';
 export class AccountMapper {
 	static fromDocument(doc: AccountDocument): Account {
 		return new Account(
-			doc.userId,
+			doc._id.toString(),
 			doc.name,
 			doc.email,
 			doc.password,
