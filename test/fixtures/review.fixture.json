@@ -2,8 +2,8 @@
 	"entity": {
 		"id": "review-uuid-12345",
 		"content": "Excelente producto, muy buena calidad",
-		"numberStarts": 5,
-		"customerId": "customer-uuid-789",
+		"numberStars": 5,
+		"accountId": "account-uuid-123",
 		"productId": "product-uuid-456",
 		"productType": "TEXTILE",
 		"numberLikes": 10,
@@ -14,15 +14,15 @@
 	},
 	"createDto": {
 		"content": "Producto increíble, superó mis expectativas",
-		"numberStarts": 5,
-		"customerId": "customer-uuid-789",
+		"numberStars": 5,
+		"accountId": "account-uuid-123",
 		"productId": "product-uuid-456",
 		"productType": "TEXTILE"
 	},
 	"createDtoWithMedia": {
 		"content": "Producto increíble con foto adjunta",
-		"numberStarts": 5,
-		"customerId": "customer-uuid-789",
+		"numberStars": 5,
+		"accountId": "account-uuid-123",
 		"productId": "product-uuid-456",
 		"productType": "TEXTILE",
 		"mediaType": "IMG",
