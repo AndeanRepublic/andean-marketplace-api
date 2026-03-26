@@ -6,7 +6,7 @@ import { UpdateSellerProfileDto } from '../controllers/dto/UpdateSellerProfileDt
 export class SellerProfileMapper {
 	static fromDocument(doc: SellerProfileDocument): SellerProfile {
 		return new SellerProfile(
-			doc.id,
+			doc._id.toString(),
 			doc.userId,
 			doc.name,
 			doc.typePerson,
@@ -18,8 +18,9 @@ export class SellerProfileMapper {
 	}
 
 	static fromCreateDto(userId: string, dto: CreateSellerDto): SellerProfile {
+		// Don't set id - let MongoDB generate _id automatically
 		return new SellerProfile(
-			crypto.randomUUID(),
+			'',
 			userId,
 			dto.name,
 			dto.typePerson,
@@ -48,16 +49,27 @@ export class SellerProfileMapper {
 	}
 
 	static toPersistence(profile: SellerProfile) {
+		// Remove id and _id to let MongoDB handle them automatically
+		const {
+			id,
+			_id,
+			__v,
+			userId,
+			name,
+			typePerson,
+			numberDocument,
+			ruc,
+			address,
+			phoneNumber,
+		} = profile as any;
 		return {
-			_id: crypto.randomUUID(),
-			id: profile.id,
-			userId: profile.userId,
-			name: profile.name,
-			typePerson: profile.typePerson,
-			numberDocument: profile.numberDocument,
-			ruc: profile.ruc,
-			address: profile.address,
-			phoneNumber: profile.phoneNumber,
+			userId,
+			name,
+			typePerson,
+			numberDocument,
+			ruc,
+			address,
+			phoneNumber,
 		};
 	}
 }

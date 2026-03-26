@@ -44,12 +44,12 @@ export class LoginUseCase {
 	}
 
 	private async generateToken(account: Account): Promise<SessionToken> {
-		const payload = { sub: account.userId, roles: account.roles };
+		const payload = { sub: account.id, roles: account.roles };
 		const jwtToken = await this.jwtService.signAsync(payload);
 
-		// Fetch customer profile data
+		// Fetch customer profile data (userId is FK to Account._id)
 		const customerProfile =
-			await this.customerProfileRepository.getCustomerByUserId(account.userId);
+			await this.customerProfileRepository.getCustomerByUserId(account.id);
 
 		// Fetch profile picture URL if exists
 		let profilePictureUrl = '';
@@ -67,7 +67,7 @@ export class LoginUseCase {
 		return new SessionToken(
 			jwtToken,
 			this.configService.get('JWT_EXPIRES_IN') ?? 3600,
-			account.userId,
+			account.id,
 			account.name ?? '',
 			account.email ?? '',
 			customerProfile?.country ?? '',

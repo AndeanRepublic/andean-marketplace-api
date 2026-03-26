@@ -79,7 +79,7 @@ export class GetByIdTextileProductDetailUseCase {
 
 		const accountPromises = customers.map((customer) =>
 			customer
-				? this.accountRepository.getAccountByUserId(customer.userId)
+				? this.accountRepository.getAccountById(customer.userId)
 				: Promise.resolve(null),
 		);
 		const accounts = await Promise.all(accountPromises);

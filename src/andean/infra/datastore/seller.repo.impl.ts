@@ -16,11 +16,13 @@ export class SellerProfileRepositoryImpl extends SellerProfileRepository {
 	}
 
 	async getSellerById(id: string): Promise<SellerProfile | null> {
-		return this.sellerModel.findOne({ id }).exec();
+		const doc = await this.sellerModel.findById(id).exec();
+		return doc ? SellerProfileMapper.fromDocument(doc) : null;
 	}
 
 	async getSellerByUserId(userId: string): Promise<SellerProfile | null> {
-		return this.sellerModel.findOne({ userId: userId }).exec();
+		const doc = await this.sellerModel.findOne({ userId }).exec();
+		return doc ? SellerProfileMapper.fromDocument(doc) : null;
 	}
 
 	async saveSeller(seller: SellerProfile): Promise<SellerProfile> {
@@ -50,6 +52,7 @@ export class SellerProfileRepositoryImpl extends SellerProfileRepository {
 	async getSellerByPhoneNumber(
 		phoneNumber: string,
 	): Promise<SellerProfile | null> {
-		return this.sellerModel.findOne({ phoneNumber }).exec();
+		const doc = await this.sellerModel.findOne({ phoneNumber }).exec();
+		return doc ? SellerProfileMapper.fromDocument(doc) : null;
 	}
 }

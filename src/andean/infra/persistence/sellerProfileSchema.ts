@@ -1,10 +1,10 @@
-import { Document, Schema, Types } from 'mongoose';
+import { Document, Schema } from 'mongoose';
 import { PersonType } from '../../domain/enums/PersonType';
 
+// Don't define _id - let MongoDB generate it automatically as ObjectId
+// userId is a foreign key to Account (references Account._id)
 export const SellerProfileSchema = new Schema({
-	_id: String,
-	id: String,
-	userId: String,
+	userId: { type: String, required: true, unique: true }, // FK to Account._id
 	name: String,
 	typePerson: {
 		type: String,
@@ -17,9 +17,7 @@ export const SellerProfileSchema = new Schema({
 	phoneNumber: String,
 });
 
-export interface SellerProfileDocument extends Document<string> {
-	_id: string;
-	id: string;
+export interface SellerProfileDocument extends Document {
 	userId: string;
 	name: string;
 	typePerson: PersonType;
