@@ -81,7 +81,11 @@
 	},
 	"pnpm": {
 		"onlyBuiltDependencies": [
-			"argon2"
+			"@nestjs/core",
+			"@scarf/scarf",
+			"@swc/core",
+			"argon2",
+			"sharp"
 		]
 	},
 	"jest": {

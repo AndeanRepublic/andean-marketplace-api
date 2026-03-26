@@ -122,7 +122,10 @@ const DetailTraceabilitySchema = new Schema(
 		customizable: { type: String, required: false },
 		hasCertifications: { type: Boolean, required: false },
 		weightWithoutPackage: { type: Number, required: false },
-		dimensionsWithoutPackage: { type: ProductDimensionsSchema, required: false },
+		dimensionsWithoutPackage: {
+			type: ProductDimensionsSchema,
+			required: false,
+		},
 		packagingType: { type: String, required: false },
 		packageCustomization: { type: [String], default: [] },
 		weightWithPackage: { type: Number, required: false },
@@ -169,7 +172,7 @@ const ProductTraceabilitySchema = new Schema(
 );
 
 export const TextileProductSchema = new Schema({
-	categoryId: { type: String, required: false },
+	categoryId: { type: String, required: true },
 	status: {
 		type: String,
 		enum: Object.values(TextileProductStatus),
@@ -187,7 +190,7 @@ export const TextileProductSchema = new Schema({
 });
 
 export interface TextileProductDocument extends Document {
-	categoryId?: string;
+	categoryId: string;
 	status: TextileProductStatus;
 	baseInfo: {
 		title: string;
@@ -234,7 +237,11 @@ export interface TextileProductDocument extends Document {
 		customizable?: string;
 		hasCertifications?: boolean;
 		weightWithoutPackage?: number;
-		dimensionsWithoutPackage?: { length: number; width: number; height: number };
+		dimensionsWithoutPackage?: {
+			length: number;
+			width: number;
+			height: number;
+		};
 		packagingType?: string;
 		packageCustomization?: string[];
 		weightWithPackage?: number;

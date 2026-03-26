@@ -370,7 +370,8 @@ export class DetailTraceabilityDto {
 	leadTime?: number;
 
 	@ApiPropertyOptional({
-		description: 'IDs de las certificaciones del producto (solo si hasCertifications es true)',
+		description:
+			'IDs de las certificaciones del producto (solo si hasCertifications es true)',
 		type: [String],
 		example: ['certification-fair-trade-001'],
 	})
@@ -518,13 +519,13 @@ export class CreateTextileProductDto {
 	@IsNotEmpty()
 	priceInventary!: PriceInventaryDto;
 
-	@ApiPropertyOptional({
+	@ApiProperty({
 		description: 'ID de la categoría del producto textil',
 		example: 'category-ponchos-001',
 	})
 	@IsString()
-	@IsOptional()
-	categoryId?: string;
+	@IsNotEmpty()
+	categoryId!: string;
 
 	@ApiPropertyOptional({
 		description:
