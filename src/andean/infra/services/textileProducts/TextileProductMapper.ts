@@ -81,6 +81,7 @@ export class TextileProductMapper {
 		return plainToInstance(TextileProduct, {
 			id: plain._id.toString(),
 			...plain,
+			categoryId: plain.categoryId ?? '',
 			baseInfo,
 			priceInventary,
 			atribute,
@@ -158,6 +159,7 @@ export class TextileProductMapper {
 		id: string,
 		dto: UpdateTextileProductDto,
 		existingStatus: TextileProductStatus,
+		existingCategoryId: string,
 	): TextileProduct {
 		const { ...textileProductData } = dto;
 		const baseInfo = plainToInstance(BaseInfo, dto.baseInfo);
@@ -207,6 +209,7 @@ export class TextileProductMapper {
 		const plain = {
 			id: id,
 			...textileProductData,
+			categoryId: dto.categoryId ?? existingCategoryId,
 			status: dto.status ?? existingStatus,
 			baseInfo,
 			priceInventary,

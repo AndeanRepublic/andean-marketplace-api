@@ -52,13 +52,11 @@ export class CreateTextileProductUseCase {
 	) {}
 
 	async handle(dto: CreateTextileProductDto): Promise<TextileProduct> {
-		// Validate categoryId if it exists
-		if (dto.categoryId) {
-			const categoryFound =
-				await this.textileCategoryRepository.getCategoryById(dto.categoryId);
-			if (!categoryFound) {
-				throw new NotFoundException('TextileCategory not found');
-			}
+		const categoryFound = await this.textileCategoryRepository.getCategoryById(
+			dto.categoryId,
+		);
+		if (!categoryFound) {
+			throw new NotFoundException('TextileCategory not found');
 		}
 
 		// Validate ownerId according to ownerType

@@ -250,6 +250,7 @@ export class UpdateTextileProductUseCase {
 			id,
 			dto,
 			productFound.status,
+			productFound.categoryId,
 		);
 		return this.textileProductRepository.updateTextileProduct(id, toUpdate);
 	}
