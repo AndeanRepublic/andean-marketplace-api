@@ -19,6 +19,7 @@ import { MediaItemRepository } from '../../datastore/MediaItem.repo';
 import { TextileProductAttributesAssembler } from '../../../infra/services/textileProducts/TextileProductAttributesAssembler';
 import { MediaUrlResolver } from '../../../infra/services/textileProducts/MediaUrlResolver';
 import { TraceabilityProcessName } from '../../../domain/enums/TraceabilityProcessName';
+import { TextileProduct } from 'src/andean/domain/entities/textileProducts/TextileProduct';
 
 @Injectable()
 export class GetByIdTextileProductDetailUseCase {
@@ -299,23 +300,60 @@ export class GetByIdTextileProductDetailUseCase {
 			stock: number;
 		}[]
 	> {
-		if (!categoryId) {
-			return [];
-		}
-
+		const SIMILAR_LIMIT = 4;
 		const allProducts =
 			await this.textileProductRepository.getAllTextileProducts();
-		const similarProducts = allProducts.filter(
-			(p) => p.id !== currentProductId && p.categoryId === categoryId,
-		);
-		const limitedProducts = similarProducts.slice(0, 5);
+
+		const selectedIds = new Set<string>();
+		const limitedProducts: TextileProduct[] = [];
+
+		if (categoryId) {
+			const sameCategory = allProducts.filter(
+				(p) =>
+					p.id !== currentProductId && p.categoryId === categoryId,
+			);
+			for (const p of sameCategory.slice(0, SIMILAR_LIMIT)) {
+				selectedIds.add(p.id);
+				limitedProducts.push(p);
+			}
+		}
+
+		if (limitedProducts.length < SIMILAR_LIMIT) {
+			const need = SIMILAR_LIMIT - limitedProducts.length;
+			const fillers = allProducts
+				.filter(
+					(p) =>
+						p.id !== currentProductId && !selectedIds.has(p.id),
+				)
+				.slice(0, need);
+			for (const p of fillers) {
+				selectedIds.add(p.id);
+				limitedProducts.push(p);
+			}
+		}
 
 		if (limitedProducts.length === 0) {
 			return [];
 		}
 
-		const category =
-			await this.textileCategoryRepository.getCategoryById(categoryId);
+		const uniqueCategoryIds = [
+			...new Set(
+				limitedProducts
+					.map((p) => p.categoryId)
+					.filter((cid): cid is string => Boolean(cid)),
+			),
+		];
+		const categories = await Promise.all(
+			uniqueCategoryIds.map((cid) =>
+				this.textileCategoryRepository.getCategoryById(cid),
+			),
+		);
+		const categoryNameById = new Map<string, string>();
+		for (const cat of categories) {
+			if (cat) {
+				categoryNameById.set(cat.id, cat.name);
+			}
+		}
 
 		const allVariants = (
 			await Promise.all(
@@ -351,7 +389,9 @@ export class GetByIdTextileProductDetailUseCase {
 				return {
 					id: product.id,
 					title: product.baseInfo.title,
-					categoryName: category?.name || '',
+					categoryName: product.categoryId
+						? (categoryNameById.get(product.categoryId) ?? '')
+						: '',
 					productorName,
 					variantInfo: attrs.variantInfo,
 					principalImgUrl: product.baseInfo.mediaIds?.[0] || '',

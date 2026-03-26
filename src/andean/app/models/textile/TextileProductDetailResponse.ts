@@ -276,7 +276,8 @@ export class TextileProductDetailResponse {
 
 	@ApiProperty({
 		type: [SimilarProductResponse],
-		description: 'Productos similares',
+		description:
+			'Productos similares (hasta 4): prioriza la misma categoría; si faltan, completa con los primeros del catálogo general',
 	})
 	similarProducts!: SimilarProductResponse[];
 
