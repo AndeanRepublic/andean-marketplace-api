@@ -136,7 +136,7 @@ export class ExperienceDetailMapper {
 		let totalStars = 0;
 
 		reviews.forEach((r) => {
-			const s = r.numberStarts;
+			const s = r.numberStars;
 			if (s >= 1 && s <= 5) {
 				counts[s as keyof typeof counts]++;
 				totalStars += s;
@@ -166,7 +166,7 @@ export class ExperienceDetailMapper {
 			idReview: review.id,
 			nameUser: userNames[i]?.name || 'Usuario Anónimo',
 			content: review.content,
-			numberStarts: review.numberStarts,
+			numberStars: review.numberStars,
 			date: review.createdAt,
 			likes: review.numberLikes,
 			dislikes: review.numberDislikes,

@@ -9,11 +9,14 @@ import { TextileProductSchema } from './infra/persistence/textileProducts/textil
 import { TextileCertificationSchema } from './infra/persistence/textileProducts/textileCertification.schema';
 import { ColorOptionAlternativeSchema } from './infra/persistence/textileProducts/ColorOptionAlternative.schema';
 import { SizeOptionAlternativeSchema } from './infra/persistence/textileProducts/SizeOptionAlternative.schema';
+import { AccountSchema } from './infra/persistence/account.schema';
 import { UsersModule } from './users.module';
 import { ShopsModule } from './shop.module';
 import { CommunityModule } from './community.module';
 import { MediaItemModule } from './mediaItem.module';
 import { OriginProductModule } from './originProduct.module';
+import { AccountRepository } from './app/datastore/Account.repo';
+import { AccountReviewRepositoryImpl } from './infra/datastore/AccountReviewOnly.repo.impl';
 import { CreateTextileCategoryUseCase } from './app/use_cases/textileProducts/CreateTextileCategoryUseCase';
 import { CreateManyTextileCategoriesUseCase } from './app/use_cases/textileProducts/CreateManyTextileCategoriesUseCase';
 import { TextileCategoryRepository } from './app/datastore/textileProducts/TextileCategory.repo';
@@ -177,6 +180,10 @@ import { MediaUrlResolver } from './infra/services/textileProducts/MediaUrlResol
 				name: 'MediaItem',
 				schema: MediaItemSchema,
 			},
+			{
+				name: 'Account',
+				schema: AccountSchema,
+			},
 		]),
 		UsersModule,
 		ShopsModule,
@@ -311,6 +318,10 @@ import { MediaUrlResolver } from './infra/services/textileProducts/MediaUrlResol
 		{
 			provide: MediaItemRepository,
 			useClass: MediaItemRepoImpl,
+		},
+		{
+			provide: AccountRepository,
+			useClass: AccountReviewRepositoryImpl,
 		},
 	],
 	exports: [

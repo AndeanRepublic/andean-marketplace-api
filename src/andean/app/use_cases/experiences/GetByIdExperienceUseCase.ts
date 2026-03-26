@@ -192,17 +192,9 @@ export class GetByIdExperienceUseCase {
 	}
 
 	private async buildReviews(reviews: Review[]) {
-		const customers = await Promise.all(
-			reviews.map((r) =>
-				this.customerProfileRepository.getCustomerById(r.customerId),
-			),
-		);
+		// Obtener accounts directamente usando accountId
 		const accounts = await Promise.all(
-			customers.map((c) =>
-				c
-					? this.accountRepository.getAccountByUserId(c.userId)
-					: Promise.resolve(null),
-			),
+			reviews.map((r) => this.accountRepository.getAccountById(r.accountId)),
 		);
 
 		const userNames = accounts.map((a) => ({

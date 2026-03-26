@@ -147,8 +147,8 @@ describe('ReviewController (e2e)', () => {
 			return request(app.getHttpServer())
 				.post('/reviews')
 				.field('content', createDto.content)
-				.field('numberStarts', createDto.numberStarts)
-				.field('customerId', createDto.customerId)
+				.field('numberStars', createDto.numberStars)
+				.field('accountId', createDto.accountId)
 				.field('productId', createDto.productId)
 				.field('productType', createDto.productType)
 				.expect(HttpStatus.CREATED)
@@ -156,8 +156,8 @@ describe('ReviewController (e2e)', () => {
 					expect(res.body).toMatchObject({
 						id: expect.any(String),
 						content: expect.any(String),
-						numberStarts: expect.any(Number),
-						customerId: expect.any(String),
+						numberStars: expect.any(Number),
+						accountId: expect.any(String),
 						productId: expect.any(String),
 						productType: expect.any(String),
 					});
@@ -166,8 +166,8 @@ describe('ReviewController (e2e)', () => {
 					expect(createReviewUseCase.handle).toHaveBeenCalledWith(
 						expect.objectContaining({
 							content: createDto.content,
-							numberStarts: createDto.numberStarts,
-							customerId: createDto.customerId,
+							numberStars: createDto.numberStars,
+							accountId: createDto.accountId,
 							productId: createDto.productId,
 							productType: createDto.productType,
 						}),
@@ -189,8 +189,8 @@ describe('ReviewController (e2e)', () => {
 					contentType: 'image/jpeg',
 				})
 				.field('content', createDtoWithMedia.content)
-				.field('numberStarts', createDtoWithMedia.numberStarts)
-				.field('customerId', createDtoWithMedia.customerId)
+				.field('numberStars', createDtoWithMedia.numberStars)
+				.field('accountId', createDtoWithMedia.accountId)
 				.field('productId', createDtoWithMedia.productId)
 				.field('productType', createDtoWithMedia.productType)
 				.field('mediaType', createDtoWithMedia.mediaType)
@@ -201,7 +201,7 @@ describe('ReviewController (e2e)', () => {
 					expect(res.body).toMatchObject({
 						id: expect.any(String),
 						content: expect.any(String),
-						numberStarts: expect.any(Number),
+						numberStars: expect.any(Number),
 						mediaId: expect.any(String),
 					});
 					expect(createReviewUseCase.handle).toHaveBeenCalledWith(
@@ -223,28 +223,28 @@ describe('ReviewController (e2e)', () => {
 		it('should return 400 when content is missing', () => {
 			return request(app.getHttpServer())
 				.post('/reviews')
-				.field('numberStarts', 5)
-				.field('customerId', 'customer-123')
+				.field('numberStars', 5)
+				.field('accountId', 'customer-123')
 				.field('productId', 'product-456')
 				.field('productType', ProductType.TEXTILE)
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 
-		it('should return 400 when numberStarts is missing', () => {
+		it('should return 400 when numberStars is missing', () => {
 			return request(app.getHttpServer())
 				.post('/reviews')
 				.field('content', 'Great product')
-				.field('customerId', 'customer-123')
+				.field('accountId', 'customer-123')
 				.field('productId', 'product-456')
 				.field('productType', ProductType.TEXTILE)
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 
-		it('should return 400 when customerId is missing', () => {
+		it('should return 400 when accountId is missing', () => {
 			return request(app.getHttpServer())
 				.post('/reviews')
 				.field('content', 'Great product')
-				.field('numberStarts', 5)
+				.field('numberStars', 5)
 				.field('productId', 'product-456')
 				.field('productType', ProductType.TEXTILE)
 				.expect(HttpStatus.BAD_REQUEST);
@@ -254,8 +254,8 @@ describe('ReviewController (e2e)', () => {
 			return request(app.getHttpServer())
 				.post('/reviews')
 				.field('content', 'Great product')
-				.field('numberStarts', 5)
-				.field('customerId', 'customer-123')
+				.field('numberStars', 5)
+				.field('accountId', 'customer-123')
 				.field('productType', ProductType.TEXTILE)
 				.expect(HttpStatus.BAD_REQUEST);
 		});
@@ -264,8 +264,8 @@ describe('ReviewController (e2e)', () => {
 			return request(app.getHttpServer())
 				.post('/reviews')
 				.field('content', 'Great product')
-				.field('numberStarts', 5)
-				.field('customerId', 'customer-123')
+				.field('numberStars', 5)
+				.field('accountId', 'customer-123')
 				.field('productId', 'product-456')
 				.expect(HttpStatus.BAD_REQUEST);
 		});
@@ -280,8 +280,8 @@ describe('ReviewController (e2e)', () => {
 					contentType: 'image/jpeg',
 				})
 				.field('content', 'Great product')
-				.field('numberStarts', 5)
-				.field('customerId', 'customer-123')
+				.field('numberStars', 5)
+				.field('accountId', 'customer-123')
 				.field('productId', 'product-456')
 				.field('productType', ProductType.TEXTILE)
 				.field('mediaType', MediaItemType.IMG)
@@ -299,8 +299,8 @@ describe('ReviewController (e2e)', () => {
 					contentType: 'text/plain',
 				})
 				.field('content', 'Great product')
-				.field('numberStarts', 5)
-				.field('customerId', 'customer-123')
+				.field('numberStars', 5)
+				.field('accountId', 'customer-123')
 				.field('productId', 'product-456')
 				.field('productType', ProductType.TEXTILE)
 				.field('mediaType', MediaItemType.IMG)
@@ -319,8 +319,8 @@ describe('ReviewController (e2e)', () => {
 					contentType: 'image/jpeg',
 				})
 				.field('content', 'Great')
-				.field('numberStarts', 5)
-				.field('customerId', 'customer-123')
+				.field('numberStars', 5)
+				.field('accountId', 'customer-123')
 				.field('productId', 'product-456')
 				.field('productType', ProductType.TEXTILE)
 				.field('mediaType', MediaItemType.IMG)
@@ -335,8 +335,8 @@ describe('ReviewController (e2e)', () => {
 					contentType: 'image/png',
 				})
 				.field('content', 'Great')
-				.field('numberStarts', 5)
-				.field('customerId', 'customer-123')
+				.field('numberStars', 5)
+				.field('accountId', 'customer-123')
 				.field('productId', 'product-456')
 				.field('productType', ProductType.TEXTILE)
 				.field('mediaType', MediaItemType.IMG)
@@ -351,8 +351,8 @@ describe('ReviewController (e2e)', () => {
 					contentType: 'image/webp',
 				})
 				.field('content', 'Great')
-				.field('numberStarts', 5)
-				.field('customerId', 'customer-123')
+				.field('numberStars', 5)
+				.field('accountId', 'customer-123')
 				.field('productId', 'product-456')
 				.field('productType', ProductType.TEXTILE)
 				.field('mediaType', MediaItemType.IMG)
@@ -376,7 +376,7 @@ describe('ReviewController (e2e)', () => {
 					expect(res.body[0]).toMatchObject({
 						id: expect.any(String),
 						content: expect.any(String),
-						numberStarts: expect.any(Number),
+						numberStars: expect.any(Number),
 					});
 				});
 		});
@@ -405,7 +405,7 @@ describe('ReviewController (e2e)', () => {
 					expect(res.body).toMatchObject({
 						id: mockReview.id,
 						content: mockReview.content,
-						numberStarts: mockReview.numberStarts,
+						numberStars: mockReview.numberStars,
 					});
 				});
 		});

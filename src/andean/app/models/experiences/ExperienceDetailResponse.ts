@@ -422,7 +422,7 @@ export class ReviewCommentResponse {
 	content!: string;
 
 	@ApiProperty({ description: 'Cantidad de estrellas (1-5)', example: 5 })
-	numberStarts!: number;
+	numberStars!: number;
 
 	@ApiProperty({
 		description: 'Fecha de la reseña',

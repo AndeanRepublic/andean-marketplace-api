@@ -105,7 +105,7 @@ export class ReviewCommentResponse {
 	@ApiProperty() idReview!: string;
 	@ApiProperty() nameUser!: string;
 	@ApiProperty() content!: string;
-	@ApiProperty() numberStarts!: number;
+	@ApiProperty() numberStars!: number;
 	@ApiProperty() date!: Date;
 	@ApiProperty() likes!: number;
 	@ApiProperty() dislikes!: number;

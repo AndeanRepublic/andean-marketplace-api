@@ -72,16 +72,9 @@ export class GetByIdTextileProductDetailUseCase {
 			ProductType.TEXTILE,
 		);
 
-		// -- Obtener customers para las reviews y sus nombres de Account
-		const customerPromises = reviews.map((review) =>
-			this.customerProfileRepository.getCustomerById(review.customerId),
-		);
-		const customers = await Promise.all(customerPromises);
-
-		const accountPromises = customers.map((customer) =>
-			customer
-				? this.accountRepository.getAccountByUserId(customer.userId)
-				: Promise.resolve(null),
+		// -- Obtener accounts para las reviews
+		const accountPromises = reviews.map((review) =>
+			this.accountRepository.getAccountById(review.accountId),
 		);
 		const accounts = await Promise.all(accountPromises);
 
@@ -93,7 +86,7 @@ export class GetByIdTextileProductDetailUseCase {
 			idReview: review.id,
 			nameUser: accounts[index]?.name || 'Usuario Anónimo',
 			content: review.content,
-			numberStarts: review.numberStarts,
+			numberStars: review.numberStars,
 			date: review.createdAt,
 			likes: review.numberLikes,
 			dislikes: review.numberDislikes,
@@ -207,7 +200,7 @@ export class GetByIdTextileProductDetailUseCase {
 		let totalStars = 0;
 
 		reviews.forEach((review) => {
-			const stars = review.numberStarts;
+			const stars = review.numberStars;
 			if (stars >= 1 && stars <= 5) {
 				counts[stars as keyof typeof counts]++;
 				totalStars += stars;

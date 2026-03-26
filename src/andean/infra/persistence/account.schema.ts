@@ -1,12 +1,11 @@
-import { Document, Schema, Types } from 'mongoose';
+import { Document, Schema } from 'mongoose';
 import { AccountRole } from '../../domain/enums/AccountRole';
 import { AccountStatus } from '../../domain/enums/AccountStatus';
 
+// Don't define _id - let MongoDB generate it automatically as ObjectId
 export const AccountSchema = new Schema({
-	_id: String,
-	userId: String,
 	name: String,
-	email: String,
+	email: { type: String, required: true, unique: true },
 	password: String,
 	type: [
 		{
@@ -22,9 +21,7 @@ export const AccountSchema = new Schema({
 	},
 });
 
-export interface AccountDocument extends Document<string> {
-	_id: string;
-	userId: string;
+export interface AccountDocument extends Document {
 	name: string;
 	email: string;
 	password: string;

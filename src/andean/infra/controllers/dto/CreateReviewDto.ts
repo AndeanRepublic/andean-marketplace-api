@@ -24,7 +24,7 @@ export class CreateReviewDto {
 	@Transform(({ value }) => parseInt(value))
 	@IsInt()
 	@IsNotEmpty()
-	numberStarts!: number;
+	numberStars!: number;
 
 	// Campos opcionales para subir media directamente
 	@ApiPropertyOptional({
@@ -54,12 +54,12 @@ export class CreateReviewDto {
 	mediaRole?: MediaItemRole;
 
 	@ApiProperty({
-		description: 'ID del cliente que realiza la reseña',
+		description: 'ID de la cuenta del usuario que realiza la reseña',
 		example: '507f1f77bcf86cd799439022',
 	})
 	@IsString()
 	@IsNotEmpty()
-	customerId!: string;
+	accountId!: string;
 
 	@ApiProperty({
 		description: 'ID del producto reseñado',
