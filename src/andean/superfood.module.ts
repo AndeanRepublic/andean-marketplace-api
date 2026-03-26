@@ -115,8 +115,11 @@ import { CommunityModule } from './community.module';
 import { MediaItemModule } from './mediaItem.module';
 import { DetailSourceProductModule } from './detailSourceProduct.module';
 import { ReviewSchema } from './infra/persistence/Review.schema';
+import { AccountSchema } from './infra/persistence/account.schema';
 import { ReviewRepository } from './app/datastore/Review.repo';
 import { ReviewRepositoryImpl } from './infra/datastore/Review.repo.impl';
+import { AccountRepository } from './app/datastore/Account.repo';
+import { AccountReviewRepositoryImpl } from './infra/datastore/AccountReviewOnly.repo.impl';
 import { CreateReviewUseCase } from './app/use_cases/CreateReviewUseCase';
 import { GetAllReviewsUseCase } from './app/use_cases/GetAllReviewsUseCase';
 import { GetByIdReviewUseCase } from './app/use_cases/GetByIdReviewUseCase';
@@ -151,6 +154,7 @@ import { TextileProductModule } from './textileProduct.module';
 			},
 			{ name: 'SuperfoodType', schema: SuperfoodTypeSchema },
 			{ name: 'Review', schema: ReviewSchema },
+			{ name: 'Account', schema: AccountSchema },
 		]),
 		ShopsModule,
 		CommunityModule,
@@ -286,6 +290,10 @@ import { TextileProductModule } from './textileProduct.module';
 		{
 			provide: ReviewRepository,
 			useClass: ReviewRepositoryImpl,
+		},
+		{
+			provide: AccountRepository,
+			useClass: AccountReviewRepositoryImpl,
 		},
 	],
 	exports: [

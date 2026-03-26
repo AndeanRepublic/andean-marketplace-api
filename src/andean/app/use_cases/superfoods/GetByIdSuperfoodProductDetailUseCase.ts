@@ -235,18 +235,9 @@ export class GetByIdSuperfoodProductDetailUseCase {
 	}
 
 	private async buildReviews(reviews: Review[]): Promise<ReviewsResponse> {
-		// Obtener customers y accounts en paralelo
-		const customers = await Promise.all(
-			reviews.map((r) =>
-				this.customerProfileRepository.getCustomerById(r.customerId),
-			),
-		);
+		// Obtener accounts directamente
 		const accounts = await Promise.all(
-			customers.map((c) =>
-				c
-					? this.accountRepository.getAccountByUserId(c.userId)
-					: Promise.resolve(null),
-			),
+			reviews.map((r) => this.accountRepository.getAccountById(r.accountId)),
 		);
 
 		const ratingStats = this.calculateRatingStats(reviews);
@@ -254,7 +245,7 @@ export class GetByIdSuperfoodProductDetailUseCase {
 			idReview: review.id,
 			nameUser: accounts[i]?.name || 'Usuario Anónimo',
 			content: review.content,
-			numberStarts: review.numberStarts,
+			numberStars: review.numberStars,
 			date: review.createdAt,
 			likes: review.numberLikes,
 			dislikes: review.numberDislikes,
@@ -268,7 +259,7 @@ export class GetByIdSuperfoodProductDetailUseCase {
 		let totalStars = 0;
 
 		reviews.forEach((r) => {
-			const s = r.numberStarts;
+			const s = r.numberStars;
 			if (s >= 1 && s <= 5) {
 				counts[s as keyof typeof counts]++;
 				totalStars += s;

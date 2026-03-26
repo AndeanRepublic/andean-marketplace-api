@@ -71,7 +71,32 @@ export class ReviewController {
 			'Crea una nueva reseña para un producto. Permite adjuntar una imagen (jpeg, png o webp, máx. 5MB).',
 	})
 	@ApiConsumes('multipart/form-data')
-	@ApiBody({ type: CreateReviewDto })
+	@ApiBody({
+		schema: {
+			type: 'object',
+			properties: {
+				content: { type: 'string' },
+				numberStars: { type: 'integer' },
+				accountId: { type: 'string' },
+				productId: { type: 'string' },
+				productType: {
+					type: 'string',
+					enum: ['TEXTILE', 'SUPERFOOD', 'EXPERIENCE'],
+				},
+				mediaType: { type: 'string' },
+				mediaName: { type: 'string' },
+				mediaRole: { type: 'string' },
+				file: { type: 'string', format: 'binary' },
+			},
+			required: [
+				'content',
+				'numberStars',
+				'accountId',
+				'productId',
+				'productType',
+			],
+		},
+	})
 	@ApiResponse({
 		status: 201,
 		description: 'Reseña creada exitosamente',
@@ -94,7 +119,20 @@ export class ReviewController {
 		file: Express.Multer.File | undefined,
 		@Body() body: CreateReviewDto,
 	): Promise<Review> {
-		return this.createReviewUseCase.handle(body, file);
+		// Para multipart/form-data, los campos vienen como strings
+		// Necesitamos convertir manualmente los tipos
+		const dto: CreateReviewDto = {
+			content: body.content as string,
+			numberStars: parseInt(body.numberStars as unknown as string, 10),
+			accountId: body.accountId as string,
+			productId: body.productId as string,
+			productType: body.productType,
+			mediaType: body.mediaType,
+			mediaName: body.mediaName,
+			mediaRole: body.mediaRole,
+		};
+
+		return this.createReviewUseCase.handle(dto, file);
 	}
 
 	@Public()

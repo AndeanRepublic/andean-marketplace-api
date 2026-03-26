@@ -7,10 +7,9 @@ import { UpdateCustomerProfileDto } from '../controllers/dto/UpdateCustomerProfi
 export class CustomerProfileMapper {
 	static fromDocument(doc: CustomerProfileDocument): CustomerProfile {
 		const plain = doc.toObject();
-		const { _id, ...rest } = plain;
 		return plainToInstance<CustomerProfile, Record<string, any>>(
 			CustomerProfile,
-			rest,
+			{ id: plain._id.toString(), ...plain },
 			{ excludeExtraneousValues: false },
 		) as unknown as CustomerProfile;
 	}
@@ -21,8 +20,8 @@ export class CustomerProfileMapper {
 	): CustomerProfile {
 		const { email, password, name, birthDate, ...customerData } = dto;
 
+		// Don't set id - let MongoDB generate _id automatically
 		const plain = {
-			id: crypto.randomUUID(),
 			userId: userId,
 			...customerData,
 			...(birthDate && { birthDate: new Date(birthDate) }),
@@ -58,8 +57,8 @@ export class CustomerProfileMapper {
 
 	static toPersistence(profile: CustomerProfile) {
 		const plain = instanceToPlain(profile);
-		// Remove _id to avoid immutable field error during updates
-		const { id, userId, ...rest } = plain;
+		// Remove id and _id to let MongoDB generate _id automatically
+		const { id, _id, __v, userId, ...rest } = plain;
 		return {
 			userId,
 			...rest,
