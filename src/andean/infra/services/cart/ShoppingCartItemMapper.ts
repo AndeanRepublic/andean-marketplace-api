@@ -25,6 +25,8 @@ export class ShoppingCartItemMapper {
 		ownerName: string,
 	): ShoppingCartItemResponse {
 		return {
+			productId: item.productId,
+			variantId: item.variantProductId ?? null,
 			ownerName,
 			title: productInfo.title,
 			combinationVariant: variant?.combination || {},
@@ -49,6 +51,8 @@ export class ShoppingCartItemMapper {
 		boxContent: BoxContentItemResponse[],
 	): ShoppingCartItemResponse {
 		return {
+			productId: item.productId,
+			variantId: item.variantProductId ?? null,
 			ownerName: '',
 			title: productInfo.title,
 			combinationVariant: {},
@@ -77,6 +81,8 @@ export class ShoppingCartItemMapper {
 		quantity: number;
 	}): ShoppingCartItemResponse {
 		return {
+			productId: params.variant.productId,
+			variantId: params.variant.id,
 			ownerName: params.ownerName,
 			title: params.productInfo.title,
 			combinationVariant: params.variant.combination,

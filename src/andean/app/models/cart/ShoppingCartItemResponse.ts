@@ -8,6 +8,19 @@ import { ProductType } from '../../../domain/enums/ProductType';
  */
 export class ShoppingCartItemResponse {
 	@ApiProperty({
+		description: 'ID del producto asociado al item del carrito',
+		example: 'product-uuid-1234',
+	})
+	productId!: string;
+
+	@ApiPropertyOptional({
+		description:
+			'ID de la variante asociada al item del carrito (null para items sin variante)',
+		example: 'variant-uuid-1234',
+	})
+	variantId?: string | null;
+
+	@ApiProperty({
 		description: 'Nombre comercial del vendedor o comunidad',
 		example: 'Artesanías Cusco',
 	})

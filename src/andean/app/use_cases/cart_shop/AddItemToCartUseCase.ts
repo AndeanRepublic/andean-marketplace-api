@@ -133,6 +133,20 @@ export class AddItemToCartUseCase {
 			);
 		}
 
+		if (existingItemWithSameVariant) {
+			const updatedItem = await this.cartItemRepository.updateQuantity(
+				existingItemWithSameVariant.id,
+				itemDto.quantity,
+			);
+
+			return ShoppingCartItemMapper.toResponse(
+				updatedItem,
+				variant,
+				productInfo,
+				ownerName,
+			);
+		}
+
 		// 6. Crear el item del carrito
 		const cartItemId = new Types.ObjectId().toString();
 		const cartItem = new CartItem(
