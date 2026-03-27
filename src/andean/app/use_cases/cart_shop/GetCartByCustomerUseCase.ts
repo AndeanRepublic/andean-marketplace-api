@@ -19,6 +19,9 @@ import { CartItem } from '../../../domain/entities/CartItem';
 import { ShoppingCartItemMapper } from '../../../infra/services/cart/ShoppingCartItemMapper';
 import { ProductType } from '../../../domain/enums/ProductType';
 import { BoxCartContentResolver } from '../../../infra/services/cart/BoxCartContentResolver';
+import { TextileProductAttributesAssembler } from '../../../infra/services/textileProducts/TextileProductAttributesAssembler';
+import { CartColorOptionResponse } from '../../models/cart/CartColorOptionResponse';
+import { TextileProductRepository } from '../../datastore/textileProducts/TextileProduct.repo';
 
 @Injectable()
 export class GetCartByCustomerUseCase {
@@ -34,6 +37,9 @@ export class GetCartByCustomerUseCase {
 		private readonly productInfoRegistry: ProductInfoProviderRegistry,
 		private readonly ownerNameResolver: OwnerNameResolver,
 		private readonly boxCartContentResolver: BoxCartContentResolver,
+		private readonly textileProductAttributesAssembler: TextileProductAttributesAssembler,
+		@Inject(TextileProductRepository)
+		private readonly textileProductRepository: TextileProductRepository,
 	) {}
 
 	async handle(
@@ -149,11 +155,31 @@ export class GetCartByCustomerUseCase {
 			productInfo.ownerId,
 		);
 
+		let colorOption: CartColorOptionResponse | undefined;
+		if (item.productType === ProductType.TEXTILE && variant) {
+			const textileProduct =
+				await this.textileProductRepository.getTextileProductById(item.productId);
+			if (textileProduct) {
+				const resolved =
+					await this.textileProductAttributesAssembler.resolveColorOptionForProductAndVariant(
+						textileProduct,
+						variant,
+					);
+				if (resolved) {
+					colorOption = {
+						label: resolved.label,
+						hexCode: resolved.hexCode,
+					};
+				}
+			}
+		}
+
 		return ShoppingCartItemMapper.toResponse(
 			item,
 			variant,
 			productInfo,
 			ownerName,
+			colorOption,
 		);
 	}
 }

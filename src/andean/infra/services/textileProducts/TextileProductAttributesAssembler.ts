@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { MediaItemRepository } from 'src/andean/app/datastore/MediaItem.repo';
 import { Variant } from 'src/andean/domain/entities/Variant';
 import { TextileProduct } from 'src/andean/domain/entities/textileProducts/TextileProduct';
+import { ProductType } from 'src/andean/domain/enums/ProductType';
 import { TextileOptions } from 'src/andean/domain/entities/textileProducts/TextileOptions';
 import { TextileOptionName } from 'src/andean/domain/enums/TextileOptionName';
 import { ColorOptionAlternativeRepository } from '../../../app/datastore/textileProducts/ColorOptionAlternative.repo';
@@ -38,6 +39,28 @@ export class TextileProductAttributesAssembler {
 		@Inject(MediaItemRepository)
 		private readonly mediaItemRepository: MediaItemRepository,
 	) {}
+
+	/**
+	 * Resuelve etiqueta + hex del catálogo para un ítem de carrito textil.
+	 * El producto debe cargarse fuera (evita ciclo Assembler → Repository → Assembler).
+	 */
+	async resolveColorOptionForProductAndVariant(
+		product: Pick<TextileProduct, 'id' | 'options'>,
+		variant: Variant,
+	): Promise<{ label: string; hexCode: string } | null> {
+		if (variant.productType !== ProductType.TEXTILE) {
+			return null;
+		}
+		const attrs = await this.buildForProduct(product, [variant]);
+		const info = attrs.variantInfo.find((v) => v.variantId === variant.id);
+		if (!info) {
+			return null;
+		}
+		return {
+			label: info.color.color,
+			hexCode: info.color.hexCode,
+		};
+	}
 
 	async buildForProduct(
 		product: Pick<TextileProduct, 'id' | 'options'>,

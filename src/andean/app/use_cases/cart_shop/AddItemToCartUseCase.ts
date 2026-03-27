@@ -18,6 +18,10 @@ import { ShoppingCartItemResponse } from '../../models/cart/ShoppingCartItemResp
 import { ProductInfoProviderRegistry } from '../../../infra/services/products/ProductInfoProviderRegistry';
 import { OwnerNameResolver } from '../../../infra/services/OwnerNameResolver';
 import { ShoppingCartItemMapper } from '../../../infra/services/cart/ShoppingCartItemMapper';
+import { TextileProductAttributesAssembler } from '../../../infra/services/textileProducts/TextileProductAttributesAssembler';
+import { ProductType } from '../../../domain/enums/ProductType';
+import { CartColorOptionResponse } from '../../models/cart/CartColorOptionResponse';
+import { TextileProductRepository } from '../../datastore/textileProducts/TextileProduct.repo';
 
 @Injectable()
 export class AddItemToCartUseCase {
@@ -32,6 +36,9 @@ export class AddItemToCartUseCase {
 		private readonly cartItemRepository: CartShopItemRepository,
 		private readonly productInfoRegistry: ProductInfoProviderRegistry,
 		private readonly ownerNameResolver: OwnerNameResolver,
+		private readonly textileProductAttributesAssembler: TextileProductAttributesAssembler,
+		@Inject(TextileProductRepository)
+		private readonly textileProductRepository: TextileProductRepository,
 	) {}
 
 	async handle(
@@ -90,6 +97,27 @@ export class AddItemToCartUseCase {
 			productInfo.ownerId,
 		);
 
+		let colorOption: CartColorOptionResponse | undefined;
+		if (variant.productType === ProductType.TEXTILE) {
+			const textileProduct =
+				await this.textileProductRepository.getTextileProductById(
+					variant.productId,
+				);
+			if (textileProduct) {
+				const resolved =
+					await this.textileProductAttributesAssembler.resolveColorOptionForProductAndVariant(
+						textileProduct,
+						variant,
+					);
+				if (resolved) {
+					colorOption = {
+						label: resolved.label,
+						hexCode: resolved.hexCode,
+					};
+				}
+			}
+		}
+
 		// 5. Obtener o crear el carrito del customer
 		let cart = await this.cartShopRepository.getCartByCustomerId(customerId);
 		if (!cart) {
@@ -133,6 +161,21 @@ export class AddItemToCartUseCase {
 			);
 		}
 
+		if (existingItemWithSameVariant) {
+			const updatedItem = await this.cartItemRepository.updateQuantity(
+				existingItemWithSameVariant.id,
+				itemDto.quantity,
+			);
+
+			return ShoppingCartItemMapper.toResponse(
+				updatedItem,
+				variant,
+				productInfo,
+				ownerName,
+				colorOption,
+			);
+		}
+
 		// 6. Crear el item del carrito
 		const cartItemId = new Types.ObjectId().toString();
 		const cartItem = new CartItem(
@@ -156,6 +199,7 @@ export class AddItemToCartUseCase {
 			productInfo,
 			ownerName,
 			quantity: itemDto.quantity,
+			colorOption,
 		});
 	}
 }
