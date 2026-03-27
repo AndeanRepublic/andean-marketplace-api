@@ -1,12 +1,26 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BoxContentItemResponse } from './BoxContentItemResponse';
 import { ProductType } from '../../../domain/enums/ProductType';
+import { CartColorOptionResponse } from './CartColorOptionResponse';
 
 /**
  * Información de un item del carrito de compras.
  * Contiene datos enriquecidos del producto y variante.
  */
 export class ShoppingCartItemResponse {
+	@ApiProperty({
+		description: 'ID del producto asociado al item del carrito',
+		example: 'product-uuid-1234',
+	})
+	productId!: string;
+
+	@ApiPropertyOptional({
+		description:
+			'ID de la variante asociada al item del carrito (null para items sin variante)',
+		example: 'variant-uuid-1234',
+	})
+	variantId?: string | null;
+
 	@ApiProperty({
 		description: 'Nombre comercial del vendedor o comunidad',
 		example: 'Artesanías Cusco',
@@ -24,6 +38,13 @@ export class ShoppingCartItemResponse {
 		example: { color: 'brown', size: 'xl', material: 'seda' },
 	})
 	combinationVariant!: Record<string, string>;
+
+	@ApiPropertyOptional({
+		description:
+			'Color resuelto para textiles (etiqueta + hex del catálogo); opcional si no aplica o no se pudo resolver',
+		type: () => CartColorOptionResponse,
+	})
+	colorOption?: CartColorOptionResponse;
 
 	@ApiProperty({
 		description: 'URL de la imagen principal del producto',

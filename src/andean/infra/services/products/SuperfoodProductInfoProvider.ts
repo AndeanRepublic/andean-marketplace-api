@@ -3,12 +3,14 @@ import { ProductInfoProvider } from '../../../app/datastore/products/ProductInfo
 import { ProductInfo } from '../../../app/models/shared/ProductInfo';
 import { ProductType } from '../../../domain/enums/ProductType';
 import { SuperfoodProductRepository } from '../../../app/datastore/superfoods/SuperfoodProduct.repo';
+import { MediaUrlResolver } from '../textileProducts/MediaUrlResolver';
 
 @Injectable()
 export class SuperfoodProductInfoProvider extends ProductInfoProvider {
 	constructor(
 		@Inject(SuperfoodProductRepository)
 		private readonly superfoodProductRepository: SuperfoodProductRepository,
+		private readonly mediaUrlResolver: MediaUrlResolver,
 	) {
 		super();
 	}
@@ -25,9 +27,13 @@ export class SuperfoodProductInfoProvider extends ProductInfoProvider {
 			return null;
 		}
 
+		const thumbnailImgUrl = await this.mediaUrlResolver.resolveUrl(
+			product.baseInfo.mediaIds[0] || '',
+		);
+
 		return {
 			title: product.baseInfo.title,
-			thumbnailImgUrl: product.baseInfo.mediaIds[0] || '',
+			thumbnailImgUrl,
 			ownerType: product.baseInfo.ownerType,
 			ownerId: product.baseInfo.ownerId,
 			isDiscountActive: product.isDiscountActive,

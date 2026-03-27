@@ -33,6 +33,8 @@ describe('CartShopController (e2e)', () => {
 
 	// Mock responses using fixtures
 	const mockAddItemResponse = {
+		productId: textileFixtures.entity.id,
+		variantId: textileFixtures.variants[0].id,
 		ownerName: textileFixtures.shop.name,
 		title: textileFixtures.entity.baseInfo.title,
 		combinationVariant: textileFixtures.variants[0].combination,
@@ -48,6 +50,8 @@ describe('CartShopController (e2e)', () => {
 	const mockGetCartResponse = {
 		items: [
 			{
+				productId: textileFixtures.entity.id,
+				variantId: textileFixtures.variants[0].id,
 				ownerName: textileFixtures.shop.name,
 				title: textileFixtures.entity.baseInfo.title,
 				combinationVariant: textileFixtures.variants[0].combination,
@@ -60,6 +64,8 @@ describe('CartShopController (e2e)', () => {
 				productType: ProductType.TEXTILE,
 			},
 			{
+				productId: superfoodFixtures.superfood.id,
+				variantId: superfoodFixtures.variants[0].id,
 				ownerName: superfoodFixtures.community.name,
 				title: superfoodFixtures.superfood.baseInfo.title,
 				combinationVariant: superfoodFixtures.variants[0].combination,
