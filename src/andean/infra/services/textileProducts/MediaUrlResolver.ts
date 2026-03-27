@@ -15,6 +15,28 @@ export class MediaUrlResolver {
 	) {}
 
 	/**
+	 * Resuelve un mediaId a una URL usable.
+	 * Si el valor ya es una URL absoluta o una ruta relativa válida, lo devuelve tal cual.
+	 */
+	async resolveUrl(mediaId?: string | null): Promise<string> {
+		if (!mediaId) return '';
+
+		const trimmed = mediaId.trim();
+		if (!trimmed) return '';
+
+		if (
+			trimmed.startsWith('http://') ||
+			trimmed.startsWith('https://') ||
+			trimmed.startsWith('/')
+		) {
+			return trimmed;
+		}
+
+		const mediaMap = await this.resolveUrls([trimmed]);
+		return mediaMap.get(trimmed) || '';
+	}
+
+	/**
 	 * Resuelve una lista de mediaIds a un Map de id -> url.
 	 * Los IDs vacíos o duplicados se filtran antes de la consulta.
 	 */
@@ -28,8 +50,21 @@ export class MediaUrlResolver {
 		}
 
 		const mediaItems = await this.mediaItemRepository.getByIds(uniqueIds);
-		return new Map(
-			mediaItems.map((m) => [m.id, `${this.storageBaseUrl}/${m.key}`]),
-		);
+		return new Map(mediaItems.map((m) => [m.id, this.buildUrl(m.key)]));
+	}
+
+	private buildUrl(key: string): string {
+		if (!key) return '';
+		if (key.startsWith('http://') || key.startsWith('https://')) {
+			return key;
+		}
+		if (key.startsWith('/')) {
+			return key;
+		}
+		if (!this.storageBaseUrl) {
+			return key;
+		}
+
+		return `${this.storageBaseUrl.replace(/\/$/, '')}/${key.replace(/^\//, '')}`;
 	}
 }

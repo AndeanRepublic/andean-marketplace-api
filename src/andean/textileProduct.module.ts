@@ -325,6 +325,7 @@ import { MediaUrlResolver } from './infra/services/textileProducts/MediaUrlResol
 		},
 	],
 	exports: [
+		MediaUrlResolver,
 		TextileCategoryRepository,
 		TextileTypeRepository,
 		TextileStyleRepository,
