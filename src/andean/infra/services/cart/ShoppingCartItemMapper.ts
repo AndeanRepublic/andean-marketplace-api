@@ -1,4 +1,5 @@
 import { ShoppingCartItemResponse } from '../../../app/models/cart/ShoppingCartItemResponse';
+import { CartColorOptionResponse } from '../../../app/models/cart/CartColorOptionResponse';
 import { BoxContentItemResponse } from '../../../app/models/cart/BoxContentItemResponse';
 import { CartItem } from '../../../domain/entities/CartItem';
 import { Variant } from '../../../domain/entities/Variant';
@@ -23,6 +24,7 @@ export class ShoppingCartItemMapper {
 		variant: Variant | null,
 		productInfo: ProductInfo,
 		ownerName: string,
+		colorOption?: CartColorOptionResponse | null,
 	): ShoppingCartItemResponse {
 		return {
 			productId: item.productId,
@@ -30,6 +32,7 @@ export class ShoppingCartItemMapper {
 			ownerName,
 			title: productInfo.title,
 			combinationVariant: variant?.combination || {},
+			colorOption: colorOption ?? undefined,
 			thumbnailImgUrl: productInfo.thumbnailImgUrl,
 			unitPrice: item.unitPrice,
 			quantity: item.quantity,
@@ -79,6 +82,7 @@ export class ShoppingCartItemMapper {
 		productInfo: ProductInfo;
 		ownerName: string;
 		quantity: number;
+		colorOption?: CartColorOptionResponse | null;
 	}): ShoppingCartItemResponse {
 		return {
 			productId: params.variant.productId,
@@ -86,6 +90,7 @@ export class ShoppingCartItemMapper {
 			ownerName: params.ownerName,
 			title: params.productInfo.title,
 			combinationVariant: params.variant.combination,
+			colorOption: params.colorOption ?? undefined,
 			thumbnailImgUrl: params.productInfo.thumbnailImgUrl,
 			unitPrice: params.variant.price,
 			quantity: params.quantity,

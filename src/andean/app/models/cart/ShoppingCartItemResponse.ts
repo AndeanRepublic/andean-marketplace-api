@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BoxContentItemResponse } from './BoxContentItemResponse';
 import { ProductType } from '../../../domain/enums/ProductType';
+import { CartColorOptionResponse } from './CartColorOptionResponse';
 
 /**
  * Información de un item del carrito de compras.
@@ -37,6 +38,13 @@ export class ShoppingCartItemResponse {
 		example: { color: 'brown', size: 'xl', material: 'seda' },
 	})
 	combinationVariant!: Record<string, string>;
+
+	@ApiPropertyOptional({
+		description:
+			'Color resuelto para textiles (etiqueta + hex del catálogo); opcional si no aplica o no se pudo resolver',
+		type: () => CartColorOptionResponse,
+	})
+	colorOption?: CartColorOptionResponse;
 
 	@ApiProperty({
 		description: 'URL de la imagen principal del producto',
