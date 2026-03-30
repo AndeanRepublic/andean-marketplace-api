@@ -21,6 +21,7 @@ import { UpdateMediaItemUseCase } from './app/use_cases/media/UpdateMediaItemUse
 import { GetMediaItemByIdUseCase } from './app/use_cases/media/GetMediaItemByIdUseCase';
 import { ListMediaItemsUseCase } from './app/use_cases/media/ListMediaItemsUseCase';
 import { DeleteMediaItemUseCase } from './app/use_cases/media/DeleteMediaItemUseCase';
+import { MediaUrlResolver } from './infra/services/textileProducts/MediaUrlResolver';
 
 // Controller
 import { MediaItemController } from './infra/controllers/mediaItem.controller';
@@ -56,7 +57,13 @@ import { MediaItemController } from './infra/controllers/mediaItem.controller';
 		GetMediaItemByIdUseCase,
 		ListMediaItemsUseCase,
 		DeleteMediaItemUseCase,
+		MediaUrlResolver,
 	],
-	exports: [MediaItemRepository, StorageRepository, MongooseModule],
+	exports: [
+		MediaItemRepository,
+		StorageRepository,
+		MongooseModule,
+		MediaUrlResolver,
+	],
 })
 export class MediaItemModule {}

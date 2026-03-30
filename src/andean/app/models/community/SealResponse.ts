@@ -24,4 +24,11 @@ export class SealResponse {
 		example: '507f1f77bcf86cd799439022',
 	})
 	logoMediaId: string;
+
+	@ApiProperty({
+		description: 'URL pública del logo del sello',
+		example: 'https://cdn.example.com/seals/logo.png',
+		required: false,
+	})
+	logoUrl?: string;
 }

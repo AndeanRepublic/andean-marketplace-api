@@ -60,10 +60,13 @@ export class GetByIdTextileProductDetailUseCase {
 		const mediaItems = await this.mediaItemRepository.getByIds(
 			product.baseInfo.mediaIds || [],
 		);
+		const imageUrlById = await this.mediaUrlResolver.resolveUrls(
+			mediaItems.map((mediaItem) => mediaItem.id),
+		);
 		const images = mediaItems.map((mediaItem) => ({
 			name: mediaItem.name,
 			role: mediaItem.role,
-			url: `${process.env.STORAGE_BASE_URL || ''}/${mediaItem.key}`,
+			url: imageUrlById.get(mediaItem.id) ?? '',
 		}));
 
 		// -- Obtener reviews del producto
@@ -151,6 +154,13 @@ export class GetByIdTextileProductDetailUseCase {
 					]);
 					bannerImageUrl = urlMap.get(community.bannerImageId) ?? '';
 				}
+				const sealLogoIds = seals
+					.filter((seal): seal is NonNullable<typeof seal> => seal !== null)
+					.map((seal) => seal.logoMediaId)
+					.filter(Boolean);
+				const sealLogoUrlMap = await this.mediaUrlResolver.resolveUrls(
+					sealLogoIds,
+				);
 
 				communityInfo = {
 					bannerImageUrl,
@@ -161,6 +171,7 @@ export class GetByIdTextileProductDetailUseCase {
 							title: seal.name,
 							description: seal.description,
 							logoMediaId: seal.logoMediaId,
+							logoUrl: sealLogoUrlMap.get(seal.logoMediaId) ?? '',
 						})),
 				};
 			}

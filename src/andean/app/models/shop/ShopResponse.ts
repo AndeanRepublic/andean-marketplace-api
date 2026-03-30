@@ -32,4 +32,10 @@ export class ShopResponse {
 		description: 'ID del MediaItem para la foto del artesano/emprendedor',
 	})
 	artisanPhotoMediaId?: string;
+
+	@ApiPropertyOptional({
+		description: 'URL pública de la foto del artesano/emprendedor',
+		example: 'https://cdn.example.com/shops/artisan.jpg',
+	})
+	artisanPhotoUrl?: string;
 }
