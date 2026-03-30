@@ -39,4 +39,8 @@ export abstract class TextileProductRepository {
 		id: string,
 		quantity: number,
 	): Promise<TextileProduct | null>;
+	abstract adjustTotalStock(
+		id: string,
+		delta: number,
+	): Promise<TextileProduct | null>;
 }
