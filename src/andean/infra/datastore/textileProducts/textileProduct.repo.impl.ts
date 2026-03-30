@@ -66,10 +66,11 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 	private buildBaseQuery(
 		filters?: ProductFilters,
 	): FilterQuery<TextileProductDocument> {
-		const baseQuery: FilterQuery<TextileProductDocument> = {
-			// Solo mostrar productos con stock disponible (totalStock > 0)
-			'priceInventary.totalStock': { $gt: 0 },
-		};
+		const baseQuery: FilterQuery<TextileProductDocument> = {};
+
+		if (!filters?.includeZeroStock) {
+			baseQuery['priceInventary.totalStock'] = { $gt: 0 };
+		}
 
 		if (filters?.categoryId) {
 			baseQuery.categoryId = filters.categoryId;

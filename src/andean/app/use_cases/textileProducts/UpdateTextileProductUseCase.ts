@@ -1,6 +1,5 @@
 import {
 	BadRequestException,
-	ForbiddenException,
 	Inject,
 	Injectable,
 	NotFoundException,
@@ -19,6 +18,7 @@ import { TextileCertificationRepository } from '../../datastore/textileProducts/
 import { ShopRepository } from '../../datastore/Shop.repo';
 import { OriginProductCommunityRepository } from '../../datastore/originProductCommunity.repo';
 import { OwnerType } from 'src/andean/domain/enums/OwnerType';
+import { assertTextileProductSellerAccess } from './assertTextileProductSellerAccess';
 import { CommunityRepository } from '../../datastore/community/community.repo';
 import { ColorOptionAlternativeRepository } from '../../datastore/textileProducts/ColorOptionAlternative.repo';
 import { SizeOptionAlternativeRepository } from '../../datastore/textileProducts/SizeOptionAlternative.repo';
@@ -68,22 +68,13 @@ export class UpdateTextileProductUseCase {
 			throw new NotFoundException('Textile product not found');
 		}
 
-		// Ownership check
-		const isAdmin = roles.includes(AccountRole.ADMIN);
-		if (!isAdmin) {
-			if (productFound.baseInfo.ownerType === OwnerType.COMMUNITY) {
-				throw new ForbiddenException('You can only modify your own resource');
-			}
-			const seller =
-				await this.sellerProfileRepository.getSellerByUserId(requestingUserId);
-			if (!seller)
-				throw new ForbiddenException('You can only modify your own resource');
-			const shops = await this.shopRepository.getAllBySellerId(seller.id);
-			const shopIds = shops.map((s) => s.id);
-			if (!shopIds.includes(productFound.baseInfo.ownerId)) {
-				throw new ForbiddenException('You can only modify your own resource');
-			}
-		}
+		await assertTextileProductSellerAccess(
+			productFound,
+			requestingUserId,
+			roles,
+			this.shopRepository,
+			this.sellerProfileRepository,
+		);
 
 		// Validate categoryId solo si existe
 		if (dto.categoryId) {

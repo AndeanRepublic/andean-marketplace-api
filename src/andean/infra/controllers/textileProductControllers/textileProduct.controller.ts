@@ -31,7 +31,7 @@ import { CreateTextileProductDto } from '../dto/textileProducts/CreateTextilePro
 import { UpdateTextileProductDto } from '../dto/textileProducts/UpdateTextileProductDto';
 import { UpdateTextileProductUseCase } from 'src/andean/app/use_cases/textileProducts/UpdateTextileProductUseCase';
 import { GetAllTextileProductsUseCase } from 'src/andean/app/use_cases/textileProducts/GetAllTextileProductsUseCase';
-import { GetByIdTextileProductUseCase } from 'src/andean/app/use_cases/textileProducts/GetByIdTextileProductUseCase';
+import { GetTextileProductForSellerUseCase } from 'src/andean/app/use_cases/textileProducts/GetTextileProductForSellerUseCase';
 import { DeleteTextileProductUseCase } from 'src/andean/app/use_cases/textileProducts/DeleteTextileProductUseCase';
 import {
 	PaginatedProductsResponse,
@@ -49,7 +49,7 @@ export class TextileProductController {
 		private readonly createTextileProductUseCase: CreateTextileProductUseCase,
 		private readonly updateTextileProductUseCase: UpdateTextileProductUseCase,
 		private readonly getAllTextileProductsUseCase: GetAllTextileProductsUseCase,
-		private readonly getByIdTextileProductUseCase: GetByIdTextileProductUseCase,
+		private readonly getTextileProductForSellerUseCase: GetTextileProductForSellerUseCase,
 		private readonly deleteTextileProductUseCase: DeleteTextileProductUseCase,
 		private readonly getByIdTextileProductDetailUseCase: GetByIdTextileProductDetailUseCase,
 	) {}
@@ -191,6 +191,14 @@ export class TextileProductController {
 			'Criterio de ordenamiento: "latest" (más recientes primero) o "popular" (más comprados primero)',
 		example: 'latest',
 	})
+	@ApiQuery({
+		name: 'include_zero_stock',
+		required: false,
+		type: Boolean,
+		description:
+			'Si es true, incluye productos sin stock (totalStock = 0). Por defecto solo hay stock > 0.',
+		example: false,
+	})
 	@ApiResponse({
 		status: 200,
 		description:
@@ -256,6 +264,37 @@ export class TextileProductController {
 		@Param('id') id: string,
 	): Promise<TextileProductDetailResponse> {
 		return this.getByIdTextileProductDetailUseCase.handle(id);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Get('/:id')
+	@ApiOperation({
+		summary: 'Obtener producto textil (admin / edición)',
+		description:
+			'Devuelve la entidad completa del producto para cargar formularios de edición. Misma regla de acceso que PUT/DELETE.',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID único del producto textil',
+		example: '6973d8ffddef7b59c2d4dcfb',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Producto encontrado',
+		type: TextileProduct,
+	})
+	@ApiResponse({ status: 403, description: 'Sin permiso sobre este producto' })
+	@ApiResponse({ status: 404, description: 'Producto no encontrado' })
+	async getTextileProductForSeller(
+		@Param('id') id: string,
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
+	): Promise<TextileProduct> {
+		return this.getTextileProductForSellerUseCase.handle(
+			id,
+			requestingUser.userId,
+			requestingUser.roles,
+		);
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
