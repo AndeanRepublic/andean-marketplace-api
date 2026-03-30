@@ -1,9 +1,11 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { VariantRepository } from '../../datastore/Variant.repo';
+import { TextileProductRepository } from '../../datastore/textileProducts/TextileProduct.repo';
 import { Variant } from '../../../domain/entities/Variant';
 import { SyncVariantsDto } from '../../../infra/controllers/dto/variant/SyncVariantsDto';
 import { SyncVariantItemDto } from '../../../infra/controllers/dto/variant/SyncVariantItemDto';
 import { VariantMapper } from '../../../infra/services/VariantMapper';
+import { ProductType } from '../../../domain/enums/ProductType';
 
 /**
  * Use case para sincronizar las variantes de un producto.
@@ -20,6 +22,8 @@ export class SyncVariantsUseCase {
 	constructor(
 		@Inject(VariantRepository)
 		private readonly variantRepository: VariantRepository,
+		@Inject(TextileProductRepository)
+		private readonly textileProductRepository: TextileProductRepository,
 	) {}
 
 	async execute(dto: SyncVariantsDto): Promise<Variant[]> {
@@ -47,6 +51,8 @@ export class SyncVariantsUseCase {
 		const newVariants: Variant[] = [];
 		const variantsToDelete: string[] = [];
 
+		let totalStockDelta = 0;
+
 		// 2. Procesar variantes del usuario
 		for (const userVariant of userVariants) {
 			const key = this.serializeCombination(userVariant.combination);
@@ -65,6 +71,7 @@ export class SyncVariantsUseCase {
 				);
 				if (updated) {
 					updatedVariants.push(updated);
+					totalStockDelta += userVariant.stock - existingVariant.stock;
 				}
 			} else {
 				// 4. No existe en BD: crear nueva variante
@@ -77,6 +84,7 @@ export class SyncVariantsUseCase {
 					...(userVariant.sku && { sku: userVariant.sku }),
 				});
 				newVariants.push(newVariant);
+				totalStockDelta += userVariant.stock;
 			}
 		}
 
@@ -84,6 +92,7 @@ export class SyncVariantsUseCase {
 		for (const [key, existingVariant] of existingMap) {
 			if (!userCombinationKeys.has(key)) {
 				variantsToDelete.push(existingVariant.id);
+				totalStockDelta -= existingVariant.stock;
 			}
 		}
 
@@ -95,6 +104,14 @@ export class SyncVariantsUseCase {
 
 		for (const id of variantsToDelete) {
 			await this.variantRepository.delete(id);
+		}
+
+		// Actualizar stock general si corresponde
+		if (productType === ProductType.TEXTILE && totalStockDelta !== 0) {
+			await this.textileProductRepository.adjustTotalStock(
+				productId,
+				totalStockDelta,
+			);
 		}
 
 		// Retornar todas las variantes actuales del producto
