@@ -15,6 +15,11 @@ export class ShopRepoImpl extends ShopRepository {
 		super();
 	}
 
+	async getAll(): Promise<Shop[]> {
+		const docs = await this.shopModel.find({}).exec();
+		return docs.map((doc: ShopDocument) => ShopMapper.fromDocument(doc));
+	}
+
 	async getAllBySellerId(sellerId: string): Promise<Shop[]> {
 		const docs = await this.shopModel.find({ sellerId }).exec();
 		return docs.map((doc: ShopDocument) => ShopMapper.fromDocument(doc));

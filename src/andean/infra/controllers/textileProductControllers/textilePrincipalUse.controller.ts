@@ -87,31 +87,33 @@ export class TextilePrincipalUseController {
 		return this.createTextilePrincipalUseUseCase.handle(body);
 	}
 
-	// @Put('/:id')
-	// @ApiOperation({
-	// 	summary: 'Actualizar uso principal',
-	// 	description: 'Actualiza los datos de un uso principal existente',
-	// })
-	// @ApiParam({
-	// 	name: 'id',
-	// 	description: 'ID del uso principal',
-	// 	example: 'uuid-1234-5678',
-	// })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'Uso principal actualizado exitosamente',
-	// 	type: TextilePrincipalUse,
-	// })
-	// @ApiResponse({
-	// 	status: 404,
-	// 	description: 'Uso principal no encontrado',
-	// })
-	// async updateTextilePrincipalUse(
-	// 	@Param('id') id: string,
-	// 	@Body() body: CreateTextilePrincipalUseDto,
-	// ): Promise<TextilePrincipalUse> {
-	// 	return this.updateTextilePrincipalUseUseCase.handle(id, body);
-	// }
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Put('/:id')
+	@ApiOperation({
+		summary: 'Actualizar uso principal',
+		description: 'Actualiza los datos de un uso principal existente',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID del uso principal',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Uso principal actualizado exitosamente',
+		type: TextilePrincipalUse,
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Uso principal no encontrado',
+	})
+	async updateTextilePrincipalUse(
+		@Param('id') id: string,
+		@Body() body: CreateTextilePrincipalUseDto,
+	): Promise<TextilePrincipalUse> {
+		return this.updateTextilePrincipalUseUseCase.handle(id, body);
+	}
 
 	@Public()
 	@Get()
@@ -129,51 +131,54 @@ export class TextilePrincipalUseController {
 		return this.getAllTextilePrincipalUsesUseCase.handle();
 	}
 
-	// @Get('/:id')
-	// @ApiOperation({
-	// 	summary: 'Obtener uso principal por ID',
-	// 	description: 'Retorna un uso principal específico por su ID',
-	// })
-	// @ApiParam({
-	// 	name: 'id',
-	// 	description: 'ID del uso principal',
-	// 	example: 'uuid-1234-5678',
-	// })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'Uso principal encontrado',
-	// 	type: TextilePrincipalUse,
-	// })
-	// @ApiResponse({
-	// 	status: 404,
-	// 	description: 'Uso principal no encontrado',
-	// })
-	// async getByIdTextilePrincipalUse(
-	// 	@Param('id') id: string,
-	// ): Promise<TextilePrincipalUse> {
-	// 	return this.getByIdTextilePrincipalUseUseCase.handle(id);
-	// }
+	@Public()
+	@Get('/:id')
+	@ApiOperation({
+		summary: 'Obtener uso principal por ID',
+		description: 'Retorna un uso principal específico por su ID',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID del uso principal',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Uso principal encontrado',
+		type: TextilePrincipalUse,
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Uso principal no encontrado',
+	})
+	async getByIdTextilePrincipalUse(
+		@Param('id') id: string,
+	): Promise<TextilePrincipalUse> {
+		return this.getByIdTextilePrincipalUseUseCase.handle(id);
+	}
 
-	// @Delete('/:id')
-	// @HttpCode(HttpStatus.NO_CONTENT)
-	// @ApiOperation({
-	// 	summary: 'Eliminar uso principal',
-	// 	description: 'Elimina un uso principal por su ID',
-	// })
-	// @ApiParam({
-	// 	name: 'id',
-	// 	description: 'ID del uso principal a eliminar',
-	// 	example: 'uuid-1234-5678',
-	// })
-	// @ApiResponse({
-	// 	status: 204,
-	// 	description: 'Uso principal eliminado exitosamente',
-	// })
-	// @ApiResponse({
-	// 	status: 404,
-	// 	description: 'Uso principal no encontrado',
-	// })
-	// async deleteTextilePrincipalUse(@Param('id') id: string): Promise<void> {
-	// 	return this.deleteTextilePrincipalUseUseCase.handle(id);
-	// }
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Delete('/:id')
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@ApiOperation({
+		summary: 'Eliminar uso principal',
+		description: 'Elimina un uso principal por su ID',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID del uso principal a eliminar',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 204,
+		description: 'Uso principal eliminado exitosamente',
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Uso principal no encontrado',
+	})
+	async deleteTextilePrincipalUse(@Param('id') id: string): Promise<void> {
+		return this.deleteTextilePrincipalUseUseCase.handle(id);
+	}
 }
