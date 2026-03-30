@@ -22,6 +22,7 @@ import { UpdateSealUseCase } from '../src/andean/app/use_cases/community/UpdateS
 import { DeleteSealUseCase } from '../src/andean/app/use_cases/community/DeleteSealUseCase';
 import { CreateManySealsUseCase } from '../src/andean/app/use_cases/community/CreateManySealsUseCase';
 import { Community } from '../src/andean/domain/entities/community/Community';
+import { MediaUrlResolver } from '../src/andean/infra/services/textileProducts/MediaUrlResolver';
 import { FixtureLoader } from './helpers/fixture-loader';
 
 describe('CommunityController (e2e)', () => {
@@ -95,6 +96,10 @@ describe('CommunityController (e2e)', () => {
 				{
 					provide: DeleteSealUseCase,
 					useValue: { handle: jest.fn().mockResolvedValue(undefined) },
+				},
+				{
+					provide: MediaUrlResolver,
+					useValue: { resolveUrls: jest.fn().mockImplementation((x) => x) },
 				},
 			],
 		})

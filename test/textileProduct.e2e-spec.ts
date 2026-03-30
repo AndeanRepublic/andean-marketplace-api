@@ -60,6 +60,7 @@ import { GetByIdColorOptionAlternativeUseCase } from '../src/andean/app/use_case
 import { DeleteColorOptionAlternativeUseCase } from '../src/andean/app/use_cases/textileProducts/DeleteColorOptionAlternativeUseCase';
 import { CreateManyColorOptionAlternativesUseCase } from '../src/andean/app/use_cases/textileProducts/CreateManyColorOptionAlternativesUseCase';
 import { GetByIdTextileProductDetailUseCase } from '../src/andean/app/use_cases/textileProducts/GetByIdTextileProductDetailUseCase';
+import { GetTextileProductForSellerUseCase } from '../src/andean/app/use_cases/textileProducts/GetTextileProductForSellerUseCase';
 import { FixtureLoader } from './helpers/fixture-loader';
 
 /**
@@ -145,6 +146,10 @@ describe('TextileProductController (e2e)', () => {
 				{
 					provide: GetByIdTextileProductDetailUseCase,
 					useValue: { handle: jest.fn().mockResolvedValue(mockDetailResponse) },
+				},
+				{
+					provide: GetTextileProductForSellerUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue(mockTextileProduct) },
 				},
 				// ── Category use cases ──────────────────────────────────────────
 				{
@@ -1114,6 +1119,12 @@ describe('TextileProductController (e2e)', () => {
 						},
 					},
 					{
+						provide: GetTextileProductForSellerUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockTextileProduct),
+						},
+					},
+					{
 						provide: CreateTextileCategoryUseCase,
 						useValue: createMockUseCase(),
 					},
@@ -1443,6 +1454,12 @@ describe('TextileProductController (e2e)', () => {
 						provide: GetByIdTextileProductDetailUseCase,
 						useValue: {
 							handle: jest.fn().mockResolvedValue(mockDetailResponse),
+						},
+					},
+					{
+						provide: GetTextileProductForSellerUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockTextileProduct),
 						},
 					},
 					{
