@@ -805,4 +805,22 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 			.exec();
 		return updated ? TextileProductMapper.fromDocument(updated) : null;
 	}
+
+	async adjustTotalStock(
+		id: string,
+		delta: number,
+	): Promise<TextileProduct | null> {
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		const updated = await this.textileProductModel
+			.findByIdAndUpdate(
+				objectId,
+				{
+					$inc: { 'priceInventary.totalStock': delta },
+					$set: { updatedAt: new Date() },
+				},
+				{ new: true },
+			)
+			.exec();
+		return updated ? TextileProductMapper.fromDocument(updated) : null;
+	}
 }

@@ -67,11 +67,24 @@ export class UpdateVariantUseCase {
 		// Construir objeto de actualización
 		const updateData = VariantMapper.fromUpdateDto(id, dto);
 
-		// Actualizar
+		// Actualizar la variante
 		const updated = await this.variantRepository.update(id, updateData);
 
 		if (!updated) {
 			throw new NotFoundException(`Failed to update Variant`);
+		}
+
+		// Sincronizar el stock general del producto textil si el stock de la variante cambió
+		if (
+			existing.productType === ProductType.TEXTILE &&
+			dto.stock !== undefined &&
+			dto.stock !== existing.stock
+		) {
+			const delta = dto.stock - existing.stock;
+			await this.textileProductRepository.adjustTotalStock(
+				existing.productId,
+				delta,
+			);
 		}
 
 		return updated;
