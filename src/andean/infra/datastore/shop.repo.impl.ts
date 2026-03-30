@@ -26,7 +26,13 @@ export class ShopRepoImpl extends ShopRepository {
 	}
 
 	async getById(id: string): Promise<Shop | null> {
-		const doc = await this.shopModel.findOne({ id }).exec();
+		// Legacy-safe lookup: most records use Mongo _id, but some flows
+		// historically queried an "id" field.
+		const doc = await this.shopModel
+			.findOne({
+				$or: [{ _id: id }, { id }],
+			})
+			.exec();
 		return doc ? ShopMapper.fromDocument(doc) : null;
 	}
 
@@ -48,7 +54,13 @@ export class ShopRepoImpl extends ShopRepository {
 
 	async updateShop(id: string, data: Partial<Shop>): Promise<Shop> {
 		const doc = await this.shopModel
-			.findOneAndUpdate({ id }, { $set: ShopMapper.toPersistence(data) }, { new: true })
+			.findOneAndUpdate(
+				{
+					$or: [{ _id: id }, { id }],
+				},
+				{ $set: ShopMapper.toPersistence(data) },
+				{ new: true },
+			)
 			.exec();
 		if (!doc) {
 			throw new NotFoundException('Shop not found');

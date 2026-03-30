@@ -15,12 +15,14 @@ import { DeleteShopUseCase } from './app/use_cases/shops/DeleteShopUseCase';
 import { UpdateShopUseCase } from './app/use_cases/shops/UpdateShopUseCase';
 import { ListAllShopsUseCase } from './app/use_cases/shops/ListAllShopsUseCase';
 import { UsersModule } from './users.module';
+import { MediaItemModule } from './mediaItem.module';
 
 @Module({
 	imports: [
 		MongooseModule.forFeature([{ name: 'Shop', schema: ShopSchema }]),
 		UsersModule,
 		ProviderInfoModule,
+		MediaItemModule,
 	],
 	controllers: [ShopController],
 	providers: [

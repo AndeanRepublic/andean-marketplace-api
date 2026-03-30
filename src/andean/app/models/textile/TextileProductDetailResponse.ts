@@ -211,6 +211,12 @@ export class SealInfoResponse {
 
 	@ApiProperty({ description: 'ID del media del logo del sello' })
 	logoMediaId!: string;
+
+	@ApiPropertyOptional({
+		description: 'URL pública del logo del sello',
+		example: 'https://cdn.example.com/seals/logo.png',
+	})
+	logoUrl?: string;
 }
 
 export class CommunityInfoResponse {

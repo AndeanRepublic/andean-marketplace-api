@@ -34,6 +34,9 @@ import { UpdateShopDto } from './dto/UpdateShopDto';
 import { UpdateShopUseCase } from '../../app/use_cases/shops/UpdateShopUseCase';
 import { ShopResponse } from '../../app/models/shop/ShopResponse';
 import { CurrentUser } from '../core/current-user.decorator';
+import { MediaUrlResolver } from '../services/textileProducts/MediaUrlResolver';
+import type { ShopWithProviderInfo } from '../../app/use_cases/shops/GetShopByIdUseCase';
+import { ProviderInfo } from '../../domain/entities/ProviderInfo';
 
 @ApiTags('shops')
 @Controller('shops')
@@ -46,6 +49,7 @@ export class ShopController {
 		private readonly createShopUseCase: CreateShopUseCase,
 		private readonly deleteShopUseCase: DeleteShopUseCase,
 		private readonly updateShopUseCase: UpdateShopUseCase,
+		private readonly mediaUrlResolver: MediaUrlResolver,
 	) {}
 
 	@Public()
@@ -60,8 +64,9 @@ export class ShopController {
 		description: 'Lista de tiendas',
 		type: [ShopResponse],
 	})
-	async listAll(): Promise<Shop[]> {
-		return this.listAllShopsUseCase.handle();
+	async listAll(): Promise<ShopResponse[]> {
+		const shops = await this.listAllShopsUseCase.handle();
+		return Promise.all(shops.map((shop) => this.toResponse(shop)));
 	}
 
 	@Public()
@@ -77,8 +82,9 @@ export class ShopController {
 		type: [ShopResponse],
 	})
 	@ApiResponse({ status: 404, description: 'Vendedor no encontrado' })
-	async finBySeller(@Param('sellerId') sellerId: string): Promise<Shop[]> {
-		return this.getShopsBySellerIdUseCase.handle(sellerId);
+	async finBySeller(@Param('sellerId') sellerId: string): Promise<ShopResponse[]> {
+		const shops = await this.getShopsBySellerIdUseCase.handle(sellerId);
+		return Promise.all(shops.map((shop) => this.toResponse(shop)));
 	}
 
 	@Public()
@@ -100,8 +106,9 @@ export class ShopController {
 	})
 	async getByCategory(
 		@Param('categoryName') categoryName: string,
-	): Promise<Shop[]> {
-		return this.getShopsByCategoryUseCase.handle(categoryName);
+	): Promise<ShopResponse[]> {
+		const shops = await this.getShopsByCategoryUseCase.handle(categoryName);
+		return Promise.all(shops.map((shop) => this.toResponse(shop)));
 	}
 
 	@Public()
@@ -117,8 +124,11 @@ export class ShopController {
 		type: ShopResponse,
 	})
 	@ApiResponse({ status: 404, description: 'Tienda no encontrada' })
-	async findById(@Param('shopId') shopId: string): Promise<Shop> {
-		return this.getShopsByIdUseCase.handle(shopId);
+	async findById(
+		@Param('shopId') shopId: string,
+	): Promise<ShopResponse & { providerInfo?: Record<string, unknown> }> {
+		const shop = await this.getShopsByIdUseCase.handle(shopId);
+		return this.toResponse(shop);
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
@@ -138,8 +148,9 @@ export class ShopController {
 	})
 	@ApiResponse({ status: 400, description: 'Datos de entrada inválidos' })
 	@ApiResponse({ status: 404, description: 'Vendedor no encontrado' })
-	async createShop(@Body() createShopDto: CreateShopDto): Promise<Shop> {
-		return this.createShopUseCase.handle(createShopDto);
+	async createShop(@Body() createShopDto: CreateShopDto): Promise<ShopResponse> {
+		const shop = await this.createShopUseCase.handle(createShopDto);
+		return this.toResponse(shop);
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
@@ -174,7 +185,61 @@ export class ShopController {
 	async updateShop(
 		@Param('shopId') shopId: string,
 		@Body() dto: UpdateShopDto,
-	): Promise<Shop> {
-		return this.updateShopUseCase.handle(shopId, dto);
+	): Promise<ShopResponse & { providerInfo?: Record<string, unknown> }> {
+		await this.updateShopUseCase.handle(shopId, dto);
+		const shop = await this.getShopsByIdUseCase.handle(shopId);
+		return this.toResponse(shop);
+	}
+
+	private async toResponse(
+		shop: Shop | ShopWithProviderInfo,
+	): Promise<ShopResponse & { providerInfo?: Record<string, unknown> }> {
+		return {
+			id: shop.id,
+			sellerId: shop.sellerId,
+			name: shop.name,
+			categories: shop.categories,
+			artisanPhotoMediaId: shop.artisanPhotoMediaId,
+			artisanPhotoUrl: await this.mediaUrlResolver.resolveUrl(
+				shop.artisanPhotoMediaId,
+			),
+			providerInfo:
+				'providerInfo' in shop && shop.providerInfo
+					? this.providerInfoToPlain(shop.providerInfo)
+					: undefined,
+		};
+	}
+
+	private providerInfoToPlain(p: ProviderInfo): Record<string, unknown> {
+		return {
+			craftType: p.craftType,
+			tagline: p.tagline,
+			shortBio: p.shortBio,
+			originPlace: p.originPlace,
+			testimonialsOrAwards: p.testimonialsOrAwards,
+			workplacePhotoMediaId: p.workplacePhotoMediaId,
+			presentationVideoMediaId: p.presentationVideoMediaId,
+			isPartOfOrganization: p.isPartOfOrganization,
+			organizationName: p.organizationName,
+			memberCount: p.memberCount,
+			exactLocation: p.exactLocation,
+			contactAddress: p.contactAddress,
+			contactPhone: p.contactPhone,
+			contactEmail: p.contactEmail,
+			spokenLanguages: p.spokenLanguages,
+			hasInternetAccess: p.hasInternetAccess,
+			connectionTypes: p.connectionTypes,
+			extendedStory: p.extendedStory,
+			foundingYear: p.foundingYear,
+			projectTimeline: p.projectTimeline,
+			womenArtisanPercentage: p.womenArtisanPercentage,
+			includesPeopleWithDisabilities: p.includesPeopleWithDisabilities,
+			hasYouthInvolvement: p.hasYouthInvolvement,
+			indirectBeneficiaryChildren: p.indirectBeneficiaryChildren,
+			averageArtisanAge: p.averageArtisanAge,
+			parallelActivities: p.parallelActivities,
+			programParticipation: p.programParticipation,
+			trainingReceived: p.trainingReceived,
+		};
 	}
 }

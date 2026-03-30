@@ -45,6 +45,7 @@ import { SealResponse } from '../../app/models/community/SealResponse';
 import { Community } from '../../domain/entities/community/Community';
 import { Seal } from '../../domain/entities/community/Seal';
 import { ProviderInfo } from '../../domain/entities/ProviderInfo';
+import { MediaUrlResolver } from '../services/textileProducts/MediaUrlResolver';
 
 const path_seals = 'seals';
 const path_seals_id = 'seals/:id';
@@ -64,6 +65,7 @@ export class CommunityController {
 		private readonly getByIdSealUseCase: GetByIdSealUseCase,
 		private readonly updateSealUseCase: UpdateSealUseCase,
 		private readonly deleteSealUseCase: DeleteSealUseCase,
+		private readonly mediaUrlResolver: MediaUrlResolver,
 	) {}
 
 	@Public()
@@ -77,8 +79,9 @@ export class CommunityController {
 		description: 'Lista de sellos',
 		type: [SealResponse],
 	})
-	async getAllSeals(): Promise<Seal[]> {
-		return this.getAllSealsUseCase.handle();
+	async getAllSeals(): Promise<SealResponse[]> {
+		const seals = await this.getAllSealsUseCase.handle();
+		return Promise.all(seals.map((seal) => this.toSealResponse(seal)));
 	}
 
 	@Public()
@@ -87,8 +90,9 @@ export class CommunityController {
 	@ApiParam({ name: 'id', description: 'Sello ID' })
 	@ApiResponse({ status: 200, description: 'Sello encontrado', type: SealResponse })
 	@ApiResponse({ status: 404, description: 'Sello no encontrado' })
-	async getByIdSeal(@Param('id') id: string): Promise<Seal> {
-		return this.getByIdSealUseCase.handle(id);
+	async getByIdSeal(@Param('id') id: string): Promise<SealResponse> {
+		const seal = await this.getByIdSealUseCase.handle(id);
+		return this.toSealResponse(seal);
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
@@ -101,8 +105,9 @@ export class CommunityController {
 	async updateSeal(
 		@Param('id') id: string,
 		@Body() body: CreateSealDto,
-	): Promise<Seal> {
-		return this.updateSealUseCase.handle(id, body);
+	): Promise<SealResponse> {
+		const seal = await this.updateSealUseCase.handle(id, body);
+		return this.toSealResponse(seal);
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
@@ -217,8 +222,9 @@ export class CommunityController {
 	})
 	@ApiResponse({ status: 400, description: 'Datos de entrada inválidos' })
 	@ApiResponse({ status: 404, description: 'MediaItem no encontrado' })
-	async createManySeals(@Body() body: CreateManySealsDto): Promise<Seal[]> {
-		return this.createManySealsUseCase.handle(body);
+	async createManySeals(@Body() body: CreateManySealsDto): Promise<SealResponse[]> {
+		const seals = await this.createManySealsUseCase.handle(body);
+		return Promise.all(seals.map((seal) => this.toSealResponse(seal)));
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
@@ -238,8 +244,9 @@ export class CommunityController {
 	})
 	@ApiResponse({ status: 400, description: 'Datos de entrada inválidos' })
 	@ApiResponse({ status: 404, description: 'MediaItem no encontrado' })
-	async createSeal(@Body() body: CreateSealDto): Promise<Seal> {
-		return this.createSealUseCase.handle(body);
+	async createSeal(@Body() body: CreateSealDto): Promise<SealResponse> {
+		const seal = await this.createSealUseCase.handle(body);
+		return this.toSealResponse(seal);
 	}
 
 	private toResponse(community: Community): CommunityResponse {
@@ -251,17 +258,28 @@ export class CommunityController {
 		};
 	}
 
-	private toDetailResponse(
+	private async toDetailResponse(
 		data: CommunityWithProviderInfo,
-	): CommunityDetailResponse {
+	): Promise<CommunityDetailResponse> {
 		const base = this.toResponse(data);
 		return {
 			...base,
 			bannerImageId: data.bannerImageId,
+			bannerImageUrl: await this.mediaUrlResolver.resolveUrl(data.bannerImageId),
 			seals: data.seals ?? [],
 			providerInfo: data.providerInfo
 				? this.providerInfoToPlain(data.providerInfo)
 				: undefined,
+		};
+	}
+
+	private async toSealResponse(seal: Seal): Promise<SealResponse> {
+		return {
+			id: seal.id,
+			name: seal.name,
+			description: seal.description,
+			logoMediaId: seal.logoMediaId,
+			logoUrl: await this.mediaUrlResolver.resolveUrl(seal.logoMediaId),
 		};
 	}
 
