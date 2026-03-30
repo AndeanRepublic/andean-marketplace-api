@@ -13,6 +13,8 @@ export interface ProductFilters {
 	categoryId?: string;
 	ownerId?: string;
 	sortBy?: ProductSortBy;
+	/** Si es true, incluye productos con totalStock <= 0 (p. ej. panel de carga). */
+	includeZeroStock?: boolean;
 }
 
 export abstract class TextileProductRepository {

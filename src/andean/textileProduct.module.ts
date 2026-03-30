@@ -68,7 +68,7 @@ import { DeleteTextilePrincipalUseUseCase } from './app/use_cases/textileProduct
 import { CreateTextileProductUseCase } from './app/use_cases/textileProducts/CreateTextileProductUseCase';
 import { UpdateTextileProductUseCase } from './app/use_cases/textileProducts/UpdateTextileProductUseCase';
 import { GetAllTextileProductsUseCase } from './app/use_cases/textileProducts/GetAllTextileProductsUseCase';
-import { GetByIdTextileProductUseCase } from './app/use_cases/textileProducts/GetByIdTextileProductUseCase';
+import { GetTextileProductForSellerUseCase } from './app/use_cases/textileProducts/GetTextileProductForSellerUseCase';
 import { GetByIdTextileProductDetailUseCase } from './app/use_cases/textileProducts/GetByIdTextileProductDetailUseCase';
 import { DeleteTextileProductUseCase } from './app/use_cases/textileProducts/DeleteTextileProductUseCase';
 import { TextileCraftTechniqueRepository } from './app/datastore/textileProducts/TextileCraftTechnique.repo';
@@ -239,7 +239,7 @@ import { MediaUrlResolver } from './infra/services/textileProducts/MediaUrlResol
 		CreateTextileProductUseCase,
 		UpdateTextileProductUseCase,
 		GetAllTextileProductsUseCase,
-		GetByIdTextileProductUseCase,
+		GetTextileProductForSellerUseCase,
 		GetByIdTextileProductDetailUseCase,
 		DeleteTextileProductUseCase,
 		CreateTextileCertificationUseCase,

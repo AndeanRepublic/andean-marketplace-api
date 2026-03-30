@@ -7,7 +7,7 @@ import { AccountRole } from 'src/andean/domain/enums/AccountRole';
 import { assertTextileProductSellerAccess } from './assertTextileProductSellerAccess';
 
 @Injectable()
-export class DeleteTextileProductUseCase {
+export class GetTextileProductForSellerUseCase {
 	constructor(
 		@Inject(TextileProductRepository)
 		private readonly textileProductRepository: TextileProductRepository,
@@ -21,13 +21,12 @@ export class DeleteTextileProductUseCase {
 		id: string,
 		requestingUserId: string,
 		roles: AccountRole[],
-	): Promise<void> {
+	): Promise<TextileProduct> {
 		const productFound =
 			await this.textileProductRepository.getTextileProductById(id);
 		if (!productFound) {
 			throw new NotFoundException('Textile product not found');
 		}
-
 		await assertTextileProductSellerAccess(
 			productFound,
 			requestingUserId,
@@ -35,8 +34,6 @@ export class DeleteTextileProductUseCase {
 			this.shopRepository,
 			this.sellerProfileRepository,
 		);
-
-		await this.textileProductRepository.deleteTextileProduct(id);
-		return;
+		return productFound;
 	}
 }
