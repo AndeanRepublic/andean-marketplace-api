@@ -87,31 +87,33 @@ export class TextileCategoryController {
 		return this.createTextileCategoryUseCase.handle(body);
 	}
 
-	// @Put('/:id')
-	// @ApiOperation({
-	// 	summary: 'Actualizar categoría textil',
-	// 	description: 'Actualiza los datos de una categoría textil existente',
-	// })
-	// @ApiParam({
-	// 	name: 'id',
-	// 	description: 'ID de la categoría',
-	// 	example: 'uuid-1234-5678',
-	// })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'Categoría actualizada exitosamente',
-	// 	type: TextileCategory,
-	// })
-	// @ApiResponse({
-	// 	status: 404,
-	// 	description: 'Categoría no encontrada',
-	// })
-	// async updateTextileCategory(
-	// 	@Param('id') id: string,
-	// 	@Body() body: CreateTextileCategoryDto,
-	// ): Promise<TextileCategory> {
-	// 	return this.updateTextileCategoryUseCase.handle(id, body);
-	// }
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Put('/:id')
+	@ApiOperation({
+		summary: 'Actualizar categoría textil',
+		description: 'Actualiza los datos de una categoría textil existente',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID de la categoría',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Categoría actualizada exitosamente',
+		type: TextileCategory,
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Categoría no encontrada',
+	})
+	async updateTextileCategory(
+		@Param('id') id: string,
+		@Body() body: CreateTextileCategoryDto,
+	): Promise<TextileCategory> {
+		return this.updateTextileCategoryUseCase.handle(id, body);
+	}
 
 	@Public()
 	@Get()
@@ -129,51 +131,54 @@ export class TextileCategoryController {
 		return this.getAllTextileCategoriesUseCase.handle();
 	}
 
-	// @Get('/:id')
-	// @ApiOperation({
-	// 	summary: 'Obtener categoría por ID',
-	// 	description: 'Retorna una categoría textil específica por su ID',
-	// })
-	// @ApiParam({
-	// 	name: 'id',
-	// 	description: 'ID de la categoría',
-	// 	example: 'uuid-1234-5678',
-	// })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'Categoría encontrada',
-	// 	type: TextileCategory,
-	// })
-	// @ApiResponse({
-	// 	status: 404,
-	// 	description: 'Categoría no encontrada',
-	// })
-	// async getByIdTextileCategory(
-	// 	@Param('id') id: string,
-	// ): Promise<TextileCategory> {
-	// 	return this.getByIdTextileCategoryUseCase.handle(id);
-	// }
+	@Public()
+	@Get('/:id')
+	@ApiOperation({
+		summary: 'Obtener categoría por ID',
+		description: 'Retorna una categoría textil específica por su ID',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID de la categoría',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Categoría encontrada',
+		type: TextileCategory,
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Categoría no encontrada',
+	})
+	async getByIdTextileCategory(
+		@Param('id') id: string,
+	): Promise<TextileCategory> {
+		return this.getByIdTextileCategoryUseCase.handle(id);
+	}
 
-	// @Delete('/:id')
-	// @HttpCode(HttpStatus.NO_CONTENT)
-	// @ApiOperation({
-	// 	summary: 'Eliminar categoría textil',
-	// 	description: 'Elimina una categoría textil por su ID',
-	// })
-	// @ApiParam({
-	// 	name: 'id',
-	// 	description: 'ID de la categoría a eliminar',
-	// 	example: 'uuid-1234-5678',
-	// })
-	// @ApiResponse({
-	// 	status: 204,
-	// 	description: 'Categoría eliminada exitosamente',
-	// })
-	// @ApiResponse({
-	// 	status: 404,
-	// 	description: 'Categoría no encontrada',
-	// })
-	// async deleteTextileCategory(@Param('id') id: string): Promise<void> {
-	// 	return this.deleteTextileCategoryUseCase.handle(id);
-	// }
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Delete('/:id')
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@ApiOperation({
+		summary: 'Eliminar categoría textil',
+		description: 'Elimina una categoría textil por su ID',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID de la categoría a eliminar',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 204,
+		description: 'Categoría eliminada exitosamente',
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Categoría no encontrada',
+	})
+	async deleteTextileCategory(@Param('id') id: string): Promise<void> {
+		return this.deleteTextileCategoryUseCase.handle(id);
+	}
 }

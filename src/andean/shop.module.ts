@@ -13,6 +13,7 @@ import { GetShopsByCategoryUseCase } from './app/use_cases/shops/GetShopsByCateg
 import { GetShopsBySellerIdUseCase } from './app/use_cases/shops/GetShopsBySellerIdUseCase';
 import { DeleteShopUseCase } from './app/use_cases/shops/DeleteShopUseCase';
 import { UpdateShopUseCase } from './app/use_cases/shops/UpdateShopUseCase';
+import { ListAllShopsUseCase } from './app/use_cases/shops/ListAllShopsUseCase';
 import { UsersModule } from './users.module';
 
 @Module({
@@ -29,6 +30,7 @@ import { UsersModule } from './users.module';
 		GetShopsBySellerIdUseCase,
 		DeleteShopUseCase,
 		UpdateShopUseCase,
+		ListAllShopsUseCase,
 		{
 			provide: ShopRepository,
 			useClass: ShopRepoImpl,

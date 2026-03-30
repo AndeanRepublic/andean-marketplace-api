@@ -27,6 +27,7 @@ import { GetShopsByCategoryUseCase } from '../../app/use_cases/shops/GetShopsByC
 import { GetShopsBySellerIdUseCase } from '../../app/use_cases/shops/GetShopsBySellerIdUseCase';
 import { DeleteShopUseCase } from '../../app/use_cases/shops/DeleteShopUseCase';
 import { CreateShopUseCase } from '../../app/use_cases/shops/CreateShopUseCase';
+import { ListAllShopsUseCase } from '../../app/use_cases/shops/ListAllShopsUseCase';
 import { Shop } from '../../domain/entities/Shop';
 import { CreateShopDto } from './dto/CreateShopDto';
 import { UpdateShopDto } from './dto/UpdateShopDto';
@@ -38,6 +39,7 @@ import { CurrentUser } from '../core/current-user.decorator';
 @Controller('shops')
 export class ShopController {
 	constructor(
+		private readonly listAllShopsUseCase: ListAllShopsUseCase,
 		private readonly getShopsByIdUseCase: GetShopByIdUseCase,
 		private readonly getShopsByCategoryUseCase: GetShopsByCategoryUseCase,
 		private readonly getShopsBySellerIdUseCase: GetShopsBySellerIdUseCase,
@@ -47,24 +49,23 @@ export class ShopController {
 	) {}
 
 	@Public()
-	@Get('/:shopId')
+	@Get()
 	@ApiOperation({
-		summary: 'Obtener tienda por ID',
-		description: 'Recupera la información de una tienda específica por su ID',
+		summary: 'Listar todas las tiendas',
+		description:
+			'Lista todas las tiendas/emprendimientos (p. ej. para formularios de alta de producto)',
 	})
-	@ApiParam({ name: 'shopId', description: 'ID de la tienda', type: String })
 	@ApiResponse({
 		status: 200,
-		description: 'Tienda encontrada',
-		type: ShopResponse,
+		description: 'Lista de tiendas',
+		type: [ShopResponse],
 	})
-	@ApiResponse({ status: 404, description: 'Tienda no encontrada' })
-	async findById(@Param('shopId') shopId: string): Promise<Shop> {
-		return this.getShopsByIdUseCase.handle(shopId);
+	async listAll(): Promise<Shop[]> {
+		return this.listAllShopsUseCase.handle();
 	}
 
 	@Public()
-	@Get('/by-seller/:sellerId')
+	@Get('by-seller/:sellerId')
 	@ApiOperation({
 		summary: 'Obtener tiendas por vendedor',
 		description: 'Recupera todas las tiendas asociadas a un vendedor',
@@ -81,7 +82,7 @@ export class ShopController {
 	}
 
 	@Public()
-	@Get('/by-category/:categoryName')
+	@Get('by-category/:categoryName')
 	@ApiOperation({
 		summary: 'Obtener tiendas por categoría',
 		description:
@@ -101,6 +102,23 @@ export class ShopController {
 		@Param('categoryName') categoryName: string,
 	): Promise<Shop[]> {
 		return this.getShopsByCategoryUseCase.handle(categoryName);
+	}
+
+	@Public()
+	@Get(':shopId')
+	@ApiOperation({
+		summary: 'Obtener tienda por ID',
+		description: 'Recupera la información de una tienda específica por su ID',
+	})
+	@ApiParam({ name: 'shopId', description: 'ID de la tienda', type: String })
+	@ApiResponse({
+		status: 200,
+		description: 'Tienda encontrada',
+		type: ShopResponse,
+	})
+	@ApiResponse({ status: 404, description: 'Tienda no encontrada' })
+	async findById(@Param('shopId') shopId: string): Promise<Shop> {
+		return this.getShopsByIdUseCase.handle(shopId);
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)

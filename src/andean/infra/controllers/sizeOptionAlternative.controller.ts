@@ -86,31 +86,34 @@ export class SizeOptionAlternativeController {
 		return this.createManySizeOptionAlternativesUseCase.handle(body);
 	}
 
-	// @Put('/:id')
-	// @ApiOperation({
-	// 	summary: 'Actualizar opción de talla',
-	// 	description: 'Actualiza los datos de una opción de talla existente',
-	// })
-	// @ApiParam({
-	// 	name: 'id',
-	// 	description: 'ID de la opción de talla',
-	// 	example: 'uuid-1234-5678',
-	// })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'Opción de talla actualizada exitosamente',
-	// 	type: SizeOptionAlternative,
-	// })
-	// @ApiResponse({
-	// 	status: 404,
-	// 	description: 'Opción de talla no encontrada',
-	// })
-	// async updateSizeOptionAlternative(
-	// 	@Param('id') id: string,
-	// 	@Body() body: CreateSizeOptionAlternativeDto,
-	// ): Promise<SizeOptionAlternative> {
-	// 	return this.updateSizeOptionAlternativeUseCase.handle(id, body);
-	// }
+	@Put('/:id')
+	@HttpCode(HttpStatus.OK)
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@ApiOperation({
+		summary: 'Actualizar opción de talla',
+		description: 'Actualiza los datos de una opción de talla existente',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID de la opción de talla',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Opción de talla actualizada exitosamente',
+		type: SizeOptionAlternative,
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Opción de talla no encontrada',
+	})
+	async updateSizeOptionAlternative(
+		@Param('id') id: string,
+		@Body() body: CreateSizeOptionAlternativeDto,
+	): Promise<SizeOptionAlternative> {
+		return this.updateSizeOptionAlternativeUseCase.handle(id, body);
+	}
 
 	@Public()
 	@Get()
@@ -128,51 +131,54 @@ export class SizeOptionAlternativeController {
 		return this.getAllSizeOptionAlternativesUseCase.handle();
 	}
 
-	// @Get('/:id')
-	// @ApiOperation({
-	// 	summary: 'Obtener opción de talla por ID',
-	// 	description: 'Retorna una opción de talla específica por su ID',
-	// })
-	// @ApiParam({
-	// 	name: 'id',
-	// 	description: 'ID de la opción de talla',
-	// 	example: 'uuid-1234-5678',
-	// })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'Opción de talla encontrada',
-	// 	type: SizeOptionAlternative,
-	// })
-	// @ApiResponse({
-	// 	status: 404,
-	// 	description: 'Opción de talla no encontrada',
-	// })
-	// async getByIdSizeOptionAlternative(
-	// 	@Param('id') id: string,
-	// ): Promise<SizeOptionAlternative> {
-	// 	return this.getByIdSizeOptionAlternativeUseCase.handle(id);
-	// }
+	@Public()
+	@Get('/:id')
+	@ApiOperation({
+		summary: 'Obtener opción de talla por ID',
+		description: 'Retorna una opción de talla específica por su ID',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID de la opción de talla',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Opción de talla encontrada',
+		type: SizeOptionAlternative,
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Opción de talla no encontrada',
+	})
+	async getByIdSizeOptionAlternative(
+		@Param('id') id: string,
+	): Promise<SizeOptionAlternative> {
+		return this.getByIdSizeOptionAlternativeUseCase.handle(id);
+	}
 
-	// @Delete('/:id')
-	// @HttpCode(HttpStatus.NO_CONTENT)
-	// @ApiOperation({
-	// 	summary: 'Eliminar opción de talla',
-	// 	description: 'Elimina una opción de talla por su ID',
-	// })
-	// @ApiParam({
-	// 	name: 'id',
-	// 	description: 'ID de la opción de talla a eliminar',
-	// 	example: 'uuid-1234-5678',
-	// })
-	// @ApiResponse({
-	// 	status: 204,
-	// 	description: 'Opción de talla eliminada exitosamente',
-	// })
-	// @ApiResponse({
-	// 	status: 404,
-	// 	description: 'Opción de talla no encontrada',
-	// })
-	// async deleteSizeOptionAlternative(@Param('id') id: string): Promise<void> {
-	// 	return this.deleteSizeOptionAlternativeUseCase.handle(id);
-	// }
+	@Delete('/:id')
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@ApiOperation({
+		summary: 'Eliminar opción de talla',
+		description: 'Elimina una opción de talla por su ID',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID de la opción de talla a eliminar',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 204,
+		description: 'Opción de talla eliminada exitosamente',
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Opción de talla no encontrada',
+	})
+	async deleteSizeOptionAlternative(@Param('id') id: string): Promise<void> {
+		return this.deleteSizeOptionAlternativeUseCase.handle(id);
+	}
 }
