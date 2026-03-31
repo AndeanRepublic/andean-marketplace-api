@@ -8,6 +8,8 @@
 		"productType": "TEXTILE",
 		"numberLikes": 10,
 		"numberDislikes": 1,
+		"likedBy": ["user-uuid-001", "user-uuid-002"],
+		"dislikedBy": ["user-uuid-003"],
 		"mediaId": "media-uuid-111",
 		"createdAt": "2026-02-01T10:00:00.000Z",
 		"updatedAt": "2026-02-01T10:00:00.000Z"
