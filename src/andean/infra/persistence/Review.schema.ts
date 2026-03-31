@@ -14,6 +14,8 @@ export const ReviewSchema = new Schema({
 	},
 	numberLikes: Number,
 	numberDislikes: Number,
+	likedBy: { type: [String], default: [] },
+	dislikedBy: { type: [String], default: [] },
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 });
@@ -27,6 +29,8 @@ export interface ReviewDocument extends Document {
 	productType: ProductType;
 	numberLikes: number;
 	numberDislikes: number;
+	likedBy: string[];
+	dislikedBy: string[];
 	createdAt: Date;
 	updatedAt: Date;
 }
