@@ -1,11 +1,6 @@
-import {
-	BadRequestException,
-	Inject,
-	Injectable,
-	NotFoundException,
-} from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ReviewRepository } from '../datastore/Review.repo';
-import { Review } from 'src/andean/domain/entities/Review';
+import { VoteResult } from '../models/review/VoteResult';
 
 @Injectable()
 export class DecrementDislikesUseCase {
@@ -14,14 +9,22 @@ export class DecrementDislikesUseCase {
 		private readonly reviewRepository: ReviewRepository,
 	) {}
 
-	async handle(id: string): Promise<Review> {
-		const reviewFound = await this.reviewRepository.getById(id);
-		if (!reviewFound) {
+	async handle(reviewId: string, userId: string): Promise<VoteResult> {
+		const review = await this.reviewRepository.removeDislike(reviewId, userId);
+		if (!review) {
 			throw new NotFoundException('Review not found');
 		}
-		if (reviewFound.numberDislikes === 0) {
-			throw new BadRequestException('Review already has 0 dislikes');
-		}
-		return this.reviewRepository.decrementDislikes(id);
+
+		const userVote = review.likedBy?.includes(userId)
+			? 'like'
+			: review.dislikedBy?.includes(userId)
+				? 'dislike'
+				: null;
+
+		return {
+			numberLikes: review.numberLikes,
+			numberDislikes: review.numberDislikes,
+			userVote,
+		};
 	}
 }
