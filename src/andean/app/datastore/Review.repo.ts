@@ -11,8 +11,8 @@ export abstract class ReviewRepository {
 		productId: string,
 		productType: ProductType,
 	): Promise<Review[]>;
-	abstract incrementLikes(id: string): Promise<Review>;
-	abstract incrementDislikes(id: string): Promise<Review>;
-	abstract decrementLikes(id: string): Promise<Review>;
-	abstract decrementDislikes(id: string): Promise<Review>;
+	abstract addLike(reviewId: string, userId: string): Promise<Review>;
+	abstract removeLike(reviewId: string, userId: string): Promise<Review>;
+	abstract addDislike(reviewId: string, userId: string): Promise<Review>;
+	abstract removeDislike(reviewId: string, userId: string): Promise<Review>;
 }
