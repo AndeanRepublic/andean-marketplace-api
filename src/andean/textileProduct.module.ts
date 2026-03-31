@@ -15,6 +15,7 @@ import { ShopsModule } from './shop.module';
 import { CommunityModule } from './community.module';
 import { MediaItemModule } from './mediaItem.module';
 import { OriginProductModule } from './originProduct.module';
+import { ProviderInfoModule } from './providerInfo.module';
 import { AccountRepository } from './app/datastore/Account.repo';
 import { AccountReviewRepositoryImpl } from './infra/datastore/AccountReviewOnly.repo.impl';
 import { CreateTextileCategoryUseCase } from './app/use_cases/textileProducts/CreateTextileCategoryUseCase';
@@ -188,6 +189,7 @@ import { MediaUrlResolver } from './infra/services/textileProducts/MediaUrlResol
 		UsersModule,
 		ShopsModule,
 		CommunityModule,
+		ProviderInfoModule,
 		OriginProductModule,
 		forwardRef(() => VariantModule),
 		MediaItemModule,

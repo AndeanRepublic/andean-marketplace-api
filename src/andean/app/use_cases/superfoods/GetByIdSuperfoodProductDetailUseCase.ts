@@ -11,6 +11,7 @@ import { MediaItemRepository } from '../../datastore/MediaItem.repo';
 import { DetailSourceProductRepository } from '../../datastore/DetailSourceProduct.repo';
 import { ProductType } from '../../../domain/enums/ProductType';
 import { MediaItemRole } from '../../../domain/enums/MediaItemRole';
+import { OwnerType } from '../../../domain/enums/OwnerType';
 import { Review } from '../../../domain/entities/Review';
 import { MediaItem } from '../../../domain/entities/MediaItem';
 import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
@@ -22,6 +23,9 @@ import {
 	SuperfoodProductListItemCompact,
 } from '../../models/superfoods/SuperfoodProductDetailResponse';
 import { SuperfoodProductListItem } from '../../models/superfoods/SuperfoodProductListItem';
+import { OwnerInfoResolver } from '../../../infra/services/owner/OwnerInfoResolver';
+import { MediaUrlResolver } from '../../../infra/services/media/MediaUrlResolver';
+import { OwnerInfoResponse } from '../../models/textile/TextileProductDetailResponse';
 
 @Injectable()
 export class GetByIdSuperfoodProductDetailUseCase {
@@ -46,6 +50,8 @@ export class GetByIdSuperfoodProductDetailUseCase {
 		private readonly mediaItemRepository: MediaItemRepository,
 		@Inject(DetailSourceProductRepository)
 		private readonly detailSourceProductRepository: DetailSourceProductRepository,
+		private readonly mediaUrlResolver: MediaUrlResolver,
+		private readonly ownerInfoResolver: OwnerInfoResolver,
 	) {}
 
 	async handle(productId: string): Promise<SuperfoodProductDetailResponse> {
@@ -78,13 +84,38 @@ export class GetByIdSuperfoodProductDetailUseCase {
 			]);
 
 		// 3. Resolver imágenes por rol
-		const images = this.resolveImages(mediaItems);
+		const images = await this.resolveImages(mediaItems);
 
 		// 4. Resolver owner y reviews en paralelo
-		const [ownerInfo, reviewsResponse] = await Promise.all([
-			this.resolveOwner(product),
+		const [resolvedOwnerInfo, reviewsResponse] = await Promise.all([
+			this.ownerInfoResolver.resolveDetailed(
+				String(product.baseInfo.ownerType),
+				product.baseInfo.ownerId,
+			),
 			this.buildReviews(reviews),
 		]);
+		const ownerInfo: OwnerInfoResponse = resolvedOwnerInfo ?? {
+			ownerType:
+				String(product.baseInfo.ownerType) === OwnerType.SHOP
+					? OwnerType.SHOP
+					: OwnerType.COMMUNITY,
+			...(String(product.baseInfo.ownerType) === OwnerType.SHOP
+				? {
+						shop: {
+							ownerImage: '',
+							shopName: '',
+							originPlace: '',
+							seals: [],
+						},
+					}
+				: {
+						community: {
+							bannerImageUrl: '',
+							name: '',
+							seals: [],
+						},
+					}),
+		};
 
 		// 5. Resolver nutritional features con iconos (batch de mediaIds)
 		const featureIconIds = nutritionalFeatures
@@ -164,7 +195,7 @@ export class GetByIdSuperfoodProductDetailUseCase {
 				isDiscountActive: product.isDiscountActive,
 				traceabilityInfo,
 			},
-			owner: ownerInfo,
+			ownerInfo,
 			benefitsInfo,
 			sourceProductInfo,
 			strikingNutritionalItems,
@@ -176,11 +207,11 @@ export class GetByIdSuperfoodProductDetailUseCase {
 
 	// ── Private helpers ──────────────────────────────────────────────────
 
-	private resolveImages(mediaItems: MediaItem[]): {
+	private async resolveImages(mediaItems: MediaItem[]): Promise<{
 		mainImg: MediaImageResponse;
 		plateImg: MediaImageResponse;
 		sourceProductImg: MediaImageResponse;
-	} {
+	}> {
 		const principal = mediaItems.find(
 			(m) => m.role === MediaItemRole.PRINCIPAL,
 		);
@@ -189,48 +220,19 @@ export class GetByIdSuperfoodProductDetailUseCase {
 		);
 		const none = mediaItems.find((m) => m.role === MediaItemRole.NONE);
 
+		const mediaUrlById = await this.mediaUrlResolver.resolveUrls(
+			mediaItems.map((item) => item.id),
+		);
+
 		const toImage = (m?: MediaItem): MediaImageResponse => ({
 			name: m?.name || '',
-			url: m?.key || '',
+			url: m?.id ? mediaUrlById.get(m.id) || '' : '',
 		});
 
 		return {
 			mainImg: toImage(principal),
 			plateImg: toImage(secondary),
 			sourceProductImg: toImage(none),
-		};
-	}
-
-	private async resolveOwner(
-		product: SuperfoodProduct,
-	): Promise<{ id: string; type: string; name: string; imgUrl: string }> {
-		const ownerType = product.baseInfo.ownerType;
-		const ownerId = product.baseInfo.ownerId;
-
-		if (ownerType === 'COMMUNITY') {
-			const community = await this.communityRepository.getById(ownerId);
-			let imgUrl = '';
-			if (community?.bannerImageId) {
-				const bannerMedia = await this.mediaItemRepository.getById(
-					community.bannerImageId,
-				);
-				imgUrl = bannerMedia?.key || '';
-			}
-			return {
-				id: ownerId,
-				type: ownerType,
-				name: community?.name || '',
-				imgUrl,
-			};
-		}
-
-		// SHOP
-		const shop = await this.shopRepository.getById(ownerId);
-		return {
-			id: ownerId,
-			type: ownerType,
-			name: shop?.name || '',
-			imgUrl: '',
 		};
 	}
 
@@ -343,8 +345,14 @@ export class GetByIdSuperfoodProductDetailUseCase {
 				ownerName: p.ownerName,
 				price: p.price,
 				totalStock: p.totalStock,
-				mainImage: p.mainImage,
-				sourceProductImage: p.sourceProductImage,
+				mainImage: {
+					...p.mainImage,
+					url: this.mediaUrlResolver.resolveKey(p.mainImage?.url),
+				},
+				sourceProductImage: {
+					...p.sourceProductImage,
+					url: this.mediaUrlResolver.resolveKey(p.sourceProductImage?.url),
+				},
 				nutritionItems: p.nutritionItems,
 			}));
 	}
