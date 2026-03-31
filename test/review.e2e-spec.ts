@@ -28,6 +28,7 @@ import { MediaItemType } from '../src/andean/domain/enums/MediaItemType';
 import { MediaItemRole } from '../src/andean/domain/enums/MediaItemRole';
 import { AccountRole } from '../src/andean/domain/enums/AccountRole';
 import { FixtureLoader } from './helpers/fixture-loader';
+import { VoteResult } from '../src/andean/app/models/review/VoteResult';
 
 describe('ReviewController (e2e)', () => {
 	let app: INestApplication;
@@ -678,6 +679,252 @@ describe('ReviewController (e2e)', () => {
 						numberDislikes: Math.max(0, mockReview.numberDislikes - 1),
 					});
 				});
+		});
+	});
+
+	// ─── Voting scenarios (VoteResult shape) ──────────────────────────────────
+	describe('Voting scenarios (PATCH/DELETE likes & dislikes)', () => {
+		const userId = mockAuthUsers.customer.userId;
+
+		// ── SC-1: First-time like ─────────────────────────────────────────────
+		it('SC-1: should like a review for the first time (userVote = like, likes +1)', () => {
+			const voteResult: VoteResult = {
+				numberLikes: mockReview.numberLikes + 1,
+				numberDislikes: mockReview.numberDislikes,
+				userVote: 'like',
+			};
+			jest
+				.spyOn(incrementLikesUseCase, 'handle')
+				.mockResolvedValueOnce(voteResult);
+
+			return request(app.getHttpServer())
+				.patch(`/reviews/${mockReview.id}/likes`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					expect(res.body).toMatchObject({
+						numberLikes: mockReview.numberLikes + 1,
+						numberDislikes: mockReview.numberDislikes,
+						userVote: 'like',
+					});
+					expect(incrementLikesUseCase.handle).toHaveBeenCalledWith(
+						mockReview.id,
+						userId,
+					);
+				});
+		});
+
+		// ── SC-2: Like is idempotent (already liked) ──────────────────────────
+		it('SC-2: should be idempotent when user already liked the review', () => {
+			const voteResult: VoteResult = {
+				numberLikes: mockReview.numberLikes,
+				numberDislikes: mockReview.numberDislikes,
+				userVote: 'like',
+			};
+			jest
+				.spyOn(incrementLikesUseCase, 'handle')
+				.mockResolvedValueOnce(voteResult);
+
+			return request(app.getHttpServer())
+				.patch(`/reviews/${mockReview.id}/likes`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					expect(res.body).toMatchObject({
+						numberLikes: mockReview.numberLikes,
+						numberDislikes: mockReview.numberDislikes,
+						userVote: 'like',
+					});
+				});
+		});
+
+		// ── SC-3: Toggle dislike → like ───────────────────────────────────────
+		it('SC-3: should toggle from dislike to like (likes +1, dislikes -1)', () => {
+			const voteResult: VoteResult = {
+				numberLikes: mockReview.numberLikes + 1,
+				numberDislikes: mockReview.numberDislikes - 1,
+				userVote: 'like',
+			};
+			jest
+				.spyOn(incrementLikesUseCase, 'handle')
+				.mockResolvedValueOnce(voteResult);
+
+			return request(app.getHttpServer())
+				.patch(`/reviews/${mockReview.id}/likes`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					expect(res.body).toMatchObject({
+						numberLikes: mockReview.numberLikes + 1,
+						numberDislikes: mockReview.numberDislikes - 1,
+						userVote: 'like',
+					});
+				});
+		});
+
+		// ── SC-4: First-time dislike ──────────────────────────────────────────
+		it('SC-4: should dislike a review for the first time (userVote = dislike, dislikes +1)', () => {
+			const voteResult: VoteResult = {
+				numberLikes: mockReview.numberLikes,
+				numberDislikes: mockReview.numberDislikes + 1,
+				userVote: 'dislike',
+			};
+			jest
+				.spyOn(incrementDislikesUseCase, 'handle')
+				.mockResolvedValueOnce(voteResult);
+
+			return request(app.getHttpServer())
+				.patch(`/reviews/${mockReview.id}/dislikes`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					expect(res.body).toMatchObject({
+						numberLikes: mockReview.numberLikes,
+						numberDislikes: mockReview.numberDislikes + 1,
+						userVote: 'dislike',
+					});
+					expect(incrementDislikesUseCase.handle).toHaveBeenCalledWith(
+						mockReview.id,
+						userId,
+					);
+				});
+		});
+
+		// ── SC-5: Dislike is idempotent (already disliked) ───────────────────
+		it('SC-5: should be idempotent when user already disliked the review', () => {
+			const voteResult: VoteResult = {
+				numberLikes: mockReview.numberLikes,
+				numberDislikes: mockReview.numberDislikes,
+				userVote: 'dislike',
+			};
+			jest
+				.spyOn(incrementDislikesUseCase, 'handle')
+				.mockResolvedValueOnce(voteResult);
+
+			return request(app.getHttpServer())
+				.patch(`/reviews/${mockReview.id}/dislikes`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					expect(res.body).toMatchObject({
+						numberLikes: mockReview.numberLikes,
+						numberDislikes: mockReview.numberDislikes,
+						userVote: 'dislike',
+					});
+				});
+		});
+
+		// ── SC-6: Toggle like → dislike ───────────────────────────────────────
+		it('SC-6: should toggle from like to dislike (dislikes +1, likes -1)', () => {
+			const voteResult: VoteResult = {
+				numberLikes: mockReview.numberLikes - 1,
+				numberDislikes: mockReview.numberDislikes + 1,
+				userVote: 'dislike',
+			};
+			jest
+				.spyOn(incrementDislikesUseCase, 'handle')
+				.mockResolvedValueOnce(voteResult);
+
+			return request(app.getHttpServer())
+				.patch(`/reviews/${mockReview.id}/dislikes`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					expect(res.body).toMatchObject({
+						numberLikes: mockReview.numberLikes - 1,
+						numberDislikes: mockReview.numberDislikes + 1,
+						userVote: 'dislike',
+					});
+				});
+		});
+
+		// ── SC-7: Remove like ─────────────────────────────────────────────────
+		it('SC-7: should remove a like (likes -1, userVote = null)', () => {
+			const voteResult = {
+				numberLikes: mockReview.numberLikes - 1,
+				numberDislikes: mockReview.numberDislikes,
+				userVote: null,
+			};
+			jest
+				.spyOn(decrementLikesUseCase, 'handle')
+				.mockResolvedValueOnce(voteResult);
+
+			return request(app.getHttpServer())
+				.delete(`/reviews/${mockReview.id}/likes`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					expect(res.body).toMatchObject({
+						numberLikes: mockReview.numberLikes - 1,
+						numberDislikes: mockReview.numberDislikes,
+						userVote: null,
+					});
+					expect(decrementLikesUseCase.handle).toHaveBeenCalledWith(
+						mockReview.id,
+						userId,
+					);
+				});
+		});
+
+		// ── SC-8: Remove dislike ──────────────────────────────────────────────
+		it('SC-8: should remove a dislike (dislikes -1, userVote = null)', () => {
+			const voteResult = {
+				numberLikes: mockReview.numberLikes,
+				numberDislikes: mockReview.numberDislikes - 1,
+				userVote: null,
+			};
+			jest
+				.spyOn(decrementDislikesUseCase, 'handle')
+				.mockResolvedValueOnce(voteResult);
+
+			return request(app.getHttpServer())
+				.delete(`/reviews/${mockReview.id}/dislikes`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					expect(res.body).toMatchObject({
+						numberLikes: mockReview.numberLikes,
+						numberDislikes: mockReview.numberDislikes - 1,
+						userVote: null,
+					});
+					expect(decrementDislikesUseCase.handle).toHaveBeenCalledWith(
+						mockReview.id,
+						userId,
+					);
+				});
+		});
+
+		// ── 404: review not found ─────────────────────────────────────────────
+		it('should return 404 when review does not exist (PATCH /likes)', () => {
+			jest
+				.spyOn(incrementLikesUseCase, 'handle')
+				.mockRejectedValueOnce(new NotFoundException('Review not found'));
+
+			return request(app.getHttpServer())
+				.patch('/reviews/non-existent-id/likes')
+				.expect(HttpStatus.NOT_FOUND);
+		});
+
+		it('should return 404 when review does not exist (PATCH /dislikes)', () => {
+			jest
+				.spyOn(incrementDislikesUseCase, 'handle')
+				.mockRejectedValueOnce(new NotFoundException('Review not found'));
+
+			return request(app.getHttpServer())
+				.patch('/reviews/non-existent-id/dislikes')
+				.expect(HttpStatus.NOT_FOUND);
+		});
+
+		it('should return 404 when review does not exist (DELETE /likes)', () => {
+			jest
+				.spyOn(decrementLikesUseCase, 'handle')
+				.mockRejectedValueOnce(new NotFoundException('Review not found'));
+
+			return request(app.getHttpServer())
+				.delete('/reviews/non-existent-id/likes')
+				.expect(HttpStatus.NOT_FOUND);
+		});
+
+		it('should return 404 when review does not exist (DELETE /dislikes)', () => {
+			jest
+				.spyOn(decrementDislikesUseCase, 'handle')
+				.mockRejectedValueOnce(new NotFoundException('Review not found'));
+
+			return request(app.getHttpServer())
+				.delete('/reviews/non-existent-id/dislikes')
+				.expect(HttpStatus.NOT_FOUND);
 		});
 	});
 
