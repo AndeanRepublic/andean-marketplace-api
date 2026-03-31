@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ReviewRepository } from '../../app/datastore/Review.repo';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -89,7 +89,7 @@ export class ReviewRepositoryImpl extends ReviewRepository {
 			)
 			.exec();
 		if (!updated) {
-			throw new Error('Review not found');
+			throw new NotFoundException('Review not found');
 		}
 		return ReviewMapper.fromDocument(updated);
 	}
@@ -121,7 +121,7 @@ export class ReviewRepositoryImpl extends ReviewRepository {
 			)
 			.exec();
 		if (!updated) {
-			throw new Error('Review not found');
+			throw new NotFoundException('Review not found');
 		}
 		return ReviewMapper.fromDocument(updated);
 	}
@@ -157,7 +157,7 @@ export class ReviewRepositoryImpl extends ReviewRepository {
 			)
 			.exec();
 		if (!updated) {
-			throw new Error('Review not found');
+			throw new NotFoundException('Review not found');
 		}
 		return ReviewMapper.fromDocument(updated);
 	}
@@ -189,7 +189,7 @@ export class ReviewRepositoryImpl extends ReviewRepository {
 			)
 			.exec();
 		if (!updated) {
-			throw new Error('Review not found');
+			throw new NotFoundException('Review not found');
 		}
 		return ReviewMapper.fromDocument(updated);
 	}
