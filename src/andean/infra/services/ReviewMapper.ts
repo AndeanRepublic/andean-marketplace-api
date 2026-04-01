@@ -21,6 +21,8 @@ export class ReviewMapper {
 			...reviewData,
 			numberLikes: 0,
 			numberDislikes: 0,
+			likedBy: [],
+			dislikedBy: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		};

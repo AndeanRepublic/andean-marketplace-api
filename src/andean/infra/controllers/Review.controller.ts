@@ -33,16 +33,17 @@ import { CreateReviewUseCase } from '../../app/use_cases/CreateReviewUseCase';
 import { Review } from '../../domain/entities/Review';
 import { CreateReviewDto } from './dto/CreateReviewDto';
 import { UpdateReviewDto } from './dto/UpdateReviewDto';
-import { ReviewResponse } from '../../app/models/review/ReviewResponse';
-import type { UploadedFile as UploadedFileModel } from '../../app/models/shared/UploadedFile';
-import { GetAllReviewsUseCase } from '../../app/use_cases/GetAllReviewsUseCase';
-import { GetByIdReviewUseCase } from '../../app/use_cases/GetByIdReviewUseCase';
-import { UpdateReviewUseCase } from '../../app/use_cases/UpdateReviewUseCase';
-import { DeleteReviewUseCase } from '../../app/use_cases/DeleteReviewUseCase';
-import { IncrementLikesUseCase } from '../../app/use_cases/IncrementLikesUseCase';
-import { IncrementDislikesUseCase } from '../../app/use_cases/IncrementDislikesUseCase';
-import { DecrementLikesUseCase } from '../../app/use_cases/DecrementLikesUseCase';
-import { DecrementDislikesUseCase } from '../../app/use_cases/DecrementDislikesUseCase';
+import { ReviewResponse } from '@/app/models/review/ReviewResponse';
+import { VoteResult } from '@/app/models/review/VoteResult';
+import type { UploadedFile as UploadedFileModel } from '@/app/models/shared/UploadedFile';
+import { GetAllReviewsUseCase } from '@/app/use_cases/GetAllReviewsUseCase';
+import { GetByIdReviewUseCase } from '@/app/use_cases/GetByIdReviewUseCase';
+import { UpdateReviewUseCase } from '@/app/use_cases/UpdateReviewUseCase';
+import { DeleteReviewUseCase } from '@/app/use_cases/DeleteReviewUseCase';
+import { IncrementLikesUseCase } from '@/app/use_cases/IncrementLikesUseCase';
+import { IncrementDislikesUseCase } from '@/app/use_cases/IncrementDislikesUseCase';
+import { DecrementLikesUseCase } from '@/app/use_cases/DecrementLikesUseCase';
+import { DecrementDislikesUseCase } from '@/app/use_cases/DecrementDislikesUseCase';
 
 const path_reviews = '/';
 const path_reviews_id = '/:id';
@@ -223,68 +224,84 @@ export class ReviewController {
 	@UseGuards(JwtAuthGuard)
 	@Patch(`${path_reviews_id}/likes`)
 	@ApiOperation({
-		summary: 'Incrementar likes',
-		description: 'Suma un like a la reseña indicada',
+		summary: 'Agregar like',
+		description:
+			'Registra un like del usuario autenticado en la reseña. Si ya tiene dislike, lo elimina. Idempotente.',
 	})
 	@ApiParam({ name: 'id', description: 'ID de la reseña', type: String })
 	@ApiResponse({
 		status: 200,
 		description: 'Like registrado exitosamente',
-		type: ReviewResponse,
+		type: VoteResult,
 	})
 	@ApiResponse({ status: 404, description: 'Reseña no encontrada' })
-	async incrementLikes(@Param('id') id: string): Promise<Review> {
-		return this.incrementLikesUseCase.handle(id);
+	async incrementLikes(
+		@Param('id') id: string,
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
+	): Promise<VoteResult> {
+		return this.incrementLikesUseCase.handle(id, requestingUser.userId);
 	}
 
 	@UseGuards(JwtAuthGuard)
 	@Patch(`${path_reviews_id}/dislikes`)
 	@ApiOperation({
-		summary: 'Incrementar dislikes',
-		description: 'Suma un dislike a la reseña indicada',
+		summary: 'Agregar dislike',
+		description:
+			'Registra un dislike del usuario autenticado en la reseña. Si ya tiene like, lo elimina. Idempotente.',
 	})
 	@ApiParam({ name: 'id', description: 'ID de la reseña', type: String })
 	@ApiResponse({
 		status: 200,
 		description: 'Dislike registrado exitosamente',
-		type: ReviewResponse,
+		type: VoteResult,
 	})
 	@ApiResponse({ status: 404, description: 'Reseña no encontrada' })
-	async incrementDislikes(@Param('id') id: string): Promise<Review> {
-		return this.incrementDislikesUseCase.handle(id);
+	async incrementDislikes(
+		@Param('id') id: string,
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
+	): Promise<VoteResult> {
+		return this.incrementDislikesUseCase.handle(id, requestingUser.userId);
 	}
 
 	@UseGuards(JwtAuthGuard)
 	@Delete(`${path_reviews_id}/likes`)
 	@ApiOperation({
-		summary: 'Decrementar likes',
-		description: 'Resta un like a la reseña indicada',
+		summary: 'Quitar like',
+		description:
+			'Elimina el like del usuario autenticado en la reseña. Idempotente si no tenía like.',
 	})
 	@ApiParam({ name: 'id', description: 'ID de la reseña', type: String })
 	@ApiResponse({
 		status: 200,
 		description: 'Like eliminado exitosamente',
-		type: ReviewResponse,
+		type: VoteResult,
 	})
 	@ApiResponse({ status: 404, description: 'Reseña no encontrada' })
-	async decrementLikes(@Param('id') id: string): Promise<Review> {
-		return this.decrementLikesUseCase.handle(id);
+	async decrementLikes(
+		@Param('id') id: string,
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
+	): Promise<VoteResult> {
+		return this.decrementLikesUseCase.handle(id, requestingUser.userId);
 	}
 
 	@UseGuards(JwtAuthGuard)
 	@Delete(`${path_reviews_id}/dislikes`)
 	@ApiOperation({
-		summary: 'Decrementar dislikes',
-		description: 'Resta un dislike a la reseña indicada',
+		summary: 'Quitar dislike',
+		description:
+			'Elimina el dislike del usuario autenticado en la reseña. Idempotente si no tenía dislike.',
 	})
 	@ApiParam({ name: 'id', description: 'ID de la reseña', type: String })
 	@ApiResponse({
 		status: 200,
 		description: 'Dislike eliminado exitosamente',
-		type: ReviewResponse,
+		type: VoteResult,
 	})
 	@ApiResponse({ status: 404, description: 'Reseña no encontrada' })
-	async decrementDislikes(@Param('id') id: string): Promise<Review> {
-		return this.decrementDislikesUseCase.handle(id);
+	async decrementDislikes(
+		@Param('id') id: string,
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
+	): Promise<VoteResult> {
+		return this.decrementDislikesUseCase.handle(id, requestingUser.userId);
 	}
 }
