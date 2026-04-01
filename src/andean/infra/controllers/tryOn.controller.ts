@@ -23,6 +23,7 @@ import {
 import { TryOnUseCase } from '../../app/use_cases/tryOn/TryOnUseCase';
 import { TryOnDto } from './dto/tryOn/TryOnDto';
 import { TryOnResponse } from '../../app/models/tryOn/TryOnResponse';
+import type { UploadedFile as UploadedFileModel } from '../../app/models/shared/UploadedFile';
 
 @ApiTags('Try On')
 @Controller('try-on')
@@ -84,7 +85,7 @@ export class TryOnController {
 				],
 			}),
 		)
-		file: Express.Multer.File,
+		file: UploadedFileModel,
 		@Body() dto: TryOnDto,
 	): Promise<TryOnResponse> {
 		return this.tryOnUseCase.execute({

@@ -1,6 +1,7 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { TextileProductRepository } from '../../datastore/textileProducts/TextileProduct.repo';
 import {
+	OwnerInfoResponse,
 	TextileProductDetailResponse,
 	TraceabilityInfoResponse,
 } from '../../models/textile/TextileProductDetailResponse';
@@ -17,9 +18,10 @@ import { AccountRepository } from '../../datastore/Account.repo';
 import { Review } from 'src/andean/domain/entities/Review';
 import { MediaItemRepository } from '../../datastore/MediaItem.repo';
 import { TextileProductAttributesAssembler } from '../../../infra/services/textileProducts/TextileProductAttributesAssembler';
-import { MediaUrlResolver } from '../../../infra/services/textileProducts/MediaUrlResolver';
+import { MediaUrlResolver } from '../../../infra/services/media/MediaUrlResolver';
 import { TraceabilityProcessName } from '../../../domain/enums/TraceabilityProcessName';
 import { TextileProduct } from 'src/andean/domain/entities/textileProducts/TextileProduct';
+import { OwnerInfoResolver } from '../../../infra/services/owner/OwnerInfoResolver';
 
 @Injectable()
 export class GetByIdTextileProductDetailUseCase {
@@ -46,6 +48,7 @@ export class GetByIdTextileProductDetailUseCase {
 		private readonly mediaItemRepository: MediaItemRepository,
 		private readonly mediaUrlResolver: MediaUrlResolver,
 		private readonly textileProductAttributesAssembler: TextileProductAttributesAssembler,
+		private readonly ownerInfoResolver: OwnerInfoResolver,
 	) {}
 
 	async handle(id: string): Promise<TextileProductDetailResponse> {
@@ -126,56 +129,11 @@ export class GetByIdTextileProductDetailUseCase {
 			product.categoryId,
 		);
 
-		// -- Obtener communityInfo si es COMMUNITY
-		let communityInfo:
-			| {
-					bannerImageUrl: string;
-					name: string;
-					seals: { title: string; description: string; logoMediaId: string }[];
-			  }
-			| undefined = undefined;
-		if (product.baseInfo.ownerType === OwnerType.COMMUNITY) {
-			const community = await this.communityRepository.getById(
+		const ownerInfo: OwnerInfoResponse | undefined =
+			await this.ownerInfoResolver.resolveDetailed(
+				product.baseInfo.ownerType,
 				product.baseInfo.ownerId,
 			);
-			if (community) {
-				const seals = community.seals
-					? await Promise.all(
-							community.seals.map((sealId) =>
-								this.sealRepository.getById(sealId),
-							),
-						)
-					: [];
-
-				let bannerImageUrl = '';
-				if (community.bannerImageId) {
-					const urlMap = await this.mediaUrlResolver.resolveUrls([
-						community.bannerImageId,
-					]);
-					bannerImageUrl = urlMap.get(community.bannerImageId) ?? '';
-				}
-				const sealLogoIds = seals
-					.filter((seal): seal is NonNullable<typeof seal> => seal !== null)
-					.map((seal) => seal.logoMediaId)
-					.filter(Boolean);
-				const sealLogoUrlMap = await this.mediaUrlResolver.resolveUrls(
-					sealLogoIds,
-				);
-
-				communityInfo = {
-					bannerImageUrl,
-					name: community.name,
-					seals: seals
-						.filter((seal): seal is NonNullable<typeof seal> => seal !== null)
-						.map((seal) => ({
-							title: seal.name,
-							description: seal.description,
-							logoMediaId: seal.logoMediaId,
-							logoUrl: sealLogoUrlMap.get(seal.logoMediaId) ?? '',
-						})),
-				};
-			}
-		}
 
 		// -- Obtener category name
 		let categoryName = '';
@@ -202,7 +160,7 @@ export class GetByIdTextileProductDetailUseCase {
 				comments,
 			},
 			similarProducts,
-			...(communityInfo && { communityInfo }),
+			...(ownerInfo && { ownerInfo }),
 		};
 	}
 
@@ -313,8 +271,7 @@ export class GetByIdTextileProductDetailUseCase {
 
 		if (categoryId) {
 			const sameCategory = allProducts.filter(
-				(p) =>
-					p.id !== currentProductId && p.categoryId === categoryId,
+				(p) => p.id !== currentProductId && p.categoryId === categoryId,
 			);
 			for (const p of sameCategory.slice(0, SIMILAR_LIMIT)) {
 				selectedIds.add(p.id);
@@ -325,10 +282,7 @@ export class GetByIdTextileProductDetailUseCase {
 		if (limitedProducts.length < SIMILAR_LIMIT) {
 			const need = SIMILAR_LIMIT - limitedProducts.length;
 			const fillers = allProducts
-				.filter(
-					(p) =>
-						p.id !== currentProductId && !selectedIds.has(p.id),
-				)
+				.filter((p) => p.id !== currentProductId && !selectedIds.has(p.id))
 				.slice(0, need);
 			for (const p of fillers) {
 				selectedIds.add(p.id);

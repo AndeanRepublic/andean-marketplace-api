@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { MediaItemRepository } from '../../../app/datastore/MediaItem.repo';
 
 /**
- * Servicio para resolver IDs de media a URLs completas.
+ * Servicio compartido para resolver IDs de media a URLs completas.
  * Usa MediaItemRepository y STORAGE_BASE_URL para construir las URLs.
  */
 @Injectable()
@@ -34,6 +34,15 @@ export class MediaUrlResolver {
 
 		const mediaMap = await this.resolveUrls([trimmed]);
 		return mediaMap.get(trimmed) || '';
+	}
+
+	resolveKey(key?: string | null): string {
+		if (!key) return '';
+
+		const trimmed = key.trim();
+		if (!trimmed) return '';
+
+		return this.buildUrl(trimmed);
 	}
 
 	/**

@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { OwnerInfoResponse } from '../textile/TextileProductDetailResponse';
 
 // ── Media ────────────────────────────────────────────────────────────────
 export class MediaImageResponse {
@@ -50,14 +51,6 @@ export class HeroDetailResponse {
 	@ApiProperty() isDiscountActive!: boolean;
 	@ApiProperty({ type: TraceabilityInfoResponse })
 	traceabilityInfo!: TraceabilityInfoResponse;
-}
-
-// ── Owner ────────────────────────────────────────────────────────────────
-export class OwnerInfoResponse {
-	@ApiProperty() id!: string;
-	@ApiProperty() type!: string;
-	@ApiProperty() name!: string;
-	@ApiProperty() imgUrl!: string;
 }
 
 // ── Benefit ──────────────────────────────────────────────────────────────
@@ -127,7 +120,8 @@ export class SuperfoodProductDetailResponse {
 	sourceProductImg!: MediaImageResponse;
 
 	@ApiProperty({ type: HeroDetailResponse }) heroDetail!: HeroDetailResponse;
-	@ApiProperty({ type: OwnerInfoResponse }) owner!: OwnerInfoResponse;
+	@ApiPropertyOptional({ type: OwnerInfoResponse })
+	ownerInfo?: OwnerInfoResponse;
 
 	@ApiProperty({ type: [BenefitInfoResponse] })
 	benefitsInfo!: BenefitInfoResponse[];

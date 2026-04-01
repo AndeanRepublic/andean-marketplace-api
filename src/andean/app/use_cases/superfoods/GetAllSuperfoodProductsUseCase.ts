@@ -5,12 +5,14 @@ import {
 } from '../../datastore/superfoods/SuperfoodProduct.repo';
 import { PaginatedProductsResponse } from '../../models/shared/PaginatedProductsResponse';
 import { SuperfoodProductListItem } from '../../models/superfoods/SuperfoodProductListItem';
+import { MediaUrlResolver } from '../../../infra/services/media/MediaUrlResolver';
 
 @Injectable()
 export class GetAllSuperfoodProductsUseCase {
 	constructor(
 		@Inject(SuperfoodProductRepository)
 		private readonly superfoodProductRepository: SuperfoodProductRepository,
+		private readonly mediaUrlResolver: MediaUrlResolver,
 	) {}
 
 	async handle(
@@ -27,7 +29,7 @@ export class GetAllSuperfoodProductsUseCase {
 			}
 
 			return {
-				products,
+				products: products.map((product) => this.resolveProductImages(product)),
 				pagination: {
 					total,
 					page: 1,
@@ -50,11 +52,27 @@ export class GetAllSuperfoodProductsUseCase {
 		const perPage = filters.perPage || 10;
 
 		return {
-			products,
+			products: products.map((product) => this.resolveProductImages(product)),
 			pagination: {
 				total,
 				page,
 				per_page: perPage,
+			},
+		};
+	}
+
+	private resolveProductImages(
+		product: SuperfoodProductListItem,
+	): SuperfoodProductListItem {
+		return {
+			...product,
+			mainImage: {
+				...product.mainImage,
+				url: this.mediaUrlResolver.resolveKey(product.mainImage?.url),
+			},
+			sourceProductImage: {
+				...product.sourceProductImage,
+				url: this.mediaUrlResolver.resolveKey(product.sourceProductImage?.url),
 			},
 		};
 	}

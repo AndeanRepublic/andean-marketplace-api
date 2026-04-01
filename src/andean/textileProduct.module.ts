@@ -15,6 +15,7 @@ import { ShopsModule } from './shop.module';
 import { CommunityModule } from './community.module';
 import { MediaItemModule } from './mediaItem.module';
 import { OriginProductModule } from './originProduct.module';
+import { ProviderInfoModule } from './providerInfo.module';
 import { AccountRepository } from './app/datastore/Account.repo';
 import { AccountReviewRepositoryImpl } from './infra/datastore/AccountReviewOnly.repo.impl';
 import { CreateTextileCategoryUseCase } from './app/use_cases/textileProducts/CreateTextileCategoryUseCase';
@@ -123,7 +124,8 @@ import { VariantModule } from './variant.module';
 import { VariantSchema } from './infra/persistence/variant.schema';
 import { MediaItemSchema } from './infra/persistence/mediaItem.schema';
 import { TextileProductAttributesAssembler } from './infra/services/textileProducts/TextileProductAttributesAssembler';
-import { MediaUrlResolver } from './infra/services/textileProducts/MediaUrlResolver';
+import { MediaUrlResolver } from './infra/services/media/MediaUrlResolver';
+import { OwnerInfoResolver } from './infra/services/owner/OwnerInfoResolver';
 
 @Module({
 	imports: [
@@ -188,6 +190,7 @@ import { MediaUrlResolver } from './infra/services/textileProducts/MediaUrlResol
 		UsersModule,
 		ShopsModule,
 		CommunityModule,
+		ProviderInfoModule,
 		OriginProductModule,
 		forwardRef(() => VariantModule),
 		MediaItemModule,
@@ -271,6 +274,7 @@ import { MediaUrlResolver } from './infra/services/textileProducts/MediaUrlResol
 		DecrementDislikesUseCase,
 		TextileProductAttributesAssembler,
 		MediaUrlResolver,
+		OwnerInfoResolver,
 		{
 			provide: TextileCategoryRepository,
 			useClass: TextileCategoryRepositoryImpl,

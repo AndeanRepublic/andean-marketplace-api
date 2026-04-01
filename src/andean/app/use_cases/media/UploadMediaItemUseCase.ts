@@ -5,9 +5,10 @@ import { StorageRepository } from '../../datastore/Storage.repo';
 import { MediaItemMapper } from '../../../infra/services/MediaItemMapper';
 import { MediaItemType } from '../../../domain/enums/MediaItemType';
 import { MediaItemRole } from '../../../domain/enums/MediaItemRole';
+import { UploadedFile } from '../../models/shared/UploadedFile';
 
 export interface UploadMediaItemInput {
-	file: Express.Multer.File;
+	file: UploadedFile;
 	type: MediaItemType;
 	name: string;
 	role?: MediaItemRole;
@@ -18,7 +19,7 @@ export class UploadMediaItemUseCase {
 	constructor(
 		private readonly mediaItemRepository: MediaItemRepository,
 		private readonly storageRepository: StorageRepository,
-	) { }
+	) {}
 
 	async execute(input: UploadMediaItemInput): Promise<MediaItem> {
 		const { file, type, name, role } = input;

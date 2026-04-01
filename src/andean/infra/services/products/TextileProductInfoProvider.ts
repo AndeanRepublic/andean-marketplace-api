@@ -3,7 +3,7 @@ import { ProductInfoProvider } from '../../../app/datastore/products/ProductInfo
 import { ProductInfo } from '../../../app/models/shared/ProductInfo';
 import { ProductType } from '../../../domain/enums/ProductType';
 import { TextileProductRepository } from '../../../app/datastore/textileProducts/TextileProduct.repo';
-import { MediaUrlResolver } from '../textileProducts/MediaUrlResolver';
+import { MediaUrlResolver } from '../media/MediaUrlResolver';
 
 @Injectable()
 export class TextileProductInfoProvider extends ProductInfoProvider {
