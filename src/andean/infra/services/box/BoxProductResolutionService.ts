@@ -11,6 +11,7 @@ import { Community } from '../../../domain/entities/community/Community';
 import { MediaItem } from '../../../domain/entities/MediaItem';
 import { Box, BoxProduct } from '../../../domain/entities/box/Box';
 import { BoxImageResponse } from '../../../app/models/box/BoxImageResponse';
+import { MediaUrlResolver } from '../media/MediaUrlResolver';
 
 export interface BoxDependencies {
 	superfoodMap: Map<string, SuperfoodProduct>;
@@ -28,6 +29,7 @@ export class BoxProductResolutionService {
 		private readonly textileProductRepository: TextileProductRepository,
 		private readonly communityRepository: CommunityRepository,
 		private readonly mediaItemRepository: MediaItemRepository,
+		private readonly mediaUrlResolver: MediaUrlResolver,
 	) {}
 
 	/**
@@ -120,7 +122,9 @@ export class BoxProductResolutionService {
 	): BoxImageResponse {
 		if (!mediaId) return { url: '', name: '' };
 		const media = mediaMap.get(mediaId);
-		return media ? { url: media.key, name: media.name } : { url: '', name: '' };
+		return media
+			? { url: this.mediaUrlResolver.resolveKey(media.key), name: media.name }
+			: { url: '', name: '' };
 	}
 
 	/**

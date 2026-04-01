@@ -3,7 +3,7 @@ import { ProductInfoProvider } from '../../../app/datastore/products/ProductInfo
 import { ProductInfo } from '../../../app/models/shared/ProductInfo';
 import { ProductType } from '../../../domain/enums/ProductType';
 import { BoxRepository } from '../../../app/datastore/box/Box.repo';
-import { MediaUrlResolver } from '../textileProducts/MediaUrlResolver';
+import { MediaUrlResolver } from '../media/MediaUrlResolver';
 
 /**
  * Provider de información de producto para Boxes.

@@ -50,8 +50,18 @@ export class GetBoxDetailUseCase {
 		const detail = {
 			description: box.description,
 			images: [
-				mainMedia ? { url: mainMedia.key, name: mainMedia.name } : null,
-				thumbMedia ? { url: thumbMedia.key, name: thumbMedia.name } : null,
+				mainMedia
+					? this.boxResolutionService.resolveImage(
+							box.mainImageId,
+							dependencies.mediaMap,
+						)
+					: null,
+				thumbMedia
+					? this.boxResolutionService.resolveImage(
+							box.thumbnailImageId,
+							dependencies.mediaMap,
+						)
+					: null,
 			].filter((img): img is BoxImageResponse => img !== null),
 		};
 

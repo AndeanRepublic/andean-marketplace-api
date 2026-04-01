@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { MediaItemRole } from 'src/andean/domain/enums/MediaItemRole';
+import { OwnerType } from 'src/andean/domain/enums/OwnerType';
 
 // ── Media ────────────────────────────────────────────────────────────────
 export class MediaImageResponse {
@@ -233,6 +234,40 @@ export class CommunityInfoResponse {
 	seals!: SealInfoResponse[];
 }
 
+export class ShopInfoResponse {
+	@ApiProperty({ description: 'URL de la imagen del owner (tienda)' })
+	ownerImage!: string;
+
+	@ApiProperty({ description: 'Nombre de la tienda' })
+	shopName!: string;
+
+	@ApiProperty({ description: 'Lugar de origen de la tienda' })
+	originPlace!: string;
+
+	@ApiProperty({
+		type: [SealInfoResponse],
+		description: 'Sellos asociados a la tienda',
+	})
+	seals!: SealInfoResponse[];
+}
+
+export class OwnerInfoResponse {
+	@ApiProperty({ enum: OwnerType, description: 'Tipo de owner del producto' })
+	ownerType!: OwnerType;
+
+	@ApiPropertyOptional({
+		type: CommunityInfoResponse,
+		description: 'Información de comunidad (si ownerType es COMMUNITY)',
+	})
+	community?: CommunityInfoResponse;
+
+	@ApiPropertyOptional({
+		type: ShopInfoResponse,
+		description: 'Información de tienda (si ownerType es SHOP)',
+	})
+	shop?: ShopInfoResponse;
+}
+
 // ── Main response ────────────────────────────────────────────────────────
 export class TextileProductDetailResponse {
 	@ApiProperty({
@@ -288,8 +323,8 @@ export class TextileProductDetailResponse {
 	similarProducts!: SimilarProductResponse[];
 
 	@ApiPropertyOptional({
-		type: CommunityInfoResponse,
-		description: 'Información de la comunidad asociada',
+		type: OwnerInfoResponse,
+		description: 'Información del owner asociado (comunidad o tienda)',
 	})
-	communityInfo?: CommunityInfoResponse;
+	ownerInfo?: OwnerInfoResponse;
 }

@@ -35,14 +35,15 @@ import { DeleteMediaItemUseCase } from '../../app/use_cases/media/DeleteMediaIte
 import { UploadMediaItemDto } from './dto/media/UploadMediaItemDto';
 import { UpdateMediaItemDto } from './dto/media/UpdateMediaItemDto';
 import { MediaItemResponse } from '../../app/models/shared/MediaItemResponse';
+import { UploadedFile as UploadedFileModel } from '../../app/models/shared/UploadedFile';
 import { MediaItem } from '../../domain/entities/MediaItem';
 import { MediaItemType } from '../../domain/enums/MediaItemType';
 import { MediaItemRole } from '../../domain/enums/MediaItemRole';
+import { MediaUrlResolver } from '../services/media/MediaUrlResolver';
 
 @ApiTags('Media Items')
 @Controller('media-items')
 export class MediaItemController {
-	private readonly storageBaseUrl: string;
 	private readonly maxFileSizeBytes: number;
 
 	constructor(
@@ -52,11 +53,8 @@ export class MediaItemController {
 		private readonly listMediaItemsUseCase: ListMediaItemsUseCase,
 		private readonly deleteMediaItemUseCase: DeleteMediaItemUseCase,
 		private readonly configService: ConfigService,
+		private readonly mediaUrlResolver: MediaUrlResolver,
 	) {
-		this.storageBaseUrl = this.configService.get<string>(
-			'STORAGE_BASE_URL',
-			'',
-		);
 		const maxSizeMB = parseInt(
 			this.configService.get<string>('UPLOAD_MAX_SIZE_MB', '5'),
 			10,
@@ -109,7 +107,7 @@ export class MediaItemController {
 		description: 'Archivo inválido o datos incorrectos',
 	})
 	async upload(
-		@UploadedFile() file: Express.Multer.File,
+		@UploadedFile() file: UploadedFileModel,
 		@Body() dto: UploadMediaItemDto,
 	): Promise<MediaItemResponse> {
 		if (!file) {
@@ -221,7 +219,7 @@ export class MediaItemController {
 			id: mediaItem.id,
 			type: mediaItem.type,
 			name: mediaItem.name,
-			url: `${this.storageBaseUrl}/${mediaItem.key}`, // Construir URL dinámicamente
+			url: this.mediaUrlResolver.resolveKey(mediaItem.key),
 			role: mediaItem.role,
 			createdAt: mediaItem.createdAt!,
 			updatedAt: mediaItem.updatedAt!,
