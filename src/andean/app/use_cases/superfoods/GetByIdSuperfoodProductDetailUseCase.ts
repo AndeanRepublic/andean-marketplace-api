@@ -11,7 +11,6 @@ import { MediaItemRepository } from '../../datastore/MediaItem.repo';
 import { DetailSourceProductRepository } from '../../datastore/DetailSourceProduct.repo';
 import { ProductType } from '../../../domain/enums/ProductType';
 import { MediaItemRole } from '../../../domain/enums/MediaItemRole';
-import { OwnerType } from '../../../domain/enums/OwnerType';
 import { Review } from '../../../domain/entities/Review';
 import { MediaItem } from '../../../domain/entities/MediaItem';
 import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
@@ -25,7 +24,6 @@ import {
 import { SuperfoodProductListItem } from '../../models/superfoods/SuperfoodProductListItem';
 import { OwnerInfoResolver } from '../../../infra/services/owner/OwnerInfoResolver';
 import { MediaUrlResolver } from '../../../infra/services/media/MediaUrlResolver';
-import { OwnerInfoResponse } from '../../models/textile/TextileProductDetailResponse';
 
 @Injectable()
 export class GetByIdSuperfoodProductDetailUseCase {
@@ -87,35 +85,13 @@ export class GetByIdSuperfoodProductDetailUseCase {
 		const images = await this.resolveImages(mediaItems);
 
 		// 4. Resolver owner y reviews en paralelo
-		const [resolvedOwnerInfo, reviewsResponse] = await Promise.all([
+		const [ownerInfo, reviewsResponse] = await Promise.all([
 			this.ownerInfoResolver.resolveDetailed(
 				String(product.baseInfo.ownerType),
 				product.baseInfo.ownerId,
 			),
 			this.buildReviews(reviews),
 		]);
-		const ownerInfo: OwnerInfoResponse = resolvedOwnerInfo ?? {
-			ownerType:
-				String(product.baseInfo.ownerType) === OwnerType.SHOP
-					? OwnerType.SHOP
-					: OwnerType.COMMUNITY,
-			...(String(product.baseInfo.ownerType) === OwnerType.SHOP
-				? {
-						shop: {
-							ownerImage: '',
-							shopName: '',
-							originPlace: '',
-							seals: [],
-						},
-					}
-				: {
-						community: {
-							bannerImageUrl: '',
-							name: '',
-							seals: [],
-						},
-					}),
-		};
 
 		// 5. Resolver nutritional features con iconos (batch de mediaIds)
 		const featureIconIds = nutritionalFeatures
@@ -195,7 +171,7 @@ export class GetByIdSuperfoodProductDetailUseCase {
 				isDiscountActive: product.isDiscountActive,
 				traceabilityInfo,
 			},
-			ownerInfo,
+			...(ownerInfo && { ownerInfo }),
 			benefitsInfo,
 			sourceProductInfo,
 			strikingNutritionalItems,

@@ -3,7 +3,7 @@ import {
 	TextileProductRepository,
 	ProductFilters,
 } from '../../datastore/textileProducts/TextileProduct.repo';
-import { MediaUrlResolver } from '../../../infra/services/textileProducts/MediaUrlResolver';
+import { MediaUrlResolver } from '../../../infra/services/media/MediaUrlResolver';
 import { PaginatedProductsResponse } from '../../models/shared/PaginatedProductsResponse';
 import { TextileProductListItem } from '../../models/textile/TextileProductListItemResponse';
 

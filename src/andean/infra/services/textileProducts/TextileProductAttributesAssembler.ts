@@ -1,12 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Variant } from 'src/andean/domain/entities/Variant';
-import { TextileProduct } from 'src/andean/domain/entities/textileProducts/TextileProduct';
-import { ProductType } from 'src/andean/domain/enums/ProductType';
-import { TextileOptions } from 'src/andean/domain/entities/textileProducts/TextileOptions';
-import { TextileOptionName } from 'src/andean/domain/enums/TextileOptionName';
+import { Variant } from '../../../domain/entities/Variant';
+import { TextileProduct } from '../../../domain/entities/textileProducts/TextileProduct';
+import { ProductType } from '../../../domain/enums/ProductType';
+import { TextileOptions } from '../../../domain/entities/textileProducts/TextileOptions';
+import { TextileOptionName } from '../../../domain/enums/TextileOptionName';
 import { ColorOptionAlternativeRepository } from '../../../app/datastore/textileProducts/ColorOptionAlternative.repo';
 import { SizeOptionAlternativeRepository } from '../../../app/datastore/textileProducts/SizeOptionAlternative.repo';
-import { MediaUrlResolver } from './MediaUrlResolver';
+import { MediaUrlResolver } from '../media/MediaUrlResolver';
 
 export interface TextileAvailableColor {
 	color: string;

@@ -10,6 +10,7 @@ import { StorageRepository } from '../../datastore/Storage.repo';
 import { TextileProductRepository } from '../../datastore/textileProducts/TextileProduct.repo';
 import { TryOnResponse } from '../../models/tryOn/TryOnResponse';
 import { MediaItemRole } from '../../../domain/enums/MediaItemRole';
+import { UploadedFile } from '../../models/shared/UploadedFile';
 
 const PRESIGNED_URL_TTL_SECONDS = 300; // 5 minutes
 
@@ -21,7 +22,7 @@ const MIME_TO_EXT: Record<string, string> = {
 };
 
 export interface TryOnInput {
-	humanImageFile: Express.Multer.File;
+	humanImageFile: UploadedFile;
 	textileProductId: string;
 }
 

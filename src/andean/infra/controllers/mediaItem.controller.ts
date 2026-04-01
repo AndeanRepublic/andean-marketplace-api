@@ -35,6 +35,7 @@ import { DeleteMediaItemUseCase } from '../../app/use_cases/media/DeleteMediaIte
 import { UploadMediaItemDto } from './dto/media/UploadMediaItemDto';
 import { UpdateMediaItemDto } from './dto/media/UpdateMediaItemDto';
 import { MediaItemResponse } from '../../app/models/shared/MediaItemResponse';
+import { UploadedFile as UploadedFileModel } from '../../app/models/shared/UploadedFile';
 import { MediaItem } from '../../domain/entities/MediaItem';
 import { MediaItemType } from '../../domain/enums/MediaItemType';
 import { MediaItemRole } from '../../domain/enums/MediaItemRole';
@@ -106,7 +107,7 @@ export class MediaItemController {
 		description: 'Archivo inválido o datos incorrectos',
 	})
 	async upload(
-		@UploadedFile() file: Express.Multer.File,
+		@UploadedFile() file: UploadedFileModel,
 		@Body() dto: UploadMediaItemDto,
 	): Promise<MediaItemResponse> {
 		if (!file) {
