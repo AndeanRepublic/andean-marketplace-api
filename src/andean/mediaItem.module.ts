@@ -21,7 +21,7 @@ import { UpdateMediaItemUseCase } from './app/use_cases/media/UpdateMediaItemUse
 import { GetMediaItemByIdUseCase } from './app/use_cases/media/GetMediaItemByIdUseCase';
 import { ListMediaItemsUseCase } from './app/use_cases/media/ListMediaItemsUseCase';
 import { DeleteMediaItemUseCase } from './app/use_cases/media/DeleteMediaItemUseCase';
-import { MediaUrlResolver } from './infra/services/textileProducts/MediaUrlResolver';
+import { MediaUrlResolver } from './infra/services/media/MediaUrlResolver';
 
 // Controller
 import { MediaItemController } from './infra/controllers/mediaItem.controller';

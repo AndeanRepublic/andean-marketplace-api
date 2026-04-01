@@ -38,11 +38,11 @@ import { MediaItemResponse } from '../../app/models/shared/MediaItemResponse';
 import { MediaItem } from '../../domain/entities/MediaItem';
 import { MediaItemType } from '../../domain/enums/MediaItemType';
 import { MediaItemRole } from '../../domain/enums/MediaItemRole';
+import { MediaUrlResolver } from '../services/media/MediaUrlResolver';
 
 @ApiTags('Media Items')
 @Controller('media-items')
 export class MediaItemController {
-	private readonly storageBaseUrl: string;
 	private readonly maxFileSizeBytes: number;
 
 	constructor(
@@ -52,11 +52,8 @@ export class MediaItemController {
 		private readonly listMediaItemsUseCase: ListMediaItemsUseCase,
 		private readonly deleteMediaItemUseCase: DeleteMediaItemUseCase,
 		private readonly configService: ConfigService,
+		private readonly mediaUrlResolver: MediaUrlResolver,
 	) {
-		this.storageBaseUrl = this.configService.get<string>(
-			'STORAGE_BASE_URL',
-			'',
-		);
 		const maxSizeMB = parseInt(
 			this.configService.get<string>('UPLOAD_MAX_SIZE_MB', '5'),
 			10,
@@ -221,7 +218,7 @@ export class MediaItemController {
 			id: mediaItem.id,
 			type: mediaItem.type,
 			name: mediaItem.name,
-			url: `${this.storageBaseUrl}/${mediaItem.key}`, // Construir URL dinámicamente
+			url: this.mediaUrlResolver.resolveKey(mediaItem.key),
 			role: mediaItem.role,
 			createdAt: mediaItem.createdAt!,
 			updatedAt: mediaItem.updatedAt!,

@@ -45,7 +45,7 @@ import { SealResponse } from '../../app/models/community/SealResponse';
 import { Community } from '../../domain/entities/community/Community';
 import { Seal } from '../../domain/entities/community/Seal';
 import { ProviderInfo } from '../../domain/entities/ProviderInfo';
-import { MediaUrlResolver } from '../services/textileProducts/MediaUrlResolver';
+import { MediaUrlResolver } from '../services/media/MediaUrlResolver';
 
 const path_seals = 'seals';
 const path_seals_id = 'seals/:id';

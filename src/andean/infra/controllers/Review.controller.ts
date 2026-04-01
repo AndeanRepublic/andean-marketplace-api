@@ -18,7 +18,7 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../core/jwtAuth.guard';
 import { CurrentUser } from '../core/current-user.decorator';
-import { AccountRole } from 'src/andean/domain/enums/AccountRole';
+import { AccountRole } from '../../domain/enums/AccountRole';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
 	ApiTags,
@@ -29,19 +29,20 @@ import {
 	ApiConsumes,
 } from '@nestjs/swagger';
 import { Public } from '../core/public.decorator';
-import { CreateReviewUseCase } from 'src/andean/app/use_cases/CreateReviewUseCase';
-import { Review } from 'src/andean/domain/entities/Review';
+import { CreateReviewUseCase } from '../../app/use_cases/CreateReviewUseCase';
+import { Review } from '../../domain/entities/Review';
 import { CreateReviewDto } from './dto/CreateReviewDto';
 import { UpdateReviewDto } from './dto/UpdateReviewDto';
-import { ReviewResponse } from 'src/andean/app/models/review/ReviewResponse';
-import { GetAllReviewsUseCase } from 'src/andean/app/use_cases/GetAllReviewsUseCase';
-import { GetByIdReviewUseCase } from 'src/andean/app/use_cases/GetByIdReviewUseCase';
-import { UpdateReviewUseCase } from 'src/andean/app/use_cases/UpdateReviewUseCase';
-import { DeleteReviewUseCase } from 'src/andean/app/use_cases/DeleteReviewUseCase';
-import { IncrementLikesUseCase } from 'src/andean/app/use_cases/IncrementLikesUseCase';
-import { IncrementDislikesUseCase } from 'src/andean/app/use_cases/IncrementDislikesUseCase';
-import { DecrementLikesUseCase } from 'src/andean/app/use_cases/DecrementLikesUseCase';
-import { DecrementDislikesUseCase } from 'src/andean/app/use_cases/DecrementDislikesUseCase';
+import { ReviewResponse } from '../../app/models/review/ReviewResponse';
+import type { UploadedFile as UploadedFileModel } from '../../app/models/shared/UploadedFile';
+import { GetAllReviewsUseCase } from '../../app/use_cases/GetAllReviewsUseCase';
+import { GetByIdReviewUseCase } from '../../app/use_cases/GetByIdReviewUseCase';
+import { UpdateReviewUseCase } from '../../app/use_cases/UpdateReviewUseCase';
+import { DeleteReviewUseCase } from '../../app/use_cases/DeleteReviewUseCase';
+import { IncrementLikesUseCase } from '../../app/use_cases/IncrementLikesUseCase';
+import { IncrementDislikesUseCase } from '../../app/use_cases/IncrementDislikesUseCase';
+import { DecrementLikesUseCase } from '../../app/use_cases/DecrementLikesUseCase';
+import { DecrementDislikesUseCase } from '../../app/use_cases/DecrementDislikesUseCase';
 
 const path_reviews = '/';
 const path_reviews_id = '/:id';
@@ -116,7 +117,7 @@ export class ReviewController {
 				fileIsRequired: false,
 			}),
 		)
-		file: Express.Multer.File | undefined,
+		file: UploadedFileModel | undefined,
 		@Body() body: CreateReviewDto,
 	): Promise<Review> {
 		// Para multipart/form-data, los campos vienen como strings

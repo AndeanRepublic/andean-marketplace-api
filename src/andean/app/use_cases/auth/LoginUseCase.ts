@@ -10,6 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { CustomerProfileRepository } from '../../datastore/Customer.repo';
 import { MediaItemRepository } from '../../datastore/MediaItem.repo';
+import { MediaUrlResolver } from '../../../infra/services/media/MediaUrlResolver';
 
 @Injectable()
 export class LoginUseCase {
@@ -23,6 +24,7 @@ export class LoginUseCase {
 		private readonly hashService: HashService,
 		private readonly jwtService: JwtService,
 		private readonly configService: ConfigService,
+		private readonly mediaUrlResolver: MediaUrlResolver,
 	) {}
 
 	async handle(body: LoginDto): Promise<SessionToken> {
@@ -58,9 +60,7 @@ export class LoginUseCase {
 				customerProfile.profilePictureMediaId,
 			);
 			if (mediaItem) {
-				const storageBaseUrl =
-					this.configService.get<string>('STORAGE_BASE_URL') ?? '';
-				profilePictureUrl = `${storageBaseUrl}/${mediaItem.key}`;
+				profilePictureUrl = this.mediaUrlResolver.resolveKey(mediaItem.key);
 			}
 		}
 

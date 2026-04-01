@@ -34,7 +34,7 @@ import { UpdateShopDto } from './dto/UpdateShopDto';
 import { UpdateShopUseCase } from '../../app/use_cases/shops/UpdateShopUseCase';
 import { ShopResponse } from '../../app/models/shop/ShopResponse';
 import { CurrentUser } from '../core/current-user.decorator';
-import { MediaUrlResolver } from '../services/textileProducts/MediaUrlResolver';
+import { MediaUrlResolver } from '../services/media/MediaUrlResolver';
 import type { ShopWithProviderInfo } from '../../app/use_cases/shops/GetShopByIdUseCase';
 import { ProviderInfo } from '../../domain/entities/ProviderInfo';
 
@@ -82,7 +82,9 @@ export class ShopController {
 		type: [ShopResponse],
 	})
 	@ApiResponse({ status: 404, description: 'Vendedor no encontrado' })
-	async finBySeller(@Param('sellerId') sellerId: string): Promise<ShopResponse[]> {
+	async finBySeller(
+		@Param('sellerId') sellerId: string,
+	): Promise<ShopResponse[]> {
 		const shops = await this.getShopsBySellerIdUseCase.handle(sellerId);
 		return Promise.all(shops.map((shop) => this.toResponse(shop)));
 	}
@@ -148,7 +150,9 @@ export class ShopController {
 	})
 	@ApiResponse({ status: 400, description: 'Datos de entrada inválidos' })
 	@ApiResponse({ status: 404, description: 'Vendedor no encontrado' })
-	async createShop(@Body() createShopDto: CreateShopDto): Promise<ShopResponse> {
+	async createShop(
+		@Body() createShopDto: CreateShopDto,
+	): Promise<ShopResponse> {
 		const shop = await this.createShopUseCase.handle(createShopDto);
 		return this.toResponse(shop);
 	}
@@ -178,9 +182,16 @@ export class ShopController {
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Patch(':shopId')
-	@ApiOperation({ summary: 'Actualizar tienda', description: 'Actualiza los datos de una tienda existente' })
+	@ApiOperation({
+		summary: 'Actualizar tienda',
+		description: 'Actualiza los datos de una tienda existente',
+	})
 	@ApiParam({ name: 'shopId', description: 'ID de la tienda', type: String })
-	@ApiResponse({ status: 200, description: 'Tienda actualizada', type: ShopResponse })
+	@ApiResponse({
+		status: 200,
+		description: 'Tienda actualizada',
+		type: ShopResponse,
+	})
 	@ApiResponse({ status: 404, description: 'Tienda no encontrada' })
 	async updateShop(
 		@Param('shopId') shopId: string,

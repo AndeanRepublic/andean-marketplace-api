@@ -44,6 +44,7 @@ import { GetFutureUnavailableDatesUseCase } from './app/use_cases/experiences/Ge
 
 // Strategy
 import { OwnerStrategyResolver } from './infra/services/experiences/OwnerStrategyResolver';
+import { OwnerInfoResolver } from './infra/services/owner/OwnerInfoResolver';
 
 // Controllers
 import { ExperienceController } from './infra/controllers/experienceControllers/experience.controller';
@@ -102,6 +103,7 @@ import { BookingModule } from './booking.module';
 
 		// Strategy
 		OwnerStrategyResolver,
+		OwnerInfoResolver,
 
 		// Sub-table Use Cases
 		CreateExperiencePricesUseCase,
