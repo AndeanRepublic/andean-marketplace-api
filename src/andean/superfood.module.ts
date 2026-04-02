@@ -11,6 +11,7 @@ import { SuperfoodCertificationSchema } from './infra/persistence/superfood/supe
 import { SuperfoodSalesUnitSizeSchema } from './infra/persistence/superfood/superfoodSalesUnitSize.schema';
 import { SuperfoodProductPresentationSchema } from './infra/persistence/superfood/superfoodProductPresentation.schema';
 import { SuperfoodTypeSchema } from './infra/persistence/superfood/superfoodType.schema';
+import { SuperfoodColorCatalogSchema } from './infra/persistence/superfood/superfoodColor.schema';
 
 // Controllers
 import { SuperfoodController } from './infra/controllers/superfoodControllers/superfood.controller';
@@ -22,6 +23,7 @@ import { SuperfoodNutritionalFeatureController } from './infra/controllers/super
 import { SuperfoodBenefitController } from './infra/controllers/superfoodControllers/superfoodBenefit.controller';
 import { SuperfoodProductPresentationController } from './infra/controllers/superfoodControllers/superfoodProductPresentation.controller';
 import { SuperfoodSalesUnitSizeController } from './infra/controllers/superfoodControllers/superfoodSalesUnitSize.controller';
+import { SuperfoodColorController } from './infra/controllers/superfoodControllers/superfoodColor.controller';
 import { ReviewController } from './infra/controllers/Review.controller';
 
 // Use Cases - Product
@@ -87,6 +89,13 @@ import { GetSuperfoodSalesUnitSizeByIdUseCase } from './app/use_cases/superfoods
 import { ListSuperfoodSalesUnitSizesUseCase } from './app/use_cases/superfoods/salesUnitSize/ListSuperfoodSalesUnitSizesUseCase';
 import { DeleteSuperfoodSalesUnitSizeUseCase } from './app/use_cases/superfoods/salesUnitSize/DeleteSuperfoodSalesUnitSizeUseCase';
 
+// Use Cases - Color (catálogo)
+import { CreateSuperfoodColorUseCase } from './app/use_cases/superfoods/color/CreateSuperfoodColorUseCase';
+import { CreateManySuperfoodColorsUseCase } from './app/use_cases/superfoods/color/CreateManySuperfoodColorsUseCase';
+import { ListSuperfoodColorsUseCase } from './app/use_cases/superfoods/color/ListSuperfoodColorsUseCase';
+import { GetSuperfoodColorByIdUseCase } from './app/use_cases/superfoods/color/GetSuperfoodColorByIdUseCase';
+import { DeleteSuperfoodColorUseCase } from './app/use_cases/superfoods/color/DeleteSuperfoodColorUseCase';
+
 // Repositories (Abstract)
 import { SuperfoodProductRepository } from './app/datastore/superfoods/SuperfoodProduct.repo';
 import { SuperfoodCategoryRepository } from './app/datastore/superfoods/SuperfoodCategory.repo';
@@ -97,6 +106,7 @@ import { SuperfoodPreservationMethodRepository } from './app/datastore/superfood
 import { SuperfoodCertificationRepository } from './app/datastore/superfoods/SuperfoodCertification.repo';
 import { SuperfoodSalesUnitSizeRepository } from './app/datastore/superfoods/SuperfoodSalesUnitSize.repo';
 import { SuperfoodProductPresentationRepository } from './app/datastore/superfoods/SuperfoodProductPresentation.repo';
+import { SuperfoodColorRepository } from './app/datastore/superfoods/SuperfoodColor.repo';
 
 // Repositories (Implementation)
 import { SuperfoodProductRepoImpl } from './infra/datastore/superfood/superfoodProduct.repo.impl';
@@ -108,6 +118,7 @@ import { SuperfoodPreservationMethodRepoImpl } from './infra/datastore/superfood
 import { SuperfoodCertificationRepoImpl } from './infra/datastore/superfood/superfoodCertification.repo.impl';
 import { SuperfoodSalesUnitSizeRepoImpl } from './infra/datastore/superfood/superfoodSalesUnitSize.repo.impl';
 import { SuperfoodProductPresentationRepoImpl } from './infra/datastore/superfood/superfoodProductPresentation.repo.impl';
+import { SuperfoodColorRepoImpl } from './infra/datastore/superfood/superfoodColor.repo.impl';
 
 // Other modules
 import { ShopsModule } from './shop.module';
@@ -154,6 +165,7 @@ import { OwnerInfoResolver } from './infra/services/owner/OwnerInfoResolver';
 				schema: SuperfoodProductPresentationSchema,
 			},
 			{ name: 'SuperfoodType', schema: SuperfoodTypeSchema },
+			{ name: 'SuperfoodColor', schema: SuperfoodColorCatalogSchema },
 			{ name: 'Review', schema: ReviewSchema },
 			{ name: 'Account', schema: AccountSchema },
 		]),
@@ -174,6 +186,7 @@ import { OwnerInfoResolver } from './infra/services/owner/OwnerInfoResolver';
 		SuperfoodBenefitController,
 		SuperfoodProductPresentationController,
 		SuperfoodSalesUnitSizeController,
+		SuperfoodColorController,
 		ReviewController,
 	],
 	providers: [
@@ -241,6 +254,13 @@ import { OwnerInfoResolver } from './infra/services/owner/OwnerInfoResolver';
 		ListSuperfoodSalesUnitSizesUseCase,
 		DeleteSuperfoodSalesUnitSizeUseCase,
 
+		// Use Cases - Color (catálogo)
+		CreateSuperfoodColorUseCase,
+		CreateManySuperfoodColorsUseCase,
+		ListSuperfoodColorsUseCase,
+		GetSuperfoodColorByIdUseCase,
+		DeleteSuperfoodColorUseCase,
+
 		// Use Cases - Review
 		CreateReviewUseCase,
 		GetAllReviewsUseCase,
@@ -290,6 +310,10 @@ import { OwnerInfoResolver } from './infra/services/owner/OwnerInfoResolver';
 			useClass: SuperfoodProductPresentationRepoImpl,
 		},
 		{
+			provide: SuperfoodColorRepository,
+			useClass: SuperfoodColorRepoImpl,
+		},
+		{
 			provide: ReviewRepository,
 			useClass: ReviewRepositoryImpl,
 		},
@@ -308,6 +332,7 @@ import { OwnerInfoResolver } from './infra/services/owner/OwnerInfoResolver';
 		SuperfoodCertificationRepository,
 		SuperfoodSalesUnitSizeRepository,
 		SuperfoodProductPresentationRepository,
+		SuperfoodColorRepository,
 		ReviewRepository,
 		MongooseModule,
 	],

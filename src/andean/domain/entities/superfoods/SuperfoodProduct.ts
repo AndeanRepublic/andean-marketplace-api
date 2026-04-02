@@ -1,6 +1,6 @@
 import { SuperfoodProductStatus } from '../../enums/SuperfoodProductStatus';
-import { SuperfoodColor } from '../../enums/SuperfoodColor';
 import { SuperfoodBasicInfo } from './SuperfoodBasicInfo';
+import { SuperfoodColor } from './SuperfoodColor';
 import { SuperfoodDetailProduct } from './SuperfoodDetailProduct';
 import { SuperfoodPriceInventory } from './SuperfoodPriceInventory';
 import { SuperfoodNutritionalItem } from './SuperfoodNutritionalItem';
@@ -26,5 +26,5 @@ export class SuperfoodProduct {
 		public detailTraceability?: SuperfoodDetailTraceability,
 		public productTraceability?: ProductTraceability,
 		public options?: SuperfoodOptions[], // Product options (e.g., color, size)
-	) { }
+	) {}
 }
