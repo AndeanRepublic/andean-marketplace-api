@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class MediaInfo {
 	@ApiProperty({
@@ -14,6 +14,17 @@ export class MediaInfo {
 	url!: string;
 }
 
+export class SuperfoodProductListColor {
+	@ApiProperty({
+		description: 'Nombre del color (catálogo)',
+		example: 'Morado',
+	})
+	name!: string;
+
+	@ApiProperty({ description: 'Hex del color', example: '#7c3aed' })
+	hexCodeColor!: string;
+}
+
 export class SuperfoodProductListItem {
 	@ApiProperty({
 		description: 'ID único del producto',
@@ -21,12 +32,11 @@ export class SuperfoodProductListItem {
 	})
 	id!: string;
 
-	@ApiProperty({
-		description: 'Color del producto',
-		example: 'Verde',
-		required: false,
+	@ApiPropertyOptional({
+		description: 'Color del producto (nombre + hex desde catálogo o legado)',
+		type: SuperfoodProductListColor,
 	})
-	color?: string;
+	color?: SuperfoodProductListColor;
 
 	@ApiProperty({
 		description: 'Título del producto',

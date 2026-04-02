@@ -1,6 +1,5 @@
 import { SuperfoodProductStatus } from '../../enums/SuperfoodProductStatus';
 import { SuperfoodBasicInfo } from './SuperfoodBasicInfo';
-import { SuperfoodColor } from './SuperfoodColor';
 import { SuperfoodDetailProduct } from './SuperfoodDetailProduct';
 import { SuperfoodPriceInventory } from './SuperfoodPriceInventory';
 import { SuperfoodNutritionalItem } from './SuperfoodNutritionalItem';
@@ -18,7 +17,8 @@ export class SuperfoodProduct {
 		public updatedAt: Date,
 		public isDiscountActive: boolean,
 
-		public color?: SuperfoodColor,
+		/** Referencia a documento en colección de catálogo `SuperfoodColor`. */
+		public colorId?: string,
 		public detailSourceProductId?: string, // Reference to DetailSourceProduct
 		public categoryId?: string, // Reference to SuperfoodCategories
 		public detailProduct?: SuperfoodDetailProduct,

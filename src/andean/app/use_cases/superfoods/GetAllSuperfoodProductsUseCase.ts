@@ -6,12 +6,14 @@ import {
 import { PaginatedProductsResponse } from '../../models/shared/PaginatedProductsResponse';
 import { SuperfoodProductListItem } from '../../models/superfoods/SuperfoodProductListItem';
 import { MediaUrlResolver } from '../../../infra/services/media/MediaUrlResolver';
+import { SuperfoodProductListColorResolver } from '../../../infra/services/superfood/SuperfoodProductListColorResolver';
 
 @Injectable()
 export class GetAllSuperfoodProductsUseCase {
 	constructor(
 		@Inject(SuperfoodProductRepository)
 		private readonly superfoodProductRepository: SuperfoodProductRepository,
+		private readonly superfoodProductListColorResolver: SuperfoodProductListColorResolver,
 		private readonly mediaUrlResolver: MediaUrlResolver,
 	) {}
 
@@ -28,8 +30,15 @@ export class GetAllSuperfoodProductsUseCase {
 				throw new NotFoundException('No superfood products found');
 			}
 
+			const withColors =
+				await this.superfoodProductListColorResolver.attachCatalogColorFromAggregate(
+					products,
+				);
+
 			return {
-				products: products.map((product) => this.resolveProductImages(product)),
+				products: withColors.map((product) =>
+					this.resolveProductImages(product),
+				),
 				pagination: {
 					total,
 					page: 1,
@@ -51,8 +60,13 @@ export class GetAllSuperfoodProductsUseCase {
 		const page = filters.page || 1;
 		const perPage = filters.perPage || 10;
 
+		const withColors =
+			await this.superfoodProductListColorResolver.attachCatalogColorFromAggregate(
+				products,
+			);
+
 		return {
-			products: products.map((product) => this.resolveProductImages(product)),
+			products: withColors.map((product) => this.resolveProductImages(product)),
 			pagination: {
 				total,
 				page,

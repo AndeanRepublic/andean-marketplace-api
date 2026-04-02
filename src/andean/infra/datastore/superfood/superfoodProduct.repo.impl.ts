@@ -209,9 +209,6 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 		];
 	}
 
-	/**
-	 * Construye los lookups para MediaItems
-	 */
 	private buildMediaLookups(): PipelineStage[] {
 		return [
 			{
@@ -249,9 +246,7 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 			$project: {
 				_id: 0,
 				id: { $toString: '$_id' },
-				color: {
-					$ifNull: ['$color', null],
-				},
+				colorId: '$colorId',
 				title: '$baseInfo.title',
 				ownerName: {
 					$cond: {

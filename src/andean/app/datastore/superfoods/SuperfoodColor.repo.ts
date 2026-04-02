@@ -3,6 +3,8 @@ import { SuperfoodColor } from '../../../domain/entities/superfoods/SuperfoodCol
 export abstract class SuperfoodColorRepository {
 	abstract getById(id: string): Promise<SuperfoodColor | null>;
 
+	abstract getByIds(ids: string[]): Promise<SuperfoodColor[]>;
+
 	abstract getAll(): Promise<SuperfoodColor[]>;
 
 	abstract save(color: SuperfoodColor): Promise<SuperfoodColor>;

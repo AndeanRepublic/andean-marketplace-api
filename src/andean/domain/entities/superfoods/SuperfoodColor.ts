@@ -1,7 +1,4 @@
-/**
- * Color superfood: fila en colección `superfood-colors` o snapshot embebido en
- * `SuperfoodProduct.color` (id vacío si no enlaza al catálogo).
- */
+/** Color superfood persistido en catálogo (`SuperfoodColor` / `superfood-colors`). */
 export class SuperfoodColor {
 	constructor(
 		public readonly id: string,

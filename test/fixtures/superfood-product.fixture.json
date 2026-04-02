@@ -21,7 +21,7 @@
 			"totalStock": 100,
 			"SKU": "QUINUA-PREM-001"
 		},
-		"color": "PURPLE",
+		"colorId": "507f1f77bcf86cd799439011",
 		"detailSourceProductId": "detail-source-123",
 		"categoryId": "category-quinua-001",
 		"createdAt": "2026-01-01T00:00:00.000Z",
@@ -48,7 +48,7 @@
 			"totalStock": 100,
 			"SKU": "QUINUA-PREM-001"
 		},
-		"color": "PURPLE",
+		"colorId": "507f1f77bcf86cd799439011",
 		"detailSourceProduct": {
 			"name": "Origen Andino Premium",
 			"description": "Producto cultivado en las altas montañas de los Andes peruanos",
@@ -82,7 +82,7 @@
 			"totalStock": 150,
 			"SKU": "QUINUA-PREM-001"
 		},
-		"color": "RED",
+		"colorId": "507f191e810c19729de860ea",
 		"detailSourceProduct": {
 			"name": "Origen Andino Premium Actualizado",
 			"description": "Producto cultivado en las altas montañas de los Andes peruanos - Versión mejorada",
@@ -97,7 +97,10 @@
 	},
 	"listItem": {
 		"id": "superfood-uuid-123",
-		"color": "Púrpura",
+		"color": {
+			"name": "PURPLE",
+			"hexCodeColor": "#7c3aed"
+		},
 		"title": "Quinua Premium",
 		"ownerName": "Artesanos Andinos",
 		"price": 25.50,
@@ -120,7 +123,10 @@
 		"products": [
 			{
 				"id": "superfood-uuid-123",
-				"color": "Púrpura",
+				"color": {
+			"name": "PURPLE",
+			"hexCodeColor": "#7c3aed"
+		},
 				"title": "Quinua Premium",
 				"ownerName": "Artesanos Andinos",
 				"price": 25.50,

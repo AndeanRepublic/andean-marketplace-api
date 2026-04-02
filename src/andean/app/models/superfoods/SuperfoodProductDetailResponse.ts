@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { SuperfoodProductListColor } from './SuperfoodProductListItem';
 import { OwnerInfoResponse } from '../textile/TextileProductDetailResponse';
 
 // ── Media ────────────────────────────────────────────────────────────────
@@ -141,7 +142,8 @@ export class SuperfoodProductDetailResponse {
 // ── Compact list item (for moreProducts) ─────────────────────────────────
 export class SuperfoodProductListItemCompact {
 	@ApiProperty() id!: string;
-	@ApiPropertyOptional() color?: string;
+	@ApiPropertyOptional({ type: SuperfoodProductListColor })
+	color?: SuperfoodProductListColor;
 	@ApiProperty() title!: string;
 	@ApiProperty() ownerName!: string;
 	@ApiProperty() price!: number;

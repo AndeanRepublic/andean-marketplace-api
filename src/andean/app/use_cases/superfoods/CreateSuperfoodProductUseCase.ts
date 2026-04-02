@@ -13,6 +13,7 @@ import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodP
 import { SuperfoodProductMapper } from '../../../infra/services/superfood/SuperfoodProductMapper';
 import { SuperfoodOwnerType } from '../../../domain/enums/SuperfoodOwnerType';
 import { CreateDetailSourceProductUseCase } from '../detailSourceProduct/CreateDetailSourceProductUseCase';
+import { SuperfoodColorRepository } from '../../datastore/superfoods/SuperfoodColor.repo';
 
 @Injectable()
 export class CreateSuperfoodProductUseCase {
@@ -29,8 +30,11 @@ export class CreateSuperfoodProductUseCase {
 		@Inject(CommunityRepository)
 		private readonly communityRepository: CommunityRepository,
 
+		@Inject(SuperfoodColorRepository)
+		private readonly superfoodColorRepository: SuperfoodColorRepository,
+
 		private readonly createDetailSourceProductUseCase: CreateDetailSourceProductUseCase,
-	) { }
+	) {}
 
 	async handle(dto: CreateSuperfoodDto): Promise<SuperfoodProduct> {
 		// 1. Validar que la categoría existe solo si se proporciona
@@ -64,7 +68,18 @@ export class CreateSuperfoodProductUseCase {
 			}
 		}
 
-		// 3. Si viene detailSourceProduct, crearlo primero
+		// 3. Color de catálogo (referencia por ID)
+		if (dto.colorId?.trim()) {
+			const colorId = dto.colorId.trim();
+			const color = await this.superfoodColorRepository.getById(colorId);
+			if (!color) {
+				throw new BadRequestException(
+					`Superfood color with id ${colorId} not found`,
+				);
+			}
+		}
+
+		// 4. Si viene detailSourceProduct, crearlo primero
 		let detailSourceProductId: string | undefined;
 		if (dto.detailSourceProduct) {
 			const createdDetailSource =
@@ -74,13 +89,13 @@ export class CreateSuperfoodProductUseCase {
 			detailSourceProductId = createdDetailSource.id;
 		}
 
-		// 4. Mapear DTO a entidad de dominio
+		// 5. Mapear DTO a entidad de dominio
 		const productToSave = SuperfoodProductMapper.fromCreateDto(dto);
 		if (detailSourceProductId) {
 			productToSave.detailSourceProductId = detailSourceProductId;
 		}
 
-		// 5. Guardar en base de datos
+		// 6. Guardar en base de datos
 		return this.superfoodProductRepository.saveSuperfoodProduct(productToSave);
 	}
 }

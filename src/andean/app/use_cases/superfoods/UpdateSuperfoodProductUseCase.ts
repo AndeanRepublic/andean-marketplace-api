@@ -19,6 +19,7 @@ import { CreateDetailSourceProductUseCase } from '../detailSourceProduct/CreateD
 import { UpdateDetailSourceProductUseCase } from '../detailSourceProduct/UpdateDetailSourceProductUseCase';
 import { SellerProfileRepository } from '../../datastore/Seller.repo';
 import { AccountRole } from 'src/andean/domain/enums/AccountRole';
+import { SuperfoodColorRepository } from '../../datastore/superfoods/SuperfoodColor.repo';
 
 @Injectable()
 export class UpdateSuperfoodProductUseCase {
@@ -36,6 +37,8 @@ export class UpdateSuperfoodProductUseCase {
 		private readonly updateDetailSourceProductUseCase: UpdateDetailSourceProductUseCase,
 		@Inject(SellerProfileRepository)
 		private readonly sellerProfileRepository: SellerProfileRepository,
+		@Inject(SuperfoodColorRepository)
+		private readonly superfoodColorRepository: SuperfoodColorRepository,
 	) {}
 
 	async handle(
@@ -76,6 +79,16 @@ export class UpdateSuperfoodProductUseCase {
 			if (!categoryFound) {
 				throw new NotFoundException(
 					`Category with id ${dto.categoryId} not found`,
+				);
+			}
+		}
+
+		if (dto.colorId?.trim()) {
+			const colorId = dto.colorId.trim();
+			const color = await this.superfoodColorRepository.getById(colorId);
+			if (!color) {
+				throw new BadRequestException(
+					`Superfood color with id ${colorId} not found`,
 				);
 			}
 		}

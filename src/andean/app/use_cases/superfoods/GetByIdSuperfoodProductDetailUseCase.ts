@@ -24,6 +24,7 @@ import {
 import { SuperfoodProductListItem } from '../../models/superfoods/SuperfoodProductListItem';
 import { OwnerInfoResolver } from '../../../infra/services/owner/OwnerInfoResolver';
 import { MediaUrlResolver } from '../../../infra/services/media/MediaUrlResolver';
+import { SuperfoodProductListColorResolver } from '../../../infra/services/superfood/SuperfoodProductListColorResolver';
 
 @Injectable()
 export class GetByIdSuperfoodProductDetailUseCase {
@@ -50,6 +51,7 @@ export class GetByIdSuperfoodProductDetailUseCase {
 		private readonly detailSourceProductRepository: DetailSourceProductRepository,
 		private readonly mediaUrlResolver: MediaUrlResolver,
 		private readonly ownerInfoResolver: OwnerInfoResolver,
+		private readonly superfoodProductListColorResolver: SuperfoodProductListColorResolver,
 	) {}
 
 	async handle(productId: string): Promise<SuperfoodProductDetailResponse> {
@@ -120,7 +122,7 @@ export class GetByIdSuperfoodProductDetailUseCase {
 			name: b.name,
 			iconUrl: b.iconId ? iconMap.get(b.iconId) || '' : '',
 			description: b.description || undefined,
-			color: b.color || '',
+			color: b.hexCodeColor || '',
 		}));
 
 		// 8. Mapear nutritional content — separar striking vs normal
@@ -305,11 +307,16 @@ export class GetByIdSuperfoodProductDetailUseCase {
 		currentProductId: string,
 	): Promise<SuperfoodProductListItemCompact[]> {
 		// Reutilizar el método del repo que ya hace el aggregation optimizado
-		const { products } =
+		const { products: rawProducts } =
 			await this.superfoodProductRepository.getAllWithFilters({
 				page: 1,
 				perPage: 7, // Pedir 7 para poder excluir el actual y aún tener 6
 			});
+
+		const products =
+			await this.superfoodProductListColorResolver.attachCatalogColorFromAggregate(
+				rawProducts,
+			);
 
 		return products
 			.filter((p) => p.id !== currentProductId)

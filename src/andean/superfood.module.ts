@@ -143,6 +143,7 @@ import { DecrementDislikesUseCase } from './app/use_cases/DecrementDislikesUseCa
 import { UsersModule } from './users.module';
 import { TextileProductModule } from './textileProduct.module';
 import { OwnerInfoResolver } from './infra/services/owner/OwnerInfoResolver';
+import { SuperfoodProductListColorResolver } from './infra/services/superfood/SuperfoodProductListColorResolver';
 
 @Module({
 	imports: [
@@ -197,6 +198,7 @@ import { OwnerInfoResolver } from './infra/services/owner/OwnerInfoResolver';
 		DeleteSuperfoodProductUseCase,
 		GetByIdSuperfoodProductDetailUseCase,
 		OwnerInfoResolver,
+		SuperfoodProductListColorResolver,
 
 		// Use Cases - Category
 		CreateSuperfoodCategoryUseCase,

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { SuperfoodColorRepository } from '../../../app/datastore/superfoods/SuperfoodColor.repo';
 import { SuperfoodColor } from '../../../domain/entities/superfoods/SuperfoodColor';
 import { SuperfoodColorCatalogDocument } from '../../persistence/superfood/superfoodColor.schema';
@@ -19,6 +19,17 @@ export class SuperfoodColorRepoImpl implements SuperfoodColorRepository {
 		const doc = await this.model.findById(objectId).exec();
 		if (!doc) return null;
 		return SuperfoodColorMapper.fromDocument(doc);
+	}
+
+	async getByIds(ids: string[]): Promise<SuperfoodColor[]> {
+		if (!ids.length) return [];
+		const unique = [...new Set(ids.map((id) => id.trim()).filter(Boolean))];
+		const objectIds = unique
+			.filter((id) => Types.ObjectId.isValid(id))
+			.map((id) => new Types.ObjectId(id));
+		if (!objectIds.length) return [];
+		const docs = await this.model.find({ _id: { $in: objectIds } }).exec();
+		return docs.map((doc) => SuperfoodColorMapper.fromDocument(doc));
 	}
 
 	async getAll(): Promise<SuperfoodColor[]> {
