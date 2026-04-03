@@ -1,147 +1,194 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { SuperfoodProductStatus } from '../../../domain/enums/SuperfoodProductStatus';
 import { SuperfoodConsumptionWay } from '../../../domain/enums/SuperfoodConsumptionWay';
 import { SuperfoodProductionMethod } from '../../../domain/enums/SuperfoodProductionMethod';
 import { SuperfoodOwnerType } from '../../../domain/enums/SuperfoodOwnerType';
+import { ProductTraceabilityResponse } from '../shared/ProductTraceabilityResponse';
 
 export class SuperfoodBasicInfoResponse {
 	@ApiProperty({ description: 'Título del superfood' })
-	title: string;
+	title!: string;
 
 	@ApiProperty({ description: 'IDs de MediaItems', type: [String] })
-	mediaIds: string[];
+	mediaIds!: string[];
 
 	@ApiProperty({ description: 'Descripción del producto' })
-	description: string;
+	description!: string;
 
 	@ApiProperty({ description: 'Características generales', type: [String] })
-	general_features: string[];
+	general_features!: string[];
 
 	@ApiProperty({
 		description: 'IDs de características nutricionales',
 		type: [String],
 	})
-	nutritional_features: string[];
+	nutritional_features!: string[];
 
 	@ApiProperty({ description: 'IDs de beneficios', type: [String] })
-	benefits: string[];
+	benefits!: string[];
 
 	@ApiProperty({ enum: SuperfoodOwnerType, description: 'Tipo de dueño' })
-	ownerType: SuperfoodOwnerType;
+	ownerType!: SuperfoodOwnerType;
 
 	@ApiProperty({ description: 'ID del dueño (Shop o Community)' })
-	ownerId: string;
+	ownerId!: string;
 }
 
 export class SuperfoodPriceInventoryResponse {
 	@ApiProperty({ description: 'Precio base del producto' })
-	basePrice: number;
+	basePrice!: number;
 
 	@ApiProperty({ description: 'Stock total disponible' })
-	totalStock: number;
+	totalStock!: number;
 
 	@ApiProperty({ description: 'Código SKU del producto' })
-	SKU: string;
-}
-
-export class SuperfoodElaborationTimeResponse {
-	@ApiProperty({ description: 'Días de elaboración' })
-	days: number;
-
-	@ApiProperty({ description: 'Horas de elaboración' })
-	hours: number;
+	SKU!: string;
 }
 
 export class SuperfoodDetailProductResponse {
-	@ApiProperty({ description: 'ID de tipo de superfood' })
-	type: string;
+	@ApiProperty({ description: 'ID de tipo de superfood', required: false })
+	type?: string;
 
-	@ApiProperty({ description: 'ID de presentación del producto' })
-	productPresentation: string;
+	@ApiProperty({
+		description: 'ID de presentación del producto',
+		required: false,
+	})
+	productPresentation?: string;
 
 	@ApiProperty({
 		enum: SuperfoodConsumptionWay,
 		description: 'Forma de consumo',
+		required: false,
 	})
-	consumptionWay: SuperfoodConsumptionWay;
+	consumptionWay?: SuperfoodConsumptionWay;
 
 	@ApiProperty({ description: 'Sugerencias de consumo', required: false })
 	consumptionSuggestions?: string;
 
-	@ApiProperty({ description: 'ID de tamaño de unidad de venta' })
-	salesUnitSize: string;
+	@ApiProperty({
+		description: 'ID de tamaño de unidad de venta',
+		required: false,
+	})
+	salesUnitSize?: string;
 
 	@ApiProperty({ description: 'Recomendaciones médicas', required: false })
 	medicRecommendations?: string;
 
 	@ApiProperty({ description: 'Advertencias de salud', required: false })
 	healthWarnings?: string;
-
-	@ApiProperty({
-		type: SuperfoodElaborationTimeResponse,
-		description: 'Tiempo de elaboración',
-	})
-	elaborationTime: SuperfoodElaborationTimeResponse;
 }
 
 export class SuperfoodNutritionalItemResponse {
 	@ApiProperty({ description: 'ID del item nutricional' })
-	id: string;
+	id!: string;
 
 	@ApiProperty({ description: 'Cantidad del nutriente', example: '20g' })
-	quantity: string;
+	quantity!: string;
 
 	@ApiProperty({ description: 'Nombre del nutriente', example: 'Proteína' })
-	nutrient: string;
+	nutrient!: string;
 
 	@ApiProperty({ description: 'Característica destacada' })
-	strikingFeature: string;
+	strikingFeature!: string;
 
 	@ApiProperty({ description: 'Si está seleccionado como destacado' })
-	selected: boolean;
+	selected!: boolean;
+}
+
+export class SuperfoodProductDimensionsResponse {
+	@ApiProperty({ description: 'Largo (cm)' })
+	length!: number;
+
+	@ApiProperty({ description: 'Ancho (cm)' })
+	width!: number;
+
+	@ApiProperty({ description: 'Alto (cm)' })
+	height!: number;
 }
 
 export class SuperfoodDetailTraceabilityResponse {
-	@ApiProperty({ description: 'Si es hecho a mano' })
-	handmade: boolean;
+	@ApiProperty({ required: false })
+	productOrigin?: string;
 
-	@ApiProperty({ description: 'Materiales secundarios usados', type: [String] })
-	secondaryMaterials: string[];
-
-	@ApiProperty({ description: 'ID de la comunidad de origen del producto' })
-	originProductCommunityId: string;
+	@ApiProperty({ required: false })
+	exactSpeciesOrVarietyId?: string;
 
 	@ApiProperty({
 		enum: SuperfoodProductionMethod,
-		description: 'Método de producción',
+		required: false,
 	})
-	productionMethod: SuperfoodProductionMethod;
+	productionMethod?: SuperfoodProductionMethod;
 
-	@ApiProperty({ description: 'ID de método de preservación' })
-	preservationMethod: string;
+	@ApiProperty({ required: false })
+	preservationMethodId?: string;
 
-	@ApiProperty({ description: 'Si es artesanal' })
-	isArtesanal: boolean;
+	@ApiProperty({ type: [String], required: false })
+	certificationIds?: string[];
 
-	@ApiProperty({ description: 'Si es natural' })
-	isNatural: boolean;
+	@ApiProperty({ required: false })
+	sanitaryRegistryNumber?: string;
 
-	@ApiProperty({ description: 'Si se puede comer sin preparación' })
-	isEatableWithoutPrep: boolean;
+	@ApiProperty({ required: false })
+	expirationDate?: Date;
 
-	@ApiProperty({ description: 'Si puede causar alergias' })
-	canCauseAllergies: boolean;
+	@ApiProperty({ required: false })
+	productionDate?: Date;
 
-	@ApiProperty({ description: 'ID de certificación', required: false })
-	certification?: string;
+	@ApiProperty({ required: false })
+	lotNumber?: string;
+
+	@ApiProperty({ required: false })
+	isNatural?: boolean;
+
+	@ApiProperty({ required: false })
+	isArtesanal?: boolean;
+
+	@ApiProperty({ required: false })
+	isEatableWithoutPrep?: boolean;
+
+	@ApiProperty({ required: false })
+	canCauseAllergies?: boolean;
+
+	@ApiProperty({ type: [String], required: false })
+	allergens?: string[];
+
+	@ApiProperty({ required: false })
+	primaryPackaging?: string;
+
+	@ApiProperty({ required: false })
+	secondaryPackaging?: string;
+
+	@ApiProperty({ required: false })
+	packagingSpecification?: string;
+
+	@ApiProperty({ required: false })
+	netWeight?: string;
+
+	@ApiProperty({ required: false })
+	grossWeight?: string;
+
+	@ApiPropertyOptional({
+		type: () => SuperfoodProductDimensionsResponse,
+		description: 'Dimensiones del empaque (cm)',
+	})
+	dimensionsWithPackage?: SuperfoodProductDimensionsResponse;
+
+	@ApiProperty({ required: false })
+	storageConditions?: string;
+
+	@ApiProperty({ required: false })
+	estimatedDeliveryDays?: number;
+
+	@ApiProperty({ required: false })
+	isCustomizableOrMixable?: boolean;
 }
 
 export class SuperfoodOptionsItemResponse {
 	@ApiProperty({ description: 'ID del item de opción' })
-	id: string;
+	id!: string;
 
 	@ApiProperty({ description: 'Etiqueta del item', example: 'Rojo' })
-	label: string;
+	label!: string;
 
 	@ApiProperty({
 		description: 'URLs de imágenes del item',
@@ -153,81 +200,95 @@ export class SuperfoodOptionsItemResponse {
 
 export class SuperfoodOptionsResponse {
 	@ApiProperty({ description: 'ID de la opción' })
-	id: string;
+	id!: string;
 
 	@ApiProperty({ description: 'Nombre de la opción', example: 'Color' })
-	name: string;
+	name!: string;
 
 	@ApiProperty({
 		description: 'Valores de la opción',
 		type: [SuperfoodOptionsItemResponse],
 	})
-	values: SuperfoodOptionsItemResponse[];
+	values!: SuperfoodOptionsItemResponse[];
 }
 
 export class SuperfoodProductResponse {
 	@ApiProperty({ description: 'ID único del producto' })
-	id: string;
+	id!: string;
 
-	@ApiProperty({ description: 'ID de categoría de superfood' })
-	categoryId: string;
+	@ApiPropertyOptional({ description: 'ID de categoría de superfood' })
+	categoryId?: string;
 
 	@ApiProperty({
 		enum: SuperfoodProductStatus,
 		description: 'Estado del producto',
 	})
-	status: SuperfoodProductStatus;
+	status!: SuperfoodProductStatus;
 
 	@ApiProperty({
 		type: SuperfoodBasicInfoResponse,
 		description: 'Información básica del producto',
 	})
-	baseInfo: SuperfoodBasicInfoResponse;
+	baseInfo!: SuperfoodBasicInfoResponse;
 
 	@ApiProperty({
 		type: SuperfoodPriceInventoryResponse,
 		description: 'Precio e inventario',
 	})
-	priceInventory: SuperfoodPriceInventoryResponse;
+	priceInventory!: SuperfoodPriceInventoryResponse;
 
-	@ApiProperty({
+	@ApiPropertyOptional({
 		type: SuperfoodDetailProductResponse,
 		description: 'Detalles del producto',
 	})
-	detailProduct: SuperfoodDetailProductResponse;
+	detailProduct?: SuperfoodDetailProductResponse;
 
-	@ApiProperty({
+	@ApiPropertyOptional({
 		type: [SuperfoodNutritionalItemResponse],
 		description: 'Contenido nutricional',
 	})
-	nutritionalContent: SuperfoodNutritionalItemResponse[];
+	nutritionalContent?: SuperfoodNutritionalItemResponse[];
 
-	@ApiProperty({
+	@ApiPropertyOptional({
 		type: SuperfoodDetailTraceabilityResponse,
-		description: 'Detalles de trazabilidad',
+		description: 'Datos internos de gestión y trazabilidad',
 	})
-	detailTraceability: SuperfoodDetailTraceabilityResponse;
+	detailTraceability?: SuperfoodDetailTraceabilityResponse;
 
-	@ApiProperty({
-		description: 'Trazabilidad general del producto',
-		required: false,
+	@ApiPropertyOptional({
+		type: ProductTraceabilityResponse,
+		description: 'Trazabilidad por etapas / blockchain',
 	})
-	productTraceability?: any;
+	productTraceability?: ProductTraceabilityResponse;
 
-	@ApiProperty({
+	@ApiPropertyOptional({
 		type: [SuperfoodOptionsResponse],
-		description: 'Opciones del producto',
+		description: 'Opciones del producto (variantes)',
 	})
-	options: SuperfoodOptionsResponse[];
+	options?: SuperfoodOptionsResponse[];
+
+	@ApiPropertyOptional({
+		description: 'ID de color de catálogo (SuperfoodColor)',
+	})
+	colorId?: string;
+
+	@ApiPropertyOptional({
+		description: 'ID del producto fuente de detalle (DetailSourceProduct)',
+	})
+	detailSourceProductId?: string;
 
 	@ApiProperty({
 		description: 'Indica si el descuento está activo para este producto',
 	})
-	isDiscountActive: boolean;
+	isDiscountActive!: boolean;
 
-	@ApiProperty({ description: 'Fecha de creación' })
-	createdAt: Date;
+	@ApiProperty({ description: 'Fecha de creación', type: String, format: 'date-time' })
+	createdAt!: Date;
 
-	@ApiProperty({ description: 'Fecha de última actualización' })
-	updatedAt: Date;
+	@ApiProperty({
+		description: 'Fecha de última actualización',
+		type: String,
+		format: 'date-time',
+	})
+	updatedAt!: Date;
 }

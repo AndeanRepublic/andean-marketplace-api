@@ -1,7 +1,5 @@
 import {
-	IsBoolean,
 	IsEnum,
-	IsNotEmpty,
 	IsNumber,
 	IsOptional,
 	IsString,
@@ -10,17 +8,6 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { SuperfoodConsumptionWay } from '../../../../domain/enums/SuperfoodConsumptionWay';
-import { SuperfoodProductionMethod } from '../../../../domain/enums/SuperfoodProductionMethod';
-
-export class CreateElaborationTimeDto {
-	@ApiProperty()
-	@IsNumber()
-	days: number;
-
-	@ApiProperty()
-	@IsNumber()
-	hours: number;
-}
 
 export class CreateSuperfoodDetailDto {
 	@ApiProperty({ description: 'ID de tipo de superfood', required: false })
@@ -63,62 +50,4 @@ export class CreateSuperfoodDetailDto {
 	@IsString()
 	@IsOptional()
 	healthWarnings?: string;
-
-	@ApiProperty({ type: CreateElaborationTimeDto, required: false })
-	@ValidateNested()
-	@Type(() => CreateElaborationTimeDto)
-	@IsOptional()
-	elaborationTime?: CreateElaborationTimeDto;
-
-	@ApiProperty({ required: false })
-	@IsBoolean()
-	@IsOptional()
-	handmade?: boolean;
-
-	@ApiProperty({ type: [String], required: false })
-	@IsOptional()
-	secondaryMaterials?: string[];
-
-	@ApiProperty({
-		description: 'ID de la comunidad de origen del producto',
-		required: false,
-	})
-	@IsString()
-	@IsOptional()
-	originProductCommunityId?: string;
-
-	@ApiProperty({ enum: SuperfoodProductionMethod, required: false })
-	@IsEnum(SuperfoodProductionMethod)
-	@IsOptional()
-	productionMethod?: SuperfoodProductionMethod;
-
-	@ApiProperty({ description: 'ID de método de preservación', required: false })
-	@IsString()
-	@IsOptional()
-	preservationMethod?: string;
-
-	@ApiProperty({ required: false })
-	@IsBoolean()
-	@IsOptional()
-	isArtesanal?: boolean;
-
-	@ApiProperty({ required: false })
-	@IsBoolean()
-	@IsOptional()
-	isNatural?: boolean;
-
-	@ApiProperty({ required: false })
-	@IsBoolean()
-	@IsOptional()
-	isEatableWithoutPrep?: boolean;
-
-	@ApiProperty({ required: false })
-	@IsBoolean()
-	@IsOptional()
-	canCauseAllergies?: boolean;
-
-	@ApiProperty({ required: false })
-	@IsString()
-	@IsOptional()
-	certification?: string;
 }

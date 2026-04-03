@@ -1,6 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { SuperfoodProductListColor } from './SuperfoodProductListItem';
 import { OwnerInfoResponse } from '../textile/TextileProductDetailResponse';
+import {
+	SuperfoodDetailProductResponse,
+	SuperfoodDetailTraceabilityResponse,
+} from './SuperfoodProductResponse';
+import { ProductTraceabilityResponse } from '../shared/ProductTraceabilityResponse';
 
 // ── Media ────────────────────────────────────────────────────────────────
 export class MediaImageResponse {
@@ -137,6 +142,52 @@ export class SuperfoodProductDetailResponse {
 	@ApiProperty({ description: 'Productos similares (máximo 6)' })
 	moreProducts!: SuperfoodProductListItemCompact[];
 	@ApiProperty({ type: ReviewsResponse }) reviews!: ReviewsResponse;
+
+	@ApiPropertyOptional({
+		type: SuperfoodDetailTraceabilityResponse,
+		description:
+			'Datos de gestión y trazabilidad (útil para formularios de edición)',
+	})
+	detailTraceability?: SuperfoodDetailTraceabilityResponse;
+
+	@ApiPropertyOptional({
+		type: SuperfoodDetailProductResponse,
+		description: 'Detalle de producto persistido (edición)',
+	})
+	detailProduct?: SuperfoodDetailProductResponse;
+
+	@ApiPropertyOptional({ description: 'ID categoría superfood' })
+	categoryId?: string;
+
+	@ApiPropertyOptional({ description: 'ID color catálogo' })
+	colorId?: string;
+
+	@ApiPropertyOptional({ description: 'Estado del producto' })
+	status?: string;
+
+	@ApiPropertyOptional({ description: 'ID DetailSourceProduct principal' })
+	detailSourceProductId?: string;
+
+	@ApiPropertyOptional({ description: 'Precio e inventario (persistido)' })
+	priceInventory?: Record<string, unknown>;
+
+	@ApiPropertyOptional({ description: 'Información base (persistida)' })
+	baseInfo?: Record<string, unknown>;
+
+	@ApiPropertyOptional({
+		description: 'Contenido nutricional (persistido)',
+		type: 'array',
+	})
+	nutritionalContent?: Record<string, unknown>[];
+
+	@ApiPropertyOptional({
+		type: ProductTraceabilityResponse,
+		description: 'Trazabilidad blockchain/epochs',
+	})
+	productTraceability?: ProductTraceabilityResponse;
+
+	@ApiPropertyOptional()
+	isDiscountActive?: boolean;
 }
 
 // ── Compact list item (for moreProducts) ─────────────────────────────────

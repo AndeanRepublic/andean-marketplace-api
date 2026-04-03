@@ -20,6 +20,9 @@ import { UpdateDetailSourceProductUseCase } from '../detailSourceProduct/UpdateD
 import { SellerProfileRepository } from '../../datastore/Seller.repo';
 import { AccountRole } from 'src/andean/domain/enums/AccountRole';
 import { SuperfoodColorRepository } from '../../datastore/superfoods/SuperfoodColor.repo';
+import { SuperfoodCertificationRepository } from '../../datastore/superfoods/SuperfoodCertification.repo';
+import { SuperfoodPreservationMethodRepository } from '../../datastore/superfoods/SuperfoodPreservationMethod.repo';
+import { DetailSourceProductRepository } from '../../datastore/DetailSourceProduct.repo';
 
 @Injectable()
 export class UpdateSuperfoodProductUseCase {
@@ -39,7 +42,52 @@ export class UpdateSuperfoodProductUseCase {
 		private readonly sellerProfileRepository: SellerProfileRepository,
 		@Inject(SuperfoodColorRepository)
 		private readonly superfoodColorRepository: SuperfoodColorRepository,
+
+		@Inject(SuperfoodCertificationRepository)
+		private readonly superfoodCertificationRepository: SuperfoodCertificationRepository,
+
+		@Inject(SuperfoodPreservationMethodRepository)
+		private readonly superfoodPreservationMethodRepository: SuperfoodPreservationMethodRepository,
+
+		@Inject(DetailSourceProductRepository)
+		private readonly detailSourceProductRepository: DetailSourceProductRepository,
 	) {}
+
+	private async validateDetailTraceability(
+		dto: CreateSuperfoodDto['detailTraceability'],
+	): Promise<void> {
+		if (!dto) return;
+		const pm = dto.preservationMethodId?.trim();
+		if (pm) {
+			const m = await this.superfoodPreservationMethodRepository.getById(pm);
+			if (!m) {
+				throw new NotFoundException(
+					`SuperfoodPreservationMethod with id ${pm} not found`,
+				);
+			}
+		}
+		const speciesId = dto.exactSpeciesOrVarietyId?.trim();
+		if (speciesId) {
+			const dsp = await this.detailSourceProductRepository.getById(speciesId);
+			if (!dsp) {
+				throw new NotFoundException(
+					`DetailSourceProduct with id ${speciesId} not found`,
+				);
+			}
+		}
+		if (dto.certificationIds?.length) {
+			for (const rawId of dto.certificationIds) {
+				const id = rawId?.trim();
+				if (!id) continue;
+				const c = await this.superfoodCertificationRepository.getById(id);
+				if (!c) {
+					throw new NotFoundException(
+						`SuperfoodCertification with id ${id} not found`,
+					);
+				}
+			}
+		}
+	}
 
 	async handle(
 		productId: string,
@@ -92,6 +140,8 @@ export class UpdateSuperfoodProductUseCase {
 				);
 			}
 		}
+
+		await this.validateDetailTraceability(dto.detailTraceability);
 
 		// 3. Validar ownerId según ownerType solo si existe en el DTO
 		if (dto.baseInfo?.ownerType === SuperfoodOwnerType.SHOP) {

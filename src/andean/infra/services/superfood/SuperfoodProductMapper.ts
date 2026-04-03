@@ -6,7 +6,6 @@ import { SuperfoodPriceInventory } from '../../../domain/entities/superfoods/Sup
 import { SuperfoodDetailProduct } from '../../../domain/entities/superfoods/SuperfoodDetailProduct';
 import { SuperfoodNutritionalItem } from '../../../domain/entities/superfoods/SuperfoodNutritionalItem';
 import { SuperfoodDetailTraceability } from '../../../domain/entities/superfoods/SuperfoodDetailTraceability';
-import { SuperfoodElaborationTime } from '../../../domain/entities/superfoods/SuperfoodElaborationTime';
 import { SuperfoodOptions } from '../../../domain/entities/superfoods/SuperfoodOptions';
 import { SuperfoodOptionsItem } from '../../../domain/entities/superfoods/SuperfoodOptionsItem';
 import { ProductTraceability } from '../../../domain/entities/ProductTraceability';
@@ -38,17 +37,10 @@ export class SuperfoodProductMapper {
 
 		let detailProduct: SuperfoodDetailProduct | undefined;
 		if (plain.detailProduct) {
-			let elaborationTime: SuperfoodElaborationTime | undefined;
-			if (plain.detailProduct.elaborationTime) {
-				elaborationTime = plainToOne(
-					SuperfoodElaborationTime,
-					plain.detailProduct.elaborationTime,
-				);
-			}
-			detailProduct = plainToOne(SuperfoodDetailProduct, {
-				...plain.detailProduct,
-				elaborationTime,
-			});
+			detailProduct = plainToOne(
+				SuperfoodDetailProduct,
+				plain.detailProduct,
+			);
 		}
 
 		const nutritionalContent = plain.nutritionalContent?.map((item: unknown) =>
@@ -114,17 +106,7 @@ export class SuperfoodProductMapper {
 
 		let detailProduct: SuperfoodDetailProduct | undefined;
 		if (dto.detailProduct) {
-			let elaborationTime: SuperfoodElaborationTime | undefined;
-			if (dto.detailProduct.elaborationTime) {
-				elaborationTime = plainToOne(
-					SuperfoodElaborationTime,
-					dto.detailProduct.elaborationTime,
-				);
-			}
-			detailProduct = plainToOne(SuperfoodDetailProduct, {
-				...dto.detailProduct,
-				elaborationTime,
-			});
+			detailProduct = plainToOne(SuperfoodDetailProduct, dto.detailProduct);
 		}
 
 		const nutritionalContent = dto.nutritionalContent?.map((item) =>
@@ -194,17 +176,7 @@ export class SuperfoodProductMapper {
 
 		let detailProduct: SuperfoodDetailProduct | undefined;
 		if (dto.detailProduct) {
-			let elaborationTime: SuperfoodElaborationTime | undefined;
-			if (dto.detailProduct.elaborationTime) {
-				elaborationTime = plainToOne(
-					SuperfoodElaborationTime,
-					dto.detailProduct.elaborationTime,
-				);
-			}
-			detailProduct = plainToOne(SuperfoodDetailProduct, {
-				...dto.detailProduct,
-				elaborationTime,
-			});
+			detailProduct = plainToOne(SuperfoodDetailProduct, dto.detailProduct);
 		}
 
 		const nutritionalContent = dto.nutritionalContent?.map((item) =>

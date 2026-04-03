@@ -21,10 +21,16 @@ import {
 	ReviewsResponse,
 	SuperfoodProductListItemCompact,
 } from '../../models/superfoods/SuperfoodProductDetailResponse';
+import type {
+	SuperfoodDetailProductResponse,
+	SuperfoodDetailTraceabilityResponse,
+} from '../../models/superfoods/SuperfoodProductResponse';
+import type { ProductTraceabilityResponse } from '../../models/shared/ProductTraceabilityResponse';
 import { SuperfoodProductListItem } from '../../models/superfoods/SuperfoodProductListItem';
 import { OwnerInfoResolver } from '../../../infra/services/owner/OwnerInfoResolver';
 import { MediaUrlResolver } from '../../../infra/services/media/MediaUrlResolver';
 import { SuperfoodProductListColorResolver } from '../../../infra/services/superfood/SuperfoodProductListColorResolver';
+import { instanceToPlain } from 'class-transformer';
 
 @Injectable()
 export class GetByIdSuperfoodProductDetailUseCase {
@@ -180,6 +186,34 @@ export class GetByIdSuperfoodProductDetailUseCase {
 			nutritionalInformation,
 			moreProducts,
 			reviews: reviewsResponse,
+			...(product.detailTraceability && {
+				detailTraceability: instanceToPlain(
+					product.detailTraceability,
+				) as SuperfoodDetailTraceabilityResponse,
+			}),
+			...(product.detailProduct && {
+				detailProduct: instanceToPlain(
+					product.detailProduct,
+				) as SuperfoodDetailProductResponse,
+			}),
+			categoryId: product.categoryId,
+			colorId: product.colorId,
+			status: product.status,
+			detailSourceProductId: product.detailSourceProductId,
+			priceInventory: instanceToPlain(product.priceInventory) as Record<
+				string,
+				unknown
+			>,
+			baseInfo: instanceToPlain(product.baseInfo) as Record<string, unknown>,
+			nutritionalContent: (product.nutritionalContent || []).map((n) =>
+				instanceToPlain(n),
+			) as Record<string, unknown>[],
+			...(product.productTraceability && {
+				productTraceability: instanceToPlain(
+					product.productTraceability,
+				) as ProductTraceabilityResponse,
+			}),
+			isDiscountActive: product.isDiscountActive,
 		};
 	}
 

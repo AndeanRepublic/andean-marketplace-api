@@ -14,6 +14,9 @@ import { SuperfoodProductMapper } from '../../../infra/services/superfood/Superf
 import { SuperfoodOwnerType } from '../../../domain/enums/SuperfoodOwnerType';
 import { CreateDetailSourceProductUseCase } from '../detailSourceProduct/CreateDetailSourceProductUseCase';
 import { SuperfoodColorRepository } from '../../datastore/superfoods/SuperfoodColor.repo';
+import { SuperfoodCertificationRepository } from '../../datastore/superfoods/SuperfoodCertification.repo';
+import { SuperfoodPreservationMethodRepository } from '../../datastore/superfoods/SuperfoodPreservationMethod.repo';
+import { DetailSourceProductRepository } from '../../datastore/DetailSourceProduct.repo';
 
 @Injectable()
 export class CreateSuperfoodProductUseCase {
@@ -33,8 +36,53 @@ export class CreateSuperfoodProductUseCase {
 		@Inject(SuperfoodColorRepository)
 		private readonly superfoodColorRepository: SuperfoodColorRepository,
 
+		@Inject(SuperfoodCertificationRepository)
+		private readonly superfoodCertificationRepository: SuperfoodCertificationRepository,
+
+		@Inject(SuperfoodPreservationMethodRepository)
+		private readonly superfoodPreservationMethodRepository: SuperfoodPreservationMethodRepository,
+
+		@Inject(DetailSourceProductRepository)
+		private readonly detailSourceProductRepository: DetailSourceProductRepository,
+
 		private readonly createDetailSourceProductUseCase: CreateDetailSourceProductUseCase,
 	) {}
+
+	private async validateDetailTraceability(
+		dto: CreateSuperfoodDto['detailTraceability'],
+	): Promise<void> {
+		if (!dto) return;
+		const pm = dto.preservationMethodId?.trim();
+		if (pm) {
+			const m = await this.superfoodPreservationMethodRepository.getById(pm);
+			if (!m) {
+				throw new NotFoundException(
+					`SuperfoodPreservationMethod with id ${pm} not found`,
+				);
+			}
+		}
+		const speciesId = dto.exactSpeciesOrVarietyId?.trim();
+		if (speciesId) {
+			const dsp = await this.detailSourceProductRepository.getById(speciesId);
+			if (!dsp) {
+				throw new NotFoundException(
+					`DetailSourceProduct with id ${speciesId} not found`,
+				);
+			}
+		}
+		if (dto.certificationIds?.length) {
+			for (const rawId of dto.certificationIds) {
+				const id = rawId?.trim();
+				if (!id) continue;
+				const c = await this.superfoodCertificationRepository.getById(id);
+				if (!c) {
+					throw new NotFoundException(
+						`SuperfoodCertification with id ${id} not found`,
+					);
+				}
+			}
+		}
+	}
 
 	async handle(dto: CreateSuperfoodDto): Promise<SuperfoodProduct> {
 		// 1. Validar que la categoría existe solo si se proporciona
@@ -78,6 +126,8 @@ export class CreateSuperfoodProductUseCase {
 				);
 			}
 		}
+
+		await this.validateDetailTraceability(dto.detailTraceability);
 
 		// 4. Si viene detailSourceProduct, crearlo primero
 		let detailSourceProductId: string | undefined;
