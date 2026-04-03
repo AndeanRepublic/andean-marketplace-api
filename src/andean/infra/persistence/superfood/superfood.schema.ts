@@ -165,6 +165,8 @@ const SuperfoodDetailProductSchema = new Schema(
 
 // Main schema
 export const SuperfoodProductSchema = new Schema({
+	/** Mismo valor que `_id` en hex; usado en `findOne({ id })`. Opcional por datos legacy. */
+	id: { type: String, required: false },
 	categoryId: { type: String, required: false },
 	status: {
 		type: String,
@@ -196,6 +198,7 @@ export const SuperfoodProductSchema = new Schema({
 });
 
 export interface SuperfoodProductDocument extends Document {
+	id?: string;
 	categoryId?: string;
 	status: SuperfoodProductStatus;
 	colorId?: string;

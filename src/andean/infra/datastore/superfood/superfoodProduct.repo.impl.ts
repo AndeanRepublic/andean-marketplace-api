@@ -29,9 +29,11 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 		product: SuperfoodProduct,
 	): Promise<SuperfoodProduct> {
 		const persistenceData = SuperfoodProductMapper.toPersistence(product);
+		const _id = new Types.ObjectId(product.id);
 		const newDoc = new this.model({
-			_id: crypto.randomUUID(),
 			...persistenceData,
+			_id,
+			id: product.id,
 		});
 		const savedDoc = await newDoc.save();
 		return SuperfoodProductMapper.fromDocument(savedDoc);

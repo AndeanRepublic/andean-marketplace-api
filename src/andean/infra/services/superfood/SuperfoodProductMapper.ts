@@ -85,7 +85,10 @@ export class SuperfoodProductMapper {
 				: undefined;
 
 		return plainToOne(SuperfoodProduct, {
-			id: plain._id.toString(),
+			id:
+				typeof plain.id === 'string' && plain.id.trim()
+					? plain.id.trim()
+					: plain._id.toString(),
 			status: plain.status,
 			baseInfo,
 			priceInventory,
