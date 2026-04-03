@@ -1,16 +1,30 @@
 import { SuperfoodProductionMethod } from '../../enums/SuperfoodProductionMethod';
+import { ProductDimensions } from '../ProductDimensions';
 
 export class SuperfoodDetailTraceability {
 	constructor(
-		public handmade?: boolean,
-		public secondaryMaterials?: string[], // Additional materials used
-		public originProductCommunityId?: string, // ID reference to OriginProductCommunity
-		public productionMethod?: SuperfoodProductionMethod, // AGROECOLOGICO | ORGANICO | CONVENCIONAL
-		public preservationMethod?: string, // ID reference to SuperfoodPreservationMethodItems
-		public isArtesanal?: boolean,
+		public productOrigin?: string,
+		public exactSpeciesOrVarietyId?: string,
+		public productionMethod?: SuperfoodProductionMethod,
+		public preservationMethodId?: string,
+		public certificationIds?: string[],
+		public sanitaryRegistryNumber?: string,
+		public expirationDate?: Date,
+		public productionDate?: Date,
+		public lotNumber?: string,
 		public isNatural?: boolean,
+		public isArtesanal?: boolean,
 		public isEatableWithoutPrep?: boolean,
 		public canCauseAllergies?: boolean,
-		public certification?: string, // ID reference to SuperfoodCertificationItems
+		public allergens?: string[],
+		public primaryPackaging?: string,
+		public secondaryPackaging?: string,
+		public packagingSpecification?: string,
+		public netWeight?: string,
+		public grossWeight?: string,
+		public dimensionsWithPackage?: ProductDimensions,
+		public storageConditions?: string,
+		public estimatedDeliveryDays?: number,
+		public isCustomizableOrMixable?: boolean,
 	) {}
 }

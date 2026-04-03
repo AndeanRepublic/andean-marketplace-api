@@ -1,5 +1,4 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { SuperfoodColor } from '../../../domain/enums/SuperfoodColor';
 
 export class SuperfoodBenefitResponse {
 	@ApiProperty({ description: 'ID único del beneficio' })
@@ -19,11 +18,10 @@ export class SuperfoodBenefitResponse {
 	description!: string;
 
 	@ApiPropertyOptional({
-		description: 'Color asociado al beneficio',
-		enum: SuperfoodColor,
-		example: SuperfoodColor.GREEN,
+		description: 'Color hexadecimal asociado al beneficio',
+		example: '#22c55e',
 	})
-	color?: SuperfoodColor;
+	hexCodeColor?: string;
 
 	@ApiProperty({
 		description: 'ID del MediaItem que representa el icono',

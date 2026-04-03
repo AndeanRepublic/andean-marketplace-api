@@ -10,20 +10,23 @@ import { CommunityRepository } from '../../datastore/community/community.repo';
 import { MediaItemRepository } from '../../datastore/MediaItem.repo';
 import { DetailSourceProductRepository } from '../../datastore/DetailSourceProduct.repo';
 import { ProductType } from '../../../domain/enums/ProductType';
-import { MediaItemRole } from '../../../domain/enums/MediaItemRole';
+import { collectSuperfoodProductMediaIds } from '../../../domain/superfoods/collectSuperfoodProductMediaIds';
 import { Review } from '../../../domain/entities/Review';
 import { MediaItem } from '../../../domain/entities/MediaItem';
 import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
 import {
 	SuperfoodProductDetailResponse,
 	MediaImageResponse,
-	TraceabilityInfoResponse,
 	ReviewsResponse,
 	SuperfoodProductListItemCompact,
 } from '../../models/superfoods/SuperfoodProductDetailResponse';
+import type { ProductTraceabilityResponse } from '../../models/shared/ProductTraceabilityResponse';
 import { SuperfoodProductListItem } from '../../models/superfoods/SuperfoodProductListItem';
 import { OwnerInfoResolver } from '../../../infra/services/owner/OwnerInfoResolver';
 import { MediaUrlResolver } from '../../../infra/services/media/MediaUrlResolver';
+import { SuperfoodProductListColorResolver } from '../../../infra/services/superfood/SuperfoodProductListColorResolver';
+import { SuperfoodProductListMediaResolver } from '../../../infra/services/superfood/SuperfoodProductListMediaResolver';
+import { instanceToPlain } from 'class-transformer';
 
 @Injectable()
 export class GetByIdSuperfoodProductDetailUseCase {
@@ -50,6 +53,8 @@ export class GetByIdSuperfoodProductDetailUseCase {
 		private readonly detailSourceProductRepository: DetailSourceProductRepository,
 		private readonly mediaUrlResolver: MediaUrlResolver,
 		private readonly ownerInfoResolver: OwnerInfoResolver,
+		private readonly superfoodProductListColorResolver: SuperfoodProductListColorResolver,
+		private readonly superfoodProductListMediaResolver: SuperfoodProductListMediaResolver,
 	) {}
 
 	async handle(productId: string): Promise<SuperfoodProductDetailResponse> {
@@ -63,7 +68,9 @@ export class GetByIdSuperfoodProductDetailUseCase {
 		// 2. Lanzar consultas independientes en paralelo para mejor rendimiento
 		const [mediaItems, reviews, nutritionalFeatures, benefits, sourceProduct] =
 			await Promise.all([
-				this.mediaItemRepository.getByIds(product.baseInfo.mediaIds || []),
+				this.mediaItemRepository.getByIds(
+					collectSuperfoodProductMediaIds(product.baseInfo.productMedia),
+				),
 				this.reviewRepository.getByProductIdAndType(
 					productId,
 					ProductType.SUPERFOOD,
@@ -81,16 +88,17 @@ export class GetByIdSuperfoodProductDetailUseCase {
 					: Promise.resolve(null),
 			]);
 
-		// 3. Resolver imágenes por rol
-		const images = await this.resolveImages(mediaItems);
+		// 3. Resolver imágenes por IDs en productMedia
+		const images = await this.resolveProductImages(product, mediaItems);
 
-		// 4. Resolver owner y reviews en paralelo
-		const [ownerInfo, reviewsResponse] = await Promise.all([
+		// 4. Resolver owner, reviews y color de catálogo en paralelo
+		const [ownerInfo, reviewsResponse, catalogColor] = await Promise.all([
 			this.ownerInfoResolver.resolveDetailed(
 				String(product.baseInfo.ownerType),
 				product.baseInfo.ownerId,
 			),
 			this.buildReviews(reviews),
+			this.superfoodProductListColorResolver.resolveById(product.colorId),
 		]);
 
 		// 5. Resolver nutritional features con iconos (batch de mediaIds)
@@ -105,22 +113,24 @@ export class GetByIdSuperfoodProductDetailUseCase {
 			allIconIds.length > 0
 				? await this.mediaItemRepository.getByIds(allIconIds)
 				: [];
-		const iconMap = new Map(iconMediaItems.map((m) => [m.id, m.key]));
+		const iconUrlById = await this.mediaUrlResolver.resolveUrls(
+			iconMediaItems.map((m) => m.id),
+		);
 
-		// 6. Mapear nutritional features para hero
+		// 6. Mapear nutritional features para hero (iconUrl = URL pública del media)
 		const nutritionalFeaturesInfo = nutritionalFeatures.map((f) => ({
 			id: f.id,
 			name: f.name,
-			iconUrl: f.iconId ? iconMap.get(f.iconId) || '' : '',
+			iconUrl: f.iconId ? iconUrlById.get(f.iconId) || '' : '',
 		}));
 
 		// 7. Mapear benefits
 		const benefitsInfo = benefits.map((b) => ({
 			id: b.id,
 			name: b.name,
-			iconUrl: b.iconId ? iconMap.get(b.iconId) || '' : '',
+			iconUrl: b.iconId ? iconUrlById.get(b.iconId) || '' : '',
 			description: b.description || undefined,
-			color: b.color || '',
+			color: b.hexCodeColor || '',
 		}));
 
 		// 8. Mapear nutritional content — separar striking vs normal
@@ -141,13 +151,10 @@ export class GetByIdSuperfoodProductDetailUseCase {
 			}),
 		);
 
-		// 9. Traceability
-		const traceabilityInfo = this.buildTraceabilityInfo(product);
-
-		// 10. More products (6 primeros, excluyendo el actual)
+		// 9. More products (6 primeros, excluyendo el actual)
 		const moreProducts = await this.getMoreProducts(productId);
 
-		// 11. Source product info
+		// 10. Source product info
 		const sourceProductInfo = sourceProduct
 			? {
 					name: sourceProduct.name,
@@ -156,20 +163,29 @@ export class GetByIdSuperfoodProductDetailUseCase {
 				}
 			: { name: '', description: '', features: [] };
 
-		// 12. Construir respuesta
+		// 11. Construir respuesta
 		return {
 			id: product.id,
 			mainImg: images.mainImg,
 			plateImg: images.plateImg,
 			sourceProductImg: images.sourceProductImg,
+			...(images.closestSourceProductImg.url ||
+			images.closestSourceProductImg.name
+				? { closestSourceProductImg: images.closestSourceProductImg }
+				: {}),
+			...(images.otherProductImages.length
+				? { otherProductImages: images.otherProductImages }
+				: {}),
 			heroDetail: {
 				title: product.baseInfo.title,
-				description: product.baseInfo.description,
+				...(product.baseInfo.shortDescription?.trim() && {
+					shortDescription: product.baseInfo.shortDescription.trim(),
+				}),
+				description: product.baseInfo.detailedDescription,
 				nutritionalFeatures: nutritionalFeaturesInfo,
 				basePrice: product.priceInventory.basePrice,
 				totalStock: product.priceInventory.totalStock,
 				isDiscountActive: product.isDiscountActive,
-				traceabilityInfo,
 			},
 			...(ownerInfo && { ownerInfo }),
 			benefitsInfo,
@@ -178,37 +194,53 @@ export class GetByIdSuperfoodProductDetailUseCase {
 			nutritionalInformation,
 			moreProducts,
 			reviews: reviewsResponse,
+			...(catalogColor && { color: catalogColor }),
+			status: product.status,
+			...(product.productTraceability && {
+				productTraceability: instanceToPlain(
+					product.productTraceability,
+				) as ProductTraceabilityResponse,
+			}),
+			isDiscountActive: product.isDiscountActive,
 		};
 	}
 
 	// ── Private helpers ──────────────────────────────────────────────────
 
-	private async resolveImages(mediaItems: MediaItem[]): Promise<{
+	private async resolveProductImages(
+		product: SuperfoodProduct,
+		mediaItems: MediaItem[],
+	): Promise<{
 		mainImg: MediaImageResponse;
 		plateImg: MediaImageResponse;
 		sourceProductImg: MediaImageResponse;
+		closestSourceProductImg: MediaImageResponse;
+		otherProductImages: MediaImageResponse[];
 	}> {
-		const principal = mediaItems.find(
-			(m) => m.role === MediaItemRole.PRINCIPAL,
-		);
-		const secondary = mediaItems.find(
-			(m) => m.role === MediaItemRole.SECUNDARY,
-		);
-		const none = mediaItems.find((m) => m.role === MediaItemRole.NONE);
-
+		const pm = product.baseInfo.productMedia;
+		const byId = new Map(mediaItems.map((m) => [m.id, m]));
 		const mediaUrlById = await this.mediaUrlResolver.resolveUrls(
 			mediaItems.map((item) => item.id),
 		);
 
-		const toImage = (m?: MediaItem): MediaImageResponse => ({
-			name: m?.name || '',
-			url: m?.id ? mediaUrlById.get(m.id) || '' : '',
-		});
+		const toImage = (id?: string): MediaImageResponse => {
+			const m = id ? byId.get(id) : undefined;
+			return {
+				name: m?.name || '',
+				url: m?.id ? mediaUrlById.get(m.id) || '' : '',
+			};
+		};
+
+		const otherProductImages = (pm.otherImagesId ?? [])
+			.map((id) => toImage(id))
+			.filter((img) => img.url || img.name);
 
 		return {
-			mainImg: toImage(principal),
-			plateImg: toImage(secondary),
-			sourceProductImg: toImage(none),
+			mainImg: toImage(pm.mainImgId),
+			plateImg: toImage(pm.plateImgId),
+			sourceProductImg: toImage(pm.sourceProductImgId),
+			closestSourceProductImg: toImage(pm.closestSourceProductImgId),
+			otherProductImages,
 		};
 	}
 
@@ -258,58 +290,24 @@ export class GetByIdSuperfoodProductDetailUseCase {
 		};
 	}
 
-	private buildTraceabilityInfo(
-		product: SuperfoodProduct,
-	): TraceabilityInfoResponse {
-		const epochs = product.productTraceability?.epochs || [];
-		const groups: TraceabilityInfoResponse = {
-			...(product.productTraceability?.blockchainLink && {
-				blockchainLink: product.productTraceability.blockchainLink,
-			}),
-			origen: [],
-			processing: [],
-			development: [],
-			merchandising: [],
-		};
-
-		const arrayKeys = [
-			'origen',
-			'processing',
-			'development',
-			'merchandising',
-		] as const;
-		const keyMap: Record<string, (typeof arrayKeys)[number]> = {
-			origin: 'origen',
-			processing: 'processing',
-			development: 'development',
-			merchandising: 'merchandising',
-		};
-
-		for (const epoch of epochs) {
-			const key = keyMap[epoch.processName as string];
-			if (key) {
-				groups[key]!.push({
-					title: epoch.title,
-					supplier: epoch.supplier,
-					country: epoch.country,
-					city: epoch.city,
-					description: epoch.description,
-				});
-			}
-		}
-
-		return groups;
-	}
-
 	private async getMoreProducts(
 		currentProductId: string,
 	): Promise<SuperfoodProductListItemCompact[]> {
 		// Reutilizar el método del repo que ya hace el aggregation optimizado
-		const { products } =
+		const { products: rawProducts } =
 			await this.superfoodProductRepository.getAllWithFilters({
 				page: 1,
 				perPage: 7, // Pedir 7 para poder excluir el actual y aún tener 6
 			});
+
+		const withMedia =
+			await this.superfoodProductListMediaResolver.attachListMediaFromAggregate(
+				rawProducts,
+			);
+		const products =
+			await this.superfoodProductListColorResolver.attachCatalogColorFromAggregate(
+				withMedia,
+			);
 
 		return products
 			.filter((p) => p.id !== currentProductId)
@@ -321,14 +319,8 @@ export class GetByIdSuperfoodProductDetailUseCase {
 				ownerName: p.ownerName,
 				price: p.price,
 				totalStock: p.totalStock,
-				mainImage: {
-					...p.mainImage,
-					url: this.mediaUrlResolver.resolveKey(p.mainImage?.url),
-				},
-				sourceProductImage: {
-					...p.sourceProductImage,
-					url: this.mediaUrlResolver.resolveKey(p.sourceProductImage?.url),
-				},
+				mainImage: p.mainImage,
+				sourceProductImage: p.sourceProductImage,
 				nutritionItems: p.nutritionItems,
 			}));
 	}

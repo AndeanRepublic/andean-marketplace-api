@@ -1,6 +1,5 @@
-import { IsNotEmpty, IsString, IsOptional, IsMongoId, IsEnum } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional, IsMongoId } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { SuperfoodColor } from '../../../../domain/enums/SuperfoodColor';
 
 export class CreateSuperfoodBenefitDto {
 	@ApiProperty({
@@ -15,7 +14,8 @@ export class CreateSuperfoodBenefitDto {
 
 	@ApiProperty({
 		description: 'Descripción detallada del beneficio',
-		example: 'Este beneficio ayuda a mejorar la digestión gracias a sus propiedades naturales y alto contenido de fibra.',
+		example:
+			'Este beneficio ayuda a mejorar la digestión gracias a sus propiedades naturales y alto contenido de fibra.',
 		minLength: 10,
 		maxLength: 500,
 	})
@@ -24,13 +24,12 @@ export class CreateSuperfoodBenefitDto {
 	description!: string;
 
 	@ApiPropertyOptional({
-		description: 'Color asociado al beneficio',
-		enum: SuperfoodColor,
-		example: SuperfoodColor.GREEN,
+		description: 'Color hexadecimal asociado al beneficio',
+		example: '#22c55e',
 	})
-	@IsEnum(SuperfoodColor)
+	@IsString()
 	@IsOptional()
-	color?: SuperfoodColor;
+	hexCodeColor?: string;
 
 	@ApiProperty({
 		description: 'ID del MediaItem que representa el icono del beneficio',

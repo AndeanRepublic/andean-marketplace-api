@@ -1,6 +1,6 @@
 import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
 import { ProductSortBy } from '../../../domain/enums/ProductSortBy';
-import { SuperfoodProductListItem } from '../../models/superfoods/SuperfoodProductListItem';
+import { SuperfoodProductListAggregateRow } from '../../models/superfoods/SuperfoodProductListItem';
 
 export interface SuperfoodProductFilters {
 	minPrice?: number;
@@ -19,7 +19,7 @@ export abstract class SuperfoodProductRepository {
 
 	abstract getAllWithFilters(
 		filters: SuperfoodProductFilters,
-	): Promise<{ products: SuperfoodProductListItem[]; total: number }>;
+	): Promise<{ products: SuperfoodProductListAggregateRow[]; total: number }>;
 
 	abstract saveSuperfoodProduct(
 		product: SuperfoodProduct,

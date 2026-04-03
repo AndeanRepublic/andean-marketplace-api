@@ -52,7 +52,7 @@ export class GetAllBoxesUseCase {
 							);
 
 						const thumbnailImage = this.boxResolutionService.resolveImage(
-							superfood.baseInfo?.mediaIds?.[0],
+							superfood.baseInfo?.productMedia?.mainImgId,
 							dependencies.mediaMap,
 						);
 
