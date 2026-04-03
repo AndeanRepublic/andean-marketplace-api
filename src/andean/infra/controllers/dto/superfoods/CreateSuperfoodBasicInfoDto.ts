@@ -19,7 +19,7 @@ export class CreateSuperfoodBasicInfoDto {
 	})
 	@IsString()
 	@IsNotEmpty()
-	title: string;
+	title!: string;
 
 	@ApiProperty({ type: CreateSuperfoodProductMediaDto })
 	@ValidateNested()
@@ -33,7 +33,7 @@ export class CreateSuperfoodBasicInfoDto {
 	})
 	@IsString()
 	@IsNotEmpty()
-	shortDescription: string;
+	shortDescription!: string;
 
 	@ApiProperty({
 		description:
@@ -42,7 +42,7 @@ export class CreateSuperfoodBasicInfoDto {
 	})
 	@IsString()
 	@IsNotEmpty()
-	detailedDescription: string;
+	detailedDescription!: string;
 
 	@ApiProperty({
 		description: 'Características generales (máx. 3)',
@@ -70,10 +70,10 @@ export class CreateSuperfoodBasicInfoDto {
 	@ApiProperty({ enum: OwnerType })
 	@IsEnum(OwnerType)
 	@IsNotEmpty()
-	ownerType: OwnerType;
+	ownerType!: OwnerType;
 
 	@ApiProperty({ description: 'ID del dueño (Shop o Community)' })
 	@IsString()
 	@IsNotEmpty()
-	ownerId: string;
+	ownerId!: string;
 }
