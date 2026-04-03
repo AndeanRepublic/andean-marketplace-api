@@ -1,7 +1,7 @@
 import { ToolUsed } from '../../enums/ToolUsed';
 import { ShippingMethod } from '../../enums/ShippingMethod';
 import { ShippingRegion } from '../../enums/ShippingRegion';
-import { ProductDimensions } from './ProductDimensions';
+import { ProductDimensions } from '../ProductDimensions';
 
 export class DetailTraceability {
 	constructor(

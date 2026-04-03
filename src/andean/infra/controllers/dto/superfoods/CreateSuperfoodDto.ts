@@ -8,11 +8,13 @@ import {
 	ValidateNested,
 	Min,
 	IsBoolean,
+	IsMongoId,
+	ValidateIf,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { SuperfoodProductStatus } from '../../../../domain/enums/SuperfoodProductStatus';
-import { SuperfoodColor } from '../../../../domain/enums/SuperfoodColor';
+import { ProductCurrency } from '../../../../domain/enums/ProductCurrency';
 import { CreateSuperfoodBasicInfoDto } from './CreateSuperfoodBasicInfoDto';
 import { CreateSuperfoodDetailDto } from './CreateSuperfoodDetailDto';
 import { CreateSuperfoodNutritionalDto } from './CreateSuperfoodNutritionalDto';
@@ -42,6 +44,11 @@ export class CreateSuperfoodPriceInventoryDto {
 	@Min(0, { message: 'Total stock cannot be negative' })
 	totalStock!: number;
 
+	@ApiProperty({ enum: ProductCurrency, example: ProductCurrency.PEN })
+	@IsEnum(ProductCurrency)
+	@IsNotEmpty()
+	currency!: ProductCurrency;
+
 	@ApiProperty()
 	@IsString()
 	@IsOptional()
@@ -68,13 +75,14 @@ export class CreateSuperfoodDto {
 	priceInventory!: CreateSuperfoodPriceInventoryDto;
 
 	@ApiPropertyOptional({
-		description: 'Color del producto superfood',
-		enum: SuperfoodColor,
-		example: SuperfoodColor.PURPLE,
+		description:
+			'ID del color en catálogo (`GET /superfood-colors`). Opcional.',
+		example: '507f1f77bcf86cd799439011',
 	})
-	@IsEnum(SuperfoodColor)
 	@IsOptional()
-	color?: SuperfoodColor;
+	@ValidateIf((_o, v) => typeof v === 'string' && v.trim().length > 0)
+	@IsMongoId({ message: 'colorId must be a valid catalog color ObjectId' })
+	colorId?: string;
 
 	@ApiPropertyOptional({
 		description:

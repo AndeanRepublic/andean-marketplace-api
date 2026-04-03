@@ -10,7 +10,7 @@ import { SuperfoodProductDocument } from '../../persistence/superfood/superfood.
 import { SuperfoodProductMapper } from '../../services/superfood/SuperfoodProductMapper';
 import { MongoIdUtils } from '../../utils/MongoIdUtils';
 import { ProductSortBy } from '../../../domain/enums/ProductSortBy';
-import { SuperfoodProductListItem } from '../../../app/models/superfoods/SuperfoodProductListItem';
+import { SuperfoodProductListAggregateRow } from '../../../app/models/superfoods/SuperfoodProductListItem';
 
 @Injectable()
 export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
@@ -29,9 +29,11 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 		product: SuperfoodProduct,
 	): Promise<SuperfoodProduct> {
 		const persistenceData = SuperfoodProductMapper.toPersistence(product);
+		const _id = new Types.ObjectId(product.id);
 		const newDoc = new this.model({
-			_id: crypto.randomUUID(),
 			...persistenceData,
+			_id,
+			id: product.id,
 		});
 		const savedDoc = await newDoc.save();
 		return SuperfoodProductMapper.fromDocument(savedDoc);
@@ -209,49 +211,13 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 		];
 	}
 
-	/**
-	 * Construye los lookups para MediaItems
-	 */
-	private buildMediaLookups(): PipelineStage[] {
-		return [
-			{
-				$lookup: {
-					from: 'mediaitems',
-					let: { mediaIds: '$baseInfo.mediaIds' },
-					pipeline: [
-						{
-							$match: {
-								$expr: {
-									$in: [{ $toString: '$_id' }, '$$mediaIds'],
-								},
-							},
-						},
-						{
-							$project: {
-								_id: 1,
-								name: 1,
-								key: 1,
-								role: 1,
-							},
-						},
-					],
-					as: 'mediaItems',
-				},
-			},
-		];
-	}
-
-	/**
-	 * Construye la proyección final del formato de respuesta
-	 */
+	/** Proyección del listado; medios se resuelven en el use case (batch). */
 	private buildFinalProjection(): PipelineStage {
 		return {
 			$project: {
 				_id: 0,
 				id: { $toString: '$_id' },
-				color: {
-					$ifNull: ['$color', null],
-				},
+				colorId: '$colorId',
 				title: '$baseInfo.title',
 				ownerName: {
 					$cond: {
@@ -268,49 +234,11 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 				},
 				price: '$priceInventory.basePrice',
 				totalStock: '$priceInventory.totalStock',
-				mainImage: {
-					$let: {
-						vars: {
-							principalMedia: {
-								$arrayElemAt: [
-									{
-										$filter: {
-											input: '$mediaItems',
-											as: 'media',
-											cond: { $eq: ['$$media.role', 'PRINCIPAL'] },
-										},
-									},
-									0,
-								],
-							},
-						},
-						in: {
-							name: { $ifNull: ['$$principalMedia.name', ''] },
-							url: { $ifNull: ['$$principalMedia.key', ''] },
-						},
-					},
+				mainImgId: {
+					$ifNull: ['$baseInfo.productMedia.mainImgId', ''],
 				},
-				sourceProductImage: {
-					$let: {
-						vars: {
-							noneMedia: {
-								$arrayElemAt: [
-									{
-										$filter: {
-											input: '$mediaItems',
-											as: 'media',
-											cond: { $eq: ['$$media.role', 'NONE'] },
-										},
-									},
-									0,
-								],
-							},
-						},
-						in: {
-							name: { $ifNull: ['$$noneMedia.name', ''] },
-							url: { $ifNull: ['$$noneMedia.key', ''] },
-						},
-					},
+				sourceProductImgId: {
+					$ifNull: ['$baseInfo.productMedia.sourceProductImgId', ''],
 				},
 				nutritionItems: {
 					$map: {
@@ -331,7 +259,7 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 
 	async getAllWithFilters(
 		filters: SuperfoodProductFilters,
-	): Promise<{ products: SuperfoodProductListItem[]; total: number }> {
+	): Promise<{ products: SuperfoodProductListAggregateRow[]; total: number }> {
 		const query = this.buildBaseQuery(filters);
 
 		// Paginación
@@ -344,7 +272,6 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 			{ $match: query },
 			...this.buildSortStages(filters.sortBy),
 			...this.buildSellerLookups(),
-			...this.buildMediaLookups(),
 			this.buildFinalProjection(),
 			{ $skip: skip },
 			{ $limit: perPage },
@@ -356,7 +283,7 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 		]);
 
 		return {
-			products: products as SuperfoodProductListItem[],
+			products: products as SuperfoodProductListAggregateRow[],
 			total: countResult,
 		};
 	}

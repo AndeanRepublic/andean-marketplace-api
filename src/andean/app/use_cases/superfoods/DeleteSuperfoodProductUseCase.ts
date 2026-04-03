@@ -8,7 +8,7 @@ import { SuperfoodProductRepository } from '../../datastore/superfoods/Superfood
 import { DeleteDetailSourceProductUseCase } from '../detailSourceProduct/DeleteDetailSourceProductUseCase';
 import { ShopRepository } from '../../datastore/Shop.repo';
 import { SellerProfileRepository } from '../../datastore/Seller.repo';
-import { SuperfoodOwnerType } from '../../../domain/enums/SuperfoodOwnerType';
+import { OwnerType } from '../../../domain/enums/OwnerType';
 import { AccountRole } from 'src/andean/domain/enums/AccountRole';
 
 @Injectable()
@@ -39,7 +39,7 @@ export class DeleteSuperfoodProductUseCase {
 		// Ownership check
 		const isAdmin = roles.includes(AccountRole.ADMIN);
 		if (!isAdmin) {
-			if (productFound.baseInfo.ownerType === SuperfoodOwnerType.COMMUNITY) {
+			if (productFound.baseInfo.ownerType === OwnerType.COMMUNITY) {
 				throw new ForbiddenException('You can only modify your own resource');
 			}
 			const seller =

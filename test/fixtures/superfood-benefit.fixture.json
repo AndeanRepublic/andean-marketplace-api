@@ -3,28 +3,28 @@
 		"id": "123e4567-e89b-12d3-a456-426614174000",
 		"name": "Mejora la digestión",
 		"description": "Este beneficio ayuda a mejorar la digestión gracias a sus propiedades naturales y alto contenido de fibra.",
-		"color": "GREEN",
-		"iconId": "123e4567-e89b-12d3-a456-426614174001",
+		"hexCodeColor": "#22c55e",
+		"iconId": "507f1f77bcf86cd799439011",
 		"createdAt": "2026-01-01T00:00:00.000Z",
 		"updatedAt": "2026-01-01T00:00:00.000Z"
 	},
 	"createDto": {
 		"name": "Aumenta energía",
 		"description": "Proporciona energía sostenida durante todo el día gracias a sus carbohidratos complejos y vitaminas del grupo B.",
-		"color": "YELLOW",
-		"iconId": "67890abcdef1234567890125"
+		"hexCodeColor": "#eab308",
+		"iconId": "507f1f77bcf86cd799439012"
 	},
 	"bulkCreateDto": {
 		"superfoodBenefits": [
 			{
 				"name": "Fortalece sistema inmune",
 				"description": "Refuerza las defensas naturales del cuerpo con antioxidantes y vitaminas esenciales.",
-				"color": "PURPLE"
+				"hexCodeColor": "#a855f7"
 			},
 			{
 				"name": "Reduce inflamación",
 				"description": "Ayuda a reducir procesos inflamatorios gracias a sus propiedades antiinflamatorias.",
-				"color": "RED"
+				"hexCodeColor": "#ef4444"
 			}
 		]
 	},
@@ -34,7 +34,7 @@
 			"id": "223e4567-e89b-12d3-a456-426614174001",
 			"name": "Fortalece sistema inmune",
 			"description": "Refuerza las defensas naturales del cuerpo con antioxidantes y vitaminas esenciales.",
-			"color": "PURPLE"
+			"hexCodeColor": "#a855f7"
 		}
 	]
 }

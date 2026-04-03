@@ -37,6 +37,7 @@ import { SuperfoodProductListItem } from '../../../app/models/superfoods/Superfo
 import { PaginatedSuperfoodProductsResponse } from '../../../app/models/superfoods/PaginatedSuperfoodProductsResponse';
 import { ProductSortBy } from '../../../domain/enums/ProductSortBy';
 import { GetByIdSuperfoodProductDetailUseCase } from '../../../app/use_cases/superfoods/GetByIdSuperfoodProductDetailUseCase';
+import { GetSuperfoodProductByIdUseCase } from '../../../app/use_cases/superfoods/GetSuperfoodProductByIdUseCase';
 import { SuperfoodProductDetailResponse } from '../../../app/models/superfoods/SuperfoodProductDetailResponse';
 
 @ApiTags('Superfoods')
@@ -48,6 +49,7 @@ export class SuperfoodController {
 		private readonly updateSuperfoodProductUseCase: UpdateSuperfoodProductUseCase,
 		private readonly deleteSuperfoodProductUseCase: DeleteSuperfoodProductUseCase,
 		private readonly getByIdSuperfoodProductDetailUseCase: GetByIdSuperfoodProductDetailUseCase,
+		private readonly getSuperfoodProductByIdUseCase: GetSuperfoodProductByIdUseCase,
 	) {}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
@@ -167,12 +169,37 @@ export class SuperfoodController {
 		);
 	}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Get(':productId/edit')
+	@ApiOperation({
+		summary: 'Obtener producto superfood para edición',
+		description:
+			'Devuelve el documento completo (baseInfo, priceInventory, detailProduct, etc.) para hidratar el formulario de administración. Requiere rol vendedor o admin.',
+	})
+	@ApiParam({
+		name: 'productId',
+		description: 'ID único del producto superfood',
+		example: '6973d8ffddef7b59c2d4dcfb',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Entidad persistida lista para edición',
+		type: SuperfoodProduct,
+	})
+	@ApiResponse({ status: 404, description: 'Producto no encontrado' })
+	async getSuperfoodForEdit(
+		@Param('productId') productId: string,
+	): Promise<SuperfoodProduct> {
+		return this.getSuperfoodProductByIdUseCase.handle(productId);
+	}
+
 	@Public()
 	@Get('/:productId')
 	@ApiOperation({
-		summary: 'Obtener detalle completo de producto superfood por ID',
+		summary: 'Obtener detalle de producto superfood por ID (vista pública)',
 		description:
-			'Retorna toda la información completa de un producto superfood específico incluyendo imágenes por rol, hero detail, owner, beneficios, información nutricional, trazabilidad, productos similares y reviews',
+			'Información para ficha de producto: imágenes, hero, owner, beneficios con URLs, color de catálogo, productTraceability (blockchain/epochs), similares y reseñas. Sin payload interno de edición.',
 	})
 	@ApiParam({
 		name: 'productId',

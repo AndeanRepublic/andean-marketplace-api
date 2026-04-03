@@ -28,7 +28,7 @@ export class SuperfoodProductInfoProvider extends ProductInfoProvider {
 		}
 
 		const thumbnailImgUrl = await this.mediaUrlResolver.resolveUrl(
-			product.baseInfo.mediaIds[0] || '',
+			product.baseInfo.productMedia?.mainImgId || '',
 		);
 
 		return {

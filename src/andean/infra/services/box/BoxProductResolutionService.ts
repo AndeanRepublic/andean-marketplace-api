@@ -69,8 +69,8 @@ export class BoxProductResolutionService {
 		for (const superfood of superfoods) {
 			if (superfood.baseInfo?.ownerId)
 				allOwnerIds.add(superfood.baseInfo.ownerId);
-			if (superfood.baseInfo?.mediaIds?.length)
-				allMediaIds.add(superfood.baseInfo.mediaIds[0]);
+			const mainId = superfood.baseInfo?.productMedia?.mainImgId?.trim();
+			if (mainId) allMediaIds.add(mainId);
 		}
 		for (const variant of variants) {
 			if (variant.productId) allTextileIds.add(variant.productId);

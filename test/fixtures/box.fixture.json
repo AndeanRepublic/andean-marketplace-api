@@ -83,9 +83,9 @@
 					"title": "Quinua Premium",
 					"ownerId": "community-001",
 					"ownerType": "COMMUNITY",
-					"mediaIds": [
-						"media-sf-thumb-001"
-					]
+					"productMedia": {
+						"mainImgId": "media-sf-thumb-001"
+					}
 				},
 				"priceInventory": {
 					"basePrice": 25.50,
@@ -99,9 +99,9 @@
 					"title": "Maca Negra Orgánica",
 					"ownerId": "community-002",
 					"ownerType": "COMMUNITY",
-					"mediaIds": [
-						"media-sf-thumb-002"
-					]
+					"productMedia": {
+						"mainImgId": "media-sf-thumb-002"
+					}
 				},
 				"priceInventory": {
 					"basePrice": 30.00,

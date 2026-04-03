@@ -1,57 +1,161 @@
-import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import {
+	IsArray,
+	IsBoolean,
+	IsDate,
+	IsEnum,
+	IsNumber,
+	IsOptional,
+	IsString,
+	Min,
+	ValidateNested,
+} from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import { SuperfoodProductionMethod } from '../../../../domain/enums/SuperfoodProductionMethod';
 
+export class SuperfoodProductDimensionsDto {
+	@ApiProperty({ description: 'Largo en cm', example: 12 })
+	@IsNumber()
+	@Min(0)
+	length!: number;
+
+	@ApiProperty({ description: 'Ancho en cm', example: 8 })
+	@IsNumber()
+	@Min(0)
+	width!: number;
+
+	@ApiProperty({ description: 'Alto en cm', example: 4 })
+	@IsNumber()
+	@Min(0)
+	height!: number;
+}
+
 export class CreateSuperfoodDetailTraceabilityDto {
-	@ApiProperty({ required: false })
-	@IsBoolean()
-	@IsOptional()
-	handmade?: boolean;
-
-	@ApiProperty({ type: [String], required: false })
-	@IsOptional()
-	secondaryMaterials?: string[];
-
-	@ApiProperty({
-		description: 'ID de la comunidad de origen del producto',
-		required: false,
+	@ApiPropertyOptional({
+		description: 'Origen: región, comunidad, altitud, etc.',
 	})
 	@IsString()
 	@IsOptional()
-	originProductCommunityId?: string;
+	productOrigin?: string;
 
-	@ApiProperty({ enum: SuperfoodProductionMethod, required: false })
+	@ApiPropertyOptional({
+		description: 'ID en catálogo DetailSourceProduct (especie/variedad)',
+	})
+	@IsString()
+	@IsOptional()
+	exactSpeciesOrVarietyId?: string;
+
+	@ApiPropertyOptional({ enum: SuperfoodProductionMethod })
 	@IsEnum(SuperfoodProductionMethod)
 	@IsOptional()
 	productionMethod?: SuperfoodProductionMethod;
 
-	@ApiProperty({ description: 'ID de método de preservación', required: false })
+	@ApiPropertyOptional({ description: 'ID método de preservación (catálogo)' })
 	@IsString()
 	@IsOptional()
-	preservationMethod?: string;
+	preservationMethodId?: string;
 
-	@ApiProperty({ required: false })
-	@IsBoolean()
+	@ApiPropertyOptional({
+		type: [String],
+		description: 'IDs de certificaciones',
+	})
+	@IsArray()
+	@IsString({ each: true })
 	@IsOptional()
-	isArtesanal?: boolean;
+	certificationIds?: string[];
 
-	@ApiProperty({ required: false })
+	@ApiPropertyOptional()
+	@IsString()
+	@IsOptional()
+	sanitaryRegistryNumber?: string;
+
+	@ApiPropertyOptional({ type: String, format: 'date-time' })
+	@Type(() => Date)
+	@IsDate()
+	@IsOptional()
+	expirationDate?: Date;
+
+	@ApiPropertyOptional({ type: String, format: 'date-time' })
+	@Type(() => Date)
+	@IsDate()
+	@IsOptional()
+	productionDate?: Date;
+
+	@ApiPropertyOptional()
+	@IsString()
+	@IsOptional()
+	lotNumber?: string;
+
+	@ApiPropertyOptional()
 	@IsBoolean()
 	@IsOptional()
 	isNatural?: boolean;
 
-	@ApiProperty({ required: false })
+	@ApiPropertyOptional()
+	@IsBoolean()
+	@IsOptional()
+	isArtesanal?: boolean;
+
+	@ApiPropertyOptional()
 	@IsBoolean()
 	@IsOptional()
 	isEatableWithoutPrep?: boolean;
 
-	@ApiProperty({ required: false })
+	@ApiPropertyOptional()
 	@IsBoolean()
 	@IsOptional()
 	canCauseAllergies?: boolean;
 
-	@ApiProperty({ required: false })
+	@ApiPropertyOptional({ type: [String] })
+	@IsArray()
+	@IsString({ each: true })
+	@IsOptional()
+	allergens?: string[];
+
+	@ApiPropertyOptional()
 	@IsString()
 	@IsOptional()
-	certification?: string;
+	primaryPackaging?: string;
+
+	@ApiPropertyOptional()
+	@IsString()
+	@IsOptional()
+	secondaryPackaging?: string;
+
+	@ApiPropertyOptional()
+	@IsString()
+	@IsOptional()
+	packagingSpecification?: string;
+
+	@ApiPropertyOptional()
+	@IsString()
+	@IsOptional()
+	netWeight?: string;
+
+	@ApiPropertyOptional()
+	@IsString()
+	@IsOptional()
+	grossWeight?: string;
+
+	@ApiPropertyOptional({ type: SuperfoodProductDimensionsDto })
+	@ValidateNested()
+	@Type(() => SuperfoodProductDimensionsDto)
+	@IsOptional()
+	dimensionsWithPackage?: SuperfoodProductDimensionsDto;
+
+	@ApiPropertyOptional()
+	@IsString()
+	@IsOptional()
+	storageConditions?: string;
+
+	@ApiPropertyOptional({ minimum: 0 })
+	@IsNumber()
+	@Min(0)
+	@IsOptional()
+	estimatedDeliveryDays?: number;
+
+	@ApiPropertyOptional()
+	@IsBoolean()
+	@IsOptional()
+	isCustomizableOrMixable?: boolean;
 }

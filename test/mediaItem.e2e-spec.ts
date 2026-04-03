@@ -8,6 +8,7 @@ import { GetMediaItemByIdUseCase } from '../src/andean/app/use_cases/media/GetMe
 import { ListMediaItemsUseCase } from '../src/andean/app/use_cases/media/ListMediaItemsUseCase';
 import { UpdateMediaItemUseCase } from '../src/andean/app/use_cases/media/UpdateMediaItemUseCase';
 import { DeleteMediaItemUseCase } from '../src/andean/app/use_cases/media/DeleteMediaItemUseCase';
+import { MediaUrlResolver } from '../src/andean/infra/services/media/MediaUrlResolver';
 import { MediaItemType } from '../src/andean/domain/enums/MediaItemType';
 import { MediaItemRole } from '../src/andean/domain/enums/MediaItemRole';
 import { FixtureLoader } from './helpers/fixture-loader';
@@ -67,6 +68,17 @@ describe('MediaItemController (e2e)', () => {
 				{
 					provide: ConfigService,
 					useValue: { get: jest.fn().mockReturnValue(storageBaseUrl) },
+				},
+				{
+					provide: MediaUrlResolver,
+					useValue: {
+						resolveKey: (key: string) =>
+							key?.startsWith('http')
+								? key
+								: `${storageBaseUrl.replace(/\/$/, '')}/${String(key || '').replace(/^\//, '')}`,
+						resolveUrl: jest.fn().mockResolvedValue(''),
+						resolveUrls: jest.fn().mockResolvedValue(new Map()),
+					},
 				},
 			],
 		})

@@ -4,16 +4,19 @@
 		"status": "published",
 		"baseInfo": {
 			"title": "Quinoa Orgánica Premium",
-			"media": [
-				"media-id-3"
-			],
-			"description": "Quinoa cultivada en los Andes peruanos",
-			"ownerType": "community",
+			"productMedia": {
+				"mainImgId": "media-id-3",
+				"otherImagesId": []
+			},
+			"shortDescription": "Quinoa orgánica andina",
+			"detailedDescription": "Quinoa cultivada en los Andes peruanos",
+			"ownerType": "COMMUNITY",
 			"ownerId": "community-456"
 		},
 		"priceInventary": {
 			"basePrice": 25.0,
 			"totalStock": 100,
+			"currency": "PEN",
 			"SKU": "QUINOA-ORG-001"
 		},
 		"isDiscountActive": false,

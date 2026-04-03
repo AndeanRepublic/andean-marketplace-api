@@ -16,7 +16,7 @@ export class SuperfoodBenefitMapper {
 			MongoIdUtils.objectIdToString(plain._id), // ObjectId → string
 			plain.name,
 			plain.description,
-			plain.color,
+			plain.hexCodeColor,
 			plain.iconId,
 			plain.createdAt,
 			plain.updatedAt,
@@ -28,7 +28,7 @@ export class SuperfoodBenefitMapper {
 			new Types.ObjectId().toString(), // Generar ObjectId temporal como string
 			dto.name,
 			dto.description,
-			dto.color,
+			dto.hexCodeColor,
 			dto.iconId,
 			new Date(),
 			new Date(),
@@ -40,7 +40,7 @@ export class SuperfoodBenefitMapper {
 			id: entity.id,
 			name: entity.name,
 			description: entity.description,
-			color: entity.color,
+			hexCodeColor: entity.hexCodeColor,
 			iconId: entity.iconId,
 			createdAt: entity.createdAt!,
 			updatedAt: entity.updatedAt!,
@@ -55,7 +55,7 @@ export class SuperfoodBenefitMapper {
 		return {
 			name: entity.name,
 			description: entity.description,
-			color: entity.color,
+			hexCodeColor: entity.hexCodeColor,
 			iconId: entity.iconId,
 			createdAt: entity.createdAt || new Date(),
 			updatedAt: entity.updatedAt || new Date(),
