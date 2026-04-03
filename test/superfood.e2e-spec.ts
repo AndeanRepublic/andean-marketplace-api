@@ -17,6 +17,7 @@ import {
 } from './helpers/auth-test.helper';
 import { CreateSuperfoodProductUseCase } from '../src/andean/app/use_cases/superfoods/CreateSuperfoodProductUseCase';
 import { GetByIdSuperfoodProductDetailUseCase } from '../src/andean/app/use_cases/superfoods/GetByIdSuperfoodProductDetailUseCase';
+import { GetSuperfoodProductByIdUseCase } from '../src/andean/app/use_cases/superfoods/GetSuperfoodProductByIdUseCase';
 import { GetAllSuperfoodProductsUseCase } from '../src/andean/app/use_cases/superfoods/GetAllSuperfoodProductsUseCase';
 import { UpdateSuperfoodProductUseCase } from '../src/andean/app/use_cases/superfoods/UpdateSuperfoodProductUseCase';
 import { DeleteSuperfoodProductUseCase } from '../src/andean/app/use_cases/superfoods/DeleteSuperfoodProductUseCase';
@@ -68,6 +69,12 @@ describe('SuperfoodController (e2e)', () => {
 				{
 					provide: GetByIdSuperfoodProductDetailUseCase,
 					useValue: { handle: jest.fn().mockResolvedValue(mockDetailResponse) },
+				},
+				{
+					provide: GetSuperfoodProductByIdUseCase,
+					useValue: {
+						handle: jest.fn().mockResolvedValue(mockSuperfoodProduct),
+					},
 				},
 				{
 					provide: GetAllSuperfoodProductsUseCase,
@@ -553,10 +560,12 @@ describe('SuperfoodController (e2e)', () => {
 							totalStock: mockDetailResponse.heroDetail.totalStock,
 							isDiscountActive: mockDetailResponse.heroDetail.isDiscountActive,
 						}),
-						owner: expect.objectContaining({
-							id: expect.any(String),
-							type: expect.any(String),
+						ownerInfo: expect.objectContaining({
+							ownerType: expect.any(String),
+						}),
+						color: expect.objectContaining({
 							name: expect.any(String),
+							hexCodeColor: expect.any(String),
 						}),
 						reviews: expect.objectContaining({
 							rating: expect.objectContaining({
@@ -692,6 +701,12 @@ describe('SuperfoodController (e2e)', () => {
 						provide: GetByIdSuperfoodProductDetailUseCase,
 						useValue: {
 							handle: jest.fn().mockResolvedValue(mockDetailResponse),
+						},
+					},
+					{
+						provide: GetSuperfoodProductByIdUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockSuperfoodProduct),
 						},
 					},
 					{
@@ -913,6 +928,12 @@ describe('SuperfoodController (e2e)', () => {
 						provide: GetByIdSuperfoodProductDetailUseCase,
 						useValue: {
 							handle: jest.fn().mockResolvedValue(mockDetailResponse),
+						},
+					},
+					{
+						provide: GetSuperfoodProductByIdUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockSuperfoodProduct),
 						},
 					},
 					{

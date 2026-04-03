@@ -17,14 +17,9 @@ import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodP
 import {
 	SuperfoodProductDetailResponse,
 	MediaImageResponse,
-	TraceabilityInfoResponse,
 	ReviewsResponse,
 	SuperfoodProductListItemCompact,
 } from '../../models/superfoods/SuperfoodProductDetailResponse';
-import type {
-	SuperfoodDetailProductResponse,
-	SuperfoodDetailTraceabilityResponse,
-} from '../../models/superfoods/SuperfoodProductResponse';
 import type { ProductTraceabilityResponse } from '../../models/shared/ProductTraceabilityResponse';
 import { SuperfoodProductListItem } from '../../models/superfoods/SuperfoodProductListItem';
 import { OwnerInfoResolver } from '../../../infra/services/owner/OwnerInfoResolver';
@@ -96,13 +91,14 @@ export class GetByIdSuperfoodProductDetailUseCase {
 		// 3. Resolver imágenes por IDs en productMedia
 		const images = await this.resolveProductImages(product, mediaItems);
 
-		// 4. Resolver owner y reviews en paralelo
-		const [ownerInfo, reviewsResponse] = await Promise.all([
+		// 4. Resolver owner, reviews y color de catálogo en paralelo
+		const [ownerInfo, reviewsResponse, catalogColor] = await Promise.all([
 			this.ownerInfoResolver.resolveDetailed(
 				String(product.baseInfo.ownerType),
 				product.baseInfo.ownerId,
 			),
 			this.buildReviews(reviews),
+			this.superfoodProductListColorResolver.resolveById(product.colorId),
 		]);
 
 		// 5. Resolver nutritional features con iconos (batch de mediaIds)
@@ -117,20 +113,22 @@ export class GetByIdSuperfoodProductDetailUseCase {
 			allIconIds.length > 0
 				? await this.mediaItemRepository.getByIds(allIconIds)
 				: [];
-		const iconMap = new Map(iconMediaItems.map((m) => [m.id, m.key]));
+		const iconUrlById = await this.mediaUrlResolver.resolveUrls(
+			iconMediaItems.map((m) => m.id),
+		);
 
-		// 6. Mapear nutritional features para hero
+		// 6. Mapear nutritional features para hero (iconUrl = URL pública del media)
 		const nutritionalFeaturesInfo = nutritionalFeatures.map((f) => ({
 			id: f.id,
 			name: f.name,
-			iconUrl: f.iconId ? iconMap.get(f.iconId) || '' : '',
+			iconUrl: f.iconId ? iconUrlById.get(f.iconId) || '' : '',
 		}));
 
 		// 7. Mapear benefits
 		const benefitsInfo = benefits.map((b) => ({
 			id: b.id,
 			name: b.name,
-			iconUrl: b.iconId ? iconMap.get(b.iconId) || '' : '',
+			iconUrl: b.iconId ? iconUrlById.get(b.iconId) || '' : '',
 			description: b.description || undefined,
 			color: b.hexCodeColor || '',
 		}));
@@ -153,13 +151,10 @@ export class GetByIdSuperfoodProductDetailUseCase {
 			}),
 		);
 
-		// 9. Traceability
-		const traceabilityInfo = this.buildTraceabilityInfo(product);
-
-		// 10. More products (6 primeros, excluyendo el actual)
+		// 9. More products (6 primeros, excluyendo el actual)
 		const moreProducts = await this.getMoreProducts(productId);
 
-		// 11. Source product info
+		// 10. Source product info
 		const sourceProductInfo = sourceProduct
 			? {
 					name: sourceProduct.name,
@@ -168,7 +163,7 @@ export class GetByIdSuperfoodProductDetailUseCase {
 				}
 			: { name: '', description: '', features: [] };
 
-		// 12. Construir respuesta
+		// 11. Construir respuesta
 		return {
 			id: product.id,
 			mainImg: images.mainImg,
@@ -191,7 +186,6 @@ export class GetByIdSuperfoodProductDetailUseCase {
 				basePrice: product.priceInventory.basePrice,
 				totalStock: product.priceInventory.totalStock,
 				isDiscountActive: product.isDiscountActive,
-				traceabilityInfo,
 			},
 			...(ownerInfo && { ownerInfo }),
 			benefitsInfo,
@@ -200,28 +194,8 @@ export class GetByIdSuperfoodProductDetailUseCase {
 			nutritionalInformation,
 			moreProducts,
 			reviews: reviewsResponse,
-			...(product.detailTraceability && {
-				detailTraceability: instanceToPlain(
-					product.detailTraceability,
-				) as SuperfoodDetailTraceabilityResponse,
-			}),
-			...(product.detailProduct && {
-				detailProduct: instanceToPlain(
-					product.detailProduct,
-				) as SuperfoodDetailProductResponse,
-			}),
-			categoryId: product.categoryId,
-			colorId: product.colorId,
+			...(catalogColor && { color: catalogColor }),
 			status: product.status,
-			detailSourceProductId: product.detailSourceProductId,
-			priceInventory: instanceToPlain(product.priceInventory) as Record<
-				string,
-				unknown
-			>,
-			baseInfo: instanceToPlain(product.baseInfo) as Record<string, unknown>,
-			nutritionalContent: (product.nutritionalContent || []).map((n) =>
-				instanceToPlain(n),
-			) as Record<string, unknown>[],
 			...(product.productTraceability && {
 				productTraceability: instanceToPlain(
 					product.productTraceability,
@@ -314,49 +288,6 @@ export class GetByIdSuperfoodProductDetailUseCase {
 			totalReviews,
 			averagePunctuation: Math.round(avg * 10) / 10,
 		};
-	}
-
-	private buildTraceabilityInfo(
-		product: SuperfoodProduct,
-	): TraceabilityInfoResponse {
-		const epochs = product.productTraceability?.epochs || [];
-		const groups: TraceabilityInfoResponse = {
-			...(product.productTraceability?.blockchainLink && {
-				blockchainLink: product.productTraceability.blockchainLink,
-			}),
-			origen: [],
-			processing: [],
-			development: [],
-			merchandising: [],
-		};
-
-		const arrayKeys = [
-			'origen',
-			'processing',
-			'development',
-			'merchandising',
-		] as const;
-		const keyMap: Record<string, (typeof arrayKeys)[number]> = {
-			origin: 'origen',
-			processing: 'processing',
-			development: 'development',
-			merchandising: 'merchandising',
-		};
-
-		for (const epoch of epochs) {
-			const key = keyMap[epoch.processName as string];
-			if (key) {
-				groups[key]!.push({
-					title: epoch.title,
-					supplier: epoch.supplier,
-					country: epoch.country,
-					city: epoch.city,
-					description: epoch.description,
-				});
-			}
-		}
-
-		return groups;
 	}
 
 	private async getMoreProducts(

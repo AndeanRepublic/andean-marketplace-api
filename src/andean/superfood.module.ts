@@ -32,6 +32,7 @@ import { GetAllSuperfoodProductsUseCase } from './app/use_cases/superfoods/GetAl
 import { UpdateSuperfoodProductUseCase } from './app/use_cases/superfoods/UpdateSuperfoodProductUseCase';
 import { DeleteSuperfoodProductUseCase } from './app/use_cases/superfoods/DeleteSuperfoodProductUseCase';
 import { GetByIdSuperfoodProductDetailUseCase } from './app/use_cases/superfoods/GetByIdSuperfoodProductDetailUseCase';
+import { GetSuperfoodProductByIdUseCase } from './app/use_cases/superfoods/GetSuperfoodProductByIdUseCase';
 
 // Use Cases - Category
 import { CreateSuperfoodCategoryUseCase } from './app/use_cases/superfoods/category/CreateSuperfoodCategoryUseCase';
@@ -198,6 +199,7 @@ import { SuperfoodProductListMediaResolver } from './infra/services/superfood/Su
 		UpdateSuperfoodProductUseCase,
 		DeleteSuperfoodProductUseCase,
 		GetByIdSuperfoodProductDetailUseCase,
+		GetSuperfoodProductByIdUseCase,
 		OwnerInfoResolver,
 		SuperfoodProductListColorResolver,
 		SuperfoodProductListMediaResolver,

@@ -1,10 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { SuperfoodProductListColor } from './SuperfoodProductListItem';
 import { OwnerInfoResponse } from '../textile/TextileProductDetailResponse';
-import {
-	SuperfoodDetailProductResponse,
-	SuperfoodDetailTraceabilityResponse,
-} from './SuperfoodProductResponse';
 import { ProductTraceabilityResponse } from '../shared/ProductTraceabilityResponse';
 
 // ── Media ────────────────────────────────────────────────────────────────
@@ -26,24 +22,10 @@ export class MediaImageResponse {
 export class NutritionalFeatureInfo {
 	@ApiProperty() id!: string;
 	@ApiProperty() name!: string;
-	@ApiProperty() iconUrl!: string;
-}
-
-// ── Traceability step ────────────────────────────────────────────────────
-export class TraceabilityStep {
-	@ApiProperty() title!: string;
-	@ApiProperty() supplier!: string;
-	@ApiProperty() country!: string;
-	@ApiProperty() city!: string;
-	@ApiProperty() description!: string;
-}
-
-export class TraceabilityInfoResponse {
-	@ApiPropertyOptional() blockchainLink?: string;
-	@ApiProperty({ type: [TraceabilityStep] }) origen!: TraceabilityStep[];
-	@ApiProperty({ type: [TraceabilityStep] }) processing!: TraceabilityStep[];
-	@ApiProperty({ type: [TraceabilityStep] }) development!: TraceabilityStep[];
-	@ApiProperty({ type: [TraceabilityStep] }) merchandising!: TraceabilityStep[];
+	@ApiProperty({
+		description: 'URL pública del icono (resuelta desde el MediaItem)',
+	})
+	iconUrl!: string;
 }
 
 // ── Hero Detail ──────────────────────────────────────────────────────────
@@ -59,15 +41,16 @@ export class HeroDetailResponse {
 	@ApiProperty() basePrice!: number;
 	@ApiProperty() totalStock!: number;
 	@ApiProperty() isDiscountActive!: boolean;
-	@ApiProperty({ type: TraceabilityInfoResponse })
-	traceabilityInfo!: TraceabilityInfoResponse;
 }
 
 // ── Benefit ──────────────────────────────────────────────────────────────
 export class BenefitInfoResponse {
 	@ApiProperty() id!: string;
 	@ApiProperty() name!: string;
-	@ApiProperty() iconUrl!: string;
+	@ApiProperty({
+		description: 'URL pública del icono (resuelta desde el MediaItem)',
+	})
+	iconUrl!: string;
 	@ApiPropertyOptional() description?: string;
 	@ApiProperty() color!: string;
 }
@@ -160,41 +143,13 @@ export class SuperfoodProductDetailResponse {
 	@ApiProperty({ type: ReviewsResponse }) reviews!: ReviewsResponse;
 
 	@ApiPropertyOptional({
-		type: SuperfoodDetailTraceabilityResponse,
-		description:
-			'Datos de gestión y trazabilidad (útil para formularios de edición)',
+		type: SuperfoodProductListColor,
+		description: 'Color de catálogo resuelto (nombre + hex)',
 	})
-	detailTraceability?: SuperfoodDetailTraceabilityResponse;
-
-	@ApiPropertyOptional({
-		type: SuperfoodDetailProductResponse,
-		description: 'Detalle de producto persistido (edición)',
-	})
-	detailProduct?: SuperfoodDetailProductResponse;
-
-	@ApiPropertyOptional({ description: 'ID categoría superfood' })
-	categoryId?: string;
-
-	@ApiPropertyOptional({ description: 'ID color catálogo' })
-	colorId?: string;
+	color?: SuperfoodProductListColor;
 
 	@ApiPropertyOptional({ description: 'Estado del producto' })
 	status?: string;
-
-	@ApiPropertyOptional({ description: 'ID DetailSourceProduct principal' })
-	detailSourceProductId?: string;
-
-	@ApiPropertyOptional({ description: 'Precio e inventario (persistido)' })
-	priceInventory?: Record<string, unknown>;
-
-	@ApiPropertyOptional({ description: 'Información base (persistida)' })
-	baseInfo?: Record<string, unknown>;
-
-	@ApiPropertyOptional({
-		description: 'Contenido nutricional (persistido)',
-		type: 'array',
-	})
-	nutritionalContent?: Record<string, unknown>[];
 
 	@ApiPropertyOptional({
 		type: ProductTraceabilityResponse,

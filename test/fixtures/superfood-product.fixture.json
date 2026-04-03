@@ -202,28 +202,20 @@
 			],
 			"basePrice": 25.50,
 			"totalStock": 100,
-			"isDiscountActive": false,
-			"traceabilityInfo": {
-				"blockchainLink": "https://blockchain.example.com/tx/123",
-				"origen": [
-					{
-						"title": "Cosecha",
-						"supplier": "Cooperativa Andina",
-						"country": "Perú",
-						"city": "Cusco",
-						"description": "Cosecha manual en los Andes"
-					}
-				],
-				"processing": [],
-				"development": [],
-				"merchandising": []
+			"isDiscountActive": false
+		},
+		"ownerInfo": {
+			"ownerType": "SHOP",
+			"shop": {
+				"ownerImage": "",
+				"shopName": "Artesanos Andinos",
+				"originPlace": "",
+				"seals": []
 			}
 		},
-		"owner": {
-			"id": "shop-123",
-			"type": "SHOP",
-			"name": "Artesanos Andinos",
-			"imgUrl": ""
+		"color": {
+			"name": "PURPLE",
+			"hexCodeColor": "#7c3aed"
 		},
 		"benefitsInfo": [
 			{
@@ -231,7 +223,7 @@
 				"name": "Energía natural",
 				"iconUrl": "https://example.com/icon-energy.png",
 				"description": "Fuente de energía sostenida",
-				"color": "GREEN"
+				"color": "#22c55e"
 			}
 		],
 		"sourceProductInfo": {
