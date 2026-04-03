@@ -14,6 +14,7 @@ import {
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { SuperfoodProductStatus } from '../../../../domain/enums/SuperfoodProductStatus';
+import { ProductCurrency } from '../../../../domain/enums/ProductCurrency';
 import { CreateSuperfoodBasicInfoDto } from './CreateSuperfoodBasicInfoDto';
 import { CreateSuperfoodDetailDto } from './CreateSuperfoodDetailDto';
 import { CreateSuperfoodNutritionalDto } from './CreateSuperfoodNutritionalDto';
@@ -42,6 +43,11 @@ export class CreateSuperfoodPriceInventoryDto {
 	@IsNotEmpty()
 	@Min(0, { message: 'Total stock cannot be negative' })
 	totalStock!: number;
+
+	@ApiProperty({ enum: ProductCurrency, example: ProductCurrency.PEN })
+	@IsEnum(ProductCurrency)
+	@IsNotEmpty()
+	currency!: ProductCurrency;
 
 	@ApiProperty()
 	@IsString()

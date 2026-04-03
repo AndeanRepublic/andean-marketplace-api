@@ -83,7 +83,10 @@ export class GetBoxDetailUseCase {
 							superfood.baseInfo?.mediaIds?.[0],
 							dependencies.mediaMap,
 						),
-						information: superfood.baseInfo?.description || '',
+						information:
+							superfood.baseInfo?.detailedDescription ||
+							superfood.baseInfo?.shortDescription ||
+							'',
 						type: ProductType.SUPERFOOD,
 						discartedPrice: price,
 						price,

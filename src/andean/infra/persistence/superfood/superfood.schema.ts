@@ -3,6 +3,7 @@ import { SuperfoodProductStatus } from '../../../domain/enums/SuperfoodProductSt
 import { SuperfoodConsumptionWay } from '../../../domain/enums/SuperfoodConsumptionWay';
 import { SuperfoodProductionMethod } from '../../../domain/enums/SuperfoodProductionMethod';
 import { SuperfoodOwnerType } from '../../../domain/enums/SuperfoodOwnerType';
+import { ProductCurrency } from '../../../domain/enums/ProductCurrency';
 import { TraceabilityProcessName } from '../../../domain/enums/TraceabilityProcessName';
 
 // Nested schemas
@@ -22,7 +23,8 @@ const SuperfoodBasicInfoSchema = new Schema(
 	{
 		title: { type: String, required: true },
 		mediaIds: { type: [String], default: [] }, // IDs referencing MediaItem collection
-		description: { type: String, required: true },
+		shortDescription: { type: String, required: true },
+		detailedDescription: { type: String, required: true },
 		general_features: { type: [String], default: [] },
 		nutritional_features: { type: [String], default: [] }, // IDs
 		benefits: { type: [String], default: [] }, // IDs
@@ -40,6 +42,12 @@ const SuperfoodPriceInventorySchema = new Schema(
 	{
 		basePrice: { type: Number, required: true },
 		totalStock: { type: Number, required: true },
+		currency: {
+			type: String,
+			enum: Object.values(ProductCurrency),
+			required: true,
+			default: ProductCurrency.PEN,
+		},
 		SKU: { type: String, required: false },
 	},
 	{ _id: false },
@@ -135,6 +143,8 @@ const SuperfoodDetailProductSchema = new Schema(
 		salesUnitSize: { type: String, required: false },
 		medicRecommendations: { type: String },
 		healthWarnings: { type: String },
+		ingredients: { type: String, required: false },
+		customerExpectations: { type: String, required: false },
 	},
 	{ _id: false },
 );

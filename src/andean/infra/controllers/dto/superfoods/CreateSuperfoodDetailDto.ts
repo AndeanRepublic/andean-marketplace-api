@@ -50,4 +50,14 @@ export class CreateSuperfoodDetailDto {
 	@IsString()
 	@IsOptional()
 	healthWarnings?: string;
+
+	@ApiProperty({ required: false })
+	@IsString()
+	@IsOptional()
+	ingredients?: string;
+
+	@ApiProperty({ required: false })
+	@IsString()
+	@IsOptional()
+	customerExpectations?: string;
 }

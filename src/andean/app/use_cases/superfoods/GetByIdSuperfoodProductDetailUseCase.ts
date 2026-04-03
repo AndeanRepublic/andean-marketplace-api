@@ -172,7 +172,10 @@ export class GetByIdSuperfoodProductDetailUseCase {
 			sourceProductImg: images.sourceProductImg,
 			heroDetail: {
 				title: product.baseInfo.title,
-				description: product.baseInfo.description,
+				...(product.baseInfo.shortDescription?.trim() && {
+					shortDescription: product.baseInfo.shortDescription.trim(),
+				}),
+				description: product.baseInfo.detailedDescription,
 				nutritionalFeatures: nutritionalFeaturesInfo,
 				basePrice: product.priceInventory.basePrice,
 				totalStock: product.priceInventory.totalStock,

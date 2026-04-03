@@ -4,7 +4,8 @@ export class SuperfoodBasicInfo {
 	constructor(
 		public title: string,
 		public mediaIds: string[], // Array of IDs referencing MediaItem collection
-		public description: string,
+		public shortDescription: string,
+		public detailedDescription: string,
 		public general_features: string[], // Array of feature descriptions
 		public nutritional_features: string[], // Array of IDs referencing SuperfoodNutritionalFeaturesItems
 		public benefits: string[], // Array of IDs referencing SuperfoodBenefitItems

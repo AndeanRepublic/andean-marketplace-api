@@ -3,6 +3,7 @@ import { SuperfoodProductStatus } from '../../../domain/enums/SuperfoodProductSt
 import { SuperfoodConsumptionWay } from '../../../domain/enums/SuperfoodConsumptionWay';
 import { SuperfoodProductionMethod } from '../../../domain/enums/SuperfoodProductionMethod';
 import { SuperfoodOwnerType } from '../../../domain/enums/SuperfoodOwnerType';
+import { ProductCurrency } from '../../../domain/enums/ProductCurrency';
 import { ProductTraceabilityResponse } from '../shared/ProductTraceabilityResponse';
 
 export class SuperfoodBasicInfoResponse {
@@ -12,8 +13,11 @@ export class SuperfoodBasicInfoResponse {
 	@ApiProperty({ description: 'IDs de MediaItems', type: [String] })
 	mediaIds!: string[];
 
-	@ApiProperty({ description: 'Descripción del producto' })
-	description!: string;
+	@ApiProperty({ description: 'Descripción breve (listados)' })
+	shortDescription!: string;
+
+	@ApiProperty({ description: 'Descripción detallada' })
+	detailedDescription!: string;
 
 	@ApiProperty({ description: 'Características generales', type: [String] })
 	general_features!: string[];
@@ -41,8 +45,11 @@ export class SuperfoodPriceInventoryResponse {
 	@ApiProperty({ description: 'Stock total disponible' })
 	totalStock!: number;
 
-	@ApiProperty({ description: 'Código SKU del producto' })
-	SKU!: string;
+	@ApiProperty({ enum: ProductCurrency, description: 'Moneda del precio' })
+	currency!: ProductCurrency;
+
+	@ApiPropertyOptional({ description: 'Código SKU del producto' })
+	SKU?: string;
 }
 
 export class SuperfoodDetailProductResponse {
@@ -76,6 +83,12 @@ export class SuperfoodDetailProductResponse {
 
 	@ApiProperty({ description: 'Advertencias de salud', required: false })
 	healthWarnings?: string;
+
+	@ApiProperty({ description: 'Ingredientes', required: false })
+	ingredients?: string;
+
+	@ApiProperty({ description: 'Expectativas del cliente', required: false })
+	customerExpectations?: string;
 }
 
 export class SuperfoodNutritionalItemResponse {

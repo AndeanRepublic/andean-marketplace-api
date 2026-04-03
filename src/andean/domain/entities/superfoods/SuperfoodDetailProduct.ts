@@ -9,5 +9,7 @@ export class SuperfoodDetailProduct {
 		public salesUnitSize?: string,
 		public medicRecommendations?: string,
 		public healthWarnings?: string,
+		public ingredients?: string,
+		public customerExpectations?: string,
 	) {}
 }

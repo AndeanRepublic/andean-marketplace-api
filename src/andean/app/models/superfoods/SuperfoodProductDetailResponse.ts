@@ -49,6 +49,10 @@ export class TraceabilityInfoResponse {
 // ── Hero Detail ──────────────────────────────────────────────────────────
 export class HeroDetailResponse {
 	@ApiProperty() title!: string;
+	@ApiPropertyOptional({
+		description: 'Resumen breve (si existe en el producto)',
+	})
+	shortDescription?: string;
 	@ApiProperty() description!: string;
 	@ApiProperty({ type: [NutritionalFeatureInfo] })
 	nutritionalFeatures!: NutritionalFeatureInfo[];

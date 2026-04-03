@@ -22,10 +22,22 @@ export class CreateSuperfoodBasicInfoDto {
 	@IsOptional()
 	mediaIds?: string[];
 
-	@ApiProperty({ description: 'Descripción del producto' })
+	@ApiProperty({
+		description: 'Frase con beneficio principal o gancho',
+		example: 'Quinua orgánica en grano, alto valor proteico.',
+	})
 	@IsString()
 	@IsNotEmpty()
-	description: string;
+	shortDescription: string;
+
+	@ApiProperty({
+		description:
+			'Historia del producto, uso tradicional, beneficios, comunidad',
+		example: 'Cultivada sobre 3800 m.s.n.m. en Puno, sin pesticidas...',
+	})
+	@IsString()
+	@IsNotEmpty()
+	detailedDescription: string;
 
 	@ApiProperty({ description: 'Características generales', type: [String] })
 	@IsArray()

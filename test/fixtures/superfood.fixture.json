@@ -7,13 +7,15 @@
 			"media": [
 				"media-id-3"
 			],
-			"description": "Quinoa cultivada en los Andes peruanos",
+			"shortDescription": "Quinoa orgánica andina",
+			"detailedDescription": "Quinoa cultivada en los Andes peruanos",
 			"ownerType": "community",
 			"ownerId": "community-456"
 		},
 		"priceInventary": {
 			"basePrice": 25.0,
 			"totalStock": 100,
+			"currency": "PEN",
 			"SKU": "QUINOA-ORG-001"
 		},
 		"isDiscountActive": false,
