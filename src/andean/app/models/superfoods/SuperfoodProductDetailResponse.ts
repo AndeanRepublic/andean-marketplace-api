@@ -129,6 +129,18 @@ export class SuperfoodProductDetailResponse {
 	@ApiProperty({ type: MediaImageResponse })
 	sourceProductImg!: MediaImageResponse;
 
+	@ApiPropertyOptional({
+		type: MediaImageResponse,
+		description: 'Imagen más cercana del producto fuente',
+	})
+	closestSourceProductImg?: MediaImageResponse;
+
+	@ApiPropertyOptional({
+		type: [MediaImageResponse],
+		description: 'Otras imágenes del producto',
+	})
+	otherProductImages?: MediaImageResponse[];
+
 	@ApiProperty({ type: HeroDetailResponse }) heroDetail!: HeroDetailResponse;
 	@ApiPropertyOptional({ type: OwnerInfoResponse })
 	ownerInfo?: OwnerInfoResponse;

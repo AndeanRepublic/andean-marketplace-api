@@ -4,7 +4,13 @@
 		"status": "PUBLISHED",
 		"baseInfo": {
 			"title": "Quinua Premium",
-			"mediaIds": [],
+			"productMedia": {
+				"mainImgId": "507f1f77bcf86cd799439012",
+				"plateImgId": "507f1f77bcf86cd799439013",
+				"sourceProductImgId": "507f1f77bcf86cd799439014",
+				"closestSourceProductImgId": "507f1f77bcf86cd799439015",
+				"otherImagesId": []
+			},
 			"shortDescription": "Quinua orgánica andina",
 			"detailedDescription": "Quinua orgánica de los Andes peruanos",
 			"general_features": [
@@ -33,7 +39,13 @@
 		"status": "PUBLISHED",
 		"baseInfo": {
 			"title": "Quinua Premium",
-			"mediaIds": [],
+			"productMedia": {
+				"mainImgId": "507f1f77bcf86cd799439012",
+				"plateImgId": "507f1f77bcf86cd799439013",
+				"sourceProductImgId": "507f1f77bcf86cd799439014",
+				"closestSourceProductImgId": "507f1f77bcf86cd799439015",
+				"otherImagesId": []
+			},
 			"shortDescription": "Quinua orgánica andina",
 			"detailedDescription": "Quinua orgánica de los Andes peruanos",
 			"general_features": [
@@ -68,14 +80,19 @@
 		"status": "PUBLISHED",
 		"baseInfo": {
 			"title": "Quinua Premium Actualizada",
-			"mediaIds": [],
+			"productMedia": {
+				"mainImgId": "507f1f77bcf86cd799439012",
+				"plateImgId": "507f1f77bcf86cd799439013",
+				"sourceProductImgId": "507f1f77bcf86cd799439014",
+				"closestSourceProductImgId": "507f1f77bcf86cd799439015",
+				"otherImagesId": []
+			},
 			"shortDescription": "Quinua orgánica andina",
 			"detailedDescription": "Quinua orgánica de los Andes peruanos - Actualizada",
 			"general_features": [
 				"Orgánica",
 				"Sin gluten",
-				"Alto en proteínas",
-				"Certificado"
+				"Alto en proteínas"
 			],
 			"nutritional_features": [],
 			"benefits": [],

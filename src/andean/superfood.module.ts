@@ -144,6 +144,7 @@ import { UsersModule } from './users.module';
 import { TextileProductModule } from './textileProduct.module';
 import { OwnerInfoResolver } from './infra/services/owner/OwnerInfoResolver';
 import { SuperfoodProductListColorResolver } from './infra/services/superfood/SuperfoodProductListColorResolver';
+import { SuperfoodProductListMediaResolver } from './infra/services/superfood/SuperfoodProductListMediaResolver';
 
 @Module({
 	imports: [
@@ -199,6 +200,7 @@ import { SuperfoodProductListColorResolver } from './infra/services/superfood/Su
 		GetByIdSuperfoodProductDetailUseCase,
 		OwnerInfoResolver,
 		SuperfoodProductListColorResolver,
+		SuperfoodProductListMediaResolver,
 
 		// Use Cases - Category
 		CreateSuperfoodCategoryUseCase,

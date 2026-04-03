@@ -12,7 +12,7 @@ import { SuperfoodProductMapper } from '../../../infra/services/superfood/Superf
 import { SuperfoodCategoryRepository } from '../../datastore/superfoods/SuperfoodCategory.repo';
 import { CommunityRepository } from '../../datastore/community/community.repo';
 import { ShopRepository } from '../../datastore/Shop.repo';
-import { SuperfoodOwnerType } from '../../../domain/enums/SuperfoodOwnerType';
+import { OwnerType } from '../../../domain/enums/OwnerType';
 import { instanceToPlain } from 'class-transformer';
 import { CreateSuperfoodDto } from '../../../infra/controllers/dto/superfoods/CreateSuperfoodDto';
 import { CreateDetailSourceProductUseCase } from '../detailSourceProduct/CreateDetailSourceProductUseCase';
@@ -105,7 +105,7 @@ export class UpdateSuperfoodProductUseCase {
 		// Ownership check
 		const isAdmin = roles.includes(AccountRole.ADMIN);
 		if (!isAdmin) {
-			if (existingProduct.baseInfo.ownerType === SuperfoodOwnerType.COMMUNITY) {
+			if (existingProduct.baseInfo.ownerType === OwnerType.COMMUNITY) {
 				throw new ForbiddenException('You can only modify your own resource');
 			}
 			const seller =
@@ -144,7 +144,7 @@ export class UpdateSuperfoodProductUseCase {
 		await this.validateDetailTraceability(dto.detailTraceability);
 
 		// 3. Validar ownerId según ownerType solo si existe en el DTO
-		if (dto.baseInfo?.ownerType === SuperfoodOwnerType.SHOP) {
+		if (dto.baseInfo?.ownerType === OwnerType.SHOP) {
 			if (dto.baseInfo?.ownerId) {
 				const shopFound = await this.shopRepository.getById(
 					dto.baseInfo.ownerId,
@@ -155,7 +155,7 @@ export class UpdateSuperfoodProductUseCase {
 					);
 				}
 			}
-		} else if (dto.baseInfo?.ownerType === SuperfoodOwnerType.COMMUNITY) {
+		} else if (dto.baseInfo?.ownerType === OwnerType.COMMUNITY) {
 			if (dto.baseInfo?.ownerId) {
 				const communityFound = await this.communityRepository.getById(
 					dto.baseInfo.ownerId,

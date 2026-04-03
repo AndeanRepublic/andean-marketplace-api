@@ -11,7 +11,7 @@ import { CommunityRepository } from '../../datastore/community/community.repo';
 import { CreateSuperfoodDto } from '../../../infra/controllers/dto/superfoods/CreateSuperfoodDto';
 import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
 import { SuperfoodProductMapper } from '../../../infra/services/superfood/SuperfoodProductMapper';
-import { SuperfoodOwnerType } from '../../../domain/enums/SuperfoodOwnerType';
+import { OwnerType } from '../../../domain/enums/OwnerType';
 import { CreateDetailSourceProductUseCase } from '../detailSourceProduct/CreateDetailSourceProductUseCase';
 import { SuperfoodColorRepository } from '../../datastore/superfoods/SuperfoodColor.repo';
 import { SuperfoodCertificationRepository } from '../../datastore/superfoods/SuperfoodCertification.repo';
@@ -98,14 +98,14 @@ export class CreateSuperfoodProductUseCase {
 		}
 
 		// 2. Validar que el owner existe (shop o community)
-		if (dto.baseInfo.ownerType === SuperfoodOwnerType.SHOP) {
+		if (dto.baseInfo.ownerType === OwnerType.SHOP) {
 			const shopFound = await this.shopRepository.getById(dto.baseInfo.ownerId);
 			if (!shopFound) {
 				throw new NotFoundException(
 					`Shop with ID ${dto.baseInfo.ownerId} not found`,
 				);
 			}
-		} else if (dto.baseInfo.ownerType === SuperfoodOwnerType.COMMUNITY) {
+		} else if (dto.baseInfo.ownerType === OwnerType.COMMUNITY) {
 			const communityFound = await this.communityRepository.getById(
 				dto.baseInfo.ownerId,
 			);

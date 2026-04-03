@@ -25,7 +25,6 @@ import { UpdateDetailSourceProductUseCase } from '../src/andean/app/use_cases/de
 import { DeleteDetailSourceProductUseCase } from '../src/andean/app/use_cases/detailSourceProduct/DeleteDetailSourceProductUseCase';
 import { SuperfoodProduct } from '../src/andean/domain/entities/superfoods/SuperfoodProduct';
 import { SuperfoodProductStatus } from '../src/andean/domain/enums/SuperfoodProductStatus';
-import { SuperfoodOwnerType } from '../src/andean/domain/enums/SuperfoodOwnerType';
 import { ProductSortBy } from '../src/andean/domain/enums/ProductSortBy';
 import { SuperfoodProductListItem } from '../src/andean/app/models/superfoods/SuperfoodProductListItem';
 import { FixtureLoader } from './helpers/fixture-loader';

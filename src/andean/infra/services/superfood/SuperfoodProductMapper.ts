@@ -2,6 +2,7 @@ import { SuperfoodProductDocument } from '../../persistence/superfood/superfood.
 import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
 import { CreateSuperfoodDto } from '../../controllers/dto/superfoods/CreateSuperfoodDto';
 import { SuperfoodBasicInfo } from '../../../domain/entities/superfoods/SuperfoodBasicInfo';
+import { SuperfoodProductMedia } from '../../../domain/entities/superfoods/SuperfoodProductMedia';
 import { SuperfoodPriceInventory } from '../../../domain/entities/superfoods/SuperfoodPriceInventory';
 import { SuperfoodDetailProduct } from '../../../domain/entities/superfoods/SuperfoodDetailProduct';
 import { SuperfoodNutritionalItem } from '../../../domain/entities/superfoods/SuperfoodNutritionalItem';
@@ -29,7 +30,14 @@ export class SuperfoodProductMapper {
 	static fromDocument(doc: SuperfoodProductDocument): SuperfoodProduct {
 		const plain = doc.toObject();
 
-		const baseInfo = plainToOne(SuperfoodBasicInfo, plain.baseInfo);
+		const rawBi = plain.baseInfo as Record<string, unknown> | undefined;
+		const baseInfo = plainToOne(SuperfoodBasicInfo, {
+			...rawBi,
+			productMedia: plainToOne(
+				SuperfoodProductMedia,
+				rawBi?.productMedia,
+			),
+		});
 		const priceInventory = plainToOne(
 			SuperfoodPriceInventory,
 			plain.priceInventory,
@@ -98,7 +106,13 @@ export class SuperfoodProductMapper {
 	static fromCreateDto(dto: CreateSuperfoodDto): SuperfoodProduct {
 		const { colorId, ...superfoodProductData } = dto;
 		const normalizedColorId = colorId?.trim() || undefined;
-		const baseInfo = plainToOne(SuperfoodBasicInfo, dto.baseInfo);
+		const baseInfo = plainToOne(SuperfoodBasicInfo, {
+			...dto.baseInfo,
+			productMedia: plainToOne(
+				SuperfoodProductMedia,
+				dto.baseInfo.productMedia,
+			),
+		});
 		const priceInventory = plainToOne(
 			SuperfoodPriceInventory,
 			dto.priceInventory,
@@ -168,7 +182,13 @@ export class SuperfoodProductMapper {
 	static fromUpdateDto(id: string, dto: CreateSuperfoodDto): SuperfoodProduct {
 		const { colorId, ...superfoodProductData } = dto;
 		const normalizedColorId = colorId?.trim() || undefined;
-		const baseInfo = plainToOne(SuperfoodBasicInfo, dto.baseInfo);
+		const baseInfo = plainToOne(SuperfoodBasicInfo, {
+			...dto.baseInfo,
+			productMedia: plainToOne(
+				SuperfoodProductMedia,
+				dto.baseInfo.productMedia,
+			),
+		});
 		const priceInventory = plainToOne(
 			SuperfoodPriceInventory,
 			dto.priceInventory,

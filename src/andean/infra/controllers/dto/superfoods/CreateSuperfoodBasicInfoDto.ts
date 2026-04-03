@@ -1,12 +1,16 @@
 import {
+	ArrayMaxSize,
 	IsArray,
 	IsEnum,
 	IsNotEmpty,
 	IsOptional,
 	IsString,
+	ValidateNested,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { SuperfoodOwnerType } from '../../../../domain/enums/SuperfoodOwnerType';
+import { Type } from 'class-transformer';
+import { OwnerType } from '../../../../domain/enums/OwnerType';
+import { CreateSuperfoodProductMediaDto } from './CreateSuperfoodProductMediaDto';
 
 export class CreateSuperfoodBasicInfoDto {
 	@ApiProperty({
@@ -17,10 +21,11 @@ export class CreateSuperfoodBasicInfoDto {
 	@IsNotEmpty()
 	title: string;
 
-	@ApiProperty({ description: 'IDs de MediaItems', type: [String] })
-	@IsArray()
-	@IsOptional()
-	mediaIds?: string[];
+	@ApiProperty({ type: CreateSuperfoodProductMediaDto })
+	@ValidateNested()
+	@Type(() => CreateSuperfoodProductMediaDto)
+	@IsNotEmpty()
+	productMedia!: CreateSuperfoodProductMediaDto;
 
 	@ApiProperty({
 		description: 'Frase con beneficio principal o gancho',
@@ -39,16 +44,21 @@ export class CreateSuperfoodBasicInfoDto {
 	@IsNotEmpty()
 	detailedDescription: string;
 
-	@ApiProperty({ description: 'Características generales', type: [String] })
+	@ApiProperty({
+		description: 'Características generales (máx. 3)',
+		type: [String],
+	})
 	@IsArray()
+	@ArrayMaxSize(3)
 	@IsOptional()
 	general_features?: string[];
 
 	@ApiProperty({
-		description: 'IDs de características nutricionales',
+		description: 'IDs de características nutricionales (máx. 4)',
 		type: [String],
 	})
 	@IsArray()
+	@ArrayMaxSize(4)
 	@IsOptional()
 	nutritional_features?: string[];
 
@@ -57,10 +67,10 @@ export class CreateSuperfoodBasicInfoDto {
 	@IsOptional()
 	benefits?: string[];
 
-	@ApiProperty({ enum: SuperfoodOwnerType })
-	@IsEnum(SuperfoodOwnerType)
+	@ApiProperty({ enum: OwnerType })
+	@IsEnum(OwnerType)
 	@IsNotEmpty()
-	ownerType: SuperfoodOwnerType;
+	ownerType: OwnerType;
 
 	@ApiProperty({ description: 'ID del dueño (Shop o Community)' })
 	@IsString()

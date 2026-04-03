@@ -10,7 +10,7 @@ import { CommunityRepository } from '../../datastore/community/community.repo';
 import { MediaItemRepository } from '../../datastore/MediaItem.repo';
 import { DetailSourceProductRepository } from '../../datastore/DetailSourceProduct.repo';
 import { ProductType } from '../../../domain/enums/ProductType';
-import { MediaItemRole } from '../../../domain/enums/MediaItemRole';
+import { collectSuperfoodProductMediaIds } from '../../../domain/superfoods/collectSuperfoodProductMediaIds';
 import { Review } from '../../../domain/entities/Review';
 import { MediaItem } from '../../../domain/entities/MediaItem';
 import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
@@ -30,6 +30,7 @@ import { SuperfoodProductListItem } from '../../models/superfoods/SuperfoodProdu
 import { OwnerInfoResolver } from '../../../infra/services/owner/OwnerInfoResolver';
 import { MediaUrlResolver } from '../../../infra/services/media/MediaUrlResolver';
 import { SuperfoodProductListColorResolver } from '../../../infra/services/superfood/SuperfoodProductListColorResolver';
+import { SuperfoodProductListMediaResolver } from '../../../infra/services/superfood/SuperfoodProductListMediaResolver';
 import { instanceToPlain } from 'class-transformer';
 
 @Injectable()
@@ -58,6 +59,7 @@ export class GetByIdSuperfoodProductDetailUseCase {
 		private readonly mediaUrlResolver: MediaUrlResolver,
 		private readonly ownerInfoResolver: OwnerInfoResolver,
 		private readonly superfoodProductListColorResolver: SuperfoodProductListColorResolver,
+		private readonly superfoodProductListMediaResolver: SuperfoodProductListMediaResolver,
 	) {}
 
 	async handle(productId: string): Promise<SuperfoodProductDetailResponse> {
@@ -71,7 +73,9 @@ export class GetByIdSuperfoodProductDetailUseCase {
 		// 2. Lanzar consultas independientes en paralelo para mejor rendimiento
 		const [mediaItems, reviews, nutritionalFeatures, benefits, sourceProduct] =
 			await Promise.all([
-				this.mediaItemRepository.getByIds(product.baseInfo.mediaIds || []),
+				this.mediaItemRepository.getByIds(
+					collectSuperfoodProductMediaIds(product.baseInfo.productMedia),
+				),
 				this.reviewRepository.getByProductIdAndType(
 					productId,
 					ProductType.SUPERFOOD,
@@ -89,8 +93,8 @@ export class GetByIdSuperfoodProductDetailUseCase {
 					: Promise.resolve(null),
 			]);
 
-		// 3. Resolver imágenes por rol
-		const images = await this.resolveImages(mediaItems);
+		// 3. Resolver imágenes por IDs en productMedia
+		const images = await this.resolveProductImages(product, mediaItems);
 
 		// 4. Resolver owner y reviews en paralelo
 		const [ownerInfo, reviewsResponse] = await Promise.all([
@@ -170,6 +174,13 @@ export class GetByIdSuperfoodProductDetailUseCase {
 			mainImg: images.mainImg,
 			plateImg: images.plateImg,
 			sourceProductImg: images.sourceProductImg,
+			...(images.closestSourceProductImg.url ||
+			images.closestSourceProductImg.name
+				? { closestSourceProductImg: images.closestSourceProductImg }
+				: {}),
+			...(images.otherProductImages.length
+				? { otherProductImages: images.otherProductImages }
+				: {}),
 			heroDetail: {
 				title: product.baseInfo.title,
 				...(product.baseInfo.shortDescription?.trim() && {
@@ -222,32 +233,40 @@ export class GetByIdSuperfoodProductDetailUseCase {
 
 	// ── Private helpers ──────────────────────────────────────────────────
 
-	private async resolveImages(mediaItems: MediaItem[]): Promise<{
+	private async resolveProductImages(
+		product: SuperfoodProduct,
+		mediaItems: MediaItem[],
+	): Promise<{
 		mainImg: MediaImageResponse;
 		plateImg: MediaImageResponse;
 		sourceProductImg: MediaImageResponse;
+		closestSourceProductImg: MediaImageResponse;
+		otherProductImages: MediaImageResponse[];
 	}> {
-		const principal = mediaItems.find(
-			(m) => m.role === MediaItemRole.PRINCIPAL,
-		);
-		const secondary = mediaItems.find(
-			(m) => m.role === MediaItemRole.SECUNDARY,
-		);
-		const none = mediaItems.find((m) => m.role === MediaItemRole.NONE);
-
+		const pm = product.baseInfo.productMedia;
+		const byId = new Map(mediaItems.map((m) => [m.id, m]));
 		const mediaUrlById = await this.mediaUrlResolver.resolveUrls(
 			mediaItems.map((item) => item.id),
 		);
 
-		const toImage = (m?: MediaItem): MediaImageResponse => ({
-			name: m?.name || '',
-			url: m?.id ? mediaUrlById.get(m.id) || '' : '',
-		});
+		const toImage = (id?: string): MediaImageResponse => {
+			const m = id ? byId.get(id) : undefined;
+			return {
+				name: m?.name || '',
+				url: m?.id ? mediaUrlById.get(m.id) || '' : '',
+			};
+		};
+
+		const otherProductImages = (pm.otherImagesId ?? [])
+			.map((id) => toImage(id))
+			.filter((img) => img.url || img.name);
 
 		return {
-			mainImg: toImage(principal),
-			plateImg: toImage(secondary),
-			sourceProductImg: toImage(none),
+			mainImg: toImage(pm.mainImgId),
+			plateImg: toImage(pm.plateImgId),
+			sourceProductImg: toImage(pm.sourceProductImgId),
+			closestSourceProductImg: toImage(pm.closestSourceProductImgId),
+			otherProductImages,
 		};
 	}
 
@@ -350,9 +369,13 @@ export class GetByIdSuperfoodProductDetailUseCase {
 				perPage: 7, // Pedir 7 para poder excluir el actual y aún tener 6
 			});
 
+		const withMedia =
+			await this.superfoodProductListMediaResolver.attachListMediaFromAggregate(
+				rawProducts,
+			);
 		const products =
 			await this.superfoodProductListColorResolver.attachCatalogColorFromAggregate(
-				rawProducts,
+				withMedia,
 			);
 
 		return products
@@ -365,14 +388,8 @@ export class GetByIdSuperfoodProductDetailUseCase {
 				ownerName: p.ownerName,
 				price: p.price,
 				totalStock: p.totalStock,
-				mainImage: {
-					...p.mainImage,
-					url: this.mediaUrlResolver.resolveKey(p.mainImage?.url),
-				},
-				sourceProductImage: {
-					...p.sourceProductImage,
-					url: this.mediaUrlResolver.resolveKey(p.sourceProductImage?.url),
-				},
+				mainImage: p.mainImage,
+				sourceProductImage: p.sourceProductImage,
 				nutritionItems: p.nutritionItems,
 			}));
 	}

@@ -2,7 +2,7 @@ import { Document, Schema } from 'mongoose';
 import { SuperfoodProductStatus } from '../../../domain/enums/SuperfoodProductStatus';
 import { SuperfoodConsumptionWay } from '../../../domain/enums/SuperfoodConsumptionWay';
 import { SuperfoodProductionMethod } from '../../../domain/enums/SuperfoodProductionMethod';
-import { SuperfoodOwnerType } from '../../../domain/enums/SuperfoodOwnerType';
+import { OwnerType } from '../../../domain/enums/OwnerType';
 import { ProductCurrency } from '../../../domain/enums/ProductCurrency';
 import { TraceabilityProcessName } from '../../../domain/enums/TraceabilityProcessName';
 
@@ -19,10 +19,24 @@ const SuperfoodOptionsSchema = new Schema({
 	values: { type: [SuperfoodOptionsItemSchema], default: [] },
 });
 
+const SuperfoodProductMediaSchema = new Schema(
+	{
+		mainImgId: { type: String, required: true },
+		plateImgId: { type: String, required: false },
+		sourceProductImgId: { type: String, required: false },
+		closestSourceProductImgId: { type: String, required: false },
+		otherImagesId: { type: [String], default: [] },
+	},
+	{ _id: false },
+);
+
 const SuperfoodBasicInfoSchema = new Schema(
 	{
 		title: { type: String, required: true },
-		mediaIds: { type: [String], default: [] }, // IDs referencing MediaItem collection
+		productMedia: {
+			type: SuperfoodProductMediaSchema,
+			required: true,
+		},
 		shortDescription: { type: String, required: true },
 		detailedDescription: { type: String, required: true },
 		general_features: { type: [String], default: [] },
@@ -30,7 +44,7 @@ const SuperfoodBasicInfoSchema = new Schema(
 		benefits: { type: [String], default: [] }, // IDs
 		ownerType: {
 			type: String,
-			enum: Object.values(SuperfoodOwnerType),
+			enum: Object.values(OwnerType),
 			required: true,
 		},
 		ownerId: { type: String, required: true },

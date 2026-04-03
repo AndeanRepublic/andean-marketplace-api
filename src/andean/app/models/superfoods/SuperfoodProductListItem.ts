@@ -25,6 +25,18 @@ export class SuperfoodProductListColor {
 	hexCodeColor!: string;
 }
 
+/**
+ * Fila devuelta por el aggregate de listado antes de resolver medios y color en el use case.
+ */
+export type SuperfoodProductListAggregateRow = Omit<
+	SuperfoodProductListItem,
+	'mainImage' | 'sourceProductImage' | 'color'
+> & {
+	colorId?: string | null;
+	mainImgId?: string | null;
+	sourceProductImgId?: string | null;
+};
+
 export class SuperfoodProductListItem {
 	@ApiProperty({
 		description: 'ID único del producto',

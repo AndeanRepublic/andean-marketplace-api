@@ -80,7 +80,7 @@ export class GetBoxDetailUseCase {
 						id: product.productId,
 						title: superfood.baseInfo?.title || '',
 						thumbnailImage: this.boxResolutionService.resolveImage(
-							superfood.baseInfo?.mediaIds?.[0],
+							superfood.baseInfo?.productMedia?.mainImgId,
 							dependencies.mediaMap,
 						),
 						information:

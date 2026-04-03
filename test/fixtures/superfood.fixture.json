@@ -4,12 +4,13 @@
 		"status": "published",
 		"baseInfo": {
 			"title": "Quinoa Orgánica Premium",
-			"media": [
-				"media-id-3"
-			],
+			"productMedia": {
+				"mainImgId": "media-id-3",
+				"otherImagesId": []
+			},
 			"shortDescription": "Quinoa orgánica andina",
 			"detailedDescription": "Quinoa cultivada en los Andes peruanos",
-			"ownerType": "community",
+			"ownerType": "COMMUNITY",
 			"ownerId": "community-456"
 		},
 		"priceInventary": {

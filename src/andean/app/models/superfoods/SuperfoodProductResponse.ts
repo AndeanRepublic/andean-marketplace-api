@@ -2,16 +2,35 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { SuperfoodProductStatus } from '../../../domain/enums/SuperfoodProductStatus';
 import { SuperfoodConsumptionWay } from '../../../domain/enums/SuperfoodConsumptionWay';
 import { SuperfoodProductionMethod } from '../../../domain/enums/SuperfoodProductionMethod';
-import { SuperfoodOwnerType } from '../../../domain/enums/SuperfoodOwnerType';
+import { OwnerType } from '../../../domain/enums/OwnerType';
 import { ProductCurrency } from '../../../domain/enums/ProductCurrency';
 import { ProductTraceabilityResponse } from '../shared/ProductTraceabilityResponse';
+
+export class SuperfoodProductMediaResponse {
+	@ApiProperty({ description: 'Imagen del paquete (principal)' })
+	mainImgId!: string;
+
+	@ApiPropertyOptional({ description: 'Imagen del plato' })
+	plateImgId?: string;
+
+	@ApiPropertyOptional({ description: 'Imagen del producto fuente' })
+	sourceProductImgId?: string;
+
+	@ApiPropertyOptional({
+		description: 'Imagen más cercana del producto fuente',
+	})
+	closestSourceProductImgId?: string;
+
+	@ApiPropertyOptional({ type: [String], description: 'Otras imágenes' })
+	otherImagesId?: string[];
+}
 
 export class SuperfoodBasicInfoResponse {
 	@ApiProperty({ description: 'Título del superfood' })
 	title!: string;
 
-	@ApiProperty({ description: 'IDs de MediaItems', type: [String] })
-	mediaIds!: string[];
+	@ApiProperty({ type: SuperfoodProductMediaResponse })
+	productMedia!: SuperfoodProductMediaResponse;
 
 	@ApiProperty({ description: 'Descripción breve (listados)' })
 	shortDescription!: string;
@@ -31,8 +50,8 @@ export class SuperfoodBasicInfoResponse {
 	@ApiProperty({ description: 'IDs de beneficios', type: [String] })
 	benefits!: string[];
 
-	@ApiProperty({ enum: SuperfoodOwnerType, description: 'Tipo de dueño' })
-	ownerType!: SuperfoodOwnerType;
+	@ApiProperty({ enum: OwnerType, description: 'Tipo de dueño' })
+	ownerType!: OwnerType;
 
 	@ApiProperty({ description: 'ID del dueño (Shop o Community)' })
 	ownerId!: string;

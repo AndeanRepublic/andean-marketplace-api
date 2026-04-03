@@ -5,8 +5,8 @@ import {
 } from '../../datastore/superfoods/SuperfoodProduct.repo';
 import { PaginatedProductsResponse } from '../../models/shared/PaginatedProductsResponse';
 import { SuperfoodProductListItem } from '../../models/superfoods/SuperfoodProductListItem';
-import { MediaUrlResolver } from '../../../infra/services/media/MediaUrlResolver';
 import { SuperfoodProductListColorResolver } from '../../../infra/services/superfood/SuperfoodProductListColorResolver';
+import { SuperfoodProductListMediaResolver } from '../../../infra/services/superfood/SuperfoodProductListMediaResolver';
 
 @Injectable()
 export class GetAllSuperfoodProductsUseCase {
@@ -14,7 +14,7 @@ export class GetAllSuperfoodProductsUseCase {
 		@Inject(SuperfoodProductRepository)
 		private readonly superfoodProductRepository: SuperfoodProductRepository,
 		private readonly superfoodProductListColorResolver: SuperfoodProductListColorResolver,
-		private readonly mediaUrlResolver: MediaUrlResolver,
+		private readonly superfoodProductListMediaResolver: SuperfoodProductListMediaResolver,
 	) {}
 
 	async handle(
@@ -30,15 +30,17 @@ export class GetAllSuperfoodProductsUseCase {
 				throw new NotFoundException('No superfood products found');
 			}
 
+			const withMedia =
+				await this.superfoodProductListMediaResolver.attachListMediaFromAggregate(
+					products,
+				);
 			const withColors =
 				await this.superfoodProductListColorResolver.attachCatalogColorFromAggregate(
-					products,
+					withMedia,
 				);
 
 			return {
-				products: withColors.map((product) =>
-					this.resolveProductImages(product),
-				),
+				products: withColors,
 				pagination: {
 					total,
 					page: 1,
@@ -60,33 +62,21 @@ export class GetAllSuperfoodProductsUseCase {
 		const page = filters.page || 1;
 		const perPage = filters.perPage || 10;
 
+		const withMedia =
+			await this.superfoodProductListMediaResolver.attachListMediaFromAggregate(
+				products,
+			);
 		const withColors =
 			await this.superfoodProductListColorResolver.attachCatalogColorFromAggregate(
-				products,
+				withMedia,
 			);
 
 		return {
-			products: withColors.map((product) => this.resolveProductImages(product)),
+			products: withColors,
 			pagination: {
 				total,
 				page,
 				per_page: perPage,
-			},
-		};
-	}
-
-	private resolveProductImages(
-		product: SuperfoodProductListItem,
-	): SuperfoodProductListItem {
-		return {
-			...product,
-			mainImage: {
-				...product.mainImage,
-				url: this.mediaUrlResolver.resolveKey(product.mainImage?.url),
-			},
-			sourceProductImage: {
-				...product.sourceProductImage,
-				url: this.mediaUrlResolver.resolveKey(product.sourceProductImage?.url),
 			},
 		};
 	}
