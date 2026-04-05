@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BoxImageResponse } from './BoxImageResponse';
 import { ProductType } from '../../../domain/enums/ProductType';
 
@@ -16,6 +16,12 @@ export class BoxProductResponse {
 
 	@ApiProperty({ description: 'Imagen miniatura del producto', type: BoxImageResponse })
 	thumbnailImage!: BoxImageResponse;
+
+	@ApiPropertyOptional({
+		description: 'Imagen narrativa del ítem en el box (si se configuró narrativeImgId)',
+		type: BoxImageResponse,
+	})
+	narrativeImage?: BoxImageResponse;
 }
 
 export class BoxItemCountResponse {
@@ -30,11 +36,11 @@ export class BoxListItemResponse {
 	@ApiProperty({ description: 'ID único del box', example: '6973d8ffddef7b59c2d4dcfb' })
 	id!: string;
 
-	@ApiProperty({ description: 'Título del box', example: 'Box Andino Premium' })
-	title!: string;
+	@ApiProperty({ description: 'Nombre del box', example: 'Box Andino Premium' })
+	name!: string;
 
-	@ApiProperty({ description: 'Subtítulo del box', example: 'Lo mejor de los Andes' })
-	subtitle!: string;
+	@ApiProperty({ description: 'Eslogan del box', example: 'Lo mejor de los Andes' })
+	slogan!: string;
 
 	@ApiProperty({ description: 'Conteo de productos por tipo', type: BoxItemCountResponse })
 	itemCount!: BoxItemCountResponse;

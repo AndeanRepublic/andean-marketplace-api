@@ -93,10 +93,11 @@ describe('BoxController (e2e)', () => {
 				.expect((res) => {
 					expect(res.body).toMatchObject({
 						id: expect.any(String),
-						title: mockBox.title,
-						subtitle: mockBox.subtitle,
-						description: mockBox.description,
+						name: mockBox.name,
+						slogan: mockBox.slogan,
+						narrative: mockBox.narrative,
 						price: mockBox.price,
+						discountPercentage: mockBox.discountPercentage,
 					});
 					expect(res.body.products).toHaveLength(3);
 					expect(res.body.sealIds).toHaveLength(2);
@@ -113,18 +114,18 @@ describe('BoxController (e2e)', () => {
 				.expect(HttpStatus.CREATED);
 			expect(createBoxUseCase.handle).toHaveBeenCalledWith(
 				expect.objectContaining({
-					title: createDto.title,
-					subtitle: createDto.subtitle,
+					name: createDto.name,
+					slogan: createDto.slogan,
 					price: createDto.price,
 				}),
 			);
 		});
 
-		it('should return 400 when title is missing', () => {
-			const { title, ...dtoWithoutTitle } = createDto;
+		it('should return 400 when name is missing', () => {
+			const { name: _omitName, ...dtoWithoutName } = createDto;
 			return request(app.getHttpServer())
 				.post('/boxes')
-				.send(dtoWithoutTitle)
+				.send(dtoWithoutName)
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 
@@ -279,8 +280,8 @@ describe('BoxController (e2e)', () => {
 				.expect((res) => {
 					const box = res.body.data[0];
 					expect(box).toHaveProperty('id');
-					expect(box).toHaveProperty('title');
-					expect(box).toHaveProperty('subtitle');
+					expect(box).toHaveProperty('name');
+					expect(box).toHaveProperty('slogan');
 					expect(box).toHaveProperty('itemCount');
 					expect(box.itemCount).toHaveProperty('textiles');
 					expect(box.itemCount).toHaveProperty('superfoods');
@@ -420,8 +421,8 @@ describe('BoxController (e2e)', () => {
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					const hero = res.body.heroDetail;
-					expect(hero).toHaveProperty('title');
-					expect(hero).toHaveProperty('subtitle');
+					expect(hero).toHaveProperty('name');
+					expect(hero).toHaveProperty('slogan');
 					expect(hero).toHaveProperty('thumbnailImage');
 					expect(hero.thumbnailImage).toHaveProperty('url');
 					expect(hero.thumbnailImage).toHaveProperty('name');
@@ -440,8 +441,8 @@ describe('BoxController (e2e)', () => {
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					const hero = res.body.heroDetail;
-					expect(hero.title).toBe('Caja Andina Esencial');
-					expect(hero.subtitle).toBe('Lo mejor de los Andes en una caja');
+					expect(hero.name).toBe('Caja Andina Esencial');
+					expect(hero.slogan).toBe('Lo mejor de los Andes en una caja');
 					expect(hero.thumbnailImage.url).toContain('box-thumbnail');
 					expect(hero.mainImage.url).toContain('box-main');
 				});
@@ -457,7 +458,7 @@ describe('BoxController (e2e)', () => {
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					const detail = res.body.detail;
-					expect(detail).toHaveProperty('description');
+					expect(detail).toHaveProperty('narrative');
 					expect(detail).toHaveProperty('images');
 					expect(Array.isArray(detail.images)).toBe(true);
 					detail.images.forEach((img: any) => {

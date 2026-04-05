@@ -1,4 +1,4 @@
-import { plainToInstance, instanceToPlain } from 'class-transformer';
+import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { Types } from 'mongoose';
 import { Box, BoxProduct } from '../../../domain/entities/box/Box';
 import { BoxProductType } from '../../../domain/enums/BoxProductType';
@@ -9,43 +9,39 @@ import { MongoIdUtils } from '../../utils/MongoIdUtils';
 export class BoxMapper {
 	static fromDocument(doc: BoxDocument): Box {
 		const plain = doc.toObject();
-		const products = (plain.products || []).map(
-			(p: any) => new BoxProduct(p.productType as BoxProductType, p.productId, p.variantId),
+		const products = (doc.products ?? []).map(
+			(p) =>
+				plainToInstance(BoxProduct, {
+					...p,
+					productType: p.productType as BoxProductType,
+				}) as BoxProduct,
 		);
-		return new Box(
-			MongoIdUtils.objectIdToString(plain._id),
-			plain.title,
-			plain.subtitle,
-			plain.description,
-			plain.thumbnailImageId,
-			plain.mainImageId,
+
+		return plainToInstance(Box, {
+			...plain,
+			id: MongoIdUtils.objectIdToString(doc._id as Types.ObjectId),
 			products,
-			plain.price,
-			plain.sealIds || [],
-			plain.createdAt,
-			plain.updatedAt,
-		);
+		} as Box);
 	}
 
 	static fromCreateDto(dto: CreateBoxDto): Box {
+		const { ...boxData } = dto;
 		const id = new Types.ObjectId().toString();
 		const products = (dto.products || []).map(
-			(p) => new BoxProduct(p.productType as BoxProductType, p.productId, p.variantId),
+			(p) =>
+				plainToInstance(BoxProduct, {
+					...p,
+					productType: p.productType as BoxProductType,
+				}) as BoxProduct,
 		);
 		const now = new Date();
-		return new Box(
-			id,
-			dto.title,
-			dto.subtitle,
-			dto.description,
-			dto.thumbnailImageId,
-			dto.mainImageId,
+		return plainToInstance(Box, {
+			...boxData,
+			id: id,
 			products,
-			dto.price,
-			dto.sealIds || [],
-			now,
-			now,
-		);
+			createdAt: now,
+			updatedAt: now,
+		} as Box);
 	}
 
 	static toPersistence(box: Box | Partial<Box>) {

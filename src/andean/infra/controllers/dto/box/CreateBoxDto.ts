@@ -8,6 +8,7 @@ import {
 	IsOptional,
 	IsEnum,
 	Min,
+	Max,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -38,32 +39,51 @@ export class BoxProductDto {
 	@IsString()
 	@IsOptional()
 	variantId?: string;
+
+	@ApiPropertyOptional({
+		description:
+			'Precio de la línea en el contexto del box (si se omite, se usa el precio de catálogo)',
+		example: 24.99,
+	})
+	@IsNumber()
+	@Min(0)
+	@IsOptional()
+	boxPrice?: number;
+
+	@ApiPropertyOptional({
+		description: 'ID de MediaItem para imagen narrativa del producto en el box',
+		example: '6973d8ffddef7b59c2d4dcfd',
+	})
+	@IsString()
+	@IsOptional()
+	narrativeImgId?: string;
 }
 
 export class CreateBoxDto {
 	@ApiProperty({
-		description: 'Título del box',
+		description: 'Nombre del box',
 		example: 'Box Andino Premium',
 	})
 	@IsString()
 	@IsNotEmpty()
-	title!: string;
+	name!: string;
 
 	@ApiProperty({
-		description: 'Subtítulo del box',
+		description: 'Eslogan del box',
 		example: 'Lo mejor de los Andes en una caja',
 	})
 	@IsString()
 	@IsNotEmpty()
-	subtitle!: string;
+	slogan!: string;
 
 	@ApiProperty({
-		description: 'Descripción detallada del box',
-		example: 'Una selección curada de productos andinos tradicionales que incluye superfoods y textiles artesanales.',
+		description: 'Narrativa / descripción detallada del box',
+		example:
+			'Una selección curada de productos andinos tradicionales que incluye superfoods y textiles artesanales.',
 	})
 	@IsString()
 	@IsNotEmpty()
-	description!: string;
+	narrative!: string;
 
 	@ApiProperty({
 		description: 'ID de la imagen de miniatura del box',
@@ -82,7 +102,8 @@ export class CreateBoxDto {
 	mainImageId!: string;
 
 	@ApiProperty({
-		description: 'Lista de productos incluidos en el box. Cada producto debe tener productId (superfood) o variantId (textil)',
+		description:
+			'Lista de productos incluidos en el box. Cada producto debe tener productId (superfood) o variantId (textil)',
 		type: [BoxProductDto],
 	})
 	@IsArray()
@@ -99,6 +120,19 @@ export class CreateBoxDto {
 	@IsNumber()
 	@Min(0.01)
 	price!: number;
+
+	@ApiPropertyOptional({
+		description:
+			'Porcentaje de descuento explícito (0–100). Si se omite, el listado/detalle puede calcularlo a partir de precios.',
+		example: 25,
+		minimum: 0,
+		maximum: 100,
+	})
+	@IsNumber()
+	@Min(0)
+	@Max(100)
+	@IsOptional()
+	discountPercentage?: number;
 
 	@ApiPropertyOptional({
 		description: 'Lista de IDs de sellos asociados al box',
