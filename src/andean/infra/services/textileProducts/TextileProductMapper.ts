@@ -24,7 +24,11 @@ export class TextileProductMapper {
 			...plain.priceInventary,
 			currency: plain.priceInventary?.currency ?? ProductCurrency.USD,
 		};
-		const baseInfo = plainToInstance(BaseInfo, plain.baseInfo);
+		const baseInfoPlain = {
+			...plain.baseInfo,
+			information: plain.baseInfo?.information ?? '',
+		};
+		const baseInfo = plainToInstance(BaseInfo, baseInfoPlain);
 		const priceInventary = plainToInstance(PriceInventary, priceInventaryPlain);
 
 		let atribute: Atribute | undefined;

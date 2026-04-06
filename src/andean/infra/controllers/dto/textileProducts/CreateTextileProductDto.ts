@@ -10,8 +10,10 @@ import {
 	Min,
 	IsBoolean,
 	IsObject,
+	MinLength,
+	MaxLength,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { OwnerType } from 'src/andean/domain/enums/OwnerType';
 import { Gender } from 'src/andean/domain/enums/Gender';
@@ -92,13 +94,21 @@ export class BaseInfoDto {
 	@IsNotEmpty()
 	ownerId!: string;
 
-	@ApiPropertyOptional({
-		description: 'Información adicional del producto',
-		example: 'Cuidados especiales: lavar a mano con agua fría',
+	@ApiProperty({
+		description:
+			'Frase corta e inspiracional visible en la ficha del producto',
+		example: 'Tejido con historia, hecho para durar.',
+		minLength: 1,
+		maxLength: 2000,
 	})
+	@Transform(({ value }) =>
+		typeof value === 'string' ? value.trim() : value,
+	)
 	@IsString()
-	@IsOptional()
-	information?: string;
+	@IsNotEmpty()
+	@MinLength(1)
+	@MaxLength(2000)
+	information!: string;
 }
 
 export class PriceInventaryDto {

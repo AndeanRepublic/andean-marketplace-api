@@ -21,6 +21,8 @@ import { TextileOptionName } from 'src/andean/domain/enums/TextileOptionName';
 import { CommunityRepository } from '../../datastore/community/community.repo';
 import { ColorOptionAlternativeRepository } from '../../datastore/textileProducts/ColorOptionAlternative.repo';
 import { SizeOptionAlternativeRepository } from '../../datastore/textileProducts/SizeOptionAlternative.repo';
+import { MediaItemRepository } from '../../datastore/MediaItem.repo';
+import { validateTextileProductBaseInfoMedia } from './validateTextileProductBaseInfoMedia';
 
 @Injectable()
 export class CreateTextileProductUseCase {
@@ -49,6 +51,8 @@ export class CreateTextileProductUseCase {
 		private readonly colorOptionAlternativeRepository: ColorOptionAlternativeRepository,
 		@Inject(SizeOptionAlternativeRepository)
 		private readonly sizeOptionAlternativeRepository: SizeOptionAlternativeRepository,
+		@Inject(MediaItemRepository)
+		private readonly mediaItemRepository: MediaItemRepository,
 	) {}
 
 	async handle(dto: CreateTextileProductDto): Promise<TextileProduct> {
@@ -76,6 +80,11 @@ export class CreateTextileProductUseCase {
 				throw new NotFoundException('Community not found');
 			}
 		}
+
+		await validateTextileProductBaseInfoMedia(
+			this.mediaItemRepository,
+			dto.baseInfo.mediaIds,
+		);
 
 		// Validate detailTraceability if it exists
 		if (dto.detailTraceability) {

@@ -364,6 +364,16 @@ describe('TextileProductController (e2e)', () => {
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 
+		it('should return 400 when baseInfo.information is empty', () => {
+			return request(app.getHttpServer())
+				.post('/textile-products')
+				.send({
+					...createDto,
+					baseInfo: { ...createDto.baseInfo, information: '   ' },
+				})
+				.expect(HttpStatus.BAD_REQUEST);
+		});
+
 		it('should return 400 when basePrice is less than 0', () => {
 			return request(app.getHttpServer())
 				.post('/textile-products')
