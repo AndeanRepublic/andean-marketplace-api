@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ExperienceStatus } from '../../../domain/enums/ExperienceStatus';
 
 export class ExperienceMainImageResponse {
 	@ApiProperty({ description: 'Nombre del archivo de imagen' })
@@ -26,6 +27,9 @@ export class ExperienceListItem {
 
 	@ApiProperty({ description: 'Número de días' })
 	days!: number;
+
+	@ApiProperty({ description: 'Estado de la experiencia', enum: ExperienceStatus })
+	status!: ExperienceStatus;
 
 	@ApiProperty({ description: 'Imagen principal', type: ExperienceMainImageResponse })
 	mainImage!: ExperienceMainImageResponse;

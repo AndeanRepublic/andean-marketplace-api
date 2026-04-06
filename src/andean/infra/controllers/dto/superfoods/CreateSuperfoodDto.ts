@@ -58,7 +58,7 @@ export class CreateSuperfoodPriceInventoryDto {
 export class CreateSuperfoodDto {
 	@ApiProperty({
 		enum: SuperfoodProductStatus,
-		default: SuperfoodProductStatus.PENDING,
+		default: SuperfoodProductStatus.HIDDEN,
 	})
 	@IsEnum(SuperfoodProductStatus)
 	@IsNotEmpty()

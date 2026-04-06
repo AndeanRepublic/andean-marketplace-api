@@ -3,6 +3,7 @@ import {
 	Controller,
 	DefaultValuePipe,
 	Get,
+	Patch,
 	HttpCode,
 	HttpStatus,
 	Param,
@@ -38,6 +39,8 @@ import {
 	BoxCatalogTextilesResponseDto,
 	BoxCatalogVariantsResponseDto,
 } from '../../../app/models/box/catalog/BoxCatalogResponses';
+import { UpdateBoxStatusUseCase } from '../../../app/use_cases/boxes/UpdateBoxStatusUseCase';
+import { UpdateEntityStatusDto } from '../dto/UpdateEntityStatusDto';
 
 @Controller('boxes')
 export class BoxController {
@@ -48,6 +51,7 @@ export class BoxController {
 		private readonly getBoxCatalogSuperfoodsUseCase: GetBoxCatalogSuperfoodsUseCase,
 		private readonly getBoxCatalogTextileProductsUseCase: GetBoxCatalogTextileProductsUseCase,
 		private readonly getBoxCatalogTextileVariantsUseCase: GetBoxCatalogTextileVariantsUseCase,
+		private readonly updateBoxStatusUseCase: UpdateBoxStatusUseCase,
 	) {}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
@@ -104,6 +108,16 @@ export class BoxController {
 		@Query('per_page', new DefaultValuePipe(10), ParseIntPipe) perPage: number,
 	): Promise<BoxListPaginatedResponse> {
 		return this.getAllBoxesUseCase.handle(page, perPage);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
+	@Patch(':boxId/status')
+	async updateStatus(
+		@Param('boxId') boxId: string,
+		@Body() dto: UpdateEntityStatusDto,
+	): Promise<Box> {
+		return this.updateBoxStatusUseCase.handle(boxId, dto.status);
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)

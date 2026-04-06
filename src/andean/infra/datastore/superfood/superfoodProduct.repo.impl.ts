@@ -12,6 +12,7 @@ import { MongoIdUtils } from '../../utils/MongoIdUtils';
 import { ProductSortBy } from '../../../domain/enums/ProductSortBy';
 import { SuperfoodProductListAggregateRow } from '../../../app/models/superfoods/SuperfoodProductListItem';
 import { BoxCatalogSuperfoodItem } from '../../../app/datastore/superfoods/SuperfoodProduct.repo';
+import { SuperfoodProductStatus } from '../../../domain/enums/SuperfoodProductStatus';
 
 @Injectable()
 export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
@@ -85,6 +86,17 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 				},
 				{ new: true },
 			)
+			.exec();
+		return updated ? SuperfoodProductMapper.fromDocument(updated) : null;
+	}
+
+	async updateStatus(
+		id: string,
+		status: SuperfoodProductStatus,
+	): Promise<SuperfoodProduct | null> {
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		const updated = await this.model
+			.findByIdAndUpdate(objectId, { $set: { status, updatedAt: new Date() } }, { new: true })
 			.exec();
 		return updated ? SuperfoodProductMapper.fromDocument(updated) : null;
 	}
@@ -235,6 +247,7 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 				},
 				price: '$priceInventory.basePrice',
 				totalStock: '$priceInventory.totalStock',
+				status: '$status',
 				mainImgId: {
 					$ifNull: ['$baseInfo.productMedia.mainImgId', ''],
 				},

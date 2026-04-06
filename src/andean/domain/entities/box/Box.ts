@@ -1,4 +1,5 @@
 import { BoxProductType } from '../../enums/BoxProductType';
+import { AdminEntityStatus } from '../../enums/AdminEntityStatus';
 
 export class BoxProduct {
 	constructor(
@@ -19,6 +20,7 @@ export class Box {
 		public thumbnailImageId: string,
 		public mainImageId: string,
 		public products: BoxProduct[],
+		public status: AdminEntityStatus,
 		public price: number,
 		public discountPercentage: number | undefined,
 		public sealIds: string[],

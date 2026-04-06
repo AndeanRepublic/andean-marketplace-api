@@ -3,6 +3,7 @@ import {
 	Controller,
 	Post,
 	Get,
+	Patch,
 	Param,
 	Put,
 	Delete,
@@ -41,6 +42,8 @@ import { TextileProductListItem } from 'src/andean/app/models/textile/TextilePro
 import { TextileProductDetailResponse } from 'src/andean/app/models/textile/TextileProductDetailResponse';
 import { GetByIdTextileProductDetailUseCase } from 'src/andean/app/use_cases/textileProducts/GetByIdTextileProductDetailUseCase';
 import { ProductSortBy } from 'src/andean/domain/enums/ProductSortBy';
+import { UpdateTextileProductStatusUseCase } from 'src/andean/app/use_cases/textileProducts/UpdateTextileProductStatusUseCase';
+import { UpdateTextileProductStatusDto } from '../dto/textileProducts/UpdateTextileProductStatusDto';
 
 @ApiTags('Textile Products')
 @Controller('textile-products')
@@ -52,6 +55,7 @@ export class TextileProductController {
 		private readonly getTextileProductForSellerUseCase: GetTextileProductForSellerUseCase,
 		private readonly deleteTextileProductUseCase: DeleteTextileProductUseCase,
 		private readonly getByIdTextileProductDetailUseCase: GetByIdTextileProductDetailUseCase,
+		private readonly updateTextileProductStatusUseCase: UpdateTextileProductStatusUseCase,
 	) {}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
@@ -292,6 +296,22 @@ export class TextileProductController {
 	): Promise<TextileProduct> {
 		return this.getTextileProductForSellerUseCase.handle(
 			id,
+			requestingUser.userId,
+			requestingUser.roles,
+		);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Patch('/:id/status')
+	async updateTextileProductStatus(
+		@Param('id') id: string,
+		@Body() body: UpdateTextileProductStatusDto,
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
+	): Promise<TextileProduct> {
+		return this.updateTextileProductStatusUseCase.handle(
+			id,
+			body.status,
 			requestingUser.userId,
 			requestingUser.roles,
 		);

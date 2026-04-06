@@ -1,6 +1,7 @@
 import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
 import { ProductSortBy } from '../../../domain/enums/ProductSortBy';
 import { SuperfoodProductListAggregateRow } from '../../models/superfoods/SuperfoodProductListItem';
+import { SuperfoodProductStatus } from '../../../domain/enums/SuperfoodProductStatus';
 
 export interface SuperfoodProductFilters {
 	minPrice?: number;
@@ -45,6 +46,10 @@ export abstract class SuperfoodProductRepository {
 	abstract reduceStock(
 		id: string,
 		quantity: number,
+	): Promise<SuperfoodProduct | null>;
+	abstract updateStatus(
+		id: string,
+		status: SuperfoodProductStatus,
 	): Promise<SuperfoodProduct | null>;
 
 	/** Listado completo (sin paginar) para el formulario admin de box. */

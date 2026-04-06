@@ -15,6 +15,7 @@ import { GetBoxDetailUseCase } from './app/use_cases/boxes/GetBoxDetailUseCase';
 import { GetBoxCatalogSuperfoodsUseCase } from './app/use_cases/boxes/GetBoxCatalogSuperfoodsUseCase';
 import { GetBoxCatalogTextileProductsUseCase } from './app/use_cases/boxes/GetBoxCatalogTextileProductsUseCase';
 import { GetBoxCatalogTextileVariantsUseCase } from './app/use_cases/boxes/GetBoxCatalogTextileVariantsUseCase';
+import { UpdateBoxStatusUseCase } from './app/use_cases/boxes/UpdateBoxStatusUseCase';
 
 // Services
 import { BoxProductResolutionService } from './infra/services/box/BoxProductResolutionService';
@@ -58,6 +59,7 @@ import { CommunityModule } from './community.module';
 		GetBoxCatalogSuperfoodsUseCase,
 		GetBoxCatalogTextileProductsUseCase,
 		GetBoxCatalogTextileVariantsUseCase,
+		UpdateBoxStatusUseCase,
 	],
 	exports: [BoxRepository, MongooseModule],
 })

@@ -5,6 +5,7 @@ import { BoxProductType } from '../../../domain/enums/BoxProductType';
 import { BoxDocument } from '../../persistence/box/box.schema';
 import { CreateBoxDto } from '../../controllers/dto/box/CreateBoxDto';
 import { MongoIdUtils } from '../../utils/MongoIdUtils';
+import { AdminEntityStatus } from '../../../domain/enums/AdminEntityStatus';
 
 export class BoxMapper {
 	static fromDocument(doc: BoxDocument): Box {
@@ -20,6 +21,10 @@ export class BoxMapper {
 		return plainToInstance(Box, {
 			...plain,
 			id: MongoIdUtils.objectIdToString(doc._id as Types.ObjectId),
+			status:
+				plain.status === AdminEntityStatus.PUBLISHED
+					? AdminEntityStatus.PUBLISHED
+					: AdminEntityStatus.HIDDEN,
 			products,
 		} as Box);
 	}
@@ -39,6 +44,7 @@ export class BoxMapper {
 			...boxData,
 			id: id,
 			products,
+			status: AdminEntityStatus.HIDDEN,
 			createdAt: now,
 			updatedAt: now,
 		} as Box);

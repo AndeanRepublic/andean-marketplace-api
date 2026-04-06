@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BoxImageResponse } from './BoxImageResponse';
 import { ProductType } from '../../../domain/enums/ProductType';
+import { AdminEntityStatus } from '../../../domain/enums/AdminEntityStatus';
 
 export type BoxProductType = ProductType.SUPERFOOD | ProductType.TEXTILE;
 
@@ -41,6 +42,9 @@ export class BoxListItemResponse {
 
 	@ApiProperty({ description: 'Eslogan del box', example: 'Lo mejor de los Andes' })
 	slogan!: string;
+
+	@ApiProperty({ description: 'Estado del box', enum: AdminEntityStatus })
+	status!: AdminEntityStatus;
 
 	@ApiProperty({ description: 'Conteo de productos por tipo', type: BoxItemCountResponse })
 	itemCount!: BoxItemCountResponse;

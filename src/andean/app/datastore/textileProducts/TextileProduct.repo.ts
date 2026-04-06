@@ -2,6 +2,7 @@ import { TextileProduct } from '../../../domain/entities/textileProducts/Textile
 import { ProductSortBy } from '../../../domain/enums/ProductSortBy';
 import { FilterCount } from '../../models/shared/PaginatedProductsResponse';
 import { TextileProductListItem } from '../../models/textile/TextileProductListItemResponse';
+import { TextileProductStatus } from '../../../domain/enums/TextileProductStatus';
 
 export interface ProductFilters {
 	color?: string;
@@ -54,5 +55,9 @@ export abstract class TextileProductRepository {
 	abstract adjustTotalStock(
 		id: string,
 		delta: number,
+	): Promise<TextileProduct | null>;
+	abstract updateStatus(
+		id: string,
+		status: TextileProductStatus,
 	): Promise<TextileProduct | null>;
 }

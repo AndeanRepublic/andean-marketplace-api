@@ -1,5 +1,6 @@
 import { Document, Schema } from 'mongoose';
 import { BoxProductType } from '../../../domain/enums/BoxProductType';
+import { AdminEntityStatus } from '../../../domain/enums/AdminEntityStatus';
 
 const BoxProductSchema = new Schema(
 	{
@@ -23,6 +24,11 @@ export const BoxSchema = new Schema({
 	thumbnailImageId: { type: String, required: true },
 	mainImageId: { type: String, required: true },
 	products: { type: [BoxProductSchema], required: true },
+	status: {
+		type: String,
+		enum: Object.values(AdminEntityStatus),
+		default: AdminEntityStatus.HIDDEN,
+	},
 	price: { type: Number, required: true },
 	discountPercentage: { type: Number, required: false },
 	sealIds: { type: [String], default: [] },
@@ -45,6 +51,7 @@ export interface BoxDocument extends Document {
 		boxPrice?: number;
 		narrativeImgId?: string;
 	}[];
+	status: AdminEntityStatus;
 	price: number;
 	discountPercentage?: number;
 	sealIds: string[];

@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { TextileProductStatus } from '../../../domain/enums/TextileProductStatus';
 
 export class TextileProductColorInfo {
 	@ApiProperty({ description: 'Nombre del color', example: 'Rojo Andino' })
@@ -79,6 +80,9 @@ export class TextileProductListItem {
 
 	@ApiProperty({ description: 'Precio del producto', example: 150.0 })
 	price!: number;
+
+	@ApiProperty({ description: 'Estado del producto', enum: TextileProductStatus })
+	status!: TextileProductStatus;
 
 	@ApiProperty({
 		description: 'Stock total disponible (suma de variantes)',

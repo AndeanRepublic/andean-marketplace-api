@@ -144,6 +144,7 @@ export class GetAllBoxesUseCase {
 				id: box.id,
 				name: box.name,
 				slogan: box.slogan,
+				status: box.status,
 				itemCount: { textiles: textileCount, superfoods: superfoodCount },
 				discartedPrice,
 				price: box.price,
