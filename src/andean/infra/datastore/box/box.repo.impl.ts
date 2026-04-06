@@ -43,6 +43,19 @@ export class BoxRepoImpl extends BoxRepository {
 		return { data, total };
 	}
 
+	async update(box: Box): Promise<Box> {
+		const objectId = MongoIdUtils.stringToObjectId(box.id);
+		const persistenceData = BoxMapper.toPersistence(box);
+		persistenceData.updatedAt = box.updatedAt;
+		const updatedDoc = await this.boxModel
+			.findByIdAndUpdate(objectId, { $set: persistenceData }, { new: true })
+			.exec();
+		if (!updatedDoc) {
+			throw new Error('Box not found for update');
+		}
+		return BoxMapper.fromDocument(updatedDoc);
+	}
+
 	async delete(id: string): Promise<void> {
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		await this.boxModel.findByIdAndDelete(objectId).exec();
