@@ -1,5 +1,5 @@
-import { IsNotEmpty, IsString, IsOptional, IsMongoId } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsNotEmpty, IsString, IsMongoId, Matches } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateSuperfoodBenefitDto {
 	@ApiProperty({
@@ -23,21 +23,23 @@ export class CreateSuperfoodBenefitDto {
 	@IsNotEmpty()
 	description!: string;
 
-	@ApiPropertyOptional({
+	@ApiProperty({
 		description: 'Color hexadecimal asociado al beneficio',
 		example: '#22c55e',
 	})
 	@IsString()
-	@IsOptional()
-	hexCodeColor?: string;
+	@IsNotEmpty()
+	@Matches(/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/, {
+		message: 'hexCodeColor must be a valid hex color (#RGB or #RRGGBB)',
+	})
+	hexCodeColor!: string;
 
 	@ApiProperty({
 		description: 'ID del MediaItem que representa el icono del beneficio',
-		example: '123e4567-e89b-12d3-a456-426614174000',
-		required: false,
+		example: '507f1f77bcf86cd799439011',
 	})
 	@IsString()
+	@IsNotEmpty()
 	@IsMongoId()
-	@IsOptional()
-	iconId?: string;
+	iconId!: string;
 }
