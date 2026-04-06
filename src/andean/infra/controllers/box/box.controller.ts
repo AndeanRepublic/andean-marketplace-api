@@ -33,6 +33,8 @@ import { GetBoxDetailUseCase } from '../../../app/use_cases/boxes/GetBoxDetailUs
 import { GetBoxCatalogSuperfoodsUseCase } from '../../../app/use_cases/boxes/GetBoxCatalogSuperfoodsUseCase';
 import { GetBoxCatalogTextileProductsUseCase } from '../../../app/use_cases/boxes/GetBoxCatalogTextileProductsUseCase';
 import { GetBoxCatalogTextileVariantsUseCase } from '../../../app/use_cases/boxes/GetBoxCatalogTextileVariantsUseCase';
+import { GetBoxCatalogTextileProductMediaUseCase } from '../../../app/use_cases/boxes/GetBoxCatalogTextileProductMediaUseCase';
+import { GetBoxCatalogSuperfoodProductMediaUseCase } from '../../../app/use_cases/boxes/GetBoxCatalogSuperfoodProductMediaUseCase';
 import { Box } from '../../../domain/entities/box/Box';
 import { CreateBoxDto } from '../dto/box/CreateBoxDto';
 import { BoxListPaginatedResponse } from '../../../app/models/box/BoxListResponse';
@@ -41,6 +43,7 @@ import {
 	BoxCatalogSuperfoodsResponseDto,
 	BoxCatalogTextilesResponseDto,
 	BoxCatalogVariantsResponseDto,
+	BoxCatalogMediaResponseDto,
 } from '../../../app/models/box/catalog/BoxCatalogResponses';
 import { UpdateBoxStatusUseCase } from '../../../app/use_cases/boxes/UpdateBoxStatusUseCase';
 import { UpdateEntityStatusDto } from '../dto/UpdateEntityStatusDto';
@@ -57,6 +60,8 @@ export class BoxController {
 		private readonly getBoxCatalogSuperfoodsUseCase: GetBoxCatalogSuperfoodsUseCase,
 		private readonly getBoxCatalogTextileProductsUseCase: GetBoxCatalogTextileProductsUseCase,
 		private readonly getBoxCatalogTextileVariantsUseCase: GetBoxCatalogTextileVariantsUseCase,
+		private readonly getBoxCatalogTextileProductMediaUseCase: GetBoxCatalogTextileProductMediaUseCase,
+		private readonly getBoxCatalogSuperfoodProductMediaUseCase: GetBoxCatalogSuperfoodProductMediaUseCase,
 		private readonly updateBoxStatusUseCase: UpdateBoxStatusUseCase,
 		private readonly updateBoxUseCase: UpdateBoxUseCase,
 		private readonly deleteBoxUseCase: DeleteBoxUseCase,
@@ -144,6 +149,21 @@ export class BoxController {
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles(AccountRole.ADMIN)
+	@Get('catalog/superfoods/:productId/media')
+	@ApiOperation({
+		summary: 'Imágenes del superfood para narrativeImgId en box (admin)',
+	})
+	@ApiParam({ name: 'productId', description: 'ID del producto superfood' })
+	@ApiResponse({ status: 200, type: BoxCatalogMediaResponseDto })
+	@ApiResponse({ status: 404, description: 'Producto no encontrado' })
+	async getCatalogSuperfoodMedia(
+		@Param('productId') productId: string,
+	): Promise<BoxCatalogMediaResponseDto> {
+		return this.getBoxCatalogSuperfoodProductMediaUseCase.handle(productId);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
 	@Get('catalog/textile-products')
 	@ApiOperation({
 		summary: 'Catálogo textiles para formulario de box (admin)',
@@ -167,6 +187,22 @@ export class BoxController {
 		@Param('productId') productId: string,
 	): Promise<BoxCatalogVariantsResponseDto> {
 		return this.getBoxCatalogTextileVariantsUseCase.handle(productId);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
+	@Get('catalog/textile-products/:productId/media')
+	@ApiOperation({
+		summary:
+			'Imágenes del producto textil (baseInfo.mediaIds) para narrativeImgId en box (admin)',
+	})
+	@ApiParam({ name: 'productId', description: 'ID del producto textil' })
+	@ApiResponse({ status: 200, type: BoxCatalogMediaResponseDto })
+	@ApiResponse({ status: 404, description: 'Producto no encontrado' })
+	async getCatalogTextileProductMedia(
+		@Param('productId') productId: string,
+	): Promise<BoxCatalogMediaResponseDto> {
+		return this.getBoxCatalogTextileProductMediaUseCase.handle(productId);
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)

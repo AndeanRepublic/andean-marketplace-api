@@ -15,6 +15,8 @@ import { GetBoxDetailUseCase } from './app/use_cases/boxes/GetBoxDetailUseCase';
 import { GetBoxCatalogSuperfoodsUseCase } from './app/use_cases/boxes/GetBoxCatalogSuperfoodsUseCase';
 import { GetBoxCatalogTextileProductsUseCase } from './app/use_cases/boxes/GetBoxCatalogTextileProductsUseCase';
 import { GetBoxCatalogTextileVariantsUseCase } from './app/use_cases/boxes/GetBoxCatalogTextileVariantsUseCase';
+import { GetBoxCatalogTextileProductMediaUseCase } from './app/use_cases/boxes/GetBoxCatalogTextileProductMediaUseCase';
+import { GetBoxCatalogSuperfoodProductMediaUseCase } from './app/use_cases/boxes/GetBoxCatalogSuperfoodProductMediaUseCase';
 import { UpdateBoxStatusUseCase } from './app/use_cases/boxes/UpdateBoxStatusUseCase';
 import { UpdateBoxUseCase } from './app/use_cases/boxes/UpdateBoxUseCase';
 import { DeleteBoxUseCase } from './app/use_cases/boxes/DeleteBoxUseCase';
@@ -62,6 +64,8 @@ import { CommunityModule } from './community.module';
 		GetBoxCatalogSuperfoodsUseCase,
 		GetBoxCatalogTextileProductsUseCase,
 		GetBoxCatalogTextileVariantsUseCase,
+		GetBoxCatalogTextileProductMediaUseCase,
+		GetBoxCatalogSuperfoodProductMediaUseCase,
 		UpdateBoxStatusUseCase,
 		UpdateBoxUseCase,
 		DeleteBoxUseCase,

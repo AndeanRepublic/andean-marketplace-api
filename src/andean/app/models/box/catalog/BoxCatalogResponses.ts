@@ -74,3 +74,16 @@ export class BoxCatalogVariantsResponseDto {
 	@ApiProperty({ type: [BoxCatalogVariantItemDto] })
 	items!: BoxCatalogVariantItemDto[];
 }
+
+export class BoxCatalogMediaItemDto {
+	@ApiProperty()
+	id!: string;
+
+	@ApiProperty({ description: 'URL resuelta del MediaItem' })
+	url!: string;
+}
+
+export class BoxCatalogMediaResponseDto {
+	@ApiProperty({ type: [BoxCatalogMediaItemDto] })
+	items!: BoxCatalogMediaItemDto[];
+}
