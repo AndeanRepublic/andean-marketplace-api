@@ -19,7 +19,7 @@
 				"Alto en proteínas"
 			],
 			"nutritional_features": [],
-			"benefits": [],
+			"benefits": ["507f1f77bcf86cd799439020"],
 			"ownerType": "SHOP",
 			"ownerId": "shop-123"
 		},
@@ -29,6 +29,15 @@
 			"currency": "PEN",
 			"SKU": "QUINUA-PREM-001"
 		},
+		"nutritionalContent": [
+			{
+				"id": "nutri-row-001",
+				"nutrient": "Proteína",
+				"quantity": "14g",
+				"strikingFeature": "—",
+				"selected": false
+			}
+		],
 		"colorId": "507f1f77bcf86cd799439011",
 		"detailSourceProductId": "detail-source-123",
 		"categoryId": "category-quinua-001",
@@ -54,7 +63,7 @@
 				"Alto en proteínas"
 			],
 			"nutritional_features": [],
-			"benefits": [],
+			"benefits": ["507f1f77bcf86cd799439020"],
 			"ownerType": "SHOP",
 			"ownerId": "shop-123"
 		},
@@ -64,6 +73,14 @@
 			"currency": "PEN",
 			"SKU": "QUINUA-PREM-001"
 		},
+		"nutritionalContent": [
+			{
+				"nutrient": "Proteína",
+				"quantity": "14g",
+				"strikingFeature": "—",
+				"selected": false
+			}
+		],
 		"colorId": "507f1f77bcf86cd799439011",
 		"detailSourceProduct": {
 			"name": "Origen Andino Premium",
@@ -95,7 +112,7 @@
 				"Alto en proteínas"
 			],
 			"nutritional_features": [],
-			"benefits": [],
+			"benefits": ["507f1f77bcf86cd799439020"],
 			"ownerType": "SHOP",
 			"ownerId": "shop-123"
 		},
@@ -105,6 +122,14 @@
 			"currency": "USD",
 			"SKU": "QUINUA-PREM-001"
 		},
+		"nutritionalContent": [
+			{
+				"nutrient": "Proteína",
+				"quantity": "15g",
+				"strikingFeature": "—",
+				"selected": false
+			}
+		],
 		"colorId": "507f191e810c19729de860ea",
 		"detailSourceProduct": {
 			"name": "Origen Andino Premium Actualizado",

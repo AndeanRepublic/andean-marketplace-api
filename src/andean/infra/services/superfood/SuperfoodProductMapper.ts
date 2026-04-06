@@ -130,7 +130,7 @@ export class SuperfoodProductMapper {
 			detailProduct = plainToOne(SuperfoodDetailProduct, dto.detailProduct);
 		}
 
-		const nutritionalContent = dto.nutritionalContent?.map((item) =>
+		const nutritionalContent = dto.nutritionalContent.map((item) =>
 			plainToOne(SuperfoodNutritionalItem, {
 				...item,
 				id: crypto.randomUUID(),
@@ -206,7 +206,7 @@ export class SuperfoodProductMapper {
 			detailProduct = plainToOne(SuperfoodDetailProduct, dto.detailProduct);
 		}
 
-		const nutritionalContent = dto.nutritionalContent?.map((item) =>
+		const nutritionalContent = dto.nutritionalContent.map((item) =>
 			plainToOne(SuperfoodNutritionalItem, {
 				...item,
 				id: crypto.randomUUID(),

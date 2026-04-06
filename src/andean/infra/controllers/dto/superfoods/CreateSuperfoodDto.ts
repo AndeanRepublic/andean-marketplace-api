@@ -1,5 +1,6 @@
 import {
 	IsArray,
+	ArrayMinSize,
 	IsEnum,
 	IsNotEmpty,
 	IsNumber,
@@ -9,7 +10,6 @@ import {
 	Min,
 	IsBoolean,
 	IsMongoId,
-	ValidateIf,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
@@ -74,15 +74,13 @@ export class CreateSuperfoodDto {
 	@Type(() => CreateSuperfoodPriceInventoryDto)
 	priceInventory!: CreateSuperfoodPriceInventoryDto;
 
-	@ApiPropertyOptional({
-		description:
-			'ID del color en catálogo (`GET /superfood-colors`). Opcional.',
+	@ApiProperty({
+		description: 'ID del color en catálogo (`GET /superfood-colors`)',
 		example: '507f1f77bcf86cd799439011',
 	})
-	@IsOptional()
-	@ValidateIf((_o, v) => typeof v === 'string' && v.trim().length > 0)
 	@IsMongoId({ message: 'colorId must be a valid catalog color ObjectId' })
-	colorId?: string;
+	@IsNotEmpty()
+	colorId!: string;
 
 	@ApiPropertyOptional({
 		description:
@@ -94,10 +92,10 @@ export class CreateSuperfoodDto {
 	@IsOptional()
 	detailSourceProduct?: CreateDetailSourceProductDto;
 
-	@ApiProperty({ description: 'ID de categoría de superfood', required: false })
+	@ApiProperty({ description: 'ID de categoría de superfood' })
 	@IsString()
-	@IsOptional()
-	categoryId?: string;
+	@IsNotEmpty()
+	categoryId!: string;
 
 	@ApiProperty({ type: CreateSuperfoodDetailDto, required: false })
 	@ValidateNested()
@@ -105,12 +103,16 @@ export class CreateSuperfoodDto {
 	@IsOptional()
 	detailProduct?: CreateSuperfoodDetailDto;
 
-	@ApiProperty({ type: [CreateSuperfoodNutritionalDto], required: false })
+	@ApiProperty({
+		type: [CreateSuperfoodNutritionalDto],
+		description: 'Tabla de contenido nutricional (mínimo una fila)',
+		minItems: 1,
+	})
 	@IsArray()
-	@IsOptional()
+	@ArrayMinSize(1)
 	@ValidateNested({ each: true })
 	@Type(() => CreateSuperfoodNutritionalDto)
-	nutritionalContent?: CreateSuperfoodNutritionalDto[];
+	nutritionalContent!: CreateSuperfoodNutritionalDto[];
 
 	@ApiProperty({ type: [CreateSuperfoodOptionsDto], required: false })
 	@IsArray()

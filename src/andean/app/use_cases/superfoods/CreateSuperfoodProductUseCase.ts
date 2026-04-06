@@ -85,16 +85,14 @@ export class CreateSuperfoodProductUseCase {
 	}
 
 	async handle(dto: CreateSuperfoodDto): Promise<SuperfoodProduct> {
-		// 1. Validar que la categoría existe solo si se proporciona
-		if (dto.categoryId) {
-			const categoryFound = await this.categoryRepository.getCategoryById(
-				dto.categoryId,
+		// 1. Validar que la categoría existe
+		const categoryFound = await this.categoryRepository.getCategoryById(
+			dto.categoryId,
+		);
+		if (!categoryFound) {
+			throw new NotFoundException(
+				`Categoría con ID ${dto.categoryId} no encontrada`,
 			);
-			if (!categoryFound) {
-				throw new NotFoundException(
-					`Categoría con ID ${dto.categoryId} no encontrada`,
-				);
-			}
 		}
 
 		// 2. Validar que el owner existe (shop o community)
@@ -117,14 +115,12 @@ export class CreateSuperfoodProductUseCase {
 		}
 
 		// 3. Color de catálogo (referencia por ID)
-		if (dto.colorId?.trim()) {
-			const colorId = dto.colorId.trim();
-			const color = await this.superfoodColorRepository.getById(colorId);
-			if (!color) {
-				throw new BadRequestException(
-					`Superfood color with id ${colorId} not found`,
-				);
-			}
+		const colorId = dto.colorId.trim();
+		const color = await this.superfoodColorRepository.getById(colorId);
+		if (!color) {
+			throw new BadRequestException(
+				`Superfood color with id ${colorId} not found`,
+			);
 		}
 
 		await this.validateDetailTraceability(dto.detailTraceability);

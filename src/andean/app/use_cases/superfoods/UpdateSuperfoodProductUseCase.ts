@@ -119,26 +119,22 @@ export class UpdateSuperfoodProductUseCase {
 			}
 		}
 
-		// 2. Validar categoryId solo si existe en el DTO
-		if (dto.categoryId) {
-			const categoryFound = await this.categoryRepository.getCategoryById(
-				dto.categoryId,
+		// 2. Validar categoría y color de catálogo
+		const categoryFound = await this.categoryRepository.getCategoryById(
+			dto.categoryId,
+		);
+		if (!categoryFound) {
+			throw new NotFoundException(
+				`Category with id ${dto.categoryId} not found`,
 			);
-			if (!categoryFound) {
-				throw new NotFoundException(
-					`Category with id ${dto.categoryId} not found`,
-				);
-			}
 		}
 
-		if (dto.colorId?.trim()) {
-			const colorId = dto.colorId.trim();
-			const color = await this.superfoodColorRepository.getById(colorId);
-			if (!color) {
-				throw new BadRequestException(
-					`Superfood color with id ${colorId} not found`,
-				);
-			}
+		const colorId = dto.colorId.trim();
+		const color = await this.superfoodColorRepository.getById(colorId);
+		if (!color) {
+			throw new BadRequestException(
+				`Superfood color with id ${colorId} not found`,
+			);
 		}
 
 		await this.validateDetailTraceability(dto.detailTraceability);
