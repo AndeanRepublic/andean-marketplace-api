@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
 	TextileProductRepository,
 	ProductFilters,
+	BoxCatalogTextileItem,
 } from '../../../app/datastore/textileProducts/TextileProduct.repo';
 import { Model, FilterQuery, PipelineStage, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -777,6 +778,36 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 			products,
 			total: countResult,
 		};
+	}
+
+	async getBoxCatalogAll(): Promise<Array<BoxCatalogTextileItem>> {
+		const match: FilterQuery<TextileProductDocument> = {
+			'priceInventary.totalStock': { $gt: 0 },
+		};
+
+		const pipeline: PipelineStage[] = [
+			{ $match: match },
+			{ $sort: { createdAt: -1 } },
+			...this.buildCategoryAndSellerLookups(),
+			{
+				$project: {
+					_id: 0,
+					id: { $toString: '$_id' },
+					title: '$baseInfo.title',
+					categoryName: {
+						$ifNull: [{ $arrayElemAt: ['$category.name', 0] }, ''],
+					},
+					imgId: {
+						$ifNull: [{ $arrayElemAt: ['$baseInfo.mediaIds', 0] }, ''],
+					},
+					catalogPrice: '$priceInventary.basePrice',
+					totalStock: { $ifNull: ['$priceInventary.totalStock', 0] },
+				},
+			},
+		];
+
+		const rows = await this.textileProductModel.aggregate(pipeline).exec();
+		return rows as Array<BoxCatalogTextileItem>;
 	}
 
 	async getByIds(ids: string[]): Promise<TextileProduct[]> {

@@ -12,6 +12,15 @@ export interface SuperfoodProductFilters {
 	sortBy?: ProductSortBy;
 }
 
+export interface BoxCatalogSuperfoodItem {
+	id: string;
+	title: string;
+	categoryName: string;
+	imgId: string;
+	catalogPrice: number;
+	totalStock: number;
+}
+
 export abstract class SuperfoodProductRepository {
 	abstract getSuperfoodProductById(
 		id: string,
@@ -37,4 +46,7 @@ export abstract class SuperfoodProductRepository {
 		id: string,
 		quantity: number,
 	): Promise<SuperfoodProduct | null>;
+
+	/** Listado completo (sin paginar) para el formulario admin de box. */
+	abstract getBoxCatalogAll(): Promise<Array<BoxCatalogSuperfoodItem>>;
 }

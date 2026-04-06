@@ -17,6 +17,15 @@ export interface ProductFilters {
 	includeZeroStock?: boolean;
 }
 
+export interface BoxCatalogTextileItem {
+	id: string;
+	title: string;
+	categoryName: string;
+	imgId: string;
+	catalogPrice: number;
+	totalStock: number;
+}
+
 export abstract class TextileProductRepository {
 	abstract getAllTextileProducts(): Promise<TextileProduct[]>;
 	abstract getAllWithPagination(
@@ -26,6 +35,9 @@ export abstract class TextileProductRepository {
 	abstract getAllWithFilters(
 		filters: ProductFilters,
 	): Promise<{ products: TextileProductListItem[]; total: number }>;
+
+	/** Catálogo completo para formulario de box (sin paginar). */
+	abstract getBoxCatalogAll(): Promise<Array<BoxCatalogTextileItem>>;
 	abstract getFilterCounts(filters?: ProductFilters): Promise<FilterCount>;
 	abstract getTextileProductById(id: string): Promise<TextileProduct | null>;
 	abstract saveTextileProduct(product: TextileProduct): Promise<TextileProduct>;

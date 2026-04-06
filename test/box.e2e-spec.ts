@@ -13,6 +13,9 @@ import { createAllowAllGuard, mockAuthUsers } from './helpers/auth-test.helper';
 import { CreateBoxUseCase } from '../src/andean/app/use_cases/boxes/CreateBoxUseCase';
 import { GetAllBoxesUseCase } from '../src/andean/app/use_cases/boxes/GetAllBoxesUseCase';
 import { GetBoxDetailUseCase } from '../src/andean/app/use_cases/boxes/GetBoxDetailUseCase';
+import { GetBoxCatalogSuperfoodsUseCase } from '../src/andean/app/use_cases/boxes/GetBoxCatalogSuperfoodsUseCase';
+import { GetBoxCatalogTextileProductsUseCase } from '../src/andean/app/use_cases/boxes/GetBoxCatalogTextileProductsUseCase';
+import { GetBoxCatalogTextileVariantsUseCase } from '../src/andean/app/use_cases/boxes/GetBoxCatalogTextileVariantsUseCase';
 
 // ─── Domain ─────────────────────────────────────────────────────────────────
 import { Box } from '../src/andean/domain/entities/box/Box';
@@ -49,6 +52,28 @@ describe('BoxController (e2e)', () => {
 				{
 					provide: GetBoxDetailUseCase,
 					useValue: { handle: jest.fn().mockResolvedValue(detailResponse) },
+				},
+				{
+					provide: GetBoxCatalogSuperfoodsUseCase,
+					useValue: {
+						handle: jest.fn().mockResolvedValue({
+							items: [],
+						}),
+					},
+				},
+				{
+					provide: GetBoxCatalogTextileProductsUseCase,
+					useValue: {
+						handle: jest.fn().mockResolvedValue({
+							items: [],
+						}),
+					},
+				},
+				{
+					provide: GetBoxCatalogTextileVariantsUseCase,
+					useValue: {
+						handle: jest.fn().mockResolvedValue({ items: [] }),
+					},
 				},
 			],
 		})
@@ -182,6 +207,8 @@ describe('BoxController (e2e)', () => {
 					...createDto,
 					products: [
 						{ productType: 'SUPERFOOD', productId: 'superfood-uuid-123' },
+						{ productType: 'SUPERFOOD', productId: 'superfood-uuid-456' },
+						{ productType: 'TEXTILE', variantId: 'variant-textile-001' },
 					],
 				})
 				.expect(HttpStatus.CREATED);
@@ -195,6 +222,8 @@ describe('BoxController (e2e)', () => {
 					...createDto,
 					products: [
 						{ productType: 'TEXTILE', variantId: 'variant-textile-001' },
+						{ productType: 'SUPERFOOD', productId: 'superfood-uuid-123' },
+						{ productType: 'SUPERFOOD', productId: 'superfood-uuid-456' },
 					],
 				})
 				.expect(HttpStatus.CREATED);
@@ -207,6 +236,8 @@ describe('BoxController (e2e)', () => {
 					...createDto,
 					products: [
 						{ productType: 'INVALID', productId: 'superfood-uuid-123' },
+						{ productType: 'SUPERFOOD', productId: 'superfood-uuid-456' },
+						{ productType: 'TEXTILE', variantId: 'variant-textile-001' },
 					],
 				})
 				.expect(HttpStatus.BAD_REQUEST);
@@ -217,7 +248,11 @@ describe('BoxController (e2e)', () => {
 				.post('/boxes')
 				.send({
 					...createDto,
-					products: [{ productId: 'superfood-uuid-123' }],
+					products: [
+						{ productId: 'superfood-uuid-123' },
+						{ productType: 'SUPERFOOD', productId: 'superfood-uuid-456' },
+						{ productType: 'TEXTILE', variantId: 'variant-textile-001' },
+					],
 				})
 				.expect(HttpStatus.BAD_REQUEST);
 		});

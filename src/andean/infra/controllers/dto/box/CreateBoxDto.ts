@@ -9,6 +9,8 @@ import {
 	IsEnum,
 	Min,
 	Max,
+	ArrayMinSize,
+	ArrayMaxSize,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -108,6 +110,8 @@ export class CreateBoxDto {
 	})
 	@IsArray()
 	@ArrayNotEmpty()
+	@ArrayMinSize(3)
+	@ArrayMaxSize(3)
 	@ValidateNested({ each: true })
 	@Type(() => BoxProductDto)
 	products!: BoxProductDto[];
@@ -140,6 +144,7 @@ export class CreateBoxDto {
 		type: [String],
 	})
 	@IsArray()
+	@ArrayMaxSize(5)
 	@IsString({ each: true })
 	@IsOptional()
 	sealIds?: string[];
