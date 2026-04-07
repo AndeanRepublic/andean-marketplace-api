@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { AdminEntityStatus } from '../../../domain/enums/AdminEntityStatus';
 
 export class CommunityResponse {
 	@ApiProperty({
@@ -18,6 +19,9 @@ export class CommunityResponse {
 		example: '2026-01-13T10:00:00.000Z',
 	})
 	createdAt: Date;
+
+	@ApiProperty({ description: 'Estado de la comunidad', enum: AdminEntityStatus })
+	status: AdminEntityStatus;
 
 	@ApiProperty({
 		description: 'Fecha de última actualización',

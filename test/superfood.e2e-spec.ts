@@ -24,6 +24,7 @@ import { DeleteSuperfoodProductUseCase } from '../src/andean/app/use_cases/super
 import { CreateDetailSourceProductUseCase } from '../src/andean/app/use_cases/detailSourceProduct/CreateDetailSourceProductUseCase';
 import { UpdateDetailSourceProductUseCase } from '../src/andean/app/use_cases/detailSourceProduct/UpdateDetailSourceProductUseCase';
 import { DeleteDetailSourceProductUseCase } from '../src/andean/app/use_cases/detailSourceProduct/DeleteDetailSourceProductUseCase';
+import { UpdateSuperfoodStatusUseCase } from '../src/andean/app/use_cases/superfoods/UpdateSuperfoodStatusUseCase';
 import { SuperfoodProduct } from '../src/andean/domain/entities/superfoods/SuperfoodProduct';
 import { SuperfoodProductStatus } from '../src/andean/domain/enums/SuperfoodProductStatus';
 import { ProductSortBy } from '../src/andean/domain/enums/ProductSortBy';
@@ -115,6 +116,12 @@ describe('SuperfoodController (e2e)', () => {
 				{
 					provide: DeleteDetailSourceProductUseCase,
 					useValue: { handle: jest.fn().mockResolvedValue(undefined) },
+				},
+				{
+					provide: UpdateSuperfoodStatusUseCase,
+					useValue: {
+						handle: jest.fn().mockResolvedValue(mockSuperfoodProduct),
+					},
 				},
 			],
 		})
@@ -741,6 +748,12 @@ describe('SuperfoodController (e2e)', () => {
 						provide: DeleteDetailSourceProductUseCase,
 						useValue: { handle: jest.fn().mockResolvedValue(undefined) },
 					},
+					{
+						provide: UpdateSuperfoodStatusUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockSuperfoodProduct),
+						},
+					},
 				],
 			})
 				.overrideGuard(JwtAuthGuard)
@@ -967,6 +980,12 @@ describe('SuperfoodController (e2e)', () => {
 					{
 						provide: DeleteDetailSourceProductUseCase,
 						useValue: { handle: jest.fn().mockResolvedValue(undefined) },
+					},
+					{
+						provide: UpdateSuperfoodStatusUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockSuperfoodProduct),
+						},
 					},
 				],
 			})

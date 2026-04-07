@@ -1,9 +1,9 @@
 {
 	"entity": {
 		"id": "box-uuid-001",
-		"title": "Caja Andina Esencial",
-		"subtitle": "Lo mejor de los Andes en una caja",
-		"description": "Una selección curada de productos andinos premium: superfoods y textiles artesanales.",
+		"name": "Caja Andina Esencial",
+		"slogan": "Lo mejor de los Andes en una caja",
+		"narrative": "Una selección curada de productos andinos premium: superfoods y textiles artesanales.",
 		"thumbnailImageId": "media-thumbnail-box-001",
 		"mainImageId": "media-main-box-001",
 		"products": [
@@ -21,6 +21,7 @@
 			}
 		],
 		"price": 89.90,
+		"discountPercentage": 56,
 		"sealIds": [
 			"box-seal-uuid-001",
 			"box-seal-uuid-002"
@@ -29,9 +30,9 @@
 		"updatedAt": "2026-01-15T00:00:00.000Z"
 	},
 	"createDto": {
-		"title": "Caja Andina Esencial",
-		"subtitle": "Lo mejor de los Andes en una caja",
-		"description": "Una selección curada de productos andinos premium: superfoods y textiles artesanales.",
+		"name": "Caja Andina Esencial",
+		"slogan": "Lo mejor de los Andes en una caja",
+		"narrative": "Una selección curada de productos andinos premium: superfoods y textiles artesanales.",
 		"thumbnailImageId": "media-thumbnail-box-001",
 		"mainImageId": "media-main-box-001",
 		"products": [
@@ -49,17 +50,18 @@
 			}
 		],
 		"price": 89.90,
+		"discountPercentage": 56,
 		"sealIds": [
 			"box-seal-uuid-001",
 			"box-seal-uuid-002"
 		]
 	},
 	"updateDto": {
-		"title": "Caja Andina Premium",
+		"name": "Caja Andina Premium",
 		"price": 99.90
 	},
 	"invalidDto": {
-		"title": "",
+		"name": "",
 		"price": -10,
 		"products": []
 	},
@@ -156,8 +158,8 @@
 		"data": [
 			{
 				"id": "box-uuid-001",
-				"title": "Caja Andina Esencial",
-				"subtitle": "Lo mejor de los Andes en una caja",
+				"name": "Caja Andina Esencial",
+				"slogan": "Lo mejor de los Andes en una caja",
 				"itemCount": {
 					"textiles": 1,
 					"superfoods": 2
@@ -209,8 +211,8 @@
 	"detailResponse": {
 		"id": "box-uuid-001",
 		"heroDetail": {
-			"title": "Caja Andina Esencial",
-			"subtitle": "Lo mejor de los Andes en una caja",
+			"name": "Caja Andina Esencial",
+			"slogan": "Lo mejor de los Andes en una caja",
 			"thumbnailImage": {
 				"url": "https://example.com/uploads/box-thumbnail.jpg",
 				"name": "box-thumbnail.jpg"
@@ -221,7 +223,7 @@
 			}
 		},
 		"detail": {
-			"description": "Una selección curada de productos andinos premium: superfoods y textiles artesanales.",
+			"narrative": "Una selección curada de productos andinos premium: superfoods y textiles artesanales.",
 			"images": [
 				{
 					"url": "https://example.com/uploads/box-main.jpg",

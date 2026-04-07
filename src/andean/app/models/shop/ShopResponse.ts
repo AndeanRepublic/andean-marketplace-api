@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ShopCategory } from '../../../domain/enums/ShopCategory';
+import { AdminEntityStatus } from '../../../domain/enums/AdminEntityStatus';
 
 export class ShopResponse {
 	@ApiProperty({
@@ -19,6 +20,9 @@ export class ShopResponse {
 		example: 'Artesanías Andinas',
 	})
 	name: string;
+
+	@ApiProperty({ description: 'Estado del emprendimiento', enum: AdminEntityStatus })
+	status: AdminEntityStatus;
 
 	@ApiProperty({
 		description: 'Categorías de la tienda',

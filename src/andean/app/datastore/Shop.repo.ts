@@ -1,5 +1,6 @@
 import { Shop } from '../../domain/entities/Shop';
 import { ShopCategory } from '../../domain/enums/ShopCategory';
+import { AdminEntityStatus } from '../../domain/enums/AdminEntityStatus';
 
 export abstract class ShopRepository {
 	abstract getAll(): Promise<Shop[]>;
@@ -9,4 +10,5 @@ export abstract class ShopRepository {
 	abstract deleteShop(id: string): Promise<void>;
 	abstract getAllByCategory(category: ShopCategory): Promise<Shop[]>;
 	abstract updateShop(id: string, data: Partial<Shop>): Promise<Shop>;
+	abstract updateStatus(id: string, status: AdminEntityStatus): Promise<Shop>;
 }

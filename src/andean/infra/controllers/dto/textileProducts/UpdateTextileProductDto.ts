@@ -7,7 +7,7 @@ import { CreateTextileProductDto } from './CreateTextileProductDto';
 export class UpdateTextileProductDto extends CreateTextileProductDto {
 	@ApiPropertyOptional({
 		description:
-			'Estado del producto: PUBLISHED, PENDING, SOLD_OUT, HIDDEN. Si no se envía, se mantiene el actual.',
+			'Estado del producto: PUBLISHED u HIDDEN. Si no se envía, se mantiene el actual.',
 		enum: TextileProductStatus,
 	})
 	@IsEnum(TextileProductStatus)

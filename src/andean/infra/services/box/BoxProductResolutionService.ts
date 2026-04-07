@@ -48,6 +48,8 @@ export class BoxProductResolutionService {
 			for (const product of box.products) {
 				if (product.productId) allSuperfoodIds.add(product.productId);
 				if (product.variantId) allVariantIds.add(product.variantId);
+				const nar = product.narrativeImgId?.trim();
+				if (nar) allMediaIds.add(nar);
 			}
 		}
 
@@ -139,6 +141,20 @@ export class BoxProductResolutionService {
 	 */
 	getVariantPrice(variant: Variant): number {
 		return variant.price;
+	}
+
+	/**
+	 * Precio de línea en el box: usa boxPrice si viene definido (>0), si no el precio de catálogo.
+	 */
+	resolveLinePrice(product: BoxProduct, catalogPrice: number): number {
+		if (
+			product.boxPrice != null &&
+			!Number.isNaN(product.boxPrice) &&
+			product.boxPrice > 0
+		) {
+			return product.boxPrice;
+		}
+		return catalogPrice;
 	}
 
 	/**

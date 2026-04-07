@@ -1,5 +1,6 @@
 import { WeekDay } from 'src/andean/domain/enums/WeekDay';
 import { Experience } from '../../../domain/entities/experiences/Experience';
+import { ExperienceStatus } from '../../../domain/enums/ExperienceStatus';
 
 export interface ExperienceFilters {
 	page?: number;
@@ -19,6 +20,7 @@ export interface ExperienceListRawItem {
 	days: number;
 	mainImageName: string;
 	mainImageUrl: string;
+	status: ExperienceStatus;
 }
 
 export abstract class ExperienceRepository {
@@ -32,4 +34,8 @@ export abstract class ExperienceRepository {
 	): Promise<{ items: ExperienceListRawItem[]; total: number }>;
 	abstract getWeeklyStartDays(experienceId: string): Promise<WeekDay[]>;
 	abstract getFutureAvailableDates(experienceId: string): Promise<Date[]>;
+	abstract updateStatus(
+		id: string,
+		status: ExperienceStatus,
+	): Promise<Experience | null>;
 }

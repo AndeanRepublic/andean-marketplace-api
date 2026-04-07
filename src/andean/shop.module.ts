@@ -14,6 +14,7 @@ import { GetShopsBySellerIdUseCase } from './app/use_cases/shops/GetShopsBySelle
 import { DeleteShopUseCase } from './app/use_cases/shops/DeleteShopUseCase';
 import { UpdateShopUseCase } from './app/use_cases/shops/UpdateShopUseCase';
 import { ListAllShopsUseCase } from './app/use_cases/shops/ListAllShopsUseCase';
+import { UpdateShopStatusUseCase } from './app/use_cases/shops/UpdateShopStatusUseCase';
 import { UsersModule } from './users.module';
 import { MediaItemModule } from './mediaItem.module';
 
@@ -32,6 +33,7 @@ import { MediaItemModule } from './mediaItem.module';
 		GetShopsBySellerIdUseCase,
 		DeleteShopUseCase,
 		UpdateShopUseCase,
+		UpdateShopStatusUseCase,
 		ListAllShopsUseCase,
 		{
 			provide: ShopRepository,

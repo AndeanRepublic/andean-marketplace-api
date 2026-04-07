@@ -7,7 +7,8 @@
 			"mediaIds": [],
 			"description": "Poncho tejido a mano por artesanos andinos",
 			"ownerType": "SHOP",
-			"ownerId": "shop-123"
+			"ownerId": "shop-123",
+			"information": "Frase inspiracional de ejemplo para el poncho andino."
 		},
 		"priceInventary": {
 			"basePrice": 150.0,
@@ -42,7 +43,8 @@
 			"mediaIds": [],
 			"description": "Poncho tejido a mano por artesanos andinos",
 			"ownerType": "SHOP",
-			"ownerId": "shop-123"
+			"ownerId": "shop-123",
+			"information": "Frase inspiracional de ejemplo para el poncho andino."
 		},
 		"priceInventary": {
 			"basePrice": 150.0,
@@ -59,7 +61,8 @@
 			"mediaIds": [],
 			"description": "Poncho tejido a mano por artesanos andinos - Edición especial",
 			"ownerType": "SHOP",
-			"ownerId": "shop-123"
+			"ownerId": "shop-123",
+			"information": "Edición especial: tradición viva en cada fibra."
 		},
 		"priceInventary": {
 			"basePrice": 180.0,
@@ -181,7 +184,7 @@
 			}
 		],
 		"generalStock": 50,
-		"information": "",
+		"information": "Frase inspiracional de ejemplo para el poncho andino.",
 		"description": "Poncho tejido a mano por artesanos andinos",
 		"traceabilityInfo": {
 			"origen": [],

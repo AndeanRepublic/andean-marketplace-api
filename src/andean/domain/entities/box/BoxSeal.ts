@@ -6,5 +6,5 @@ export class BoxSeal {
 		public logoMediaId: string,
 		public createdAt: Date,
 		public updatedAt: Date,
-	) { }
+	) {}
 }

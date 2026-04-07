@@ -17,6 +17,7 @@ import {
 } from 'class-transformer';
 import * as crypto from 'crypto';
 import { Types } from 'mongoose';
+import { SuperfoodProductStatus } from '../../../domain/enums/SuperfoodProductStatus';
 
 /**
  * Un solo objeto desde un plain. Con `any` (p. ej. subdocs de Mongoose), `plainToInstance`
@@ -89,7 +90,10 @@ export class SuperfoodProductMapper {
 				typeof plain.id === 'string' && plain.id.trim()
 					? plain.id.trim()
 					: plain._id.toString(),
-			status: plain.status,
+			status:
+				plain.status === SuperfoodProductStatus.PUBLISHED
+					? SuperfoodProductStatus.PUBLISHED
+					: SuperfoodProductStatus.HIDDEN,
 			baseInfo,
 			priceInventory,
 			detailProduct,
@@ -126,7 +130,7 @@ export class SuperfoodProductMapper {
 			detailProduct = plainToOne(SuperfoodDetailProduct, dto.detailProduct);
 		}
 
-		const nutritionalContent = dto.nutritionalContent?.map((item) =>
+		const nutritionalContent = dto.nutritionalContent.map((item) =>
 			plainToOne(SuperfoodNutritionalItem, {
 				...item,
 				id: crypto.randomUUID(),
@@ -202,7 +206,7 @@ export class SuperfoodProductMapper {
 			detailProduct = plainToOne(SuperfoodDetailProduct, dto.detailProduct);
 		}
 
-		const nutritionalContent = dto.nutritionalContent?.map((item) =>
+		const nutritionalContent = dto.nutritionalContent.map((item) =>
 			plainToOne(SuperfoodNutritionalItem, {
 				...item,
 				id: crypto.randomUUID(),

@@ -14,7 +14,13 @@ import { JwtAuthGuard } from '../../core/jwtAuth.guard';
 import { RolesGuard } from '../../core/roles.guard';
 import { Roles } from '../../core/roles.decorator';
 import { AccountRole } from '../../../domain/enums/AccountRole';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import {
+	ApiTags,
+	ApiOperation,
+	ApiResponse,
+	ApiBody,
+	ApiParam,
+} from '@nestjs/swagger';
 import { Public } from '../../core/public.decorator';
 import { BoxSealResponse } from '../../../app/models/box/BoxSealResponse';
 import { CreateBoxSealUseCase } from '../../../app/use_cases/boxSeals/CreateBoxSealUseCase';
@@ -99,21 +105,41 @@ export class BoxSealController {
 		return this.getAllBoxSealsUseCase.handle();
 	}
 
-	// @Get('/:id')
-	// async getBoxSealById(@Param('id') id: string): Promise<BoxSeal> {
-	// 	return this.getBoxSealByIdUseCase.handle(id);
-	// }
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
+	@Get(':id')
+	@ApiOperation({ summary: 'Obtener sello de box por id' })
+	@ApiParam({ name: 'id', description: 'ID del sello' })
+	@ApiResponse({ status: 200, type: BoxSealResponse })
+	@ApiResponse({ status: 404, description: 'Sello no encontrado' })
+	async getBoxSealById(@Param('id') id: string): Promise<BoxSeal> {
+		return this.getBoxSealByIdUseCase.handle(id);
+	}
 
-	// @Put('/:id')
-	// async updateBoxSeal(
-	// 	@Param('id') id: string,
-	// 	@Body() dto: UpdateBoxSealDto,
-	// ): Promise<BoxSeal> {
-	// 	return this.updateBoxSealUseCase.handle(id, dto);
-	// }
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
+	@Put(':id')
+	@ApiOperation({ summary: 'Actualizar sello de box' })
+	@ApiParam({ name: 'id', description: 'ID del sello' })
+	@ApiBody({ type: UpdateBoxSealDto })
+	@ApiResponse({ status: 200, type: BoxSealResponse })
+	@ApiResponse({ status: 404, description: 'Sello no encontrado' })
+	async updateBoxSeal(
+		@Param('id') id: string,
+		@Body() dto: UpdateBoxSealDto,
+	): Promise<BoxSeal> {
+		return this.updateBoxSealUseCase.handle(id, dto);
+	}
 
-	// @Delete('/:id')
-	// async deleteBoxSeal(@Param('id') id: string): Promise<void> {
-	// 	return this.deleteBoxSealUseCase.handle(id);
-	//}
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
+	@Delete(':id')
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@ApiOperation({ summary: 'Eliminar sello de box' })
+	@ApiParam({ name: 'id', description: 'ID del sello' })
+	@ApiResponse({ status: 204, description: 'Eliminado' })
+	@ApiResponse({ status: 404, description: 'Sello no encontrado' })
+	async deleteBoxSeal(@Param('id') id: string): Promise<void> {
+		return this.deleteBoxSealUseCase.handle(id);
+	}
 }

@@ -5,6 +5,7 @@ import { UpdateCommunityDto } from '../../controllers/dto/community/UpdateCommun
 import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { Types } from 'mongoose';
 import { MongoIdUtils } from '../../utils/MongoIdUtils';
+import { AdminEntityStatus } from '../../../domain/enums/AdminEntityStatus';
 
 export class CommunityMapper {
 	/**
@@ -15,6 +16,10 @@ export class CommunityMapper {
 		const plain = doc.toObject();
 		return plainToInstance(Community, {
 			id: MongoIdUtils.objectIdToString(plain._id), // ObjectId → string
+			status:
+				plain.status === AdminEntityStatus.PUBLISHED
+					? AdminEntityStatus.PUBLISHED
+					: AdminEntityStatus.HIDDEN,
 			...plain,
 		});
 	}
@@ -23,6 +28,7 @@ export class CommunityMapper {
 		const plain = {
 			id: new Types.ObjectId().toString(), // Generar ObjectId temporal como string
 			...dto,
+			status: AdminEntityStatus.HIDDEN,
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		};

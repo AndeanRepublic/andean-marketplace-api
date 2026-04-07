@@ -33,7 +33,7 @@ export class BoxProductInfoProvider extends ProductInfoProvider {
 		);
 
 		return {
-			title: box.title,
+			title: box.name,
 			thumbnailImgUrl,
 			ownerType: '',
 			ownerId: '',

@@ -6,6 +6,7 @@ import { Box } from '../../../domain/entities/box/Box';
 import { BoxDocument } from '../../persistence/box/box.schema';
 import { BoxMapper } from '../../services/box/BoxMapper';
 import { MongoIdUtils } from '../../utils/MongoIdUtils';
+import { AdminEntityStatus } from '../../../domain/enums/AdminEntityStatus';
 
 @Injectable()
 export class BoxRepoImpl extends BoxRepository {
@@ -42,8 +43,29 @@ export class BoxRepoImpl extends BoxRepository {
 		return { data, total };
 	}
 
+	async update(box: Box): Promise<Box> {
+		const objectId = MongoIdUtils.stringToObjectId(box.id);
+		const persistenceData = BoxMapper.toPersistence(box);
+		persistenceData.updatedAt = box.updatedAt;
+		const updatedDoc = await this.boxModel
+			.findByIdAndUpdate(objectId, { $set: persistenceData }, { new: true })
+			.exec();
+		if (!updatedDoc) {
+			throw new Error('Box not found for update');
+		}
+		return BoxMapper.fromDocument(updatedDoc);
+	}
+
 	async delete(id: string): Promise<void> {
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		await this.boxModel.findByIdAndDelete(objectId).exec();
+	}
+
+	async updateStatus(id: string, status: AdminEntityStatus): Promise<Box | null> {
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		const updated = await this.boxModel
+			.findByIdAndUpdate(objectId, { $set: { status, updatedAt: new Date() } }, { new: true })
+			.exec();
+		return updated ? BoxMapper.fromDocument(updated) : null;
 	}
 }

@@ -1,10 +1,13 @@
 import {
 	ArrayMaxSize,
+	ArrayMinSize,
 	IsArray,
 	IsEnum,
+	IsMongoId,
 	IsNotEmpty,
 	IsOptional,
 	IsString,
+	MinLength,
 	ValidateNested,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
@@ -45,13 +48,17 @@ export class CreateSuperfoodBasicInfoDto {
 	detailedDescription!: string;
 
 	@ApiProperty({
-		description: 'Características generales (máx. 3)',
+		description: 'Características generales (mín. 1, máx. 3)',
 		type: [String],
+		minItems: 1,
+		maxItems: 3,
 	})
 	@IsArray()
+	@ArrayMinSize(1)
 	@ArrayMaxSize(3)
-	@IsOptional()
-	general_features?: string[];
+	@IsString({ each: true })
+	@MinLength(1, { each: true })
+	general_features!: string[];
 
 	@ApiProperty({
 		description: 'IDs de características nutricionales (máx. 4)',
@@ -62,10 +69,15 @@ export class CreateSuperfoodBasicInfoDto {
 	@IsOptional()
 	nutritional_features?: string[];
 
-	@ApiProperty({ description: 'IDs de beneficios', type: [String] })
+	@ApiProperty({
+		description: 'IDs de beneficios del catálogo (mín. 1)',
+		type: [String],
+		minItems: 1,
+	})
 	@IsArray()
-	@IsOptional()
-	benefits?: string[];
+	@ArrayMinSize(1)
+	@IsMongoId({ each: true })
+	benefits!: string[];
 
 	@ApiProperty({ enum: OwnerType })
 	@IsEnum(OwnerType)

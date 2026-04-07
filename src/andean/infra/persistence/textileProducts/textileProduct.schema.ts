@@ -24,7 +24,7 @@ const BaseInfoSchema = new Schema(
 			required: true,
 		},
 		ownerId: { type: String, required: true },
-		information: { type: String, required: false },
+		information: { type: String, required: true },
 	},
 	{ _id: false },
 );
@@ -198,7 +198,7 @@ export interface TextileProductDocument extends Document {
 		description: string;
 		ownerType: OwnerType;
 		ownerId: string;
-		information?: string;
+		information: string;
 	};
 	priceInventary: {
 		basePrice: number;

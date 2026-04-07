@@ -4,6 +4,8 @@ import { ROLES_KEY } from './roles.decorator';
 import { Request } from 'express';
 import { Payload } from '../../app/models/users/Payload';
 
+type RequestWithUser = Request & { user?: Payload };
+
 @Injectable()
 export class RolesGuard implements CanActivate {
 	constructor(private reflector: Reflector) {}
@@ -18,8 +20,8 @@ export class RolesGuard implements CanActivate {
 			return true;
 		}
 
-		const request: Request = context.switchToHttp().getRequest();
-		const user: Payload = <Payload>request.user;
+		const request = context.switchToHttp().getRequest<RequestWithUser>();
+		const user = request.user;
 
 		if (!user || !user.roles || user.roles.length === 0) {
 			return false;

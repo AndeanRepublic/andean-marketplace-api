@@ -7,6 +7,6 @@ export class BaseInfo {
 		public description: string,
 		public ownerType: OwnerType,
 		public ownerId: string,
-		public information?: string,
+		public information: string,
 	) { }
 }

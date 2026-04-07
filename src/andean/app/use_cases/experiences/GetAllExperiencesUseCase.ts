@@ -32,6 +32,7 @@ export class GetAllExperiencesUseCase {
 			price: raw.adultsPrice,
 			place: raw.ubication,
 			days: raw.days,
+			status: raw.status,
 			mainImage: {
 				name: raw.mainImageName,
 				url: raw.mainImageUrl,

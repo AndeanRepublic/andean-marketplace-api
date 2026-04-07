@@ -6,6 +6,7 @@ import { ShopDocument } from '../persistence/shop.schema';
 import { Shop } from '../../domain/entities/Shop';
 import { ShopMapper } from '../services/ShopMapper';
 import { ShopCategory } from '../../domain/enums/ShopCategory';
+import { AdminEntityStatus } from '../../domain/enums/AdminEntityStatus';
 
 @Injectable()
 export class ShopRepoImpl extends ShopRepository {
@@ -59,6 +60,20 @@ export class ShopRepoImpl extends ShopRepository {
 					$or: [{ _id: id }, { id }],
 				},
 				{ $set: ShopMapper.toPersistence(data) },
+				{ new: true },
+			)
+			.exec();
+		if (!doc) {
+			throw new NotFoundException('Shop not found');
+		}
+		return ShopMapper.fromDocument(doc);
+	}
+
+	async updateStatus(id: string, status: AdminEntityStatus): Promise<Shop> {
+		const doc = await this.shopModel
+			.findOneAndUpdate(
+				{ $or: [{ _id: id }, { id }] },
+				{ $set: { status } },
 				{ new: true },
 			)
 			.exec();

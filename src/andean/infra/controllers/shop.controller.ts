@@ -37,6 +37,8 @@ import { CurrentUser } from '../core/current-user.decorator';
 import { MediaUrlResolver } from '../services/media/MediaUrlResolver';
 import type { ShopWithProviderInfo } from '../../app/use_cases/shops/GetShopByIdUseCase';
 import { ProviderInfo } from '../../domain/entities/ProviderInfo';
+import { UpdateShopStatusUseCase } from '../../app/use_cases/shops/UpdateShopStatusUseCase';
+import { UpdateEntityStatusDto } from './dto/UpdateEntityStatusDto';
 
 @ApiTags('shops')
 @Controller('shops')
@@ -50,6 +52,7 @@ export class ShopController {
 		private readonly deleteShopUseCase: DeleteShopUseCase,
 		private readonly updateShopUseCase: UpdateShopUseCase,
 		private readonly mediaUrlResolver: MediaUrlResolver,
+		private readonly updateShopStatusUseCase: UpdateShopStatusUseCase,
 	) {}
 
 	@Public()
@@ -181,6 +184,18 @@ export class ShopController {
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Patch(':shopId/status')
+	async updateStatus(
+		@Param('shopId') shopId: string,
+		@Body() dto: UpdateEntityStatusDto,
+	): Promise<ShopResponse & { providerInfo?: Record<string, unknown> }> {
+		await this.updateShopStatusUseCase.handle(shopId, dto.status);
+		const shop = await this.getShopsByIdUseCase.handle(shopId);
+		return this.toResponse(shop);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Patch(':shopId')
 	@ApiOperation({
 		summary: 'Actualizar tienda',
@@ -209,6 +224,7 @@ export class ShopController {
 			id: shop.id,
 			sellerId: shop.sellerId,
 			name: shop.name,
+			status: shop.status,
 			categories: shop.categories,
 			artisanPhotoMediaId: shop.artisanPhotoMediaId,
 			artisanPhotoUrl: await this.mediaUrlResolver.resolveUrl(

@@ -16,14 +16,11 @@ export class CreateSuperfoodNutritionalFeatureUseCase {
 	async handle(
 		dto: CreateSuperfoodNutritionalFeatureDto,
 	): Promise<SuperfoodNutritionalFeatureResponse> {
-		// Validar que el iconId existe si se proporciona
-		if (dto.iconId) {
-			const iconExists = await this.mediaItemRepository.getById(dto.iconId);
-			if (!iconExists) {
-				throw new BadRequestException(
-					`MediaItem with id ${dto.iconId} not found`,
-				);
-			}
+		const iconExists = await this.mediaItemRepository.getById(dto.iconId);
+		if (!iconExists) {
+			throw new BadRequestException(
+				`MediaItem with id ${dto.iconId} not found`,
+			);
 		}
 
 		// Crear entidad usando mapper
