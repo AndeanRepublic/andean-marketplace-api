@@ -57,6 +57,10 @@ export class BoxMapper {
 				),
 		);
 		const now = new Date();
+		const status =
+			dto.status === AdminEntityStatus.PUBLISHED
+				? AdminEntityStatus.PUBLISHED
+				: AdminEntityStatus.HIDDEN;
 		return new Box(
 			id,
 			dto.name,
@@ -65,7 +69,7 @@ export class BoxMapper {
 			dto.thumbnailImageId,
 			dto.mainImageId,
 			products,
-			AdminEntityStatus.HIDDEN,
+			status,
 			dto.price,
 			dto.discountPercentage,
 			dto.sealIds ?? [],
@@ -90,6 +94,11 @@ export class BoxMapper {
 				),
 		);
 		const now = new Date();
+		const nextStatus =
+			dto.status === AdminEntityStatus.PUBLISHED ||
+			dto.status === AdminEntityStatus.HIDDEN
+				? dto.status
+				: existing.status;
 		return new Box(
 			id,
 			dto.name,
@@ -98,7 +107,7 @@ export class BoxMapper {
 			dto.thumbnailImageId,
 			dto.mainImageId,
 			products,
-			existing.status,
+			nextStatus,
 			dto.price,
 			dto.discountPercentage,
 			dto.sealIds ?? [],

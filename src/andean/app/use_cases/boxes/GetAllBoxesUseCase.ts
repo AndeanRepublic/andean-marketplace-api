@@ -35,6 +35,60 @@ export class GetAllBoxesUseCase {
 			let textileCount = 0;
 			const products: BoxProductResponse[] = [];
 
+			const stocksData: Array<{
+				stock: number;
+				type: ProductType.SUPERFOOD | ProductType.TEXTILE;
+				productId: string;
+			}> = [];
+			for (const p of box.products) {
+				if (p.productId) {
+					const sf = dependencies.superfoodMap.get(p.productId);
+					const stock = sf
+						? Math.max(
+								0,
+								Math.floor(
+									Number(sf.priceInventory?.totalStock ?? 0),
+								),
+							)
+						: 0;
+					stocksData.push({
+						stock,
+						type: ProductType.SUPERFOOD,
+						productId: p.productId,
+					});
+				} else if (p.variantId) {
+					const variant = dependencies.variantMap.get(p.variantId);
+					const stock = variant
+						? Math.max(0, Math.floor(Number(variant.stock ?? 0)))
+						: 0;
+					const textileProductId = variant?.productId ?? '';
+					stocksData.push({
+						stock,
+						type: ProductType.TEXTILE,
+						productId: textileProductId,
+					});
+				}
+			}
+
+			let fulfillableQuantity = 0;
+			let bottleneckProductType:
+				| ProductType.SUPERFOOD
+				| ProductType.TEXTILE
+				| undefined;
+			let bottleneckProductId: string | undefined;
+			if (stocksData.length === 3) {
+				fulfillableQuantity = Math.min(
+					stocksData[0]!.stock,
+					stocksData[1]!.stock,
+					stocksData[2]!.stock,
+				);
+				const bottleneck = stocksData.reduce((a, c) =>
+					c.stock < a.stock ? c : a,
+				);
+				bottleneckProductType = bottleneck.type;
+				bottleneckProductId = bottleneck.productId;
+			}
+
 			for (const product of box.products) {
 				if (product.productId) {
 					superfoodCount++;
@@ -151,6 +205,11 @@ export class GetAllBoxesUseCase {
 				porcentageDiscount,
 				thumbnailImage: boxThumb,
 				products,
+				fulfillableQuantity,
+				bottleneckProductType:
+					stocksData.length === 3 ? bottleneckProductType : undefined,
+				bottleneckProductId:
+					stocksData.length === 3 ? bottleneckProductId : undefined,
 			};
 		});
 

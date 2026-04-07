@@ -15,6 +15,7 @@ import {
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BoxProductType } from '../../../../domain/enums/BoxProductType';
+import { AdminEntityStatus } from '../../../../domain/enums/AdminEntityStatus';
 
 export class BoxProductDto {
 	@ApiProperty({
@@ -148,4 +149,12 @@ export class CreateBoxDto {
 	@IsString({ each: true })
 	@IsOptional()
 	sealIds?: string[];
+
+	@ApiPropertyOptional({
+		description: 'Estado de publicación del box (por defecto HIDDEN al crear)',
+		enum: AdminEntityStatus,
+	})
+	@IsEnum(AdminEntityStatus)
+	@IsOptional()
+	status?: AdminEntityStatus;
 }

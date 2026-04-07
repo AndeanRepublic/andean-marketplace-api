@@ -63,6 +63,25 @@ export class BoxListItemResponse {
 
 	@ApiProperty({ description: 'Lista de productos incluidos en el box', type: [BoxProductResponse] })
 	products!: BoxProductResponse[];
+
+	@ApiProperty({
+		description:
+			'Cantidad de cajas armables con el stock actual (mínimo de stocks de los 3 componentes)',
+		example: 12,
+	})
+	fulfillableQuantity!: number;
+
+	@ApiPropertyOptional({
+		description: 'Tipo del producto que limita el stock (si hay 3 líneas resueltas)',
+		enum: [ProductType.SUPERFOOD, ProductType.TEXTILE],
+	})
+	bottleneckProductType?: ProductType.SUPERFOOD | ProductType.TEXTILE;
+
+	@ApiPropertyOptional({
+		description:
+			'ID del producto limitante (superfood id o producto textil id, no variante)',
+	})
+	bottleneckProductId?: string;
 }
 
 export class BoxPaginationResponse {
