@@ -3,6 +3,7 @@ import {
 	Controller,
 	Post,
 	Get,
+	Patch,
 	Param,
 	Put,
 	Delete,
@@ -35,6 +36,8 @@ import { UpdateExperienceDto } from '../dto/experiences/UpdateExperienceDto';
 import { Experience } from 'src/andean/domain/entities/experiences/Experience';
 import { PaginatedExperiencesResponse } from 'src/andean/app/models/experiences/ExperienceListItemResponse';
 import { ExperienceDetailResponse } from 'src/andean/app/models/experiences/ExperienceDetailResponse';
+import { UpdateExperienceStatusUseCase } from 'src/andean/app/use_cases/experiences/UpdateExperienceStatusUseCase';
+import { UpdateExperienceStatusDto } from '../dto/experiences/UpdateExperienceStatusDto';
 
 @ApiTags('Experiences')
 @Controller('experiences')
@@ -45,6 +48,7 @@ export class ExperienceController {
 		private readonly deleteExperienceUseCase: DeleteExperienceUseCase,
 		private readonly getAllExperiencesUseCase: GetAllExperiencesUseCase,
 		private readonly getByIdExperienceUseCase: GetByIdExperienceUseCase,
+		private readonly updateExperienceStatusUseCase: UpdateExperienceStatusUseCase,
 	) {}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
@@ -208,6 +212,22 @@ export class ExperienceController {
 
 		return this.getAllExperiencesUseCase.handle(
 			Object.keys(filters).length > 0 ? filters : undefined,
+		);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Patch('/:id/status')
+	async updateStatus(
+		@Param('id') id: string,
+		@Body() body: UpdateExperienceStatusDto,
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
+	): Promise<Experience> {
+		return this.updateExperienceStatusUseCase.handle(
+			id,
+			body.status,
+			requestingUser.userId,
+			requestingUser.roles,
 		);
 	}
 

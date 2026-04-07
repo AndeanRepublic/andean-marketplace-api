@@ -72,6 +72,7 @@ import { GetAllTextileProductsUseCase } from './app/use_cases/textileProducts/Ge
 import { GetTextileProductForSellerUseCase } from './app/use_cases/textileProducts/GetTextileProductForSellerUseCase';
 import { GetByIdTextileProductDetailUseCase } from './app/use_cases/textileProducts/GetByIdTextileProductDetailUseCase';
 import { DeleteTextileProductUseCase } from './app/use_cases/textileProducts/DeleteTextileProductUseCase';
+import { UpdateTextileProductStatusUseCase } from './app/use_cases/textileProducts/UpdateTextileProductStatusUseCase';
 import { TextileCraftTechniqueRepository } from './app/datastore/textileProducts/TextileCraftTechnique.repo';
 import { TextileCraftTechniqueRepositoryImpl } from './infra/datastore/textileProducts/textileCraftTechnique.repo.impl';
 import { TextilePrincipalUseRepository } from './app/datastore/textileProducts/TextilePrincipalUse.repo';
@@ -245,6 +246,7 @@ import { OwnerInfoResolver } from './infra/services/owner/OwnerInfoResolver';
 		GetTextileProductForSellerUseCase,
 		GetByIdTextileProductDetailUseCase,
 		DeleteTextileProductUseCase,
+		UpdateTextileProductStatusUseCase,
 		CreateTextileCertificationUseCase,
 		CreateManyTextileCertificationsUseCase,
 		UpdateTextileCertificationUseCase,

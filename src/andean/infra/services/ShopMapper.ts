@@ -3,12 +3,17 @@ import { Shop } from '../../domain/entities/Shop';
 import { CreateShopDto } from '../controllers/dto/CreateShopDto';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { Types } from 'mongoose';
+import { AdminEntityStatus } from '../../domain/enums/AdminEntityStatus';
 
 export class ShopMapper {
 	static fromDocument(doc: ShopDocument): Shop {
 		const plain = doc.toObject();
 		return plainToInstance(Shop, {
 			id: plain._id.toString(),
+			status:
+				plain.status === AdminEntityStatus.PUBLISHED
+					? AdminEntityStatus.PUBLISHED
+					: AdminEntityStatus.HIDDEN,
 			...plain,
 		});
 	}
@@ -21,6 +26,7 @@ export class ShopMapper {
 		const plain = {
 			id: new Types.ObjectId().toString(),
 			...shopData,
+			status: AdminEntityStatus.HIDDEN,
 		};
 		return plainToInstance(Shop, plain);
 	}

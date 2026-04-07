@@ -24,6 +24,8 @@ import { ColorOptionAlternativeRepository } from '../../datastore/textileProduct
 import { SizeOptionAlternativeRepository } from '../../datastore/textileProducts/SizeOptionAlternative.repo';
 import { SellerProfileRepository } from '../../datastore/Seller.repo';
 import { AccountRole } from 'src/andean/domain/enums/AccountRole';
+import { MediaItemRepository } from '../../datastore/MediaItem.repo';
+import { validateTextileProductBaseInfoMedia } from './validateTextileProductBaseInfoMedia';
 
 @Injectable()
 export class UpdateTextileProductUseCase {
@@ -54,6 +56,8 @@ export class UpdateTextileProductUseCase {
 		private readonly sizeOptionAlternativeRepository: SizeOptionAlternativeRepository,
 		@Inject(SellerProfileRepository)
 		private readonly sellerProfileRepository: SellerProfileRepository,
+		@Inject(MediaItemRepository)
+		private readonly mediaItemRepository: MediaItemRepository,
 	) {}
 
 	async handle(
@@ -102,6 +106,11 @@ export class UpdateTextileProductUseCase {
 				throw new NotFoundException('Community not found');
 			}
 		}
+
+		await validateTextileProductBaseInfoMedia(
+			this.mediaItemRepository,
+			dto.baseInfo.mediaIds,
+		);
 
 		// Validate detailTraceability solo si existe
 		if (dto.detailTraceability) {

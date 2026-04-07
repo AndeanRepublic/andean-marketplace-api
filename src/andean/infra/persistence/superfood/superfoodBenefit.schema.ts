@@ -3,8 +3,8 @@ import { Document, Schema } from 'mongoose';
 export const SuperfoodBenefitSchema = new Schema({
 	name: { type: String, required: true },
 	description: { type: String, required: true },
-	hexCodeColor: { type: String, required: false },
-	iconId: { type: String }, // Reference to MediaItem
+	hexCodeColor: { type: String, required: true },
+	iconId: { type: String, required: true }, // Reference to MediaItem
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 });
@@ -12,8 +12,8 @@ export const SuperfoodBenefitSchema = new Schema({
 export interface SuperfoodBenefitDocument extends Document {
 	name: string;
 	description: string;
-	hexCodeColor?: string;
-	iconId?: string;
+	hexCodeColor: string;
+	iconId: string;
 	createdAt: Date;
 	updatedAt: Date;
 }

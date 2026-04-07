@@ -2,6 +2,7 @@ import {
 	Controller,
 	Get,
 	Post,
+	Patch,
 	Put,
 	Delete,
 	Body,
@@ -39,6 +40,8 @@ import { ProductSortBy } from '../../../domain/enums/ProductSortBy';
 import { GetByIdSuperfoodProductDetailUseCase } from '../../../app/use_cases/superfoods/GetByIdSuperfoodProductDetailUseCase';
 import { GetSuperfoodProductByIdUseCase } from '../../../app/use_cases/superfoods/GetSuperfoodProductByIdUseCase';
 import { SuperfoodProductDetailResponse } from '../../../app/models/superfoods/SuperfoodProductDetailResponse';
+import { UpdateSuperfoodStatusUseCase } from '../../../app/use_cases/superfoods/UpdateSuperfoodStatusUseCase';
+import { UpdateSuperfoodStatusDto } from '../dto/superfoods/UpdateSuperfoodStatusDto';
 
 @ApiTags('Superfoods')
 @Controller('superfoods')
@@ -50,6 +53,7 @@ export class SuperfoodController {
 		private readonly deleteSuperfoodProductUseCase: DeleteSuperfoodProductUseCase,
 		private readonly getByIdSuperfoodProductDetailUseCase: GetByIdSuperfoodProductDetailUseCase,
 		private readonly getSuperfoodProductByIdUseCase: GetSuperfoodProductByIdUseCase,
+		private readonly updateSuperfoodStatusUseCase: UpdateSuperfoodStatusUseCase,
 	) {}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
@@ -256,6 +260,22 @@ export class SuperfoodController {
 		return this.updateSuperfoodProductUseCase.handle(
 			productId,
 			dto,
+			requestingUser.userId,
+			requestingUser.roles,
+		);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Patch('/:productId/status')
+	async updateSuperfoodStatus(
+		@Param('productId') productId: string,
+		@Body() dto: UpdateSuperfoodStatusDto,
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
+	): Promise<SuperfoodProduct> {
+		return this.updateSuperfoodStatusUseCase.handle(
+			productId,
+			dto.status,
 			requestingUser.userId,
 			requestingUser.roles,
 		);

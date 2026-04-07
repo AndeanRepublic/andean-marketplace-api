@@ -25,6 +25,7 @@ import { GetAllSealsUseCase } from './app/use_cases/community/GetAllSealsUseCase
 import { GetByIdSealUseCase } from './app/use_cases/community/GetByIdSealUseCase';
 import { UpdateSealUseCase } from './app/use_cases/community/UpdateSealUseCase';
 import { DeleteSealUseCase } from './app/use_cases/community/DeleteSealUseCase';
+import { UpdateCommunityStatusUseCase } from './app/use_cases/community/UpdateCommunityStatusUseCase';
 
 // Modules
 import { MediaItemModule } from './mediaItem.module';
@@ -65,6 +66,7 @@ import { CommunityController } from './infra/controllers/community.controller';
 		GetByIdSealUseCase,
 		UpdateSealUseCase,
 		DeleteSealUseCase,
+		UpdateCommunityStatusUseCase,
 	],
 	exports: [CommunityRepository, SealRepository],
 })

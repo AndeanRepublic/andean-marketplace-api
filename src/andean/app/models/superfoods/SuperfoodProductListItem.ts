@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { SuperfoodProductStatus } from '../../../domain/enums/SuperfoodProductStatus';
 
 export class MediaInfo {
 	@ApiProperty({
@@ -73,6 +74,9 @@ export class SuperfoodProductListItem {
 		example: 40,
 	})
 	totalStock!: number;
+
+	@ApiProperty({ description: 'Estado del producto', enum: SuperfoodProductStatus })
+	status!: SuperfoodProductStatus;
 
 	@ApiProperty({
 		description: 'Imagen principal del producto',

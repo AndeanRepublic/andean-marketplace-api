@@ -46,6 +46,8 @@ import { Community } from '../../domain/entities/community/Community';
 import { Seal } from '../../domain/entities/community/Seal';
 import { ProviderInfo } from '../../domain/entities/ProviderInfo';
 import { MediaUrlResolver } from '../services/media/MediaUrlResolver';
+import { UpdateCommunityStatusUseCase } from '../../app/use_cases/community/UpdateCommunityStatusUseCase';
+import { UpdateEntityStatusDto } from './dto/UpdateEntityStatusDto';
 
 const path_seals = 'seals';
 const path_seals_id = 'seals/:id';
@@ -66,6 +68,7 @@ export class CommunityController {
 		private readonly updateSealUseCase: UpdateSealUseCase,
 		private readonly deleteSealUseCase: DeleteSealUseCase,
 		private readonly mediaUrlResolver: MediaUrlResolver,
+		private readonly updateCommunityStatusUseCase: UpdateCommunityStatusUseCase,
 	) {}
 
 	@Public()
@@ -195,6 +198,19 @@ export class CommunityController {
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Patch(':id/status')
+	@ApiOperation({ summary: 'Update community status' })
+	async updateStatus(
+		@Param('id') id: string,
+		@Body() dto: UpdateEntityStatusDto,
+	): Promise<CommunityDetailResponse> {
+		await this.updateCommunityStatusUseCase.execute(id, dto.status);
+		const community = await this.getCommunityByIdUseCase.execute(id);
+		return this.toDetailResponse(community);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Delete(':id')
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@ApiOperation({ summary: 'Delete community' })
@@ -253,6 +269,7 @@ export class CommunityController {
 		return {
 			id: community.id,
 			name: community.name,
+			status: community.status,
 			createdAt: community.createdAt,
 			updatedAt: community.updatedAt,
 		};
