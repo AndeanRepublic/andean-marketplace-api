@@ -59,4 +59,13 @@ export class AccountRepoImpl extends AccountRepository {
 			.findByIdAndUpdate(accountId, { type: roles })
 			.exec();
 	}
+
+	async updatePassword(
+		accountId: string,
+		hashedPassword: string,
+	): Promise<void> {
+		await this.accountModel
+			.findByIdAndUpdate(accountId, { password: hashedPassword })
+			.exec();
+	}
 }
