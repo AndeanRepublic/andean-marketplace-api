@@ -12,6 +12,7 @@ import { SuperfoodSalesUnitSizeSchema } from './infra/persistence/superfood/supe
 import { SuperfoodProductPresentationSchema } from './infra/persistence/superfood/superfoodProductPresentation.schema';
 import { SuperfoodTypeSchema } from './infra/persistence/superfood/superfoodType.schema';
 import { SuperfoodColorCatalogSchema } from './infra/persistence/superfood/superfoodColor.schema';
+import { SuperfoodSizeOptionAlternativeSchema } from './infra/persistence/superfood/superfoodSizeOptionAlternative.schema';
 
 // Controllers
 import { SuperfoodController } from './infra/controllers/superfoodControllers/superfood.controller';
@@ -109,6 +110,7 @@ import { SuperfoodCertificationRepository } from './app/datastore/superfoods/Sup
 import { SuperfoodSalesUnitSizeRepository } from './app/datastore/superfoods/SuperfoodSalesUnitSize.repo';
 import { SuperfoodProductPresentationRepository } from './app/datastore/superfoods/SuperfoodProductPresentation.repo';
 import { SuperfoodColorRepository } from './app/datastore/superfoods/SuperfoodColor.repo';
+import { SuperfoodSizeOptionAlternativeRepository } from './app/datastore/superfoods/SuperfoodSizeOptionAlternative.repo';
 
 // Repositories (Implementation)
 import { SuperfoodProductRepoImpl } from './infra/datastore/superfood/superfoodProduct.repo.impl';
@@ -121,6 +123,7 @@ import { SuperfoodCertificationRepoImpl } from './infra/datastore/superfood/supe
 import { SuperfoodSalesUnitSizeRepoImpl } from './infra/datastore/superfood/superfoodSalesUnitSize.repo.impl';
 import { SuperfoodProductPresentationRepoImpl } from './infra/datastore/superfood/superfoodProductPresentation.repo.impl';
 import { SuperfoodColorRepoImpl } from './infra/datastore/superfood/superfoodColor.repo.impl';
+import { SuperfoodSizeOptionAlternativeRepoImpl } from './infra/datastore/superfood/superfoodSizeOptionAlternative.repo.impl';
 
 // Other modules
 import { ShopsModule } from './shop.module';
@@ -170,6 +173,10 @@ import { SuperfoodProductListMediaResolver } from './infra/services/superfood/Su
 			},
 			{ name: 'SuperfoodType', schema: SuperfoodTypeSchema },
 			{ name: 'SuperfoodColor', schema: SuperfoodColorCatalogSchema },
+			{
+				name: 'SuperfoodSizeOptionAlternative',
+				schema: SuperfoodSizeOptionAlternativeSchema,
+			},
 			{ name: 'Review', schema: ReviewSchema },
 			{ name: 'Account', schema: AccountSchema },
 		]),
@@ -322,6 +329,10 @@ import { SuperfoodProductListMediaResolver } from './infra/services/superfood/Su
 			useClass: SuperfoodColorRepoImpl,
 		},
 		{
+			provide: SuperfoodSizeOptionAlternativeRepository,
+			useClass: SuperfoodSizeOptionAlternativeRepoImpl,
+		},
+		{
 			provide: ReviewRepository,
 			useClass: ReviewRepositoryImpl,
 		},
@@ -341,6 +352,7 @@ import { SuperfoodProductListMediaResolver } from './infra/services/superfood/Su
 		SuperfoodSalesUnitSizeRepository,
 		SuperfoodProductPresentationRepository,
 		SuperfoodColorRepository,
+		SuperfoodSizeOptionAlternativeRepository,
 		ReviewRepository,
 		MongooseModule,
 	],

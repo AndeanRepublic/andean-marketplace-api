@@ -64,13 +64,17 @@ export class SourceProductInfoResponse {
 
 // ── Nutritional items ────────────────────────────────────────────────────
 export class StrikingNutritionalItemResponse {
-	@ApiProperty() quantity!: string;
+	@ApiProperty() quantityNumber!: number;
+	@ApiProperty({ enum: ['g', 'mg', 'µg', 'kcal', 'cal', 'kJ'] })
+	quantityUnit!: 'g' | 'mg' | 'µg' | 'kcal' | 'cal' | 'kJ';
 	@ApiProperty() name!: string;
 	@ApiProperty() strikingFeature!: string;
 }
 
 export class NutritionalItemResponse {
-	@ApiProperty() quantity!: string;
+	@ApiProperty() quantityNumber!: number;
+	@ApiProperty({ enum: ['g', 'mg', 'µg', 'kcal', 'cal', 'kJ'] })
+	quantityUnit!: 'g' | 'mg' | 'µg' | 'kcal' | 'cal' | 'kJ';
 	@ApiProperty() name!: string;
 }
 

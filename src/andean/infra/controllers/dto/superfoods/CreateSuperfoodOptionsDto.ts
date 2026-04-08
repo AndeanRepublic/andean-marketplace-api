@@ -1,7 +1,9 @@
 import {
 	IsArray,
+	IsIn,
 	IsEnum,
 	IsNotEmpty,
+	IsNumber,
 	IsOptional,
 	IsString,
 	ValidateNested,
@@ -32,6 +34,61 @@ export class CreateSuperfoodOptionsItemDto {
 	@IsString()
 	@IsOptional()
 	idOptionAlternative?: string;
+
+	@ApiProperty({
+		description: 'Valor numérico del tamaño de empaque',
+		example: 1,
+		required: false,
+	})
+	@IsNumber()
+	@IsOptional()
+	sizeNumber?: number;
+
+	@ApiProperty({
+		description: 'Unidad del tamaño de empaque',
+		enum: ['g', 'mg', 'kg'],
+		example: 'kg',
+		required: false,
+	})
+	@IsIn(['g', 'mg', 'kg'])
+	@IsOptional()
+	sizeUnit?: 'g' | 'mg' | 'kg';
+
+	@ApiProperty({
+		description: 'Cantidad de porciones por empaque',
+		example: 30,
+		required: false,
+	})
+	@IsNumber()
+	@IsOptional()
+	servingsPerContainer?: number;
+
+	@ApiProperty({
+		description: 'Precio de la variante',
+		example: 39.9,
+		required: false,
+	})
+	@IsNumber()
+	@IsOptional()
+	price?: number;
+
+	@ApiProperty({
+		description: 'Stock de la variante',
+		example: 100,
+		required: false,
+	})
+	@IsNumber()
+	@IsOptional()
+	stock?: number;
+
+	@ApiProperty({
+		description: 'SKU de la variante',
+		example: 'SF-1KG-001',
+		required: false,
+	})
+	@IsString()
+	@IsOptional()
+	sku?: string;
 }
 
 export class CreateSuperfoodOptionsDto {

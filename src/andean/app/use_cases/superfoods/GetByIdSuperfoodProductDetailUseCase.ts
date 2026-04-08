@@ -139,13 +139,15 @@ export class GetByIdSuperfoodProductDetailUseCase {
 		const strikingNutritionalItems = servingNutritionItems
 			.filter((item) => item.selected)
 			.map((item) => ({
-				quantity: item.quantity,
+				quantityNumber: item.quantityNumber,
+				quantityUnit: item.quantityUnit,
 				name: item.nutrient,
 				strikingFeature: item.strikingFeature,
 			}));
 
 		const nutritionalInformation = servingNutritionItems.map((item) => ({
-			quantity: item.quantity,
+			quantityNumber: item.quantityNumber,
+			quantityUnit: item.quantityUnit,
 			name: item.nutrient,
 		}));
 

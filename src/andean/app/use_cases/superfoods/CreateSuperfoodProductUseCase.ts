@@ -18,6 +18,8 @@ import { SuperfoodCertificationRepository } from '../../datastore/superfoods/Sup
 import { SuperfoodPreservationMethodRepository } from '../../datastore/superfoods/SuperfoodPreservationMethod.repo';
 import { DetailSourceProductRepository } from '../../datastore/DetailSourceProduct.repo';
 import { SuperfoodOptionName } from '../../../domain/enums/SuperfoodOptionName';
+import { SuperfoodSizeOptionAlternativeRepository } from '../../datastore/superfoods/SuperfoodSizeOptionAlternative.repo';
+import { SuperfoodSizeOptionAlternativeMapper } from '../../../infra/services/superfood/SuperfoodSizeOptionAlternativeMapper';
 
 @Injectable()
 export class CreateSuperfoodProductUseCase {
@@ -45,6 +47,8 @@ export class CreateSuperfoodProductUseCase {
 
 		@Inject(DetailSourceProductRepository)
 		private readonly detailSourceProductRepository: DetailSourceProductRepository,
+		@Inject(SuperfoodSizeOptionAlternativeRepository)
+		private readonly superfoodSizeOptionAlternativeRepository: SuperfoodSizeOptionAlternativeRepository,
 
 		private readonly createDetailSourceProductUseCase: CreateDetailSourceProductUseCase,
 	) {}
@@ -104,13 +108,41 @@ export class CreateSuperfoodProductUseCase {
 
 			if (option.name === SuperfoodOptionName.SIZE) {
 				for (const value of option.values) {
-					if (!value.idOptionAlternative?.trim()) {
+					if (
+						typeof value.sizeNumber !== 'number' ||
+						!value.sizeUnit ||
+						typeof value.servingsPerContainer !== 'number'
+					) {
 						throw new BadRequestException(
-							'Each SIZE option value requires idOptionAlternative',
+							'Each SIZE option value requires sizeNumber, sizeUnit, and servingsPerContainer',
 						);
 					}
 				}
 			}
+		}
+	}
+
+	private async createSizeAlternativesForOptions(dto: CreateSuperfoodDto): Promise<void> {
+		if (!dto.options?.length) return;
+		for (const option of dto.options) {
+			if (option.name !== SuperfoodOptionName.SIZE || !option.values.length) {
+				continue;
+			}
+			const created =
+				await this.superfoodSizeOptionAlternativeRepository.createMany(
+					option.values.map((value) =>
+						SuperfoodSizeOptionAlternativeMapper.fromInput({
+							sizeNumber: value.sizeNumber!,
+							sizeUnit: value.sizeUnit!,
+							servingsPerContainer: value.servingsPerContainer!,
+						}),
+					),
+				);
+			option.values = option.values.map((value, idx) => ({
+				...value,
+				idOptionAlternative: created[idx]?.id,
+				label: created[idx]?.nameLabel ?? value.label,
+			}));
 		}
 	}
 
@@ -155,6 +187,7 @@ export class CreateSuperfoodProductUseCase {
 
 		await this.validateDetailTraceability(dto.detailTraceability);
 		this.validateOptions(dto);
+		await this.createSizeAlternativesForOptions(dto);
 
 		// 4. Si viene detailSourceProduct, crearlo primero
 		let detailSourceProductId: string | undefined;

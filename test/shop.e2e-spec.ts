@@ -22,6 +22,7 @@ import { CreateShopUseCase } from '../src/andean/app/use_cases/shops/CreateShopU
 import { DeleteShopUseCase } from '../src/andean/app/use_cases/shops/DeleteShopUseCase';
 import { UpdateShopUseCase } from '../src/andean/app/use_cases/shops/UpdateShopUseCase';
 import { ListAllShopsUseCase } from '../src/andean/app/use_cases/shops/ListAllShopsUseCase';
+import { UpdateShopStatusUseCase } from '../src/andean/app/use_cases/shops/UpdateShopStatusUseCase';
 import { MediaUrlResolver } from '../src/andean/infra/services/media/MediaUrlResolver';
 
 describe('ShopController (e2e) — ownership', () => {
@@ -68,6 +69,10 @@ describe('ShopController (e2e) — ownership', () => {
 				},
 				{
 					provide: UpdateShopUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue(mockShop) },
+				},
+				{
+					provide: UpdateShopStatusUseCase,
 					useValue: { handle: jest.fn().mockResolvedValue(mockShop) },
 				},
 				{

@@ -24,6 +24,8 @@ import { SuperfoodCertificationRepository } from '../../datastore/superfoods/Sup
 import { SuperfoodPreservationMethodRepository } from '../../datastore/superfoods/SuperfoodPreservationMethod.repo';
 import { DetailSourceProductRepository } from '../../datastore/DetailSourceProduct.repo';
 import { SuperfoodOptionName } from '../../../domain/enums/SuperfoodOptionName';
+import { SuperfoodSizeOptionAlternativeRepository } from '../../datastore/superfoods/SuperfoodSizeOptionAlternative.repo';
+import { SuperfoodSizeOptionAlternativeMapper } from '../../../infra/services/superfood/SuperfoodSizeOptionAlternativeMapper';
 
 @Injectable()
 export class UpdateSuperfoodProductUseCase {
@@ -52,6 +54,8 @@ export class UpdateSuperfoodProductUseCase {
 
 		@Inject(DetailSourceProductRepository)
 		private readonly detailSourceProductRepository: DetailSourceProductRepository,
+		@Inject(SuperfoodSizeOptionAlternativeRepository)
+		private readonly superfoodSizeOptionAlternativeRepository: SuperfoodSizeOptionAlternativeRepository,
 	) {}
 
 	private async validateDetailTraceability(
@@ -109,13 +113,51 @@ export class UpdateSuperfoodProductUseCase {
 
 			if (option.name === SuperfoodOptionName.SIZE) {
 				for (const value of option.values) {
-					if (!value.idOptionAlternative?.trim()) {
+					if (
+						typeof value.sizeNumber !== 'number' ||
+						!value.sizeUnit ||
+						typeof value.servingsPerContainer !== 'number'
+					) {
 						throw new BadRequestException(
-							'Each SIZE option value requires idOptionAlternative',
+							'Each SIZE option value requires sizeNumber, sizeUnit, and servingsPerContainer',
 						);
 					}
 				}
 			}
+		}
+	}
+
+	private collectExistingSizeAlternativeIds(existingProduct: SuperfoodProduct): string[] {
+		return (existingProduct.options ?? [])
+			.filter((option) => option.name === SuperfoodOptionName.SIZE)
+			.flatMap((option) =>
+				option.values
+					.map((value) => value.idOptionAlternative?.trim())
+					.filter((id): id is string => Boolean(id)),
+			);
+	}
+
+	private async replaceSizeAlternatives(dto: CreateSuperfoodDto): Promise<void> {
+		if (!dto.options?.length) return;
+		for (const option of dto.options) {
+			if (option.name !== SuperfoodOptionName.SIZE || !option.values.length) {
+				continue;
+			}
+			const created =
+				await this.superfoodSizeOptionAlternativeRepository.createMany(
+					option.values.map((value) =>
+						SuperfoodSizeOptionAlternativeMapper.fromInput({
+							sizeNumber: value.sizeNumber!,
+							sizeUnit: value.sizeUnit!,
+							servingsPerContainer: value.servingsPerContainer!,
+						}),
+					),
+				);
+			option.values = option.values.map((value, idx) => ({
+				...value,
+				idOptionAlternative: created[idx]?.id,
+				label: created[idx]?.nameLabel ?? value.label,
+			}));
 		}
 	}
 
@@ -169,6 +211,12 @@ export class UpdateSuperfoodProductUseCase {
 
 		await this.validateDetailTraceability(dto.detailTraceability);
 		this.validateOptions(dto);
+		const oldSizeAlternativeIds =
+			this.collectExistingSizeAlternativeIds(existingProduct);
+		await this.superfoodSizeOptionAlternativeRepository.deleteManyByIds(
+			oldSizeAlternativeIds,
+		);
+		await this.replaceSizeAlternatives(dto);
 
 		// 3. Validar ownerId según ownerType solo si existe en el DTO
 		if (dto.baseInfo?.ownerType === OwnerType.SHOP) {

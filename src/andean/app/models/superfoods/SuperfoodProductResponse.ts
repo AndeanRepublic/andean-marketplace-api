@@ -111,8 +111,15 @@ export class SuperfoodDetailProductResponse {
 }
 
 export class SuperfoodNutritionalItemResponse {
-	@ApiProperty({ description: 'Cantidad del nutriente', example: '20g' })
-	quantity!: string;
+	@ApiProperty({ description: 'Cantidad numérica del nutriente', example: 20 })
+	quantityNumber!: number;
+
+	@ApiProperty({
+		description: 'Unidad de la cantidad del nutriente',
+		enum: ['g', 'mg', 'µg', 'kcal', 'cal', 'kJ'],
+		example: 'g',
+	})
+	quantityUnit!: 'g' | 'mg' | 'µg' | 'kcal' | 'cal' | 'kJ';
 
 	@ApiProperty({ description: 'Nombre del nutriente', example: 'Proteína' })
 	nutrient!: string;
@@ -227,6 +234,24 @@ export class SuperfoodOptionsItemResponse {
 		description: 'ID de alternativa de opción (catálogo de tallas)',
 	})
 	idOptionAlternative?: string;
+
+	@ApiPropertyOptional({ description: 'Tamaño numérico del empaque' })
+	sizeNumber?: number;
+
+	@ApiPropertyOptional({ description: 'Unidad del tamaño', enum: ['g', 'mg', 'kg'] })
+	sizeUnit?: 'g' | 'mg' | 'kg';
+
+	@ApiPropertyOptional({ description: 'Porciones por empaque' })
+	servingsPerContainer?: number;
+
+	@ApiPropertyOptional({ description: 'Precio de la variante' })
+	price?: number;
+
+	@ApiPropertyOptional({ description: 'Stock de la variante' })
+	stock?: number;
+
+	@ApiPropertyOptional({ description: 'SKU de la variante' })
+	sku?: string;
 }
 
 export class SuperfoodOptionsResponse {
