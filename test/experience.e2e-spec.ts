@@ -21,6 +21,7 @@ import { UpdateExperienceUseCase } from '../src/andean/app/use_cases/experiences
 import { DeleteExperienceUseCase } from '../src/andean/app/use_cases/experiences/DeleteExperienceUseCase';
 import { GetAllExperiencesUseCase } from '../src/andean/app/use_cases/experiences/GetAllExperiencesUseCase';
 import { GetByIdExperienceUseCase } from '../src/andean/app/use_cases/experiences/GetByIdExperienceUseCase';
+import { UpdateExperienceStatusUseCase } from '../src/andean/app/use_cases/experiences/UpdateExperienceStatusUseCase';
 
 import { ExperienceStatus } from '../src/andean/domain/enums/ExperienceStatus';
 import { Experience } from '../src/andean/domain/entities/experiences/Experience';
@@ -80,6 +81,10 @@ describe('ExperienceController (e2e)', () => {
 					useValue: {
 						handle: jest.fn().mockResolvedValue(mockDetailResponse),
 					},
+				},
+				{
+					provide: UpdateExperienceStatusUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue(mockExperience) },
 				},
 			],
 		})
@@ -867,6 +872,10 @@ describe('ExperienceController (e2e)', () => {
 							handle: jest.fn().mockResolvedValue(mockDetailResponse),
 						},
 					},
+					{
+						provide: UpdateExperienceStatusUseCase,
+						useValue: { handle: jest.fn().mockResolvedValue(mockExperience) },
+					},
 				],
 			})
 				.overrideGuard(JwtAuthGuard)
@@ -1065,6 +1074,10 @@ describe('ExperienceController (e2e)', () => {
 							useValue: {
 								handle: jest.fn().mockResolvedValue(mockDetailResponse),
 							},
+						},
+						{
+							provide: UpdateExperienceStatusUseCase,
+							useValue: { handle: jest.fn().mockResolvedValue(mockExperience) },
 						},
 					],
 				})

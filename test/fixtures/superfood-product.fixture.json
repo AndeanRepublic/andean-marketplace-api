@@ -29,13 +29,34 @@
 			"currency": "PEN",
 			"SKU": "QUINUA-PREM-001"
 		},
-		"nutritionalContent": [
+		"servingNutrition": {
+			"servingSize": 30,
+			"servingUnit": "g",
+			"servingNutritionalContent": [
+				{
+					"nutrient": "Proteína",
+					"quantityNumber": 14,
+					"quantityUnit": "g",
+					"strikingFeature": "—",
+					"selected": false
+				}
+			]
+		},
+		"options": [
 			{
-				"id": "nutri-row-001",
-				"nutrient": "Proteína",
-				"quantity": "14g",
-				"strikingFeature": "—",
-				"selected": false
+				"name": "SIZE",
+				"values": [
+					{
+						"label": "500 g",
+						"idOptionAlternative": "size-alt-500g",
+						"sizeNumber": 500,
+						"sizeUnit": "g",
+						"servingsPerContainer": 16.67,
+						"price": 25.5,
+						"stock": 100,
+						"sku": "QUINUA-PREM-500G"
+					}
+				]
 			}
 		],
 		"colorId": "507f1f77bcf86cd799439011",
@@ -73,12 +94,33 @@
 			"currency": "PEN",
 			"SKU": "QUINUA-PREM-001"
 		},
-		"nutritionalContent": [
+		"servingNutrition": {
+			"servingSize": 30,
+			"servingUnit": "g",
+			"servingNutritionalContent": [
+				{
+					"nutrient": "Proteína",
+					"quantityNumber": 14,
+					"quantityUnit": "g",
+					"strikingFeature": "—",
+					"selected": false
+				}
+			]
+		},
+		"options": [
 			{
-				"nutrient": "Proteína",
-				"quantity": "14g",
-				"strikingFeature": "—",
-				"selected": false
+				"name": "SIZE",
+				"values": [
+					{
+						"label": "500 g",
+						"sizeNumber": 500,
+						"sizeUnit": "g",
+						"servingsPerContainer": 16.67,
+						"price": 25.5,
+						"stock": 100,
+						"sku": "QUINUA-PREM-500G"
+					}
+				]
 			}
 		],
 		"colorId": "507f1f77bcf86cd799439011",
@@ -122,12 +164,33 @@
 			"currency": "USD",
 			"SKU": "QUINUA-PREM-001"
 		},
-		"nutritionalContent": [
+		"servingNutrition": {
+			"servingSize": 30,
+			"servingUnit": "g",
+			"servingNutritionalContent": [
+				{
+					"nutrient": "Proteína",
+					"quantityNumber": 15,
+					"quantityUnit": "g",
+					"strikingFeature": "—",
+					"selected": false
+				}
+			]
+		},
+		"options": [
 			{
-				"nutrient": "Proteína",
-				"quantity": "15g",
-				"strikingFeature": "—",
-				"selected": false
+				"name": "SIZE",
+				"values": [
+					{
+						"label": "1 kg",
+						"sizeNumber": 1,
+						"sizeUnit": "kg",
+						"servingsPerContainer": 33.33,
+						"price": 30,
+						"stock": 150,
+						"sku": "QUINUA-PREM-1KG"
+					}
+				]
 			}
 		],
 		"colorId": "507f191e810c19729de860ea",
@@ -262,7 +325,6 @@
 		},
 		"strikingNutritionalItems": [
 			{
-				"id": "nutri-001",
 				"quantity": "14g",
 				"name": "Proteína",
 				"strikingFeature": "Alto contenido"
@@ -270,12 +332,10 @@
 		],
 		"nutritionalInformation": [
 			{
-				"id": "nutri-001",
 				"quantity": "14g",
 				"name": "Proteína"
 			},
 			{
-				"id": "nutri-002",
 				"quantity": "7g",
 				"name": "Fibra"
 			}
