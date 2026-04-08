@@ -9,6 +9,7 @@ import {
 	Font,
 	Row,
 	Column,
+	Img,
 } from '@react-email/components';
 import * as React from 'react';
 import { OrderConfirmationEmailData } from '../../../../app/datastore/Email.repo';
@@ -17,10 +18,10 @@ interface OrderConfirmationTemplateProps {
 	data: OrderConfirmationEmailData;
 }
 
-const ACCENT = '#A17840';
+const ACCENT = '#3067b0';
 const TEXT = '#191919';
 const BACKGROUND = '#ffffff';
-const BORDER_COLOR = '#e5e0d8';
+const BORDER_COLOR = '#3067b0';
 
 function formatCurrency(amount: number): string {
 	return `$${amount.toFixed(2)}`;
@@ -95,18 +96,16 @@ export function OrderConfirmationTemplate({
 							textAlign: 'center',
 						}}
 					>
-						<Text
+						<Img
+							src="https://andean-marketplace-front-production.up.railway.app/img/Header/logo-white.png"
+							alt="Andean Republic"
+							width={198}
+							height={65}
 							style={{
-								color: '#ffffff',
-								fontSize: '24px',
-								fontWeight: '700',
-								letterSpacing: '2px',
-								margin: 0,
-								textTransform: 'uppercase',
+								display: 'block',
+								margin: '0 auto',
 							}}
-						>
-							Andean Marketplace
-						</Text>
+						/>
 					</Section>
 
 					{/* Body */}
