@@ -111,9 +111,6 @@ export class SuperfoodDetailProductResponse {
 }
 
 export class SuperfoodNutritionalItemResponse {
-	@ApiProperty({ description: 'ID del item nutricional' })
-	id!: string;
-
 	@ApiProperty({ description: 'Cantidad del nutriente', example: '20g' })
 	quantity!: string;
 
@@ -216,9 +213,6 @@ export class SuperfoodDetailTraceabilityResponse {
 }
 
 export class SuperfoodOptionsItemResponse {
-	@ApiProperty({ description: 'ID del item de opción' })
-	id!: string;
-
 	@ApiProperty({ description: 'Etiqueta del item', example: 'Rojo' })
 	label!: string;
 
@@ -228,14 +222,16 @@ export class SuperfoodOptionsItemResponse {
 		required: false,
 	})
 	images?: string[];
+
+	@ApiPropertyOptional({
+		description: 'ID de alternativa de opción (catálogo de tallas)',
+	})
+	idOptionAlternative?: string;
 }
 
 export class SuperfoodOptionsResponse {
-	@ApiProperty({ description: 'ID de la opción' })
-	id!: string;
-
-	@ApiProperty({ description: 'Nombre de la opción', example: 'Color' })
-	name!: string;
+	@ApiProperty({ description: 'Nombre de la opción', example: 'SIZE' })
+	name!: 'SIZE';
 
 	@ApiProperty({
 		description: 'Valores de la opción',
@@ -276,10 +272,13 @@ export class SuperfoodProductResponse {
 	detailProduct?: SuperfoodDetailProductResponse;
 
 	@ApiPropertyOptional({
-		type: [SuperfoodNutritionalItemResponse],
-		description: 'Contenido nutricional',
+		description: 'Contenido nutricional por porción',
 	})
-	nutritionalContent?: SuperfoodNutritionalItemResponse[];
+	servingNutrition?: {
+		servingSize: number;
+		servingUnit: 'g' | 'mg';
+		servingNutritionalContent: SuperfoodNutritionalItemResponse[];
+	};
 
 	@ApiPropertyOptional({
 		type: SuperfoodDetailTraceabilityResponse,

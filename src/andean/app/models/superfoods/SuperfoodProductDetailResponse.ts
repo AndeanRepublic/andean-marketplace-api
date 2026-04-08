@@ -64,14 +64,12 @@ export class SourceProductInfoResponse {
 
 // ── Nutritional items ────────────────────────────────────────────────────
 export class StrikingNutritionalItemResponse {
-	@ApiProperty() id!: string;
 	@ApiProperty() quantity!: string;
 	@ApiProperty() name!: string;
 	@ApiProperty() strikingFeature!: string;
 }
 
 export class NutritionalItemResponse {
-	@ApiProperty() id!: string;
 	@ApiProperty() quantity!: string;
 	@ApiProperty() name!: string;
 }

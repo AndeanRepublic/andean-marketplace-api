@@ -1,5 +1,6 @@
 import {
 	IsArray,
+	IsEnum,
 	IsNotEmpty,
 	IsOptional,
 	IsString,
@@ -7,12 +8,13 @@ import {
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+import { SuperfoodOptionName } from '../../../../domain/enums/SuperfoodOptionName';
 
 export class CreateSuperfoodOptionsItemDto {
 	@ApiProperty({ description: 'Etiqueta del item de opción', example: 'Rojo' })
 	@IsString()
 	@IsNotEmpty()
-	label: string;
+	label!: string;
 
 	@ApiProperty({
 		description: 'IDs de MediaItems',
@@ -22,13 +24,25 @@ export class CreateSuperfoodOptionsItemDto {
 	@IsArray()
 	@IsOptional()
 	mediaIds?: string[];
+
+	@ApiProperty({
+		description: 'ID de alternativa de talla para esta opción',
+		required: false,
+	})
+	@IsString()
+	@IsOptional()
+	idOptionAlternative?: string;
 }
 
 export class CreateSuperfoodOptionsDto {
-	@ApiProperty({ description: 'Nombre de la opción', example: 'Color' })
-	@IsString()
+	@ApiProperty({
+		description: 'Nombre de la opción',
+		enum: SuperfoodOptionName,
+		example: SuperfoodOptionName.SIZE,
+	})
+	@IsEnum(SuperfoodOptionName)
 	@IsNotEmpty()
-	name: string;
+	name!: SuperfoodOptionName;
 
 	@ApiProperty({
 		description: 'Valores de la opción',
@@ -37,5 +51,5 @@ export class CreateSuperfoodOptionsDto {
 	@IsArray()
 	@ValidateNested({ each: true })
 	@Type(() => CreateSuperfoodOptionsItemDto)
-	values: CreateSuperfoodOptionsItemDto[];
+	values!: CreateSuperfoodOptionsItemDto[];
 }

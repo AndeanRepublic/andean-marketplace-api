@@ -2,7 +2,7 @@ import { SuperfoodProductStatus } from '../../enums/SuperfoodProductStatus';
 import { SuperfoodBasicInfo } from './SuperfoodBasicInfo';
 import { SuperfoodDetailProduct } from './SuperfoodDetailProduct';
 import { SuperfoodPriceInventory } from './SuperfoodPriceInventory';
-import { SuperfoodNutritionalItem } from './SuperfoodNutritionalItem';
+import { SuperfoodServingNutrition } from './SuperfoodServingNutrition';
 import { SuperfoodDetailTraceability } from './SuperfoodDetailTraceability';
 import { SuperfoodOptions } from './SuperfoodOptions';
 import { ProductTraceability } from '../ProductTraceability';
@@ -22,7 +22,7 @@ export class SuperfoodProduct {
 		public detailSourceProductId?: string, // Reference to DetailSourceProduct
 		public categoryId?: string, // Reference to SuperfoodCategories
 		public detailProduct?: SuperfoodDetailProduct,
-		public nutritionalContent?: SuperfoodNutritionalItem[],
+		public servingNutrition?: SuperfoodServingNutrition,
 		public detailTraceability?: SuperfoodDetailTraceability,
 		public productTraceability?: ProductTraceability,
 		public options?: SuperfoodOptions[], // Product options (e.g., color, size)

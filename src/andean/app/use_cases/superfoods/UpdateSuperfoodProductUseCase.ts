@@ -23,6 +23,7 @@ import { SuperfoodColorRepository } from '../../datastore/superfoods/SuperfoodCo
 import { SuperfoodCertificationRepository } from '../../datastore/superfoods/SuperfoodCertification.repo';
 import { SuperfoodPreservationMethodRepository } from '../../datastore/superfoods/SuperfoodPreservationMethod.repo';
 import { DetailSourceProductRepository } from '../../datastore/DetailSourceProduct.repo';
+import { SuperfoodOptionName } from '../../../domain/enums/SuperfoodOptionName';
 
 @Injectable()
 export class UpdateSuperfoodProductUseCase {
@@ -89,6 +90,35 @@ export class UpdateSuperfoodProductUseCase {
 		}
 	}
 
+	private validateOptions(dto: CreateSuperfoodDto): void {
+		if (!dto.options?.length) return;
+		const optionNames = dto.options.map((opt) => opt.name);
+		const uniqueOptionNames = new Set(optionNames);
+		if (optionNames.length !== uniqueOptionNames.size) {
+			throw new BadRequestException('Duplicate option names are not allowed');
+		}
+
+		for (const option of dto.options) {
+			const labels = option.values.map((v) => v.label);
+			const uniqueLabels = new Set(labels);
+			if (labels.length !== uniqueLabels.size) {
+				throw new BadRequestException(
+					`Duplicate labels in option ${option.name} are not allowed`,
+				);
+			}
+
+			if (option.name === SuperfoodOptionName.SIZE) {
+				for (const value of option.values) {
+					if (!value.idOptionAlternative?.trim()) {
+						throw new BadRequestException(
+							'Each SIZE option value requires idOptionAlternative',
+						);
+					}
+				}
+			}
+		}
+	}
+
 	async handle(
 		productId: string,
 		dto: CreateSuperfoodDto,
@@ -138,6 +168,7 @@ export class UpdateSuperfoodProductUseCase {
 		}
 
 		await this.validateDetailTraceability(dto.detailTraceability);
+		this.validateOptions(dto);
 
 		// 3. Validar ownerId según ownerType solo si existe en el DTO
 		if (dto.baseInfo?.ownerType === OwnerType.SHOP) {
