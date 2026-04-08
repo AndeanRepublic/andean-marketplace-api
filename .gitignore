@@ -59,3 +59,26 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # Other
 .cursorrules
+
+# SDD/Agent work files
+.atl/
+openspec/
+test/coverage/
+
+# Temp scripts and data
+scripts/fetch-superfood-ids.sh
+scripts/fetch-superfood-ids.ts
+scripts/fix-product-images.js
+scripts/seed-results.json
+scripts/seed-superfood-products.sh
+scripts/superfood-ids-result.json
+scripts/update-product-images.sh
+img_supefood_data.json
+superfood_products_seed.json
+
+# Temp docs
+IMPLEMENTATION_GUIDE.md
+IMPLEMENTATION_STEPS.md
+JWT_AUTH_GUIDE.md
+SUPERFOODS_SECONDARY_APIS.md
+TESTING_GUIDE.md

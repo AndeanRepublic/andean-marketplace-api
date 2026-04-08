@@ -41,4 +41,11 @@ export class AccountReviewRepositoryImpl extends AccountRepository {
 	async updateAccountRoles(_accountId: string, _roles: any[]): Promise<void> {
 		throw new Error('Not implemented: use AccountRepoImpl from UsersModule');
 	}
+
+	async updatePassword(
+		_accountId: string,
+		_hashedPassword: string,
+	): Promise<void> {
+		throw new Error('updatePassword not supported in review-only mode');
+	}
 }

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { CapturePayPalOrderService } from '../../../infra/services/paypal/CapturePayPalOrderService';
 import { CapturePayPalOrderDto } from '../../../infra/controllers/dto/payment/CapturePayPalOrderDto';
 import { CreateOrderFromCartUseCase } from '../orders/CreateOrderFromCartUseCase';
@@ -11,6 +11,7 @@ import { CreateOrderFromCartDto } from '../../../infra/controllers/dto/order/Cre
 import { CreateOrderDto } from '../../../infra/controllers/dto/order/CreateOrderDto';
 import { OrderStatus } from '../../../domain/enums/OrderStatus';
 import { DeliveryOption } from '../../../domain/enums/DeliveryOption';
+import { SendOrderConfirmationUseCase } from '../email/SendOrderConfirmationUseCase';
 
 export interface CapturePayPalOrderResponse {
 	success: boolean;
@@ -22,11 +23,14 @@ export interface CapturePayPalOrderResponse {
 
 @Injectable()
 export class CapturePayPalOrderUseCase {
+	private readonly logger = new Logger(CapturePayPalOrderUseCase.name);
+
 	constructor(
 		private readonly capturePayPalOrderService: CapturePayPalOrderService,
 		private readonly createOrderFromCartUseCase: CreateOrderFromCartUseCase,
 		private readonly createOrderUseCase: CreateOrderUseCase,
 		private readonly reduceStockFromOrderUseCase: ReduceStockFromOrderUseCase,
+		private readonly sendOrderConfirmationUseCase: SendOrderConfirmationUseCase,
 	) {}
 
 	async handle(
@@ -74,10 +78,7 @@ export class CapturePayPalOrderUseCase {
 				}
 				// Validate variantId for TEXTILE products
 				for (const item of dto.items) {
-					if (
-						item.productType === ProductType.TEXTILE &&
-						!item.variantId
-					) {
+					if (item.productType === ProductType.TEXTILE && !item.variantId) {
 						throw new BadRequestException(
 							`variantId is required for TEXTILE product ${item.productId}`,
 						);
@@ -106,6 +107,16 @@ export class CapturePayPalOrderUseCase {
 					'Either customerId (for cart) or customerEmail with items and pricing (for guest) must be provided',
 				);
 			}
+
+			// Fire-and-forget: send confirmation email without blocking the response
+			this.sendOrderConfirmationUseCase
+				.send(order)
+				.catch((err) =>
+					this.logger.error(
+						`Failed to send order confirmation email for order ${order?.id}`,
+						err instanceof Error ? err.stack : String(err),
+					),
+				);
 
 			return {
 				success: true,
