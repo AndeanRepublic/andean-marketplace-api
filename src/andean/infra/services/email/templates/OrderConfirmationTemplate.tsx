@@ -448,10 +448,10 @@ export function OrderConfirmationTemplate({
 						>
 							Questions? Contact us at{' '}
 							<a
-								href="mailto:support@andeanmarketplace.com"
+								href="mailto:hola@andeanrepublic.com"
 								style={{ color: ACCENT }}
 							>
-								support@andeanmarketplace.com
+								hola@andeanrepublic.com
 							</a>
 						</Text>
 						<Text
