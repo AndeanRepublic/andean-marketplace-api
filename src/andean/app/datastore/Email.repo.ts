@@ -21,8 +21,18 @@ export interface SendOrderConfirmationPayload {
 	data: OrderConfirmationEmailData;
 }
 
+export interface PasswordResetEmailData {
+	code: string;
+}
+
+export interface SendPasswordResetPayload {
+	to: string;
+	data: PasswordResetEmailData;
+}
+
 export abstract class EmailRepository {
 	abstract sendOrderConfirmation(
 		payload: SendOrderConfirmationPayload,
 	): Promise<void>;
+	abstract sendPasswordReset(payload: SendPasswordResetPayload): Promise<void>;
 }
