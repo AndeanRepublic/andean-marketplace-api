@@ -14,4 +14,8 @@ export abstract class AccountRepository {
 		accountId: string,
 		roles: AccountRole[],
 	): Promise<void>;
+	abstract updatePassword(
+		accountId: string,
+		hashedPassword: string,
+	): Promise<void>;
 }

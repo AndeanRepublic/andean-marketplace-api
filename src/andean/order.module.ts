@@ -31,6 +31,10 @@ import { SuperfoodStockReducer } from './infra/services/stock/SuperfoodStockRedu
 import { BoxStockReducer } from './infra/services/stock/BoxStockReducer';
 import { StockReducerRegistry } from './infra/services/stock/StockReducerRegistry';
 import { IStockReducerRegistry } from './infra/services/stock/IStockReducerRegistry';
+import { EmailRepository } from './app/datastore/Email.repo';
+import { SesClientService } from './infra/services/email/SesClientService';
+import { SesEmailRepoImpl } from './infra/datastore/email.repo.impl';
+import { SendOrderConfirmationUseCase } from './app/use_cases/email/SendOrderConfirmationUseCase';
 
 @Module({
 	imports: [
@@ -79,6 +83,13 @@ import { IStockReducerRegistry } from './infra/services/stock/IStockReducerRegis
 			useExisting: StockReducerRegistry,
 		},
 		ReduceStockFromOrderUseCase,
+		// Email Services
+		SesClientService,
+		SendOrderConfirmationUseCase,
+		{
+			provide: EmailRepository,
+			useClass: SesEmailRepoImpl,
+		},
 	],
 	exports: [OrderRepository],
 })
