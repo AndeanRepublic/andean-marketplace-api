@@ -41,6 +41,7 @@ import { GetAllExperiencesUseCase } from './app/use_cases/experiences/GetAllExpe
 import { GetByIdExperienceUseCase } from './app/use_cases/experiences/GetByIdExperienceUseCase';
 import { GetAvailabilityModeByIdUseCase } from './app/use_cases/experiences/GetAvailabilityModeByIdUseCase';
 import { GetFutureUnavailableDatesUseCase } from './app/use_cases/experiences/GetFutureUnavailableDatesUseCase';
+import { UpdateExperienceStatusUseCase } from './app/use_cases/experiences/UpdateExperienceStatusUseCase';
 
 // Strategy
 import { OwnerStrategyResolver } from './infra/services/experiences/OwnerStrategyResolver';
@@ -121,6 +122,7 @@ import { BookingModule } from './booking.module';
 		// Main Use Cases
 		CreateExperienceUseCase,
 		UpdateExperienceUseCase,
+		UpdateExperienceStatusUseCase,
 		DeleteExperienceUseCase,
 		GetAllExperiencesUseCase,
 		GetByIdExperienceUseCase,

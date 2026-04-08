@@ -1,11 +1,29 @@
-import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+	IsBoolean,
+	IsIn,
+	IsNotEmpty,
+	IsNumber,
+	IsOptional,
+	IsString,
+	Min,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateSuperfoodNutritionalDto {
-	@ApiProperty({ description: 'Cantidad del nutriente', example: '20g' })
-	@IsString()
+	@ApiProperty({ description: 'Cantidad numérica del nutriente', example: 20 })
+	@IsNumber()
+	@Min(0)
 	@IsNotEmpty()
-	quantity: string;
+	quantityNumber!: number;
+
+	@ApiProperty({
+		description: 'Unidad de la cantidad del nutriente',
+		enum: ['g', 'mg', 'µg', 'kcal', 'cal', 'kJ'],
+		example: 'g',
+	})
+	@IsIn(['g', 'mg', 'µg', 'kcal', 'cal', 'kJ'])
+	@IsNotEmpty()
+	quantityUnit!: 'g' | 'mg' | 'µg' | 'kcal' | 'cal' | 'kJ';
 
 	@ApiProperty({ description: 'Nombre del nutriente', example: 'Proteína' })
 	@IsString()

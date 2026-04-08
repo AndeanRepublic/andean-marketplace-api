@@ -19,22 +19,24 @@
 			{
 				"name": "Fortalece sistema inmune",
 				"description": "Refuerza las defensas naturales del cuerpo con antioxidantes y vitaminas esenciales.",
-				"hexCodeColor": "#a855f7"
+				"hexCodeColor": "#a855f7",
+				"iconId": "507f1f77bcf86cd799439013"
 			},
 			{
 				"name": "Reduce inflamación",
 				"description": "Ayuda a reducir procesos inflamatorios gracias a sus propiedades antiinflamatorias.",
-				"hexCodeColor": "#ef4444"
+				"hexCodeColor": "#ef4444",
+				"iconId": "507f1f77bcf86cd799439014"
 			}
 		]
 	},
-	"optionalFieldName": "iconId",
 	"additionalEntities": [
 		{
 			"id": "223e4567-e89b-12d3-a456-426614174001",
 			"name": "Fortalece sistema inmune",
 			"description": "Refuerza las defensas naturales del cuerpo con antioxidantes y vitaminas esenciales.",
-			"hexCodeColor": "#a855f7"
+			"hexCodeColor": "#a855f7",
+			"iconId": "507f1f77bcf86cd799439013"
 		}
 	]
 }

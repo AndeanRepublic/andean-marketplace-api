@@ -5,13 +5,16 @@ import { ExperienceMediaInfoMapper } from './ExperienceMediaInfoMapper';
 import { ExperienceDetailInfoMapper } from './ExperienceDetailInfoMapper';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { Types } from 'mongoose';
+import { ExperienceStatus } from '../../../domain/enums/ExperienceStatus';
 
 export class ExperienceMapper {
 	static fromDocument(doc: ExperienceDocument): Experience {
 		const plain = doc.toObject();
 		return new Experience(
 			plain._id.toString(),
-			plain.status,
+			plain.status === ExperienceStatus.PUBLISHED
+				? ExperienceStatus.PUBLISHED
+				: ExperienceStatus.HIDDEN,
 			ExperienceBasicInfoMapper.fromPlain(plain.basicInfo),
 			ExperienceMediaInfoMapper.fromPlain(plain.mediaInfo),
 			ExperienceDetailInfoMapper.fromPlain(plain.detailInfo),

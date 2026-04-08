@@ -1,15 +1,15 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BoxImageResponse } from './BoxImageResponse';
 import { ProductType } from '../../../domain/enums/ProductType';
 
 export type BoxProductType = ProductType.SUPERFOOD | ProductType.TEXTILE;
 
 export class BoxDetailHeroResponse {
-	@ApiProperty({ description: 'Título del box', example: 'Box Andino Premium' })
-	title!: string;
+	@ApiProperty({ description: 'Nombre del box', example: 'Box Andino Premium' })
+	name!: string;
 
-	@ApiProperty({ description: 'Subtítulo del box', example: 'Lo mejor de los Andes' })
-	subtitle!: string;
+	@ApiProperty({ description: 'Eslogan del box', example: 'Lo mejor de los Andes' })
+	slogan!: string;
 
 	@ApiProperty({ description: 'Imagen miniatura del box', type: BoxImageResponse })
 	thumbnailImage!: BoxImageResponse;
@@ -19,8 +19,8 @@ export class BoxDetailHeroResponse {
 }
 
 export class BoxDetailDescriptionResponse {
-	@ApiProperty({ description: 'Descripción detallada del box', example: 'Una selección curada de productos andinos tradicionales.' })
-	description!: string;
+	@ApiProperty({ description: 'Narrativa / descripción del box', example: 'Una selección curada de productos andinos tradicionales.' })
+	narrative!: string;
 
 	@ApiProperty({ description: 'Imágenes adicionales del box', type: [BoxImageResponse] })
 	images!: BoxImageResponse[];
@@ -47,6 +47,12 @@ export class BoxContainedProductResponse {
 
 	@ApiProperty({ description: 'Precio final del producto', example: 69.99 })
 	price!: number;
+
+	@ApiPropertyOptional({
+		description: 'Imagen narrativa del ítem en el box',
+		type: BoxImageResponse,
+	})
+	narrativeImage?: BoxImageResponse;
 }
 
 export class BoxPriceDetailResponse {
@@ -75,7 +81,7 @@ export class BoxDetailResponse {
 	@ApiProperty({ description: 'ID único del box', example: '6973d8ffddef7b59c2d4dcfb' })
 	id!: string;
 
-	@ApiProperty({ description: 'Información del hero (título, subtítulo e imágenes principales)', type: BoxDetailHeroResponse })
+	@ApiProperty({ description: 'Información del hero (nombre, eslogan e imágenes principales)', type: BoxDetailHeroResponse })
 	heroDetail!: BoxDetailHeroResponse;
 
 	@ApiProperty({ description: 'Descripción e imágenes adicionales del box', type: BoxDetailDescriptionResponse })

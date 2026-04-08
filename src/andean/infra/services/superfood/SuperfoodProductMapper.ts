@@ -9,14 +9,15 @@ import { SuperfoodNutritionalItem } from '../../../domain/entities/superfoods/Su
 import { SuperfoodDetailTraceability } from '../../../domain/entities/superfoods/SuperfoodDetailTraceability';
 import { SuperfoodOptions } from '../../../domain/entities/superfoods/SuperfoodOptions';
 import { SuperfoodOptionsItem } from '../../../domain/entities/superfoods/SuperfoodOptionsItem';
+import { SuperfoodServingNutrition } from '../../../domain/entities/superfoods/SuperfoodServingNutrition';
 import { ProductTraceability } from '../../../domain/entities/ProductTraceability';
 import {
 	plainToInstance,
 	instanceToPlain,
 	type ClassConstructor,
 } from 'class-transformer';
-import * as crypto from 'crypto';
 import { Types } from 'mongoose';
+import { SuperfoodProductStatus } from '../../../domain/enums/SuperfoodProductStatus';
 
 /**
  * Un solo objeto desde un plain. Con `any` (p. ej. subdocs de Mongoose), `plainToInstance`
@@ -33,10 +34,7 @@ export class SuperfoodProductMapper {
 		const rawBi = plain.baseInfo as Record<string, unknown> | undefined;
 		const baseInfo = plainToOne(SuperfoodBasicInfo, {
 			...rawBi,
-			productMedia: plainToOne(
-				SuperfoodProductMedia,
-				rawBi?.productMedia,
-			),
+			productMedia: plainToOne(SuperfoodProductMedia, rawBi?.productMedia),
 		});
 		const priceInventory = plainToOne(
 			SuperfoodPriceInventory,
@@ -45,15 +43,21 @@ export class SuperfoodProductMapper {
 
 		let detailProduct: SuperfoodDetailProduct | undefined;
 		if (plain.detailProduct) {
-			detailProduct = plainToOne(
-				SuperfoodDetailProduct,
-				plain.detailProduct,
-			);
+			detailProduct = plainToOne(SuperfoodDetailProduct, plain.detailProduct);
 		}
 
-		const nutritionalContent = plain.nutritionalContent?.map((item: unknown) =>
-			plainToOne(SuperfoodNutritionalItem, item),
-		);
+		const servingNutrition = plain.servingNutrition
+			? plainToOne(SuperfoodServingNutrition, {
+					...((plain.servingNutrition as Record<string, unknown>) ?? {}),
+					servingNutritionalContent: (
+						(
+							plain.servingNutrition as {
+								servingNutritionalContent?: unknown[];
+							}
+						)?.servingNutritionalContent ?? []
+					).map((item: unknown) => plainToOne(SuperfoodNutritionalItem, item)),
+				})
+			: undefined;
 
 		let detailTraceability: SuperfoodDetailTraceability | undefined;
 		if (plain.detailTraceability) {
@@ -89,11 +93,14 @@ export class SuperfoodProductMapper {
 				typeof plain.id === 'string' && plain.id.trim()
 					? plain.id.trim()
 					: plain._id.toString(),
-			status: plain.status,
+			status:
+				plain.status === SuperfoodProductStatus.PUBLISHED
+					? SuperfoodProductStatus.PUBLISHED
+					: SuperfoodProductStatus.HIDDEN,
 			baseInfo,
 			priceInventory,
 			detailProduct,
-			nutritionalContent,
+			servingNutrition,
 			detailTraceability,
 			productTraceability,
 			options,
@@ -126,12 +133,14 @@ export class SuperfoodProductMapper {
 			detailProduct = plainToOne(SuperfoodDetailProduct, dto.detailProduct);
 		}
 
-		const nutritionalContent = dto.nutritionalContent?.map((item) =>
-			plainToOne(SuperfoodNutritionalItem, {
-				...item,
-				id: crypto.randomUUID(),
-			}),
-		);
+		const servingNutrition = plainToOne(SuperfoodServingNutrition, {
+			servingSize: dto.servingNutrition.servingSize,
+			servingUnit: dto.servingNutrition.servingUnit,
+			servingNutritionalContent:
+				dto.servingNutrition.servingNutritionalContent.map((item) =>
+					plainToOne(SuperfoodNutritionalItem, { ...item }),
+				),
+		});
 
 		let detailTraceability: SuperfoodDetailTraceability | undefined;
 		if (dto.detailTraceability) {
@@ -153,12 +162,10 @@ export class SuperfoodProductMapper {
 			const values = (opt.values || []).map((val) =>
 				plainToOne(SuperfoodOptionsItem, {
 					...val,
-					id: crypto.randomUUID(),
 				}),
 			);
 			return plainToOne(SuperfoodOptions, {
 				...opt,
-				id: crypto.randomUUID(),
 				values,
 			});
 		});
@@ -169,7 +176,7 @@ export class SuperfoodProductMapper {
 			baseInfo,
 			priceInventory,
 			detailProduct,
-			nutritionalContent,
+			servingNutrition,
 			detailTraceability,
 			productTraceability,
 			options,
@@ -202,12 +209,14 @@ export class SuperfoodProductMapper {
 			detailProduct = plainToOne(SuperfoodDetailProduct, dto.detailProduct);
 		}
 
-		const nutritionalContent = dto.nutritionalContent?.map((item) =>
-			plainToOne(SuperfoodNutritionalItem, {
-				...item,
-				id: crypto.randomUUID(),
-			}),
-		);
+		const servingNutrition = plainToOne(SuperfoodServingNutrition, {
+			servingSize: dto.servingNutrition.servingSize,
+			servingUnit: dto.servingNutrition.servingUnit,
+			servingNutritionalContent:
+				dto.servingNutrition.servingNutritionalContent.map((item) =>
+					plainToOne(SuperfoodNutritionalItem, { ...item }),
+				),
+		});
 
 		let detailTraceability: SuperfoodDetailTraceability | undefined;
 		if (dto.detailTraceability) {
@@ -229,12 +238,10 @@ export class SuperfoodProductMapper {
 			const values = (opt.values || []).map((val) =>
 				plainToOne(SuperfoodOptionsItem, {
 					...val,
-					id: crypto.randomUUID(),
 				}),
 			);
 			return plainToOne(SuperfoodOptions, {
 				...opt,
-				id: crypto.randomUUID(),
 				values,
 			});
 		});
@@ -245,7 +252,7 @@ export class SuperfoodProductMapper {
 			baseInfo,
 			priceInventory,
 			detailProduct,
-			nutritionalContent,
+			servingNutrition,
 			detailTraceability,
 			productTraceability,
 			options,

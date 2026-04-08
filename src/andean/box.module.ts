@@ -12,9 +12,19 @@ import { BoxRepoImpl } from './infra/datastore/box/box.repo.impl';
 import { CreateBoxUseCase } from './app/use_cases/boxes/CreateBoxUseCase';
 import { GetAllBoxesUseCase } from './app/use_cases/boxes/GetAllBoxesUseCase';
 import { GetBoxDetailUseCase } from './app/use_cases/boxes/GetBoxDetailUseCase';
+import { GetBoxCatalogSuperfoodsUseCase } from './app/use_cases/boxes/GetBoxCatalogSuperfoodsUseCase';
+import { GetBoxCatalogTextileProductsUseCase } from './app/use_cases/boxes/GetBoxCatalogTextileProductsUseCase';
+import { GetBoxCatalogTextileVariantsUseCase } from './app/use_cases/boxes/GetBoxCatalogTextileVariantsUseCase';
+import { GetBoxCatalogTextileProductMediaUseCase } from './app/use_cases/boxes/GetBoxCatalogTextileProductMediaUseCase';
+import { GetBoxCatalogSuperfoodProductMediaUseCase } from './app/use_cases/boxes/GetBoxCatalogSuperfoodProductMediaUseCase';
+import { UpdateBoxStatusUseCase } from './app/use_cases/boxes/UpdateBoxStatusUseCase';
+import { UpdateBoxUseCase } from './app/use_cases/boxes/UpdateBoxUseCase';
+import { DeleteBoxUseCase } from './app/use_cases/boxes/DeleteBoxUseCase';
+import { GetBoxForAdminEditUseCase } from './app/use_cases/boxes/GetBoxForAdminEditUseCase';
 
 // Services
 import { BoxProductResolutionService } from './infra/services/box/BoxProductResolutionService';
+import { TextileVariantPickerMediaService } from './infra/services/box/TextileVariantPickerMediaService';
 
 // Controller
 import { BoxController } from './infra/controllers/box/box.controller';
@@ -46,10 +56,20 @@ import { CommunityModule } from './community.module';
 		},
 		// Services
 		BoxProductResolutionService,
+		TextileVariantPickerMediaService,
 		// Use Cases
 		CreateBoxUseCase,
 		GetAllBoxesUseCase,
 		GetBoxDetailUseCase,
+		GetBoxCatalogSuperfoodsUseCase,
+		GetBoxCatalogTextileProductsUseCase,
+		GetBoxCatalogTextileVariantsUseCase,
+		GetBoxCatalogTextileProductMediaUseCase,
+		GetBoxCatalogSuperfoodProductMediaUseCase,
+		UpdateBoxStatusUseCase,
+		UpdateBoxUseCase,
+		DeleteBoxUseCase,
+		GetBoxForAdminEditUseCase,
 	],
 	exports: [BoxRepository, MongooseModule],
 })

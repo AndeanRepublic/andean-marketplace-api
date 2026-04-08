@@ -13,6 +13,15 @@ import { createAllowAllGuard, mockAuthUsers } from './helpers/auth-test.helper';
 import { CreateBoxUseCase } from '../src/andean/app/use_cases/boxes/CreateBoxUseCase';
 import { GetAllBoxesUseCase } from '../src/andean/app/use_cases/boxes/GetAllBoxesUseCase';
 import { GetBoxDetailUseCase } from '../src/andean/app/use_cases/boxes/GetBoxDetailUseCase';
+import { GetBoxCatalogSuperfoodsUseCase } from '../src/andean/app/use_cases/boxes/GetBoxCatalogSuperfoodsUseCase';
+import { GetBoxCatalogTextileProductsUseCase } from '../src/andean/app/use_cases/boxes/GetBoxCatalogTextileProductsUseCase';
+import { GetBoxCatalogTextileVariantsUseCase } from '../src/andean/app/use_cases/boxes/GetBoxCatalogTextileVariantsUseCase';
+import { GetBoxCatalogTextileProductMediaUseCase } from '../src/andean/app/use_cases/boxes/GetBoxCatalogTextileProductMediaUseCase';
+import { GetBoxCatalogSuperfoodProductMediaUseCase } from '../src/andean/app/use_cases/boxes/GetBoxCatalogSuperfoodProductMediaUseCase';
+import { UpdateBoxStatusUseCase } from '../src/andean/app/use_cases/boxes/UpdateBoxStatusUseCase';
+import { UpdateBoxUseCase } from '../src/andean/app/use_cases/boxes/UpdateBoxUseCase';
+import { DeleteBoxUseCase } from '../src/andean/app/use_cases/boxes/DeleteBoxUseCase';
+import { GetBoxForAdminEditUseCase } from '../src/andean/app/use_cases/boxes/GetBoxForAdminEditUseCase';
 
 // ─── Domain ─────────────────────────────────────────────────────────────────
 import { Box } from '../src/andean/domain/entities/box/Box';
@@ -49,6 +58,52 @@ describe('BoxController (e2e)', () => {
 				{
 					provide: GetBoxDetailUseCase,
 					useValue: { handle: jest.fn().mockResolvedValue(detailResponse) },
+				},
+				{
+					provide: GetBoxCatalogSuperfoodsUseCase,
+					useValue: {
+						handle: jest.fn().mockResolvedValue({
+							items: [],
+						}),
+					},
+				},
+				{
+					provide: GetBoxCatalogTextileProductsUseCase,
+					useValue: {
+						handle: jest.fn().mockResolvedValue({
+							items: [],
+						}),
+					},
+				},
+				{
+					provide: GetBoxCatalogTextileVariantsUseCase,
+					useValue: {
+						handle: jest.fn().mockResolvedValue({ items: [] }),
+					},
+				},
+				{
+					provide: GetBoxCatalogTextileProductMediaUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue({ items: [] }) },
+				},
+				{
+					provide: GetBoxCatalogSuperfoodProductMediaUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue({ items: [] }) },
+				},
+				{
+					provide: UpdateBoxStatusUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue(mockBox) },
+				},
+				{
+					provide: UpdateBoxUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue(mockBox) },
+				},
+				{
+					provide: DeleteBoxUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue(undefined) },
+				},
+				{
+					provide: GetBoxForAdminEditUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue(mockBox) },
 				},
 			],
 		})
@@ -93,10 +148,11 @@ describe('BoxController (e2e)', () => {
 				.expect((res) => {
 					expect(res.body).toMatchObject({
 						id: expect.any(String),
-						title: mockBox.title,
-						subtitle: mockBox.subtitle,
-						description: mockBox.description,
+						name: mockBox.name,
+						slogan: mockBox.slogan,
+						narrative: mockBox.narrative,
 						price: mockBox.price,
+						discountPercentage: mockBox.discountPercentage,
 					});
 					expect(res.body.products).toHaveLength(3);
 					expect(res.body.sealIds).toHaveLength(2);
@@ -113,18 +169,18 @@ describe('BoxController (e2e)', () => {
 				.expect(HttpStatus.CREATED);
 			expect(createBoxUseCase.handle).toHaveBeenCalledWith(
 				expect.objectContaining({
-					title: createDto.title,
-					subtitle: createDto.subtitle,
+					name: createDto.name,
+					slogan: createDto.slogan,
 					price: createDto.price,
 				}),
 			);
 		});
 
-		it('should return 400 when title is missing', () => {
-			const { title, ...dtoWithoutTitle } = createDto;
+		it('should return 400 when name is missing', () => {
+			const { name: _omitName, ...dtoWithoutName } = createDto;
 			return request(app.getHttpServer())
 				.post('/boxes')
-				.send(dtoWithoutTitle)
+				.send(dtoWithoutName)
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 
@@ -181,6 +237,8 @@ describe('BoxController (e2e)', () => {
 					...createDto,
 					products: [
 						{ productType: 'SUPERFOOD', productId: 'superfood-uuid-123' },
+						{ productType: 'SUPERFOOD', productId: 'superfood-uuid-456' },
+						{ productType: 'TEXTILE', variantId: 'variant-textile-001' },
 					],
 				})
 				.expect(HttpStatus.CREATED);
@@ -194,6 +252,8 @@ describe('BoxController (e2e)', () => {
 					...createDto,
 					products: [
 						{ productType: 'TEXTILE', variantId: 'variant-textile-001' },
+						{ productType: 'SUPERFOOD', productId: 'superfood-uuid-123' },
+						{ productType: 'SUPERFOOD', productId: 'superfood-uuid-456' },
 					],
 				})
 				.expect(HttpStatus.CREATED);
@@ -206,6 +266,8 @@ describe('BoxController (e2e)', () => {
 					...createDto,
 					products: [
 						{ productType: 'INVALID', productId: 'superfood-uuid-123' },
+						{ productType: 'SUPERFOOD', productId: 'superfood-uuid-456' },
+						{ productType: 'TEXTILE', variantId: 'variant-textile-001' },
 					],
 				})
 				.expect(HttpStatus.BAD_REQUEST);
@@ -216,7 +278,11 @@ describe('BoxController (e2e)', () => {
 				.post('/boxes')
 				.send({
 					...createDto,
-					products: [{ productId: 'superfood-uuid-123' }],
+					products: [
+						{ productId: 'superfood-uuid-123' },
+						{ productType: 'SUPERFOOD', productId: 'superfood-uuid-456' },
+						{ productType: 'TEXTILE', variantId: 'variant-textile-001' },
+					],
 				})
 				.expect(HttpStatus.BAD_REQUEST);
 		});
@@ -279,8 +345,8 @@ describe('BoxController (e2e)', () => {
 				.expect((res) => {
 					const box = res.body.data[0];
 					expect(box).toHaveProperty('id');
-					expect(box).toHaveProperty('title');
-					expect(box).toHaveProperty('subtitle');
+					expect(box).toHaveProperty('name');
+					expect(box).toHaveProperty('slogan');
 					expect(box).toHaveProperty('itemCount');
 					expect(box.itemCount).toHaveProperty('textiles');
 					expect(box.itemCount).toHaveProperty('superfoods');
@@ -420,8 +486,8 @@ describe('BoxController (e2e)', () => {
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					const hero = res.body.heroDetail;
-					expect(hero).toHaveProperty('title');
-					expect(hero).toHaveProperty('subtitle');
+					expect(hero).toHaveProperty('name');
+					expect(hero).toHaveProperty('slogan');
 					expect(hero).toHaveProperty('thumbnailImage');
 					expect(hero.thumbnailImage).toHaveProperty('url');
 					expect(hero.thumbnailImage).toHaveProperty('name');
@@ -440,8 +506,8 @@ describe('BoxController (e2e)', () => {
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					const hero = res.body.heroDetail;
-					expect(hero.title).toBe('Caja Andina Esencial');
-					expect(hero.subtitle).toBe('Lo mejor de los Andes en una caja');
+					expect(hero.name).toBe('Caja Andina Esencial');
+					expect(hero.slogan).toBe('Lo mejor de los Andes en una caja');
 					expect(hero.thumbnailImage.url).toContain('box-thumbnail');
 					expect(hero.mainImage.url).toContain('box-main');
 				});
@@ -457,7 +523,7 @@ describe('BoxController (e2e)', () => {
 				.expect(HttpStatus.OK)
 				.expect((res) => {
 					const detail = res.body.detail;
-					expect(detail).toHaveProperty('description');
+					expect(detail).toHaveProperty('narrative');
 					expect(detail).toHaveProperty('images');
 					expect(Array.isArray(detail.images)).toBe(true);
 					detail.images.forEach((img: any) => {

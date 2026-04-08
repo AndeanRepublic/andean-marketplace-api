@@ -1,6 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BoxImageResponse } from './BoxImageResponse';
 import { ProductType } from '../../../domain/enums/ProductType';
+import { AdminEntityStatus } from '../../../domain/enums/AdminEntityStatus';
 
 export type BoxProductType = ProductType.SUPERFOOD | ProductType.TEXTILE;
 
@@ -16,6 +17,12 @@ export class BoxProductResponse {
 
 	@ApiProperty({ description: 'Imagen miniatura del producto', type: BoxImageResponse })
 	thumbnailImage!: BoxImageResponse;
+
+	@ApiPropertyOptional({
+		description: 'Imagen narrativa del ítem en el box (si se configuró narrativeImgId)',
+		type: BoxImageResponse,
+	})
+	narrativeImage?: BoxImageResponse;
 }
 
 export class BoxItemCountResponse {
@@ -30,11 +37,14 @@ export class BoxListItemResponse {
 	@ApiProperty({ description: 'ID único del box', example: '6973d8ffddef7b59c2d4dcfb' })
 	id!: string;
 
-	@ApiProperty({ description: 'Título del box', example: 'Box Andino Premium' })
-	title!: string;
+	@ApiProperty({ description: 'Nombre del box', example: 'Box Andino Premium' })
+	name!: string;
 
-	@ApiProperty({ description: 'Subtítulo del box', example: 'Lo mejor de los Andes' })
-	subtitle!: string;
+	@ApiProperty({ description: 'Eslogan del box', example: 'Lo mejor de los Andes' })
+	slogan!: string;
+
+	@ApiProperty({ description: 'Estado del box', enum: AdminEntityStatus })
+	status!: AdminEntityStatus;
 
 	@ApiProperty({ description: 'Conteo de productos por tipo', type: BoxItemCountResponse })
 	itemCount!: BoxItemCountResponse;
@@ -53,6 +63,25 @@ export class BoxListItemResponse {
 
 	@ApiProperty({ description: 'Lista de productos incluidos en el box', type: [BoxProductResponse] })
 	products!: BoxProductResponse[];
+
+	@ApiProperty({
+		description:
+			'Cantidad de cajas armables con el stock actual (mínimo de stocks de los 3 componentes)',
+		example: 12,
+	})
+	fulfillableQuantity!: number;
+
+	@ApiPropertyOptional({
+		description: 'Tipo del producto que limita el stock (si hay 3 líneas resueltas)',
+		enum: [ProductType.SUPERFOOD, ProductType.TEXTILE],
+	})
+	bottleneckProductType?: ProductType.SUPERFOOD | ProductType.TEXTILE;
+
+	@ApiPropertyOptional({
+		description:
+			'ID del producto limitante (superfood id o producto textil id, no variante)',
+	})
+	bottleneckProductId?: string;
 }
 
 export class BoxPaginationResponse {

@@ -61,6 +61,7 @@ import { DeleteColorOptionAlternativeUseCase } from '../src/andean/app/use_cases
 import { CreateManyColorOptionAlternativesUseCase } from '../src/andean/app/use_cases/textileProducts/CreateManyColorOptionAlternativesUseCase';
 import { GetByIdTextileProductDetailUseCase } from '../src/andean/app/use_cases/textileProducts/GetByIdTextileProductDetailUseCase';
 import { GetTextileProductForSellerUseCase } from '../src/andean/app/use_cases/textileProducts/GetTextileProductForSellerUseCase';
+import { UpdateTextileProductStatusUseCase } from '../src/andean/app/use_cases/textileProducts/UpdateTextileProductStatusUseCase';
 import { FixtureLoader } from './helpers/fixture-loader';
 
 /**
@@ -149,6 +150,10 @@ describe('TextileProductController (e2e)', () => {
 				},
 				{
 					provide: GetTextileProductForSellerUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue(mockTextileProduct) },
+				},
+				{
+					provide: UpdateTextileProductStatusUseCase,
 					useValue: { handle: jest.fn().mockResolvedValue(mockTextileProduct) },
 				},
 				// ── Category use cases ──────────────────────────────────────────
@@ -360,6 +365,16 @@ describe('TextileProductController (e2e)', () => {
 				.send({
 					...createDto,
 					baseInfo: { ...createDto.baseInfo, title: undefined },
+				})
+				.expect(HttpStatus.BAD_REQUEST);
+		});
+
+		it('should return 400 when baseInfo.information is empty', () => {
+			return request(app.getHttpServer())
+				.post('/textile-products')
+				.send({
+					...createDto,
+					baseInfo: { ...createDto.baseInfo, information: '   ' },
 				})
 				.expect(HttpStatus.BAD_REQUEST);
 		});
@@ -1125,6 +1140,10 @@ describe('TextileProductController (e2e)', () => {
 						},
 					},
 					{
+						provide: UpdateTextileProductStatusUseCase,
+						useValue: { handle: jest.fn().mockResolvedValue(mockTextileProduct) },
+					},
+					{
 						provide: CreateTextileCategoryUseCase,
 						useValue: createMockUseCase(),
 					},
@@ -1461,6 +1480,10 @@ describe('TextileProductController (e2e)', () => {
 						useValue: {
 							handle: jest.fn().mockResolvedValue(mockTextileProduct),
 						},
+					},
+					{
+						provide: UpdateTextileProductStatusUseCase,
+						useValue: { handle: jest.fn().mockResolvedValue(mockTextileProduct) },
 					},
 					{
 						provide: CreateTextileCategoryUseCase,

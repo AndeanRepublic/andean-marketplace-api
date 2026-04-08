@@ -11,6 +11,8 @@ import { SuperfoodProductMapper } from '../../services/superfood/SuperfoodProduc
 import { MongoIdUtils } from '../../utils/MongoIdUtils';
 import { ProductSortBy } from '../../../domain/enums/ProductSortBy';
 import { SuperfoodProductListAggregateRow } from '../../../app/models/superfoods/SuperfoodProductListItem';
+import { BoxCatalogSuperfoodItem } from '../../../app/datastore/superfoods/SuperfoodProduct.repo';
+import { SuperfoodProductStatus } from '../../../domain/enums/SuperfoodProductStatus';
 
 @Injectable()
 export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
@@ -82,6 +84,21 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 					$inc: { 'priceInventory.totalStock': -quantity },
 					$set: { updatedAt: new Date() },
 				},
+				{ new: true },
+			)
+			.exec();
+		return updated ? SuperfoodProductMapper.fromDocument(updated) : null;
+	}
+
+	async updateStatus(
+		id: string,
+		status: SuperfoodProductStatus,
+	): Promise<SuperfoodProduct | null> {
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		const updated = await this.model
+			.findByIdAndUpdate(
+				objectId,
+				{ $set: { status, updatedAt: new Date() } },
 				{ new: true },
 			)
 			.exec();
@@ -234,6 +251,7 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 				},
 				price: '$priceInventory.basePrice',
 				totalStock: '$priceInventory.totalStock',
+				status: '$status',
 				mainImgId: {
 					$ifNull: ['$baseInfo.productMedia.mainImgId', ''],
 				},
@@ -244,7 +262,9 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 					$map: {
 						input: {
 							$filter: {
-								input: { $ifNull: ['$nutritionalContent', []] },
+								input: {
+									$ifNull: ['$servingNutrition.servingNutritionalContent', []],
+								},
 								as: 'item',
 								cond: { $eq: ['$$item.selected', true] },
 							},
@@ -286,5 +306,61 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 			products: products as SuperfoodProductListAggregateRow[],
 			total: countResult,
 		};
+	}
+
+	async getBoxCatalogAll(): Promise<Array<BoxCatalogSuperfoodItem>> {
+		const match: FilterQuery<SuperfoodProductDocument> = {
+			'priceInventory.totalStock': { $gt: 0 },
+		};
+
+		const pipeline: PipelineStage[] = [
+			{ $match: match },
+			{ $sort: { createdAt: -1 } },
+			{
+				$lookup: {
+					from: 'superfoodcategories',
+					let: {
+						cid: {
+							$convert: {
+								input: '$categoryId',
+								to: 'objectId',
+								onError: null,
+								onNull: null,
+							},
+						},
+					},
+					pipeline: [
+						{
+							$match: {
+								$expr: {
+									$and: [{ $ne: ['$$cid', null] }, { $eq: ['$_id', '$$cid'] }],
+								},
+							},
+						},
+						{ $limit: 1 },
+					],
+					as: 'cat',
+				},
+			},
+			{
+				$project: {
+					_id: 0,
+					id: { $toString: '$_id' },
+					title: '$baseInfo.title',
+					categoryName: {
+						$ifNull: [{ $arrayElemAt: ['$cat.name', 0] }, ''],
+					},
+					imgId: {
+						$ifNull: ['$baseInfo.productMedia.mainImgId', ''],
+					},
+					catalogPrice: '$priceInventory.basePrice',
+					totalStock: '$priceInventory.totalStock',
+				},
+			},
+		];
+
+		const rows = await this.model.aggregate(pipeline).exec();
+
+		return rows as Array<BoxCatalogSuperfoodItem>;
 	}
 }

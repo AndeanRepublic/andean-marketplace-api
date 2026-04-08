@@ -15,6 +15,7 @@
 			"src/andean/*": ["./src/andean/*"]
 		},
 		"incremental": true,
+		"types": ["node", "jest"],
 		"skipLibCheck": true,
 		"strictNullChecks": true,
 		"forceConsistentCasingInFileNames": true,

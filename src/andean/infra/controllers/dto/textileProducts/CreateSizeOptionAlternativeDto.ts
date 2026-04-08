@@ -10,5 +10,5 @@ export class CreateSizeOptionAlternativeDto {
 	})
 	@IsString()
 	@IsNotEmpty()
-	nameLabel: string;
+	nameLabel!: string;
 }

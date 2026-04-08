@@ -14,6 +14,7 @@ import { AgeGroupCode } from 'src/andean/domain/enums/AgeGroupCode';
 import { ExperienceAvailabilityDocument } from '../../persistence/experiences/experienceAvailability.schema';
 import { ExperienceAvailabilityRepository } from 'src/andean/app/datastore/experiences/ExperienceAvailability.repo';
 import { WeekDay } from 'src/andean/domain/enums/WeekDay';
+import { ExperienceStatus } from 'src/andean/domain/enums/ExperienceStatus';
 
 @Injectable()
 export class ExperienceRepositoryImpl extends ExperienceRepository {
@@ -194,6 +195,7 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 								mainImageUrl: {
 									$ifNull: ['$mainImageData.key', ''],
 								},
+								status: '$status',
 							},
 						},
 					],
@@ -213,6 +215,7 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 			days: doc.days,
 			mainImageName: doc.mainImageName,
 			mainImageUrl: doc.mainImageUrl,
+			status: doc.status,
 		}));
 
 		return { items, total };
@@ -243,5 +246,16 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 			.map((date) => new Date(date))
 			.filter((date) => date >= now)
 			.sort((a, b) => a.getTime() - b.getTime());
+	}
+
+	async updateStatus(
+		id: string,
+		status: ExperienceStatus,
+	): Promise<Experience | null> {
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		const updated = await this.model
+			.findByIdAndUpdate(objectId, { $set: { status, updatedAt: new Date() } }, { new: true })
+			.exec();
+		return updated ? ExperienceMapper.fromDocument(updated) : null;
 	}
 }
