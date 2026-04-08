@@ -147,6 +147,7 @@ import { DecrementLikesUseCase } from './app/use_cases/DecrementLikesUseCase';
 import { DecrementDislikesUseCase } from './app/use_cases/DecrementDislikesUseCase';
 import { UsersModule } from './users.module';
 import { TextileProductModule } from './textileProduct.module';
+import { VariantModule } from './variant.module';
 import { OwnerInfoResolver } from './infra/services/owner/OwnerInfoResolver';
 import { SuperfoodProductListColorResolver } from './infra/services/superfood/SuperfoodProductListColorResolver';
 import { SuperfoodProductListMediaResolver } from './infra/services/superfood/SuperfoodProductListMediaResolver';
@@ -186,6 +187,7 @@ import { SuperfoodProductListMediaResolver } from './infra/services/superfood/Su
 		MediaItemModule,
 		DetailSourceProductModule,
 		forwardRef(() => TextileProductModule),
+		forwardRef(() => VariantModule),
 	],
 	controllers: [
 		SuperfoodController,

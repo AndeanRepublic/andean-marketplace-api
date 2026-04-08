@@ -20,6 +20,9 @@ import { DetailSourceProductRepository } from '../../datastore/DetailSourceProdu
 import { SuperfoodOptionName } from '../../../domain/enums/SuperfoodOptionName';
 import { SuperfoodSizeOptionAlternativeRepository } from '../../datastore/superfoods/SuperfoodSizeOptionAlternative.repo';
 import { SuperfoodSizeOptionAlternativeMapper } from '../../../infra/services/superfood/SuperfoodSizeOptionAlternativeMapper';
+import { VariantRepository } from '../../datastore/Variant.repo';
+import { VariantMapper } from '../../../infra/services/VariantMapper';
+import { ProductType } from '../../../domain/enums/ProductType';
 
 @Injectable()
 export class CreateSuperfoodProductUseCase {
@@ -49,6 +52,8 @@ export class CreateSuperfoodProductUseCase {
 		private readonly detailSourceProductRepository: DetailSourceProductRepository,
 		@Inject(SuperfoodSizeOptionAlternativeRepository)
 		private readonly superfoodSizeOptionAlternativeRepository: SuperfoodSizeOptionAlternativeRepository,
+		@Inject(VariantRepository)
+		private readonly variantRepository: VariantRepository,
 
 		private readonly createDetailSourceProductUseCase: CreateDetailSourceProductUseCase,
 	) {}
@@ -111,10 +116,12 @@ export class CreateSuperfoodProductUseCase {
 					if (
 						typeof value.sizeNumber !== 'number' ||
 						!value.sizeUnit ||
-						typeof value.servingsPerContainer !== 'number'
+						typeof value.servingsPerContainer !== 'number' ||
+						typeof value.price !== 'number' ||
+						typeof value.stock !== 'number'
 					) {
 						throw new BadRequestException(
-							'Each SIZE option value requires sizeNumber, sizeUnit, and servingsPerContainer',
+							'Each SIZE option value requires sizeNumber, sizeUnit, servingsPerContainer, price, and stock',
 						);
 					}
 				}
@@ -122,7 +129,9 @@ export class CreateSuperfoodProductUseCase {
 		}
 	}
 
-	private async createSizeAlternativesForOptions(dto: CreateSuperfoodDto): Promise<void> {
+	private async createSizeAlternativesForOptions(
+		dto: CreateSuperfoodDto,
+	): Promise<void> {
 		if (!dto.options?.length) return;
 		for (const option of dto.options) {
 			if (option.name !== SuperfoodOptionName.SIZE || !option.values.length) {
@@ -144,6 +153,35 @@ export class CreateSuperfoodProductUseCase {
 				label: created[idx]?.nameLabel ?? value.label,
 			}));
 		}
+	}
+
+	private async createVariantsForSizeOptions(
+		productId: string,
+		dto: CreateSuperfoodDto,
+	): Promise<void> {
+		const sizeOptions =
+			dto.options?.filter(
+				(option) => option.name === SuperfoodOptionName.SIZE,
+			) ?? [];
+		if (!sizeOptions.length) return;
+
+		const variants = sizeOptions.flatMap((option) =>
+			option.values
+				.filter((value) => value.idOptionAlternative)
+				.map((value) =>
+					VariantMapper.fromCreateDto({
+						productId,
+						productType: ProductType.SUPERFOOD,
+						combination: { SIZE: value.idOptionAlternative! },
+						price: value.price!,
+						stock: value.stock!,
+						sku: value.sku,
+					}),
+				),
+		);
+
+		if (!variants.length) return;
+		await this.variantRepository.createMany(variants);
 	}
 
 	async handle(dto: CreateSuperfoodDto): Promise<SuperfoodProduct> {
@@ -206,6 +244,9 @@ export class CreateSuperfoodProductUseCase {
 		}
 
 		// 6. Guardar en base de datos
-		return this.superfoodProductRepository.saveSuperfoodProduct(productToSave);
+		const savedProduct =
+			await this.superfoodProductRepository.saveSuperfoodProduct(productToSave);
+		await this.createVariantsForSizeOptions(savedProduct.id, dto);
+		return savedProduct;
 	}
 }

@@ -26,6 +26,9 @@ import { DetailSourceProductRepository } from '../../datastore/DetailSourceProdu
 import { SuperfoodOptionName } from '../../../domain/enums/SuperfoodOptionName';
 import { SuperfoodSizeOptionAlternativeRepository } from '../../datastore/superfoods/SuperfoodSizeOptionAlternative.repo';
 import { SuperfoodSizeOptionAlternativeMapper } from '../../../infra/services/superfood/SuperfoodSizeOptionAlternativeMapper';
+import { VariantRepository } from '../../datastore/Variant.repo';
+import { VariantMapper } from '../../../infra/services/VariantMapper';
+import { ProductType } from '../../../domain/enums/ProductType';
 
 @Injectable()
 export class UpdateSuperfoodProductUseCase {
@@ -56,6 +59,8 @@ export class UpdateSuperfoodProductUseCase {
 		private readonly detailSourceProductRepository: DetailSourceProductRepository,
 		@Inject(SuperfoodSizeOptionAlternativeRepository)
 		private readonly superfoodSizeOptionAlternativeRepository: SuperfoodSizeOptionAlternativeRepository,
+		@Inject(VariantRepository)
+		private readonly variantRepository: VariantRepository,
 	) {}
 
 	private async validateDetailTraceability(
@@ -116,10 +121,12 @@ export class UpdateSuperfoodProductUseCase {
 					if (
 						typeof value.sizeNumber !== 'number' ||
 						!value.sizeUnit ||
-						typeof value.servingsPerContainer !== 'number'
+						typeof value.servingsPerContainer !== 'number' ||
+						typeof value.price !== 'number' ||
+						typeof value.stock !== 'number'
 					) {
 						throw new BadRequestException(
-							'Each SIZE option value requires sizeNumber, sizeUnit, and servingsPerContainer',
+							'Each SIZE option value requires sizeNumber, sizeUnit, servingsPerContainer, price, and stock',
 						);
 					}
 				}
@@ -127,7 +134,9 @@ export class UpdateSuperfoodProductUseCase {
 		}
 	}
 
-	private collectExistingSizeAlternativeIds(existingProduct: SuperfoodProduct): string[] {
+	private collectExistingSizeAlternativeIds(
+		existingProduct: SuperfoodProduct,
+	): string[] {
 		return (existingProduct.options ?? [])
 			.filter((option) => option.name === SuperfoodOptionName.SIZE)
 			.flatMap((option) =>
@@ -137,7 +146,9 @@ export class UpdateSuperfoodProductUseCase {
 			);
 	}
 
-	private async replaceSizeAlternatives(dto: CreateSuperfoodDto): Promise<void> {
+	private async replaceSizeAlternatives(
+		dto: CreateSuperfoodDto,
+	): Promise<void> {
 		if (!dto.options?.length) return;
 		for (const option of dto.options) {
 			if (option.name !== SuperfoodOptionName.SIZE || !option.values.length) {
@@ -159,6 +170,37 @@ export class UpdateSuperfoodProductUseCase {
 				label: created[idx]?.nameLabel ?? value.label,
 			}));
 		}
+	}
+
+	private async replaceVariants(
+		productId: string,
+		dto: CreateSuperfoodDto,
+	): Promise<void> {
+		await this.variantRepository.deleteByProductId(productId);
+
+		const sizeOptions =
+			dto.options?.filter(
+				(option) => option.name === SuperfoodOptionName.SIZE,
+			) ?? [];
+		if (!sizeOptions.length) return;
+
+		const variants = sizeOptions.flatMap((option) =>
+			option.values
+				.filter((value) => value.idOptionAlternative)
+				.map((value) =>
+					VariantMapper.fromCreateDto({
+						productId,
+						productType: ProductType.SUPERFOOD,
+						combination: { SIZE: value.idOptionAlternative! },
+						price: value.price!,
+						stock: value.stock!,
+						sku: value.sku,
+					}),
+				),
+		);
+
+		if (!variants.length) return;
+		await this.variantRepository.createMany(variants);
 	}
 
 	async handle(
@@ -217,6 +259,7 @@ export class UpdateSuperfoodProductUseCase {
 			oldSizeAlternativeIds,
 		);
 		await this.replaceSizeAlternatives(dto);
+		await this.replaceVariants(productId, dto);
 
 		// 3. Validar ownerId según ownerType solo si existe en el DTO
 		if (dto.baseInfo?.ownerType === OwnerType.SHOP) {

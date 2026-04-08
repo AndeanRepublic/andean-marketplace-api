@@ -234,24 +234,6 @@ export class SuperfoodOptionsItemResponse {
 		description: 'ID de alternativa de opción (catálogo de tallas)',
 	})
 	idOptionAlternative?: string;
-
-	@ApiPropertyOptional({ description: 'Tamaño numérico del empaque' })
-	sizeNumber?: number;
-
-	@ApiPropertyOptional({ description: 'Unidad del tamaño', enum: ['g', 'mg', 'kg'] })
-	sizeUnit?: 'g' | 'mg' | 'kg';
-
-	@ApiPropertyOptional({ description: 'Porciones por empaque' })
-	servingsPerContainer?: number;
-
-	@ApiPropertyOptional({ description: 'Precio de la variante' })
-	price?: number;
-
-	@ApiPropertyOptional({ description: 'Stock de la variante' })
-	stock?: number;
-
-	@ApiPropertyOptional({ description: 'SKU de la variante' })
-	sku?: string;
 }
 
 export class SuperfoodOptionsResponse {

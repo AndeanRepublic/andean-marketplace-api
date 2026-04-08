@@ -12,12 +12,6 @@ const SuperfoodOptionsItemSchema = new Schema({
 	label: { type: String, required: true },
 	mediaIds: { type: [String], default: [] },
 	idOptionAlternative: { type: String, required: false },
-	sizeNumber: { type: Number, required: false },
-	sizeUnit: { type: String, enum: ['g', 'mg', 'kg'], required: false },
-	servingsPerContainer: { type: Number, required: false },
-	price: { type: Number, required: false },
-	stock: { type: Number, required: false },
-	sku: { type: String, required: false },
 });
 
 const SuperfoodOptionsSchema = new Schema({
