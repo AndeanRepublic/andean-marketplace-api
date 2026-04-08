@@ -96,7 +96,11 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 	): Promise<SuperfoodProduct | null> {
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		const updated = await this.model
-			.findByIdAndUpdate(objectId, { $set: { status, updatedAt: new Date() } }, { new: true })
+			.findByIdAndUpdate(
+				objectId,
+				{ $set: { status, updatedAt: new Date() } },
+				{ new: true },
+			)
 			.exec();
 		return updated ? SuperfoodProductMapper.fromDocument(updated) : null;
 	}
@@ -258,7 +262,9 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 					$map: {
 						input: {
 							$filter: {
-								input: { $ifNull: ['$nutritionalContent', []] },
+								input: {
+									$ifNull: ['$servingNutrition.servingNutritionalContent', []],
+								},
 								as: 'item',
 								cond: { $eq: ['$$item.selected', true] },
 							},

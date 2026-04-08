@@ -16,6 +16,12 @@ import { GetBoxDetailUseCase } from '../src/andean/app/use_cases/boxes/GetBoxDet
 import { GetBoxCatalogSuperfoodsUseCase } from '../src/andean/app/use_cases/boxes/GetBoxCatalogSuperfoodsUseCase';
 import { GetBoxCatalogTextileProductsUseCase } from '../src/andean/app/use_cases/boxes/GetBoxCatalogTextileProductsUseCase';
 import { GetBoxCatalogTextileVariantsUseCase } from '../src/andean/app/use_cases/boxes/GetBoxCatalogTextileVariantsUseCase';
+import { GetBoxCatalogTextileProductMediaUseCase } from '../src/andean/app/use_cases/boxes/GetBoxCatalogTextileProductMediaUseCase';
+import { GetBoxCatalogSuperfoodProductMediaUseCase } from '../src/andean/app/use_cases/boxes/GetBoxCatalogSuperfoodProductMediaUseCase';
+import { UpdateBoxStatusUseCase } from '../src/andean/app/use_cases/boxes/UpdateBoxStatusUseCase';
+import { UpdateBoxUseCase } from '../src/andean/app/use_cases/boxes/UpdateBoxUseCase';
+import { DeleteBoxUseCase } from '../src/andean/app/use_cases/boxes/DeleteBoxUseCase';
+import { GetBoxForAdminEditUseCase } from '../src/andean/app/use_cases/boxes/GetBoxForAdminEditUseCase';
 
 // ─── Domain ─────────────────────────────────────────────────────────────────
 import { Box } from '../src/andean/domain/entities/box/Box';
@@ -74,6 +80,30 @@ describe('BoxController (e2e)', () => {
 					useValue: {
 						handle: jest.fn().mockResolvedValue({ items: [] }),
 					},
+				},
+				{
+					provide: GetBoxCatalogTextileProductMediaUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue({ items: [] }) },
+				},
+				{
+					provide: GetBoxCatalogSuperfoodProductMediaUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue({ items: [] }) },
+				},
+				{
+					provide: UpdateBoxStatusUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue(mockBox) },
+				},
+				{
+					provide: UpdateBoxUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue(mockBox) },
+				},
+				{
+					provide: DeleteBoxUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue(undefined) },
+				},
+				{
+					provide: GetBoxForAdminEditUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue(mockBox) },
 				},
 			],
 		})

@@ -3,6 +3,7 @@ import {
 	ArrayMinSize,
 	IsEnum,
 	IsNotEmpty,
+	IsIn,
 	IsNumber,
 	IsOptional,
 	IsString,
@@ -55,6 +56,38 @@ export class CreateSuperfoodPriceInventoryDto {
 	SKU?: string;
 }
 
+export class CreateSuperfoodServingNutritionDto {
+	@ApiProperty({
+		description: 'Tamaño de la porción para la tabla nutricional',
+		example: 30,
+		minimum: 0.01,
+	})
+	@IsNumber()
+	@Min(0.01)
+	@IsNotEmpty()
+	servingSize!: number;
+
+	@ApiProperty({
+		description: 'Unidad del tamaño de porción',
+		enum: ['g', 'mg'],
+		example: 'g',
+	})
+	@IsIn(['g', 'mg'])
+	@IsNotEmpty()
+	servingUnit!: 'g' | 'mg';
+
+	@ApiProperty({
+		type: [CreateSuperfoodNutritionalDto],
+		description: 'Tabla de contenido nutricional por porción',
+		minItems: 1,
+	})
+	@IsArray()
+	@ArrayMinSize(1)
+	@ValidateNested({ each: true })
+	@Type(() => CreateSuperfoodNutritionalDto)
+	servingNutritionalContent!: CreateSuperfoodNutritionalDto[];
+}
+
 export class CreateSuperfoodDto {
 	@ApiProperty({
 		enum: SuperfoodProductStatus,
@@ -104,15 +137,12 @@ export class CreateSuperfoodDto {
 	detailProduct?: CreateSuperfoodDetailDto;
 
 	@ApiProperty({
-		type: [CreateSuperfoodNutritionalDto],
-		description: 'Tabla de contenido nutricional (mínimo una fila)',
-		minItems: 1,
+		type: CreateSuperfoodServingNutritionDto,
+		description: 'Contenido nutricional por porción',
 	})
-	@IsArray()
-	@ArrayMinSize(1)
-	@ValidateNested({ each: true })
-	@Type(() => CreateSuperfoodNutritionalDto)
-	nutritionalContent!: CreateSuperfoodNutritionalDto[];
+	@ValidateNested()
+	@Type(() => CreateSuperfoodServingNutritionDto)
+	servingNutrition!: CreateSuperfoodServingNutritionDto;
 
 	@ApiProperty({ type: [CreateSuperfoodOptionsDto], required: false })
 	@IsArray()

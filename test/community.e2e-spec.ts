@@ -21,6 +21,7 @@ import { GetByIdSealUseCase } from '../src/andean/app/use_cases/community/GetByI
 import { UpdateSealUseCase } from '../src/andean/app/use_cases/community/UpdateSealUseCase';
 import { DeleteSealUseCase } from '../src/andean/app/use_cases/community/DeleteSealUseCase';
 import { CreateManySealsUseCase } from '../src/andean/app/use_cases/community/CreateManySealsUseCase';
+import { UpdateCommunityStatusUseCase } from '../src/andean/app/use_cases/community/UpdateCommunityStatusUseCase';
 import { Community } from '../src/andean/domain/entities/community/Community';
 import { MediaUrlResolver } from '../src/andean/infra/services/media/MediaUrlResolver';
 import { FixtureLoader } from './helpers/fixture-loader';
@@ -100,6 +101,10 @@ describe('CommunityController (e2e)', () => {
 				{
 					provide: MediaUrlResolver,
 					useValue: { resolveUrls: jest.fn().mockImplementation((x) => x) },
+				},
+				{
+					provide: UpdateCommunityStatusUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue(mockCommunity) },
 				},
 			],
 		})

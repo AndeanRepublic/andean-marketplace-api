@@ -134,22 +134,22 @@ export class GetByIdSuperfoodProductDetailUseCase {
 		}));
 
 		// 8. Mapear nutritional content — separar striking vs normal
-		const strikingNutritionalItems = (product.nutritionalContent || [])
+		const servingNutritionItems =
+			product.servingNutrition?.servingNutritionalContent || [];
+		const strikingNutritionalItems = servingNutritionItems
 			.filter((item) => item.selected)
 			.map((item) => ({
-				id: item.id,
-				quantity: item.quantity,
+				quantityNumber: item.quantityNumber,
+				quantityUnit: item.quantityUnit,
 				name: item.nutrient,
 				strikingFeature: item.strikingFeature,
 			}));
 
-		const nutritionalInformation = (product.nutritionalContent || []).map(
-			(item) => ({
-				id: item.id,
-				quantity: item.quantity,
-				name: item.nutrient,
-			}),
-		);
+		const nutritionalInformation = servingNutritionItems.map((item) => ({
+			quantityNumber: item.quantityNumber,
+			quantityUnit: item.quantityUnit,
+			name: item.nutrient,
+		}));
 
 		// 9. More products (6 primeros, excluyendo el actual)
 		const moreProducts = await this.getMoreProducts(productId);

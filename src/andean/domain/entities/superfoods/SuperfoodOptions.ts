@@ -1,9 +1,9 @@
 import { SuperfoodOptionsItem } from './SuperfoodOptionsItem';
+import { SuperfoodOptionName } from '../../enums/SuperfoodOptionName';
 
 export class SuperfoodOptions {
 	constructor(
-		public id: string,
-		public name: string, // e.g., "Color", "Tamaño"
+		public name: SuperfoodOptionName,
 		public values: SuperfoodOptionsItem[], // Array of option items
 	) {}
 }
