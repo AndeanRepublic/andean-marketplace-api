@@ -41,6 +41,7 @@ import { CommunityModule } from './community.module';
 import { ShopsModule } from './shop.module';
 import { ProviderInfoModule } from './providerInfo.module';
 import { OwnerInfoResolver } from './infra/services/owner/OwnerInfoResolver';
+import { OwnerNameResolver } from './infra/services/OwnerNameResolver';
 
 @Module({
 	imports: [
@@ -66,6 +67,7 @@ import { OwnerInfoResolver } from './infra/services/owner/OwnerInfoResolver';
 		BoxProductLinesValidator,
 		TextileVariantPickerMediaService,
 		OwnerInfoResolver,
+		OwnerNameResolver,
 		// Use Cases
 		CreateBoxUseCase,
 		GetAllBoxesUseCase,

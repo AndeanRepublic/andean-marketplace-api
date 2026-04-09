@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BoxImageResponse } from './BoxImageResponse';
 import { AdminEntityStatus } from '../../../domain/enums/AdminEntityStatus';
+import { OwnerType } from '../../../domain/enums/OwnerType';
+import { ProductType } from '../../../domain/enums/ProductType';
 
 export class BoxItemCountResponse {
 	@ApiProperty({ description: 'Cantidad de productos textiles', example: 1 })
@@ -8,6 +10,37 @@ export class BoxItemCountResponse {
 
 	@ApiProperty({ description: 'Cantidad de productos superfood', example: 2 })
 	superfoods!: number;
+}
+
+export class BoxListProductResponse {
+	@ApiProperty({ description: 'Nombre del producto', example: 'Poncho Andino' })
+	name!: string;
+
+	@ApiProperty({
+		description: 'Tipo de owner del producto',
+		enum: OwnerType,
+		example: OwnerType.COMMUNITY,
+	})
+	ownerType!: OwnerType;
+
+	@ApiProperty({
+		description: 'Nombre de la comunidad o shop owner',
+		example: 'Comunidad Chinchero',
+	})
+	owner!: string;
+
+	@ApiProperty({
+		description: 'Tipo de producto',
+		enum: ProductType,
+		example: ProductType.TEXTILE,
+	})
+	type!: ProductType;
+
+	@ApiProperty({
+		description: 'URL de imagen (variante o fallback del producto)',
+		example: 'https://cdn.example.com/media/abc.jpg',
+	})
+	thumbnailImage!: string;
 }
 
 export class BoxListItemResponse {
@@ -59,6 +92,12 @@ export class BoxListItemResponse {
 		example: 12,
 	})
 	fulfillableQuantity!: number;
+
+	@ApiProperty({
+		description: 'Productos contenidos en el box con owner e imagen',
+		type: [BoxListProductResponse],
+	})
+	products!: BoxListProductResponse[];
 }
 
 export class BoxPaginationResponse {
