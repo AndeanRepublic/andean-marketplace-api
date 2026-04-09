@@ -69,6 +69,7 @@ import { DeleteTextilePrincipalUseUseCase } from './app/use_cases/textileProduct
 import { CreateTextileProductUseCase } from './app/use_cases/textileProducts/CreateTextileProductUseCase';
 import { UpdateTextileProductUseCase } from './app/use_cases/textileProducts/UpdateTextileProductUseCase';
 import { GetAllTextileProductsUseCase } from './app/use_cases/textileProducts/GetAllTextileProductsUseCase';
+import { GetAllTextileProductsForManagementUseCase } from './app/use_cases/textileProducts/GetAllTextileProductsForManagementUseCase';
 import { GetTextileProductForSellerUseCase } from './app/use_cases/textileProducts/GetTextileProductForSellerUseCase';
 import { GetByIdTextileProductDetailUseCase } from './app/use_cases/textileProducts/GetByIdTextileProductDetailUseCase';
 import { DeleteTextileProductUseCase } from './app/use_cases/textileProducts/DeleteTextileProductUseCase';
@@ -243,6 +244,7 @@ import { OwnerInfoResolver } from './infra/services/owner/OwnerInfoResolver';
 		CreateTextileProductUseCase,
 		UpdateTextileProductUseCase,
 		GetAllTextileProductsUseCase,
+		GetAllTextileProductsForManagementUseCase,
 		GetTextileProductForSellerUseCase,
 		GetByIdTextileProductDetailUseCase,
 		DeleteTextileProductUseCase,
