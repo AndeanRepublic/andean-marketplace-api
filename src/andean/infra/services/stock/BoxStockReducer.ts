@@ -5,6 +5,7 @@ import { ProductType } from '../../../domain/enums/ProductType';
 import { BoxProductType } from '../../../domain/enums/BoxProductType';
 import { StockReductionItem } from '../../../app/models/shop/StockReductionItem';
 import { BoxRepository } from '../../../app/datastore/box/Box.repo';
+import { VariantRepository } from '../../../app/datastore/Variant.repo';
 import { IStockReducerRegistry } from './IStockReducerRegistry';
 
 const BOX_PRODUCT_TYPE_MAP: Record<BoxProductType, ProductType> = {
@@ -19,6 +20,8 @@ export class BoxStockReducer extends StockReducerStrategy {
 	constructor(
 		@Inject(BoxRepository)
 		private readonly boxRepository: BoxRepository,
+		@Inject(VariantRepository)
+		private readonly variantRepository: VariantRepository,
 		private readonly moduleRef: ModuleRef,
 	) {
 		super();
@@ -30,21 +33,25 @@ export class BoxStockReducer extends StockReducerStrategy {
 			throw new NotFoundException(`Box not found: ${item.productId}`);
 		}
 
-		// Lazy resolution rompe el ciclo circular con StockReducerRegistry
 		const registry = this.moduleRef.get<IStockReducerRegistry>(
 			IStockReducerRegistry,
 			{ strict: false },
 		);
 
-		// Cada producto dentro del box tiene cantidad 1
 		for (const boxProduct of box.products) {
-			if (!boxProduct.productType || !boxProduct.productId) continue;
+			if (!boxProduct.productType || !boxProduct.variantId) continue;
+
+			const variant = await this.variantRepository.getById(
+				boxProduct.variantId,
+			);
+			if (!variant) continue;
 
 			const mappedType = BOX_PRODUCT_TYPE_MAP[boxProduct.productType];
+			if (variant.productType !== mappedType) continue;
 
 			await registry.reduceStock({
 				productType: mappedType,
-				productId: boxProduct.productId,
+				productId: variant.productId,
 				quantity: 1,
 				variantId: boxProduct.variantId,
 			});

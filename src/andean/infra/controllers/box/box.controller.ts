@@ -33,6 +33,7 @@ import { GetBoxDetailUseCase } from '../../../app/use_cases/boxes/GetBoxDetailUs
 import { GetBoxCatalogSuperfoodsUseCase } from '../../../app/use_cases/boxes/GetBoxCatalogSuperfoodsUseCase';
 import { GetBoxCatalogTextileProductsUseCase } from '../../../app/use_cases/boxes/GetBoxCatalogTextileProductsUseCase';
 import { GetBoxCatalogTextileVariantsUseCase } from '../../../app/use_cases/boxes/GetBoxCatalogTextileVariantsUseCase';
+import { GetBoxCatalogSuperfoodVariantsUseCase } from '../../../app/use_cases/boxes/GetBoxCatalogSuperfoodVariantsUseCase';
 import { GetBoxCatalogTextileProductMediaUseCase } from '../../../app/use_cases/boxes/GetBoxCatalogTextileProductMediaUseCase';
 import { GetBoxCatalogSuperfoodProductMediaUseCase } from '../../../app/use_cases/boxes/GetBoxCatalogSuperfoodProductMediaUseCase';
 import { Box } from '../../../domain/entities/box/Box';
@@ -60,6 +61,7 @@ export class BoxController {
 		private readonly getBoxCatalogSuperfoodsUseCase: GetBoxCatalogSuperfoodsUseCase,
 		private readonly getBoxCatalogTextileProductsUseCase: GetBoxCatalogTextileProductsUseCase,
 		private readonly getBoxCatalogTextileVariantsUseCase: GetBoxCatalogTextileVariantsUseCase,
+		private readonly getBoxCatalogSuperfoodVariantsUseCase: GetBoxCatalogSuperfoodVariantsUseCase,
 		private readonly getBoxCatalogTextileProductMediaUseCase: GetBoxCatalogTextileProductMediaUseCase,
 		private readonly getBoxCatalogSuperfoodProductMediaUseCase: GetBoxCatalogSuperfoodProductMediaUseCase,
 		private readonly updateBoxStatusUseCase: UpdateBoxStatusUseCase,
@@ -75,7 +77,7 @@ export class BoxController {
 	@ApiOperation({
 		summary: 'Crear nuevo box',
 		description:
-			'Crea un nuevo box con productos (superfoods y/o variantes textiles). Valida que los productos y variantes existan y tengan stock disponible antes de crear el box.',
+			'Crea un nuevo box con productos por variante (superfoods y/o textiles). Valida que referencias y tipos sean consistentes.',
 	})
 	@ApiResponse({
 		status: 201,
@@ -85,7 +87,7 @@ export class BoxController {
 	@ApiResponse({
 		status: 400,
 		description:
-			'Datos de entrada inválidos, producto/variante no encontrado o sin stock disponible (VARIANT_NOT_FOUND, VARIANT_OUT_OF_STOCK, PRODUCT_NOT_FOUND, PRODUCT_OUT_OF_STOCK)',
+			'Datos de entrada inválidos, referencia no encontrada o tipo de variante inconsistente (VARIANT_NOT_FOUND, BOX_PRODUCT_REFERENCE_REQUIRED, BOX_VARIANT_TYPE_MISMATCH)',
 	})
 	async createBox(@Body() createBoxDto: CreateBoxDto): Promise<Box> {
 		return this.createBoxUseCase.handle(createBoxDto);
@@ -160,6 +162,21 @@ export class BoxController {
 		@Param('productId') productId: string,
 	): Promise<BoxCatalogMediaResponseDto> {
 		return this.getBoxCatalogSuperfoodProductMediaUseCase.handle(productId);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
+	@Get('catalog/superfoods/:productId/variants')
+	@ApiOperation({
+		summary: 'Variantes superfood para formulario de box (admin)',
+	})
+	@ApiParam({ name: 'productId', description: 'ID del producto superfood' })
+	@ApiResponse({ status: 200, type: BoxCatalogVariantsResponseDto })
+	@ApiResponse({ status: 404, description: 'Producto no encontrado' })
+	async getCatalogSuperfoodVariants(
+		@Param('productId') productId: string,
+	): Promise<BoxCatalogVariantsResponseDto> {
+		return this.getBoxCatalogSuperfoodVariantsUseCase.handle(productId);
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)

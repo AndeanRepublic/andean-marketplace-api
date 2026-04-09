@@ -4,7 +4,6 @@ import { AdminEntityStatus } from '../../enums/AdminEntityStatus';
 export class BoxProduct {
 	constructor(
 		public productType?: BoxProductType,
-		public productId?: string,
 		public variantId?: string,
 		public boxPrice?: number,
 		public narrativeImgId?: string,

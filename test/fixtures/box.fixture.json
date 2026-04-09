@@ -9,11 +9,11 @@
 		"products": [
 			{
 				"productType": "SUPERFOOD",
-				"productId": "superfood-uuid-123"
+				"variantId": "variant-superfood-123"
 			},
 			{
 				"productType": "SUPERFOOD",
-				"productId": "superfood-uuid-456"
+				"variantId": "variant-superfood-456"
 			},
 			{
 				"productType": "TEXTILE",
@@ -26,6 +26,7 @@
 			"box-seal-uuid-001",
 			"box-seal-uuid-002"
 		],
+		"status": "PUBLISHED",
 		"createdAt": "2026-01-15T00:00:00.000Z",
 		"updatedAt": "2026-01-15T00:00:00.000Z"
 	},
@@ -38,11 +39,11 @@
 		"products": [
 			{
 				"productType": "SUPERFOOD",
-				"productId": "superfood-uuid-123"
+				"variantId": "variant-superfood-123"
 			},
 			{
 				"productType": "SUPERFOOD",
-				"productId": "superfood-uuid-456"
+				"variantId": "variant-superfood-456"
 			},
 			{
 				"productType": "TEXTILE",
@@ -78,6 +79,24 @@
 		}
 	},
 	"relatedProducts": {
+		"superfoodVariants": [
+			{
+				"id": "variant-superfood-123",
+				"productId": "superfood-uuid-123",
+				"productType": "SUPERFOOD",
+				"price": 25.50,
+				"stock": 100,
+				"combination": { "SIZE": "size-alt-123" }
+			},
+			{
+				"id": "variant-superfood-456",
+				"productId": "superfood-uuid-456",
+				"productType": "SUPERFOOD",
+				"price": 30.00,
+				"stock": 50,
+				"combination": { "SIZE": "size-alt-456" }
+			}
+		],
 		"superfoods": [
 			{
 				"id": "superfood-uuid-123",
@@ -160,6 +179,7 @@
 				"id": "box-uuid-001",
 				"name": "Caja Andina Esencial",
 				"slogan": "Lo mejor de los Andes en una caja",
+				"status": "PUBLISHED",
 				"itemCount": {
 					"textiles": 1,
 					"superfoods": 2
@@ -171,35 +191,7 @@
 					"url": "https://example.com/uploads/box-thumbnail.jpg",
 					"name": "box-thumbnail.jpg"
 				},
-				"products": [
-					{
-						"name": "Quinua Premium",
-						"community": "Comunidad Quinua Andina",
-						"type": "SUPERFOOD",
-						"thumbnailImage": {
-							"url": "https://example.com/uploads/quinua-thumb.jpg",
-							"name": "quinua-thumb.jpg"
-						}
-					},
-					{
-						"name": "Maca Negra Orgánica",
-						"community": "Comunidad Maca Power",
-						"type": "SUPERFOOD",
-						"thumbnailImage": {
-							"url": "https://example.com/uploads/maca-thumb.jpg",
-							"name": "maca-thumb.jpg"
-						}
-					},
-					{
-						"name": "Poncho Andino Premium",
-						"community": "Comunidad Textil Cusco",
-						"type": "TEXTILE",
-						"thumbnailImage": {
-							"url": "https://example.com/uploads/poncho-thumb.jpg",
-							"name": "poncho-thumb.jpg"
-						}
-					}
-				]
+				"fulfillableQuantity": 20
 			}
 		],
 		"pagination": {
@@ -237,7 +229,7 @@
 		},
 		"containedProducts": [
 			{
-				"id": "superfood-uuid-123",
+				"id": "variant-superfood-123",
 				"title": "Quinua Premium",
 				"thumbnailImage": {
 					"url": "https://example.com/uploads/quinua-thumb.jpg",
@@ -246,10 +238,19 @@
 				"information": "Quinua orgánica de los Andes peruanos",
 				"type": "SUPERFOOD",
 				"discartedPrice": 25.50,
-				"price": 25.50
+				"price": 25.50,
+				"ownerId": "community-001",
+				"ownerInfo": {
+					"ownerType": "COMMUNITY",
+					"community": {
+						"bannerImageUrl": "",
+						"name": "Comunidad Quinua Andina",
+						"seals": []
+					}
+				}
 			},
 			{
-				"id": "superfood-uuid-456",
+				"id": "variant-superfood-456",
 				"title": "Maca Negra Orgánica",
 				"thumbnailImage": {
 					"url": "https://example.com/uploads/maca-thumb.jpg",
@@ -258,7 +259,16 @@
 				"information": "Maca negra de Junín, energizante natural",
 				"type": "SUPERFOOD",
 				"discartedPrice": 30.00,
-				"price": 30.00
+				"price": 30.00,
+				"ownerId": "community-002",
+				"ownerInfo": {
+					"ownerType": "COMMUNITY",
+					"community": {
+						"bannerImageUrl": "",
+						"name": "Comunidad Maca Power",
+						"seals": []
+					}
+				}
 			},
 			{
 				"id": "variant-textile-001",
@@ -270,7 +280,16 @@
 				"information": "Poncho tejido a mano por artesanos andinos",
 				"type": "TEXTILE",
 				"discartedPrice": 150.00,
-				"price": 150.00
+				"price": 150.00,
+				"ownerId": "community-003",
+				"ownerInfo": {
+					"ownerType": "COMMUNITY",
+					"community": {
+						"bannerImageUrl": "",
+						"name": "Comunidad Textil Cusco",
+						"seals": []
+					}
+				}
 			}
 		],
 		"priceDetail": {

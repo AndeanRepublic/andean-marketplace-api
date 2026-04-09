@@ -54,4 +54,8 @@ export abstract class SuperfoodProductRepository {
 
 	/** Listado completo (sin paginar) para el formulario admin de box. */
 	abstract getBoxCatalogAll(): Promise<Array<BoxCatalogSuperfoodItem>>;
+	/** Variante para box-admin: incluye productos con stock 0. */
+	abstract getBoxCatalogAllIncludingZeroStock(): Promise<
+		Array<BoxCatalogSuperfoodItem>
+	>;
 }

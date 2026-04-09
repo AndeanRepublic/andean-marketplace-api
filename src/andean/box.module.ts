@@ -15,6 +15,7 @@ import { GetBoxDetailUseCase } from './app/use_cases/boxes/GetBoxDetailUseCase';
 import { GetBoxCatalogSuperfoodsUseCase } from './app/use_cases/boxes/GetBoxCatalogSuperfoodsUseCase';
 import { GetBoxCatalogTextileProductsUseCase } from './app/use_cases/boxes/GetBoxCatalogTextileProductsUseCase';
 import { GetBoxCatalogTextileVariantsUseCase } from './app/use_cases/boxes/GetBoxCatalogTextileVariantsUseCase';
+import { GetBoxCatalogSuperfoodVariantsUseCase } from './app/use_cases/boxes/GetBoxCatalogSuperfoodVariantsUseCase';
 import { GetBoxCatalogTextileProductMediaUseCase } from './app/use_cases/boxes/GetBoxCatalogTextileProductMediaUseCase';
 import { GetBoxCatalogSuperfoodProductMediaUseCase } from './app/use_cases/boxes/GetBoxCatalogSuperfoodProductMediaUseCase';
 import { UpdateBoxStatusUseCase } from './app/use_cases/boxes/UpdateBoxStatusUseCase';
@@ -24,6 +25,7 @@ import { GetBoxForAdminEditUseCase } from './app/use_cases/boxes/GetBoxForAdminE
 
 // Services
 import { BoxProductResolutionService } from './infra/services/box/BoxProductResolutionService';
+import { BoxProductLinesValidator } from './infra/services/box/BoxProductLinesValidator';
 import { TextileVariantPickerMediaService } from './infra/services/box/TextileVariantPickerMediaService';
 
 // Controller
@@ -36,6 +38,9 @@ import { TextileProductModule } from './textileProduct.module';
 import { VariantModule } from './variant.module';
 import { MediaItemModule } from './mediaItem.module';
 import { CommunityModule } from './community.module';
+import { ShopsModule } from './shop.module';
+import { ProviderInfoModule } from './providerInfo.module';
+import { OwnerInfoResolver } from './infra/services/owner/OwnerInfoResolver';
 
 @Module({
 	imports: [
@@ -46,6 +51,8 @@ import { CommunityModule } from './community.module';
 		VariantModule,
 		MediaItemModule,
 		CommunityModule,
+		ShopsModule,
+		ProviderInfoModule,
 	],
 	controllers: [BoxController],
 	providers: [
@@ -56,7 +63,9 @@ import { CommunityModule } from './community.module';
 		},
 		// Services
 		BoxProductResolutionService,
+		BoxProductLinesValidator,
 		TextileVariantPickerMediaService,
+		OwnerInfoResolver,
 		// Use Cases
 		CreateBoxUseCase,
 		GetAllBoxesUseCase,
@@ -64,6 +73,7 @@ import { CommunityModule } from './community.module';
 		GetBoxCatalogSuperfoodsUseCase,
 		GetBoxCatalogTextileProductsUseCase,
 		GetBoxCatalogTextileVariantsUseCase,
+		GetBoxCatalogSuperfoodVariantsUseCase,
 		GetBoxCatalogTextileProductMediaUseCase,
 		GetBoxCatalogSuperfoodProductMediaUseCase,
 		UpdateBoxStatusUseCase,
