@@ -7,11 +7,7 @@ import { StockReductionItem } from '../../../app/models/shop/StockReductionItem'
 import { BoxRepository } from '../../../app/datastore/box/Box.repo';
 import { VariantRepository } from '../../../app/datastore/Variant.repo';
 import { IStockReducerRegistry } from './IStockReducerRegistry';
-
-const BOX_PRODUCT_TYPE_MAP: Record<BoxProductType, ProductType> = {
-	[BoxProductType.TEXTILE]: ProductType.TEXTILE,
-	[BoxProductType.SUPERFOOD]: ProductType.SUPERFOOD,
-};
+import { BOX_LINE_TO_PRODUCT_TYPE } from '../box/boxLineProductTypeMap';
 
 @Injectable()
 export class BoxStockReducer extends StockReducerStrategy {
@@ -46,13 +42,14 @@ export class BoxStockReducer extends StockReducerStrategy {
 			);
 			if (!variant) continue;
 
-			const mappedType = BOX_PRODUCT_TYPE_MAP[boxProduct.productType];
-			if (variant.productType !== mappedType) continue;
+			const mappedType =
+				BOX_LINE_TO_PRODUCT_TYPE[boxProduct.productType as BoxProductType];
+			if (!mappedType || variant.productType !== mappedType) continue;
 
 			await registry.reduceStock({
 				productType: mappedType,
 				productId: variant.productId,
-				quantity: 1,
+				quantity: item.quantity,
 				variantId: boxProduct.variantId,
 			});
 		}
