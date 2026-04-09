@@ -30,6 +30,7 @@ import { ReviewController } from './infra/controllers/Review.controller';
 // Use Cases - Product
 import { CreateSuperfoodProductUseCase } from './app/use_cases/superfoods/CreateSuperfoodProductUseCase';
 import { GetAllSuperfoodProductsUseCase } from './app/use_cases/superfoods/GetAllSuperfoodProductsUseCase';
+import { GetAllSuperfoodProductsForManagementUseCase } from './app/use_cases/superfoods/GetAllSuperfoodProductsForManagementUseCase';
 import { UpdateSuperfoodProductUseCase } from './app/use_cases/superfoods/UpdateSuperfoodProductUseCase';
 import { DeleteSuperfoodProductUseCase } from './app/use_cases/superfoods/DeleteSuperfoodProductUseCase';
 import { GetByIdSuperfoodProductDetailUseCase } from './app/use_cases/superfoods/GetByIdSuperfoodProductDetailUseCase';
@@ -206,6 +207,7 @@ import { SuperfoodProductListMediaResolver } from './infra/services/superfood/Su
 		// Use Cases - Product
 		CreateSuperfoodProductUseCase,
 		GetAllSuperfoodProductsUseCase,
+		GetAllSuperfoodProductsForManagementUseCase,
 		UpdateSuperfoodProductUseCase,
 		DeleteSuperfoodProductUseCase,
 		GetByIdSuperfoodProductDetailUseCase,
