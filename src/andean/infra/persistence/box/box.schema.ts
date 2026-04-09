@@ -9,7 +9,6 @@ const BoxProductSchema = new Schema(
 			enum: Object.values(BoxProductType),
 			required: true,
 		},
-		productId: { type: String },
 		variantId: { type: String },
 		boxPrice: { type: Number },
 		narrativeImgId: { type: String },
@@ -46,7 +45,6 @@ export interface BoxDocument extends Document {
 	mainImageId: string;
 	products: {
 		productType?: string;
-		productId?: string;
 		variantId?: string;
 		boxPrice?: number;
 		narrativeImgId?: string;

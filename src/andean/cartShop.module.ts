@@ -29,6 +29,7 @@ import { BoxProductInfoProvider } from './infra/services/products/BoxProductInfo
 import { ProductInfoProviderRegistry } from './infra/services/products/ProductInfoProviderRegistry';
 import { OwnerNameResolver } from './infra/services/OwnerNameResolver';
 import { BoxCartContentResolver } from './infra/services/cart/BoxCartContentResolver';
+import { BoxCartAvailabilityService } from './infra/services/cart/BoxCartAvailabilityService';
 import { BoxModule } from './box.module';
 
 @Module({
@@ -79,6 +80,7 @@ import { BoxModule } from './box.module';
 		ProductInfoProviderRegistry,
 		OwnerNameResolver,
 		BoxCartContentResolver,
+		BoxCartAvailabilityService,
 	],
 	exports: [CartShopRepository, CartShopItemRepository],
 })

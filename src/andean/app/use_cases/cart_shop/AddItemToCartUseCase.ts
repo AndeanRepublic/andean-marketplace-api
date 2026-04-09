@@ -22,6 +22,9 @@ import { TextileProductAttributesAssembler } from '../../../infra/services/texti
 import { ProductType } from '../../../domain/enums/ProductType';
 import { CartColorOptionResponse } from '../../models/cart/CartColorOptionResponse';
 import { TextileProductRepository } from '../../datastore/textileProducts/TextileProduct.repo';
+import { BoxCartAvailabilityService } from '../../../infra/services/cart/BoxCartAvailabilityService';
+import { BoxCartContentResolver } from '../../../infra/services/cart/BoxCartContentResolver';
+import { Variant } from '../../../domain/entities/Variant';
 
 @Injectable()
 export class AddItemToCartUseCase {
@@ -39,6 +42,8 @@ export class AddItemToCartUseCase {
 		private readonly textileProductAttributesAssembler: TextileProductAttributesAssembler,
 		@Inject(TextileProductRepository)
 		private readonly textileProductRepository: TextileProductRepository,
+		private readonly boxCartAvailability: BoxCartAvailabilityService,
+		private readonly boxCartContentResolver: BoxCartContentResolver,
 	) {}
 
 	async handle(
@@ -47,11 +52,41 @@ export class AddItemToCartUseCase {
 		itemDto: AddCartItemDto,
 		targetCustomerId?: string,
 	): Promise<ShoppingCartItemResponse> {
-		// Pattern H — 2-hop ownership check with ADMIN bypass
+		const customerId = await this.resolveCustomerId(
+			requestingUserId,
+			roles,
+			targetCustomerId,
+		);
+
+		const variantIdTrim = itemDto.variantId?.trim();
+		const boxIdTrim = itemDto.boxId?.trim();
+		if (variantIdTrim && boxIdTrim) {
+			throw new BadRequestException(
+				'No envíe variantId y boxId en la misma petición',
+			);
+		}
+
+		if (boxIdTrim) {
+			return this.addBoxToCart(customerId, boxIdTrim, itemDto.quantity);
+		}
+		if (variantIdTrim) {
+			return this.addVariantToCart(
+				customerId,
+				variantIdTrim,
+				itemDto.quantity,
+			);
+		}
+		throw new BadRequestException('Debe enviar variantId o boxId');
+	}
+
+	private async resolveCustomerId(
+		requestingUserId: string,
+		roles: AccountRole[],
+		targetCustomerId?: string,
+	): Promise<string> {
 		let customerId: string | null;
 		const isAdmin = roles.includes(AccountRole.ADMIN);
 		if (isAdmin && targetCustomerId) {
-			// ADMIN targeting a specific customer's cart
 			customerId = targetCustomerId;
 		} else if (!isAdmin) {
 			const customer =
@@ -61,99 +96,80 @@ export class AddItemToCartUseCase {
 			}
 			customerId = customer.id;
 		} else {
-			// ADMIN with no targetCustomerId: resolve own customer profile
 			const customer =
 				await this.customerRepository.getCustomerByUserId(requestingUserId);
 			customerId = customer?.id ?? null;
 		}
 
-		// ADMIN with no CustomerProfile cannot add items (no cart to add to)
 		if (!customerId) {
 			throw new ForbiddenException('You can only access your own cart');
 		}
+		return customerId;
+	}
 
-		// 2. Obtener la variante
-		const variant = await this.variantRepository.getById(itemDto.variantId);
+	private async ensureCart(customerId: string): Promise<CartShop> {
+		let cart = await this.cartShopRepository.getCartByCustomerId(customerId);
+		if (!cart) {
+			cart = new CartShop(
+				new Types.ObjectId().toString(),
+				customerId,
+				0,
+				0,
+				0,
+				new Date(),
+				new Date(),
+				undefined,
+			);
+			await this.cartShopRepository.createCart(cart);
+		}
+		return cart;
+	}
+
+	private async addVariantToCart(
+		customerId: string,
+		variantId: string,
+		quantity: number,
+	): Promise<ShoppingCartItemResponse> {
+		const variant = await this.variantRepository.getById(variantId);
 		if (!variant) {
 			throw new NotFoundException('Variant not found');
 		}
 
-		// 2.1. Validar que la variante tenga stock disponible
 		if (variant.stock <= 0) {
 			throw new BadRequestException(
 				'La variante seleccionada no tiene stock disponible',
 			);
 		}
 
-		// 3. Obtener información del producto según el tipo (Strategy Pattern)
 		const productInfo = await this.productInfoRegistry.getProductInfo(
 			variant.productType,
 			variant.productId,
 		);
 
-		// 4. Obtener el nombre del owner (shop o community)
 		const ownerName = await this.ownerNameResolver.resolve(
 			productInfo.ownerType,
 			productInfo.ownerId,
 		);
 
-		let colorOption: CartColorOptionResponse | undefined;
-		if (variant.productType === ProductType.TEXTILE) {
-			const textileProduct =
-				await this.textileProductRepository.getTextileProductById(
-					variant.productId,
-				);
-			if (textileProduct) {
-				const resolved =
-					await this.textileProductAttributesAssembler.resolveColorOptionForProductAndVariant(
-						textileProduct,
-						variant,
-					);
-				if (resolved) {
-					colorOption = {
-						label: resolved.label,
-						hexCode: resolved.hexCode,
-					};
-				}
-			}
-		}
+		const colorOption = await this.resolveTextileColorOption(variant);
 
-		// 5. Obtener o crear el carrito del customer
-		let cart = await this.cartShopRepository.getCartByCustomerId(customerId);
-		if (!cart) {
-			cart = new CartShop(
-				new Types.ObjectId().toString(),
-				customerId,
-				0, // delivery
-				0, // tax
-				0, // discount
-				new Date(),
-				new Date(),
-				undefined, // customerEmail - not used for logged-in users
-			);
-			await this.cartShopRepository.createCart(cart);
-		}
-
-		// Verificar si ya existe un item en el carrito con la misma variante
+		const cart = await this.ensureCart(customerId);
 		const existingCartItems =
 			await this.cartItemRepository.getItemsByCartShopId(cart.id);
 		const existingItemWithSameVariant = existingCartItems.find(
 			(item) => item.variantProductId === variant.id,
 		);
 
-		// Calcular la cantidad total que se intentaría agregar
 		const totalQuantity = existingItemWithSameVariant
-			? existingItemWithSameVariant.quantity + itemDto.quantity
-			: itemDto.quantity;
+			? existingItemWithSameVariant.quantity + quantity
+			: quantity;
 
-		// Validar que la cantidad total no exceda el stock disponible
 		if (totalQuantity > variant.stock) {
 			const availableStock = variant.stock;
 			const alreadyInCart = existingItemWithSameVariant
 				? existingItemWithSameVariant.quantity
 				: 0;
 			const maxCanAdd = availableStock - alreadyInCart;
-
 			throw new BadRequestException(
 				`Stock insuficiente. Stock disponible: ${availableStock}, ` +
 					`ya en carrito: ${alreadyInCart}, ` +
@@ -164,9 +180,8 @@ export class AddItemToCartUseCase {
 		if (existingItemWithSameVariant) {
 			const updatedItem = await this.cartItemRepository.updateQuantity(
 				existingItemWithSameVariant.id,
-				itemDto.quantity,
+				quantity,
 			);
-
 			return ShoppingCartItemMapper.toResponse(
 				updatedItem,
 				variant,
@@ -176,30 +191,129 @@ export class AddItemToCartUseCase {
 			);
 		}
 
-		// 6. Crear el item del carrito
 		const cartItemId = new Types.ObjectId().toString();
 		const cartItem = new CartItem(
 			cartItemId,
 			cart.id,
 			variant.productType,
 			variant.productId,
-			itemDto.quantity,
+			quantity,
 			variant.price,
-			0, // discount
+			0,
 			new Date(),
 			new Date(),
 			variant.id,
 		);
 		await this.cartItemRepository.createItem(cartItem);
 
-		// 7. Usar mapper para construir la respuesta
 		return ShoppingCartItemMapper.fromParams({
 			cartItemId,
 			variant,
 			productInfo,
 			ownerName,
-			quantity: itemDto.quantity,
+			quantity,
 			colorOption,
 		});
+	}
+
+	private async resolveTextileColorOption(
+		variant: Variant,
+	): Promise<CartColorOptionResponse | undefined> {
+		if (variant.productType !== ProductType.TEXTILE) {
+			return undefined;
+		}
+		const textileProduct =
+			await this.textileProductRepository.getTextileProductById(
+				variant.productId,
+			);
+		if (!textileProduct) {
+			return undefined;
+		}
+		const resolved =
+			await this.textileProductAttributesAssembler.resolveColorOptionForProductAndVariant(
+				textileProduct,
+				variant,
+			);
+		if (!resolved) {
+			return undefined;
+		}
+		return { label: resolved.label, hexCode: resolved.hexCode };
+	}
+
+	private async addBoxToCart(
+		customerId: string,
+		boxId: string,
+		quantity: number,
+	): Promise<ShoppingCartItemResponse> {
+		const { box, maxSellableBoxes } =
+			await this.boxCartAvailability.requireSellableBox(boxId);
+
+		const productInfo = await this.productInfoRegistry.getProductInfo(
+			ProductType.BOX,
+			box.id,
+		);
+		if (!productInfo) {
+			throw new NotFoundException('Box product info not found');
+		}
+
+		const cart = await this.ensureCart(customerId);
+		const existingCartItems =
+			await this.cartItemRepository.getItemsByCartShopId(cart.id);
+		const existingBoxLine = existingCartItems.find(
+			(item) =>
+				item.productType === ProductType.BOX &&
+				item.productId === box.id &&
+				!item.variantProductId,
+		);
+
+		const totalQuantity = existingBoxLine
+			? existingBoxLine.quantity + quantity
+			: quantity;
+
+		if (totalQuantity > maxSellableBoxes) {
+			const alreadyInCart = existingBoxLine ? existingBoxLine.quantity : 0;
+			const maxCanAdd = maxSellableBoxes - alreadyInCart;
+			throw new BadRequestException(
+				`Stock insuficiente para la caja. Disponible: ${maxSellableBoxes}, ` +
+					`ya en carrito: ${alreadyInCart}, máximo que puedes agregar: ${maxCanAdd}`,
+			);
+		}
+
+		if (existingBoxLine) {
+			const updatedItem = await this.cartItemRepository.updateQuantity(
+				existingBoxLine.id,
+				quantity,
+			);
+			const boxContent = await this.boxCartContentResolver.resolve(box.id);
+			return ShoppingCartItemMapper.toBoxResponse(
+				updatedItem,
+				productInfo,
+				boxContent,
+				maxSellableBoxes,
+			);
+		}
+
+		const cartItemId = new Types.ObjectId().toString();
+		const cartItem = new CartItem(
+			cartItemId,
+			cart.id,
+			ProductType.BOX,
+			box.id,
+			quantity,
+			box.price,
+			0,
+			new Date(),
+			new Date(),
+			undefined,
+		);
+		await this.cartItemRepository.createItem(cartItem);
+
+		const boxContent = await this.boxCartContentResolver.resolve(box.id);
+		return ShoppingCartItemMapper.toBoxResponse(
+			cartItem,
+			productInfo,
+			boxContent,
+			maxSellableBoxes,
+		);
 	}
 }

@@ -1,29 +1,8 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { BoxImageResponse } from './BoxImageResponse';
-import { ProductType } from '../../../domain/enums/ProductType';
 import { AdminEntityStatus } from '../../../domain/enums/AdminEntityStatus';
-
-export type BoxProductType = ProductType.SUPERFOOD | ProductType.TEXTILE;
-
-export class BoxProductResponse {
-	@ApiProperty({ description: 'Nombre del producto', example: 'Quinua Real Orgánica' })
-	name!: string;
-
-	@ApiProperty({ description: 'Nombre de la comunidad productora', example: 'Comunidad de Chinchero' })
-	community!: string;
-
-	@ApiProperty({ description: 'Tipo de producto', enum: [ProductType.SUPERFOOD, ProductType.TEXTILE], example: ProductType.SUPERFOOD })
-	type!: BoxProductType;
-
-	@ApiProperty({ description: 'Imagen miniatura del producto', type: BoxImageResponse })
-	thumbnailImage!: BoxImageResponse;
-
-	@ApiPropertyOptional({
-		description: 'Imagen narrativa del ítem en el box (si se configuró narrativeImgId)',
-		type: BoxImageResponse,
-	})
-	narrativeImage?: BoxImageResponse;
-}
+import { OwnerType } from '../../../domain/enums/OwnerType';
+import { ProductType } from '../../../domain/enums/ProductType';
 
 export class BoxItemCountResponse {
 	@ApiProperty({ description: 'Cantidad de productos textiles', example: 1 })
@@ -33,23 +12,66 @@ export class BoxItemCountResponse {
 	superfoods!: number;
 }
 
+export class BoxListProductResponse {
+	@ApiProperty({ description: 'Nombre del producto', example: 'Poncho Andino' })
+	name!: string;
+
+	@ApiProperty({
+		description: 'Tipo de owner del producto',
+		enum: OwnerType,
+		example: OwnerType.COMMUNITY,
+	})
+	ownerType!: OwnerType;
+
+	@ApiProperty({
+		description: 'Nombre de la comunidad o shop owner',
+		example: 'Comunidad Chinchero',
+	})
+	owner!: string;
+
+	@ApiProperty({
+		description: 'Tipo de producto',
+		enum: ProductType,
+		example: ProductType.TEXTILE,
+	})
+	type!: ProductType;
+
+	@ApiProperty({
+		description: 'URL de imagen (variante o fallback del producto)',
+		example: 'https://cdn.example.com/media/abc.jpg',
+	})
+	thumbnailImage!: string;
+}
+
 export class BoxListItemResponse {
-	@ApiProperty({ description: 'ID único del box', example: '6973d8ffddef7b59c2d4dcfb' })
+	@ApiProperty({
+		description: 'ID único del box',
+		example: '6973d8ffddef7b59c2d4dcfb',
+	})
 	id!: string;
 
 	@ApiProperty({ description: 'Nombre del box', example: 'Box Andino Premium' })
 	name!: string;
 
-	@ApiProperty({ description: 'Eslogan del box', example: 'Lo mejor de los Andes' })
+	@ApiProperty({
+		description: 'Eslogan del box',
+		example: 'Lo mejor de los Andes',
+	})
 	slogan!: string;
 
 	@ApiProperty({ description: 'Estado del box', enum: AdminEntityStatus })
 	status!: AdminEntityStatus;
 
-	@ApiProperty({ description: 'Conteo de productos por tipo', type: BoxItemCountResponse })
+	@ApiProperty({
+		description: 'Conteo de productos por tipo',
+		type: BoxItemCountResponse,
+	})
 	itemCount!: BoxItemCountResponse;
 
-	@ApiProperty({ description: 'Precio original (antes de descuento)', example: 199.99 })
+	@ApiProperty({
+		description: 'Precio original (antes de descuento)',
+		example: 199.99,
+	})
 	discartedPrice!: number;
 
 	@ApiProperty({ description: 'Precio final del box', example: 149.99 })
@@ -58,11 +80,11 @@ export class BoxListItemResponse {
 	@ApiProperty({ description: 'Porcentaje de descuento aplicado', example: 25 })
 	porcentageDiscount!: number;
 
-	@ApiProperty({ description: 'Imagen miniatura del box', type: BoxImageResponse })
+	@ApiProperty({
+		description: 'Imagen miniatura del box',
+		type: BoxImageResponse,
+	})
 	thumbnailImage!: BoxImageResponse;
-
-	@ApiProperty({ description: 'Lista de productos incluidos en el box', type: [BoxProductResponse] })
-	products!: BoxProductResponse[];
 
 	@ApiProperty({
 		description:
@@ -71,17 +93,11 @@ export class BoxListItemResponse {
 	})
 	fulfillableQuantity!: number;
 
-	@ApiPropertyOptional({
-		description: 'Tipo del producto que limita el stock (si hay 3 líneas resueltas)',
-		enum: [ProductType.SUPERFOOD, ProductType.TEXTILE],
+	@ApiProperty({
+		description: 'Productos contenidos en el box con owner e imagen',
+		type: [BoxListProductResponse],
 	})
-	bottleneckProductType?: ProductType.SUPERFOOD | ProductType.TEXTILE;
-
-	@ApiPropertyOptional({
-		description:
-			'ID del producto limitante (superfood id o producto textil id, no variante)',
-	})
-	bottleneckProductId?: string;
+	products!: BoxListProductResponse[];
 }
 
 export class BoxPaginationResponse {
@@ -99,6 +115,9 @@ export class BoxListPaginatedResponse {
 	@ApiProperty({ description: 'Lista de boxes', type: [BoxListItemResponse] })
 	data!: BoxListItemResponse[];
 
-	@ApiProperty({ description: 'Información de paginación', type: BoxPaginationResponse })
+	@ApiProperty({
+		description: 'Información de paginación',
+		type: BoxPaginationResponse,
+	})
 	pagination!: BoxPaginationResponse;
 }

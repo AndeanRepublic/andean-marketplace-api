@@ -14,7 +14,6 @@ export class BoxMapper {
 			(p) =>
 				new BoxProduct(
 					p.productType as BoxProductType,
-					p.productId,
 					p.variantId,
 					p.boxPrice,
 					p.narrativeImgId,
@@ -50,7 +49,6 @@ export class BoxMapper {
 			(p) =>
 				new BoxProduct(
 					p.productType,
-					p.productId,
 					p.variantId,
 					p.boxPrice,
 					p.narrativeImgId,
@@ -78,16 +76,11 @@ export class BoxMapper {
 		);
 	}
 
-	static fromUpdateDto(
-		id: string,
-		dto: CreateBoxDto,
-		existing: Box,
-	): Box {
+	static fromUpdateDto(id: string, dto: CreateBoxDto, existing: Box): Box {
 		const products = (dto.products ?? []).map(
 			(p) =>
 				new BoxProduct(
 					p.productType,
-					p.productId,
 					p.variantId,
 					p.boxPrice,
 					p.narrativeImgId,

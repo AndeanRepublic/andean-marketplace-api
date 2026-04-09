@@ -18,7 +18,8 @@ export class GetBoxCatalogSuperfoodsUseCase {
 	) {}
 
 	async handle(): Promise<BoxCatalogSuperfoodsResponseDto> {
-		const rows = await this.superfoodProductRepository.getBoxCatalogAll();
+		const rows =
+			await this.superfoodProductRepository.getBoxCatalogAllIncludingZeroStock();
 		const mediaIds = rows
 			.map((r) => r.imgId?.trim())
 			.filter((id): id is string => Boolean(id));
