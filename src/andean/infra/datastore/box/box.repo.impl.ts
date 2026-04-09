@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, PipelineStage } from 'mongoose';
 import { BoxRepository } from '../../../app/datastore/box/Box.repo';
 import { Box } from '../../../domain/entities/box/Box';
 import { BoxDocument } from '../../persistence/box/box.schema';
@@ -41,6 +41,147 @@ export class BoxRepoImpl extends BoxRepository {
 		]);
 		const data = docs.map((doc) => BoxMapper.fromDocument(doc));
 		return { data, total };
+	}
+
+	/** Colección de variantes en Mongo (modelo Mongoose `Variant`). */
+	private static readonly VARIANT_COLLECTION = 'variants';
+
+	async getIdsPageWithPositiveFulfillableStock(
+		page: number,
+		perPage: number,
+	): Promise<{ items: { id: string; fulfillableQuantity: number }[]; total: number }> {
+		const skip = Math.max(0, (page - 1) * perPage);
+		const limit = Math.max(1, perPage);
+
+		const pipeline: PipelineStage[] = [
+			{
+				$addFields: {
+					__linesWithVariant: {
+						$filter: {
+							input: '$products',
+							as: 'p',
+							cond: {
+								$and: [
+									{ $ne: ['$$p.variantId', null] },
+									{ $ne: ['$$p.variantId', ''] },
+								],
+							},
+						},
+					},
+				},
+			},
+			{ $unwind: { path: '$__linesWithVariant' } },
+			{
+				$lookup: {
+					from: BoxRepoImpl.VARIANT_COLLECTION,
+					let: { vid: '$__linesWithVariant.variantId' },
+					pipeline: [
+						{
+							$match: {
+								$expr: {
+									$eq: [
+										'$_id',
+										{
+											$convert: {
+												input: '$$vid',
+												to: 'objectId',
+												onError: null,
+												onNull: null,
+											},
+										},
+									],
+								},
+							},
+						},
+					],
+					as: '__variantHit',
+				},
+			},
+			{
+				$addFields: {
+					__lineStock: {
+						$max: [
+							0,
+							{
+								$floor: {
+									$ifNull: [{ $arrayElemAt: ['$__variantHit.stock', 0] }, 0],
+								},
+							},
+						],
+					},
+				},
+			},
+			{
+				$group: {
+					_id: '$_id',
+					stocks: { $push: '$__lineStock' },
+					createdAt: { $first: '$createdAt' },
+				},
+			},
+			{
+				$addFields: {
+					fulfillableQuantity: {
+						$cond: [
+							{ $eq: [{ $size: '$stocks' }, 3] },
+							{ $min: '$stocks' },
+							0,
+						],
+					},
+				},
+			},
+			{ $match: { fulfillableQuantity: { $gt: 0 } } },
+			{
+				$facet: {
+					meta: [{ $count: 'total' }],
+					data: [
+						{ $sort: { createdAt: -1 } },
+						{ $skip: skip },
+						{ $limit: limit },
+						{
+							$project: {
+								_id: 1,
+								fulfillableQuantity: 1,
+							},
+						},
+					],
+				},
+			},
+		];
+
+		const agg = await this.boxModel.aggregate(pipeline).exec();
+		const row = agg[0] as
+			| {
+					meta: { total: number }[];
+					data: { _id: { toString: () => string }; fulfillableQuantity: number }[];
+			  }
+			| undefined;
+
+		const total = row?.meta?.[0]?.total ?? 0;
+		const items =
+			row?.data?.map((d) => ({
+				id: d._id.toString(),
+				fulfillableQuantity: d.fulfillableQuantity,
+			})) ?? [];
+
+		return { items, total };
+	}
+
+	async getByIdsInOrder(ids: string[]): Promise<Box[]> {
+		if (!ids.length) return [];
+		const objectIds: ReturnType<typeof MongoIdUtils.stringToObjectId>[] = [];
+		for (const id of ids) {
+			try {
+				objectIds.push(MongoIdUtils.stringToObjectId(id));
+			} catch {
+				/* id inválido: se omite del find; el orden final lo filtra */
+			}
+		}
+		if (!objectIds.length) return [];
+		const docs = await this.boxModel.find({ _id: { $in: objectIds } }).exec();
+		const byId = new Map(
+			docs.map((d) => [d._id.toString(), BoxMapper.fromDocument(d)]),
+		);
+		return ids.map((id) => byId.get(id)).filter((b): b is Box => Boolean(b));
 	}
 
 	async update(box: Box): Promise<Box> {
