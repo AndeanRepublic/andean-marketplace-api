@@ -27,21 +27,13 @@ export class BoxProductDto {
 	@IsNotEmpty()
 	productType!: BoxProductType;
 
-	@ApiPropertyOptional({
-		description: 'ID del producto a incluir en el box',
-		example: '6973d8ffddef7b59c2d4dcfb',
-	})
-	@IsString()
-	@IsOptional()
-	productId?: string;
-
-	@ApiPropertyOptional({
-		description: 'ID de la variante a incluir en el box',
+	@ApiProperty({
+		description: 'ID de la variante (superfood o textil)',
 		example: '6973d8ffddef7b59c2d4dcfc',
 	})
 	@IsString()
-	@IsOptional()
-	variantId?: string;
+	@IsNotEmpty()
+	variantId!: string;
 
 	@ApiPropertyOptional({
 		description:
@@ -106,7 +98,7 @@ export class CreateBoxDto {
 
 	@ApiProperty({
 		description:
-			'Lista de productos incluidos en el box. Cada producto debe tener productId (superfood) o variantId (textil)',
+			'Lista de productos incluidos en el box. Cada línea debe tener variantId (superfood o textil).',
 		type: [BoxProductDto],
 	})
 	@IsArray()

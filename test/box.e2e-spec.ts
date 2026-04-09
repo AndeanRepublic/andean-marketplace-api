@@ -16,6 +16,7 @@ import { GetBoxDetailUseCase } from '../src/andean/app/use_cases/boxes/GetBoxDet
 import { GetBoxCatalogSuperfoodsUseCase } from '../src/andean/app/use_cases/boxes/GetBoxCatalogSuperfoodsUseCase';
 import { GetBoxCatalogTextileProductsUseCase } from '../src/andean/app/use_cases/boxes/GetBoxCatalogTextileProductsUseCase';
 import { GetBoxCatalogTextileVariantsUseCase } from '../src/andean/app/use_cases/boxes/GetBoxCatalogTextileVariantsUseCase';
+import { GetBoxCatalogSuperfoodVariantsUseCase } from '../src/andean/app/use_cases/boxes/GetBoxCatalogSuperfoodVariantsUseCase';
 import { GetBoxCatalogTextileProductMediaUseCase } from '../src/andean/app/use_cases/boxes/GetBoxCatalogTextileProductMediaUseCase';
 import { GetBoxCatalogSuperfoodProductMediaUseCase } from '../src/andean/app/use_cases/boxes/GetBoxCatalogSuperfoodProductMediaUseCase';
 import { UpdateBoxStatusUseCase } from '../src/andean/app/use_cases/boxes/UpdateBoxStatusUseCase';
@@ -77,6 +78,12 @@ describe('BoxController (e2e)', () => {
 				},
 				{
 					provide: GetBoxCatalogTextileVariantsUseCase,
+					useValue: {
+						handle: jest.fn().mockResolvedValue({ items: [] }),
+					},
+				},
+				{
+					provide: GetBoxCatalogSuperfoodVariantsUseCase,
 					useValue: {
 						handle: jest.fn().mockResolvedValue({ items: [] }),
 					},
@@ -229,31 +236,22 @@ describe('BoxController (e2e)', () => {
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 
-		it('should accept a product with only productId (superfood)', () => {
+		it('should accept three lines each with variantId (superfood and textile)', () => {
 			jest.spyOn(createBoxUseCase, 'handle').mockResolvedValueOnce(mockBox);
 			return request(app.getHttpServer())
 				.post('/boxes')
 				.send({
 					...createDto,
 					products: [
-						{ productType: 'SUPERFOOD', productId: 'superfood-uuid-123' },
-						{ productType: 'SUPERFOOD', productId: 'superfood-uuid-456' },
+						{
+							productType: 'SUPERFOOD',
+							variantId: 'variant-superfood-123',
+						},
+						{
+							productType: 'SUPERFOOD',
+							variantId: 'variant-superfood-456',
+						},
 						{ productType: 'TEXTILE', variantId: 'variant-textile-001' },
-					],
-				})
-				.expect(HttpStatus.CREATED);
-		});
-
-		it('should accept a product with only variantId (textile)', () => {
-			jest.spyOn(createBoxUseCase, 'handle').mockResolvedValueOnce(mockBox);
-			return request(app.getHttpServer())
-				.post('/boxes')
-				.send({
-					...createDto,
-					products: [
-						{ productType: 'TEXTILE', variantId: 'variant-textile-001' },
-						{ productType: 'SUPERFOOD', productId: 'superfood-uuid-123' },
-						{ productType: 'SUPERFOOD', productId: 'superfood-uuid-456' },
 					],
 				})
 				.expect(HttpStatus.CREATED);
@@ -265,8 +263,14 @@ describe('BoxController (e2e)', () => {
 				.send({
 					...createDto,
 					products: [
-						{ productType: 'INVALID', productId: 'superfood-uuid-123' },
-						{ productType: 'SUPERFOOD', productId: 'superfood-uuid-456' },
+						{
+							productType: 'INVALID',
+							variantId: 'variant-superfood-123',
+						},
+						{
+							productType: 'SUPERFOOD',
+							variantId: 'variant-superfood-456',
+						},
 						{ productType: 'TEXTILE', variantId: 'variant-textile-001' },
 					],
 				})
@@ -279,8 +283,11 @@ describe('BoxController (e2e)', () => {
 				.send({
 					...createDto,
 					products: [
-						{ productId: 'superfood-uuid-123' },
-						{ productType: 'SUPERFOOD', productId: 'superfood-uuid-456' },
+						{ variantId: 'variant-superfood-123' },
+						{
+							productType: 'SUPERFOOD',
+							variantId: 'variant-superfood-456',
+						},
 						{ productType: 'TEXTILE', variantId: 'variant-textile-001' },
 					],
 				})
@@ -356,26 +363,11 @@ describe('BoxController (e2e)', () => {
 					expect(box).toHaveProperty('thumbnailImage');
 					expect(box.thumbnailImage).toHaveProperty('url');
 					expect(box.thumbnailImage).toHaveProperty('name');
-					expect(box).toHaveProperty('products');
-					expect(Array.isArray(box.products)).toBe(true);
-				});
-		});
-
-		it('should return correct product shape within each box', () => {
-			jest
-				.spyOn(getAllBoxesUseCase, 'handle')
-				.mockResolvedValueOnce(listResponse);
-			return request(app.getHttpServer())
-				.get('/boxes')
-				.expect(HttpStatus.OK)
-				.expect((res) => {
-					const product = res.body.data[0].products[0];
-					expect(product).toHaveProperty('name');
-					expect(product).toHaveProperty('community');
-					expect(product).toHaveProperty('type');
-					expect(product).toHaveProperty('thumbnailImage');
-					expect(product.thumbnailImage).toHaveProperty('url');
-					expect(product.thumbnailImage).toHaveProperty('name');
+					expect(box).toHaveProperty('status');
+					expect(box).toHaveProperty('fulfillableQuantity');
+					expect(box).not.toHaveProperty('products');
+					expect(box).not.toHaveProperty('bottleneckProductType');
+					expect(box).not.toHaveProperty('bottleneckProductId');
 				});
 		});
 
@@ -426,23 +418,6 @@ describe('BoxController (e2e)', () => {
 				});
 		});
 
-		it('should differentiate superfood and textile products by type field', () => {
-			jest
-				.spyOn(getAllBoxesUseCase, 'handle')
-				.mockResolvedValueOnce(listResponse);
-			return request(app.getHttpServer())
-				.get('/boxes')
-				.expect(HttpStatus.OK)
-				.expect((res) => {
-					const products = res.body.data[0].products;
-					const superfoods = products.filter(
-						(p: any) => p.type === 'SUPERFOOD',
-					);
-					const textiles = products.filter((p: any) => p.type === 'TEXTILE');
-					expect(superfoods).toHaveLength(2);
-					expect(textiles).toHaveLength(1);
-				});
-		});
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -556,6 +531,9 @@ describe('BoxController (e2e)', () => {
 						expect(['SUPERFOOD', 'TEXTILE']).toContain(p.type);
 						expect(p).toHaveProperty('discartedPrice');
 						expect(p).toHaveProperty('price');
+						expect(p).toHaveProperty('ownerId');
+						expect(p).toHaveProperty('ownerInfo');
+						expect(p.ownerInfo).toHaveProperty('ownerType');
 					});
 				});
 		});

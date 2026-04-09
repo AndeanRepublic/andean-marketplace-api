@@ -813,6 +813,33 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 		return rows as Array<BoxCatalogTextileItem>;
 	}
 
+	async getBoxCatalogAllIncludingZeroStock(): Promise<
+		Array<BoxCatalogTextileItem>
+	> {
+		const pipeline: PipelineStage[] = [
+			{ $sort: { createdAt: -1 } },
+			...this.buildCategoryAndSellerLookups(),
+			{
+				$project: {
+					_id: 0,
+					id: { $toString: '$_id' },
+					title: '$baseInfo.title',
+					categoryName: {
+						$ifNull: [{ $arrayElemAt: ['$category.name', 0] }, ''],
+					},
+					imgId: {
+						$ifNull: [{ $arrayElemAt: ['$baseInfo.mediaIds', 0] }, ''],
+					},
+					catalogPrice: '$priceInventary.basePrice',
+					totalStock: { $ifNull: ['$priceInventary.totalStock', 0] },
+				},
+			},
+		];
+
+		const rows = await this.textileProductModel.aggregate(pipeline).exec();
+		return rows as Array<BoxCatalogTextileItem>;
+	}
+
 	async getByIds(ids: string[]): Promise<TextileProduct[]> {
 		if (!ids.length) return [];
 		const objectIds = ids.map((id) => MongoIdUtils.stringToObjectId(id));
@@ -864,7 +891,11 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 	): Promise<TextileProduct | null> {
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		const updated = await this.textileProductModel
-			.findByIdAndUpdate(objectId, { $set: { status, updatedAt: new Date() } }, { new: true })
+			.findByIdAndUpdate(
+				objectId,
+				{ $set: { status, updatedAt: new Date() } },
+				{ new: true },
+			)
 			.exec();
 		return updated ? TextileProductMapper.fromDocument(updated) : null;
 	}

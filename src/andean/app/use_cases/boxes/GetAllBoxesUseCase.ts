@@ -3,18 +3,24 @@ import { BoxRepository } from '../../datastore/box/Box.repo';
 import {
 	BoxListPaginatedResponse,
 	BoxListItemResponse,
-	BoxProductResponse,
+	BoxListProductResponse,
 } from '../../models/box/BoxListResponse';
-import { BoxImageResponse } from '../../models/box/BoxImageResponse';
 import { ProductType } from '../../../domain/enums/ProductType';
 import { BoxProductResolutionService } from '../../../infra/services/box/BoxProductResolutionService';
 import { Box } from '../../../domain/entities/box/Box';
+import { OwnerNameResolver } from '../../../infra/services/OwnerNameResolver';
+import { Variant } from '../../../domain/entities/Variant';
+import { OwnerType } from '../../../domain/enums/OwnerType';
+import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
+import { TextileProduct } from '../../../domain/entities/textileProducts/TextileProduct';
+import { MediaItem } from '../../../domain/entities/MediaItem';
 
 @Injectable()
 export class GetAllBoxesUseCase {
 	constructor(
 		private readonly boxRepository: BoxRepository,
 		private readonly boxResolutionService: BoxProductResolutionService,
+		private readonly ownerNameResolver: OwnerNameResolver,
 	) {}
 
 	async handle(
@@ -27,191 +33,77 @@ export class GetAllBoxesUseCase {
 		);
 
 		const dependencies =
-			await this.boxResolutionService.bulkFetchBoxDependencies(boxes);
+			await this.boxResolutionService.bulkFetchBoxDependenciesForList(boxes);
 
-		const enrichedBoxes: BoxListItemResponse[] = boxes.map((box) => {
-			let discartedPrice = 0;
-			let superfoodCount = 0;
-			let textileCount = 0;
-			const products: BoxProductResponse[] = [];
+		const ownerNameCache = new Map<string, string>();
+		const enrichedBoxes: BoxListItemResponse[] = await Promise.all(
+			boxes.map(async (box) => {
+				let discartedPrice = 0;
+				let superfoodCount = 0;
+				let textileCount = 0;
 
-			const stocksData: Array<{
-				stock: number;
-				type: ProductType.SUPERFOOD | ProductType.TEXTILE;
-				productId: string;
-			}> = [];
-			for (const p of box.products) {
-				if (p.productId) {
-					const sf = dependencies.superfoodMap.get(p.productId);
-					const stock = sf
-						? Math.max(
-								0,
-								Math.floor(
-									Number(sf.priceInventory?.totalStock ?? 0),
-								),
-							)
-						: 0;
-					stocksData.push({
-						stock,
-						type: ProductType.SUPERFOOD,
-						productId: p.productId,
-					});
-				} else if (p.variantId) {
+				const stocks: number[] = [];
+				for (const p of box.products) {
+					if (!p.variantId) continue;
 					const variant = dependencies.variantMap.get(p.variantId);
 					const stock = variant
 						? Math.max(0, Math.floor(Number(variant.stock ?? 0)))
 						: 0;
-					const textileProductId = variant?.productId ?? '';
-					stocksData.push({
-						stock,
-						type: ProductType.TEXTILE,
-						productId: textileProductId,
-					});
+					stocks.push(stock);
 				}
-			}
 
-			let fulfillableQuantity = 0;
-			let bottleneckProductType:
-				| ProductType.SUPERFOOD
-				| ProductType.TEXTILE
-				| undefined;
-			let bottleneckProductId: string | undefined;
-			if (stocksData.length === 3) {
-				fulfillableQuantity = Math.min(
-					stocksData[0]!.stock,
-					stocksData[1]!.stock,
-					stocksData[2]!.stock,
-				);
-				const bottleneck = stocksData.reduce((a, c) =>
-					c.stock < a.stock ? c : a,
-				);
-				bottleneckProductType = bottleneck.type;
-				bottleneckProductId = bottleneck.productId;
-			}
+				let fulfillableQuantity = 0;
+				if (stocks.length === 3) {
+					fulfillableQuantity = Math.min(stocks[0]!, stocks[1]!, stocks[2]!);
+				}
 
-			for (const product of box.products) {
-				if (product.productId) {
-					superfoodCount++;
-					const superfood = dependencies.superfoodMap.get(product.productId);
-					if (superfood) {
-						const catalog = this.boxResolutionService.getSuperfoodPrice(
-							superfood,
-						);
-						const price = this.boxResolutionService.resolveLinePrice(
-							product,
-							catalog,
-						);
-						discartedPrice += price;
-
-						const communityName =
-							this.boxResolutionService.resolveCommunityName(
-								superfood.baseInfo?.ownerId,
-								dependencies.communityMap,
-							);
-
-						const thumbnailImage = this.boxResolutionService.resolveImage(
-							superfood.baseInfo?.productMedia?.mainImgId,
-							dependencies.mediaMap,
-						);
-
-						const narrativeImage = product.narrativeImgId?.trim()
-							? this.boxResolutionService.resolveImage(
-									product.narrativeImgId,
-									dependencies.mediaMap,
-								)
-							: undefined;
-
-						const row: BoxProductResponse = {
-							name: superfood.baseInfo?.title || '',
-							community: communityName,
-							type: ProductType.SUPERFOOD,
-							thumbnailImage,
-						};
-						if (
-							narrativeImage &&
-							(narrativeImage.url || narrativeImage.name)
-						) {
-							row.narrativeImage = narrativeImage;
-						}
-						products.push(row);
-					}
-				} else if (product.variantId) {
-					textileCount++;
+				for (const product of box.products) {
+					if (!product.variantId) continue;
 					const variant = dependencies.variantMap.get(product.variantId);
-					if (variant) {
-						const catalog = this.boxResolutionService.getVariantPrice(variant);
-						const price = this.boxResolutionService.resolveLinePrice(
-							product,
-							catalog,
-						);
-						discartedPrice += price;
-						const textile = dependencies.textileMap.get(variant.productId);
-
-						let communityName = '';
-						let thumbnailImage: BoxImageResponse = { url: '', name: '' };
-
-						if (textile) {
-							communityName = this.boxResolutionService.resolveCommunityName(
-								textile.baseInfo?.ownerId,
-								dependencies.communityMap,
-							);
-							thumbnailImage = this.boxResolutionService.resolveImage(
-								textile.baseInfo?.mediaIds?.[0],
-								dependencies.mediaMap,
-							);
-						}
-
-						const narrativeImage = product.narrativeImgId?.trim()
-							? this.boxResolutionService.resolveImage(
-									product.narrativeImgId,
-									dependencies.mediaMap,
-								)
-							: undefined;
-
-						const row: BoxProductResponse = {
-							name: textile?.baseInfo?.title || '',
-							community: communityName,
-							type: ProductType.TEXTILE,
-							thumbnailImage,
-						};
-						if (
-							narrativeImage &&
-							(narrativeImage.url || narrativeImage.name)
-						) {
-							row.narrativeImage = narrativeImage;
-						}
-						products.push(row);
-					}
+					if (!variant) continue;
+					const catalog = this.boxResolutionService.getVariantPrice(variant);
+					const price = this.boxResolutionService.resolveLinePrice(
+						product,
+						catalog,
+					);
+					discartedPrice += price;
+					if (variant.productType === ProductType.SUPERFOOD) superfoodCount++;
+					else if (variant.productType === ProductType.TEXTILE) textileCount++;
 				}
-			}
 
-			const boxThumb = this.boxResolutionService.resolveImage(
-				box.thumbnailImageId,
-				dependencies.mediaMap,
-			);
-			const porcentageDiscount = this.resolveDiscountPercentage(
-				box,
-				discartedPrice,
-			);
+				const products = await this.buildListProducts(
+					box,
+					dependencies.variantMap,
+					dependencies.superfoodMap,
+					dependencies.textileMap,
+					dependencies.mediaMap,
+					ownerNameCache,
+				);
 
-			return {
-				id: box.id,
-				name: box.name,
-				slogan: box.slogan,
-				status: box.status,
-				itemCount: { textiles: textileCount, superfoods: superfoodCount },
-				discartedPrice,
-				price: box.price,
-				porcentageDiscount,
-				thumbnailImage: boxThumb,
-				products,
-				fulfillableQuantity,
-				bottleneckProductType:
-					stocksData.length === 3 ? bottleneckProductType : undefined,
-				bottleneckProductId:
-					stocksData.length === 3 ? bottleneckProductId : undefined,
-			};
-		});
+				const boxThumb = this.boxResolutionService.resolveImage(
+					box.thumbnailImageId,
+					dependencies.mediaMap,
+				);
+				const porcentageDiscount = this.resolveDiscountPercentage(
+					box,
+					discartedPrice,
+				);
+
+				return {
+					id: box.id,
+					name: box.name,
+					slogan: box.slogan,
+					status: box.status,
+					itemCount: { textiles: textileCount, superfoods: superfoodCount },
+					discartedPrice,
+					price: box.price,
+					porcentageDiscount,
+					thumbnailImage: boxThumb,
+					fulfillableQuantity,
+					products,
+				};
+			}),
+		);
 
 		return {
 			data: enrichedBoxes,
@@ -229,5 +121,79 @@ export class GetAllBoxesUseCase {
 		return discartedPrice > 0
 			? Math.round((1 - box.price / discartedPrice) * 100)
 			: 0;
+	}
+
+	private async buildListProducts(
+		box: Box,
+		variantMap: Map<string, Variant>,
+		superfoodMap: Map<string, SuperfoodProduct>,
+		textileMap: Map<string, TextileProduct>,
+		mediaMap: Map<string, MediaItem>,
+		ownerNameCache: Map<string, string>,
+	): Promise<BoxListProductResponse[]> {
+		const rows: BoxListProductResponse[] = [];
+
+		for (const line of box.products) {
+			if (!line.variantId) continue;
+			const variant = variantMap.get(line.variantId);
+			if (!variant) continue;
+
+			if (variant.productType === ProductType.SUPERFOOD) {
+				const superfood = superfoodMap.get(variant.productId);
+				const ownerType = superfood?.baseInfo?.ownerType;
+				const ownerId = superfood?.baseInfo?.ownerId ?? '';
+				if (!superfood?.baseInfo?.title || !ownerType) continue;
+
+				rows.push({
+					name: superfood.baseInfo.title,
+					ownerType,
+					owner: await this.resolveOwnerName(ownerType, ownerId, ownerNameCache),
+					type: ProductType.SUPERFOOD,
+					thumbnailImage: this.boxResolutionService.resolveListProductThumbnailUrl(
+						variant,
+						textileMap,
+						superfoodMap,
+						mediaMap,
+					),
+				});
+				continue;
+			}
+
+			if (variant.productType === ProductType.TEXTILE) {
+				const textile = textileMap.get(variant.productId);
+				const ownerType = textile?.baseInfo?.ownerType;
+				const ownerId = textile?.baseInfo?.ownerId ?? '';
+				if (!textile?.baseInfo?.title || !ownerType) continue;
+
+				rows.push({
+					name: textile.baseInfo.title,
+					ownerType,
+					owner: await this.resolveOwnerName(ownerType, ownerId, ownerNameCache),
+					type: ProductType.TEXTILE,
+					thumbnailImage: this.boxResolutionService.resolveListProductThumbnailUrl(
+						variant,
+						textileMap,
+						superfoodMap,
+						mediaMap,
+					),
+				});
+			}
+		}
+
+		return rows;
+	}
+
+	private async resolveOwnerName(
+		ownerType: OwnerType,
+		ownerId: string,
+		cache: Map<string, string>,
+	): Promise<string> {
+		const cacheKey = `${ownerType}:${ownerId}`;
+		const cached = cache.get(cacheKey);
+		if (cached) return cached;
+
+		const ownerName = await this.ownerNameResolver.resolve(ownerType, ownerId);
+		cache.set(cacheKey, ownerName);
+		return ownerName;
 	}
 }
