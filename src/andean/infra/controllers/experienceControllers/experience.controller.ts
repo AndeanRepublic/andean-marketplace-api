@@ -30,6 +30,7 @@ import { CreateExperienceUseCase } from 'src/andean/app/use_cases/experiences/Cr
 import { UpdateExperienceUseCase } from 'src/andean/app/use_cases/experiences/UpdateExperienceUseCase';
 import { DeleteExperienceUseCase } from 'src/andean/app/use_cases/experiences/DeleteExperienceUseCase';
 import { GetAllExperiencesUseCase } from 'src/andean/app/use_cases/experiences/GetAllExperiencesUseCase';
+import { GetAllExperiencesForManagementUseCase } from 'src/andean/app/use_cases/experiences/GetAllExperiencesForManagementUseCase';
 import { GetByIdExperienceUseCase } from 'src/andean/app/use_cases/experiences/GetByIdExperienceUseCase';
 import { CreateExperienceDto } from '../dto/experiences/CreateExperienceDto';
 import { UpdateExperienceDto } from '../dto/experiences/UpdateExperienceDto';
@@ -38,6 +39,7 @@ import { PaginatedExperiencesResponse } from 'src/andean/app/models/experiences/
 import { ExperienceDetailResponse } from 'src/andean/app/models/experiences/ExperienceDetailResponse';
 import { UpdateExperienceStatusUseCase } from 'src/andean/app/use_cases/experiences/UpdateExperienceStatusUseCase';
 import { UpdateExperienceStatusDto } from '../dto/experiences/UpdateExperienceStatusDto';
+import { ExperienceFilters } from 'src/andean/app/datastore/experiences/Experience.repo';
 
 @ApiTags('Experiences')
 @Controller('experiences')
@@ -47,6 +49,7 @@ export class ExperienceController {
 		private readonly updateExperienceUseCase: UpdateExperienceUseCase,
 		private readonly deleteExperienceUseCase: DeleteExperienceUseCase,
 		private readonly getAllExperiencesUseCase: GetAllExperiencesUseCase,
+		private readonly getAllExperiencesForManagementUseCase: GetAllExperiencesForManagementUseCase,
 		private readonly getByIdExperienceUseCase: GetByIdExperienceUseCase,
 		private readonly updateExperienceStatusUseCase: UpdateExperienceStatusUseCase,
 	) {}
@@ -109,6 +112,85 @@ export class ExperienceController {
 			body,
 			requestingUser.userId,
 			requestingUser.roles,
+		);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
+	@Get('management')
+	@ApiOperation({
+		summary: 'Listar experiencias para dashboard (admin)',
+		description:
+			'Misma lista paginada que el endpoint público (incluye HIDDEN), requiere rol ADMIN. Para el catálogo público usar GET /experiences.',
+	})
+	@ApiQuery({
+		name: 'page',
+		required: false,
+		type: Number,
+		description: 'Número de página (por defecto: 1)',
+		example: 1,
+	})
+	@ApiQuery({
+		name: 'per_page',
+		required: false,
+		type: Number,
+		description: 'Cantidad por página (por defecto: 20)',
+		example: 20,
+	})
+	@ApiQuery({
+		name: 'category',
+		required: false,
+		type: String,
+		description: 'Filtrar por categoría de experiencia',
+		example: 'trekking',
+	})
+	@ApiQuery({
+		name: 'owner_id',
+		required: false,
+		type: String,
+		description: 'Filtrar por ID del propietario (comunidad)',
+		example: '507f1f77bcf86cd799439013',
+	})
+	@ApiQuery({
+		name: 'min_price',
+		required: false,
+		type: Number,
+		description: 'Precio mínimo (basado en precio ADULTS)',
+		example: 50,
+	})
+	@ApiQuery({
+		name: 'max_price',
+		required: false,
+		type: Number,
+		description: 'Precio máximo (basado en precio ADULTS)',
+		example: 500,
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista paginada para gestión',
+		type: PaginatedExperiencesResponse,
+	})
+	async getAllForManagement(
+		@Query('page', new ParseIntPipe({ optional: true })) page?: number,
+		@Query('per_page', new ParseIntPipe({ optional: true }))
+		perPage?: number,
+		@Query('category') category?: string,
+		@Query('owner_id') ownerId?: string,
+		@Query('min_price', new ParseIntPipe({ optional: true }))
+		minPrice?: number,
+		@Query('max_price', new ParseIntPipe({ optional: true }))
+		maxPrice?: number,
+	): Promise<PaginatedExperiencesResponse> {
+		const filters: ExperienceFilters = {};
+		if (page !== undefined) filters.page = page;
+		if (perPage !== undefined) filters.perPage = perPage;
+		if (category) filters.category = category;
+		if (ownerId) filters.ownerId = ownerId;
+		if (minPrice !== undefined) filters.minPrice = minPrice;
+		if (maxPrice !== undefined) filters.maxPrice = maxPrice;
+
+		return this.getAllExperiencesForManagementUseCase.handle(
+			Object.keys(filters).length > 0 ? filters : undefined,
 		);
 	}
 

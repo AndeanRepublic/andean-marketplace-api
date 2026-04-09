@@ -38,6 +38,7 @@ import { CreateExperienceUseCase } from './app/use_cases/experiences/CreateExper
 import { UpdateExperienceUseCase } from './app/use_cases/experiences/UpdateExperienceUseCase';
 import { DeleteExperienceUseCase } from './app/use_cases/experiences/DeleteExperienceUseCase';
 import { GetAllExperiencesUseCase } from './app/use_cases/experiences/GetAllExperiencesUseCase';
+import { GetAllExperiencesForManagementUseCase } from './app/use_cases/experiences/GetAllExperiencesForManagementUseCase';
 import { GetByIdExperienceUseCase } from './app/use_cases/experiences/GetByIdExperienceUseCase';
 import { GetAvailabilityModeByIdUseCase } from './app/use_cases/experiences/GetAvailabilityModeByIdUseCase';
 import { GetFutureUnavailableDatesUseCase } from './app/use_cases/experiences/GetFutureUnavailableDatesUseCase';
@@ -125,6 +126,7 @@ import { BookingModule } from './booking.module';
 		UpdateExperienceStatusUseCase,
 		DeleteExperienceUseCase,
 		GetAllExperiencesUseCase,
+		GetAllExperiencesForManagementUseCase,
 		GetByIdExperienceUseCase,
 		GetAvailabilityModeByIdUseCase,
 		GetFutureUnavailableDatesUseCase,
