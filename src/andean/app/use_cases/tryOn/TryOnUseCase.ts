@@ -176,14 +176,10 @@ export class TryOnUseCase {
 			(item) => item.role === MediaItemRole.THUMBNAIL,
 		);
 		if (thumbnailImage) {
-			this.logger.debug(`No PRODUCT image found, using THUMBNAIL as fallback`);
 			return thumbnailImage;
 		}
 
 		// Prioridad 3: Primera imagen disponible
-		this.logger.debug(
-			`No PRODUCT or THUMBNAIL image found, using first available media`,
-		);
 		return mediaItems[0];
 	}
 }
