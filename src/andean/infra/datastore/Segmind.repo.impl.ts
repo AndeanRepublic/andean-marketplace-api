@@ -26,7 +26,7 @@ export class SegmindRepoImpl implements SegmindRepository {
 				{
 					outfit_image: outfitImageUrl,
 					model_image: modelImageUrl,
-					model_type: 'Quality',
+					model_type: 'Balanced',
 					cn_strength: 0.9,
 					cn_end: 0.5,
 					image_format: 'webp',
@@ -40,7 +40,7 @@ export class SegmindRepoImpl implements SegmindRepository {
 						'Content-Type': 'application/json',
 					},
 					// Segmind puede tardar varios segundos procesando el modelo
-					timeout: 120_000,
+					timeout: 180_000,
 				},
 			);
 
