@@ -1,8 +1,12 @@
 import { Module } from '@nestjs/common';
 
-// Repositories
+// Repositories (abstractions)
 import { SegmindRepository } from './app/datastore/Segmind.repo';
+import { TryOnImageOptimizerRepository } from './app/datastore/TryOnImageOptimizer.repo';
+
+// Repositories (implementations)
 import { SegmindRepoImpl } from './infra/datastore/Segmind.repo.impl';
+import { TryOnImageOptimizerRepoImpl } from './infra/datastore/TryOnImageOptimizer.repo.impl';
 
 // Use Cases
 import { TryOnUseCase } from './app/use_cases/tryOn/TryOnUseCase';
@@ -23,6 +27,10 @@ import { TextileProductModule } from './textileProduct.module';
 		{
 			provide: SegmindRepository,
 			useClass: SegmindRepoImpl,
+		},
+		{
+			provide: TryOnImageOptimizerRepository,
+			useClass: TryOnImageOptimizerRepoImpl,
 		},
 		TryOnUseCase,
 	],
