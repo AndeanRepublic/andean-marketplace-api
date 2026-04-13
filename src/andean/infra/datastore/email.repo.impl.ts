@@ -53,7 +53,7 @@ export class SesEmailRepoImpl extends EmailRepository {
 		await this.sesClientService.getClient().send(command);
 
 		this.logger.log(
-			`Order confirmation email sent to ${to} for order #${data.orderNumber}`,
+			`[provider=ses] Order confirmation email sent to ${to} for order #${data.orderNumber}`,
 		);
 	}
 
@@ -88,6 +88,6 @@ export class SesEmailRepoImpl extends EmailRepository {
 
 		await this.sesClientService.getClient().send(command);
 
-		this.logger.log(`Password reset email sent to ${to}`);
+		this.logger.log(`[provider=ses] Password reset email sent to ${to}`);
 	}
 }
