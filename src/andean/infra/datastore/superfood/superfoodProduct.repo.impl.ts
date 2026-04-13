@@ -363,4 +363,54 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 
 		return rows as Array<BoxCatalogSuperfoodItem>;
 	}
+
+	async getBoxCatalogAllIncludingZeroStock(): Promise<Array<BoxCatalogSuperfoodItem>> {
+		const pipeline: PipelineStage[] = [
+			{ $sort: { createdAt: -1 } },
+			{
+				$lookup: {
+					from: 'superfoodcategories',
+					let: {
+						cid: {
+							$convert: {
+								input: '$categoryId',
+								to: 'objectId',
+								onError: null,
+								onNull: null,
+							},
+						},
+					},
+					pipeline: [
+						{
+							$match: {
+								$expr: {
+									$and: [{ $ne: ['$$cid', null] }, { $eq: ['$_id', '$$cid'] }],
+								},
+							},
+						},
+						{ $limit: 1 },
+					],
+					as: 'cat',
+				},
+			},
+			{
+				$project: {
+					_id: 0,
+					id: { $toString: '$_id' },
+					title: '$baseInfo.title',
+					categoryName: {
+						$ifNull: [{ $arrayElemAt: ['$cat.name', 0] }, ''],
+					},
+					imgId: {
+						$ifNull: ['$baseInfo.productMedia.mainImgId', ''],
+					},
+					catalogPrice: '$priceInventory.basePrice',
+					totalStock: '$priceInventory.totalStock',
+				},
+			},
+		];
+
+		const rows = await this.model.aggregate(pipeline).exec();
+		return rows as Array<BoxCatalogSuperfoodItem>;
+	}
 }

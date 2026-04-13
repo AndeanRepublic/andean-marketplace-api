@@ -15,7 +15,8 @@ export class GetBoxCatalogTextileProductsUseCase {
 	) {}
 
 	async handle(): Promise<BoxCatalogTextilesResponseDto> {
-		const rows = await this.textileProductRepository.getBoxCatalogAll();
+		const rows =
+			await this.textileProductRepository.getBoxCatalogAllIncludingZeroStock();
 		const mediaIds = rows
 			.map((r) => r.imgId?.trim())
 			.filter((id): id is string => Boolean(id));

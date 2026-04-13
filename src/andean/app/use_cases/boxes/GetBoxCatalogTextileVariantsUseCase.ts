@@ -29,7 +29,7 @@ export class GetBoxCatalogTextileVariantsUseCase {
 
 		const variants = await this.variantRepository.getByProductId(productId);
 		const textileVariants = variants.filter(
-			(v) => v.productType === ProductType.TEXTILE && v.stock > 0,
+			(v) => v.productType === ProductType.TEXTILE,
 		);
 
 		const mediaIds: string[] = [];

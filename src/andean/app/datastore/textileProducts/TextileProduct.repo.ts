@@ -39,6 +39,10 @@ export abstract class TextileProductRepository {
 
 	/** Catálogo completo para formulario de box (sin paginar). */
 	abstract getBoxCatalogAll(): Promise<Array<BoxCatalogTextileItem>>;
+	/** Variante para box-admin: incluye productos con stock 0. */
+	abstract getBoxCatalogAllIncludingZeroStock(): Promise<
+		Array<BoxCatalogTextileItem>
+	>;
 	abstract getFilterCounts(filters?: ProductFilters): Promise<FilterCount>;
 	abstract getTextileProductById(id: string): Promise<TextileProduct | null>;
 	abstract saveTextileProduct(product: TextileProduct): Promise<TextileProduct>;

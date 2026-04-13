@@ -45,13 +45,13 @@ export class ShoppingCartItemMapper {
 
 	/**
 	 * Transforma un CartItem de tipo BOX en ShoppingCartItemResponse.
-	 * Las cajas tienen quantity=1, maxStock=1, ownerName vacío y sin variante.
-	 * Incluye el contenido de la caja (boxContent) para mostrar productos internos.
+	 * ownerName vacío y sin variante; maxStock según disponibilidad de variantes internas.
 	 */
 	static toBoxResponse(
 		item: CartItem,
 		productInfo: ProductInfo,
 		boxContent: BoxContentItemResponse[],
+		maxStock: number,
 	): ShoppingCartItemResponse {
 		return {
 			productId: item.productId,
@@ -61,9 +61,9 @@ export class ShoppingCartItemMapper {
 			combinationVariant: {},
 			thumbnailImgUrl: productInfo.thumbnailImgUrl,
 			unitPrice: item.unitPrice,
-			quantity: 1,
+			quantity: item.quantity,
 			idShoppingCartItem: item.id,
-			maxStock: 1,
+			maxStock,
 			isDiscountActive: false,
 			productType: ProductType.BOX,
 			boxContent,
