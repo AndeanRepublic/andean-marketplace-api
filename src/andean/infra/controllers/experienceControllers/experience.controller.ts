@@ -38,6 +38,7 @@ import { Experience } from 'src/andean/domain/entities/experiences/Experience';
 import { PaginatedExperiencesResponse } from 'src/andean/app/models/experiences/ExperienceListItemResponse';
 import { ExperienceDetailResponse } from 'src/andean/app/models/experiences/ExperienceDetailResponse';
 import { UpdateExperienceStatusUseCase } from 'src/andean/app/use_cases/experiences/UpdateExperienceStatusUseCase';
+import { GetExperienceForEditUseCase } from 'src/andean/app/use_cases/experiences/GetExperienceForEditUseCase';
 import { UpdateExperienceStatusDto } from '../dto/experiences/UpdateExperienceStatusDto';
 import { ExperienceFilters } from 'src/andean/app/datastore/experiences/Experience.repo';
 
@@ -52,6 +53,7 @@ export class ExperienceController {
 		private readonly getAllExperiencesForManagementUseCase: GetAllExperiencesForManagementUseCase,
 		private readonly getByIdExperienceUseCase: GetByIdExperienceUseCase,
 		private readonly updateExperienceStatusUseCase: UpdateExperienceStatusUseCase,
+		private readonly getExperienceForEditUseCase: GetExperienceForEditUseCase,
 	) {}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
@@ -191,6 +193,33 @@ export class ExperienceController {
 
 		return this.getAllExperiencesForManagementUseCase.handle(
 			Object.keys(filters).length > 0 ? filters : undefined,
+		);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Get(':experienceId/edit')
+	@ApiOperation({
+		summary: 'Obtener experiencia para edición (admin)',
+		description:
+			'Payload alineado al formulario de alta (CreateExperienceDto) más mediaPreviewUrls. Misma regla de acceso que PUT. Declarar antes del GET público /:id.',
+	})
+	@ApiParam({
+		name: 'experienceId',
+		description: 'ID único de la experiencia',
+		example: '507f1f77bcf86cd799439011',
+	})
+	@ApiResponse({ status: 200, description: 'Payload para hidratar el formulario' })
+	@ApiResponse({ status: 403, description: 'Sin permiso sobre este recurso' })
+	@ApiResponse({ status: 404, description: 'Experiencia no encontrada' })
+	async getForEdit(
+		@Param('experienceId') experienceId: string,
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
+	): Promise<Record<string, unknown>> {
+		return this.getExperienceForEditUseCase.handle(
+			experienceId,
+			requestingUser.userId,
+			requestingUser.roles,
 		);
 	}
 

@@ -59,6 +59,8 @@ import { MediaItemModule } from './mediaItem.module';
 import { UsersModule } from './users.module';
 import { ShopsModule } from './shop.module';
 import { BookingModule } from './booking.module';
+import { SellerResourceAccessModule } from './sellerResourceAccess.module';
+import { GetExperienceForEditUseCase } from './app/use_cases/experiences/GetExperienceForEditUseCase';
 
 @Module({
 	imports: [
@@ -74,6 +76,7 @@ import { BookingModule } from './booking.module';
 		UsersModule,
 		ShopsModule,
 		forwardRef(() => BookingModule),
+		SellerResourceAccessModule,
 	],
 	controllers: [
 		ExperienceController,
@@ -130,6 +133,7 @@ import { BookingModule } from './booking.module';
 		GetByIdExperienceUseCase,
 		GetAvailabilityModeByIdUseCase,
 		GetFutureUnavailableDatesUseCase,
+		GetExperienceForEditUseCase,
 	],
 	exports: [
 		ExperiencePricesRepository,

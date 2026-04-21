@@ -128,6 +128,7 @@ import { MediaItemSchema } from './infra/persistence/mediaItem.schema';
 import { TextileProductAttributesAssembler } from './infra/services/textileProducts/TextileProductAttributesAssembler';
 import { MediaUrlResolver } from './infra/services/media/MediaUrlResolver';
 import { OwnerInfoResolver } from './infra/services/owner/OwnerInfoResolver';
+import { SellerResourceAccessModule } from './sellerResourceAccess.module';
 
 @Module({
 	imports: [
@@ -197,6 +198,7 @@ import { OwnerInfoResolver } from './infra/services/owner/OwnerInfoResolver';
 		forwardRef(() => VariantModule),
 		MediaItemModule,
 		forwardRef(() => SuperfoodModule),
+		SellerResourceAccessModule,
 	],
 	controllers: [
 		TextileCategoryController,

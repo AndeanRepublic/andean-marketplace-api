@@ -140,6 +140,7 @@ import { ShopsModule } from './shop.module';
 import { CommunityModule } from './community.module';
 import { MediaItemModule } from './mediaItem.module';
 import { DetailSourceProductModule } from './detailSourceProduct.module';
+import { SellerResourceAccessModule } from './sellerResourceAccess.module';
 import { ReviewSchema } from './infra/persistence/Review.schema';
 import { AccountSchema } from './infra/persistence/account.schema';
 import { ReviewRepository } from './app/datastore/Review.repo';
@@ -198,6 +199,7 @@ import { SuperfoodProductListMediaResolver } from './infra/services/superfood/Su
 		DetailSourceProductModule,
 		forwardRef(() => TextileProductModule),
 		forwardRef(() => VariantModule),
+		SellerResourceAccessModule,
 	],
 	controllers: [
 		SuperfoodController,
