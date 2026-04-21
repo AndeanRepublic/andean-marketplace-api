@@ -92,7 +92,7 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 			},
 			{ $unwind: '$prices' },
 
-			// 3. Extract ADULTS price
+			// 3. List price (align with ExperienceDetailMapper.resolvePrice: ADULTS else first age group)
 			{
 				$addFields: {
 					adultsPrice: {
@@ -102,7 +102,7 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 									$arrayElemAt: [
 										{
 											$filter: {
-												input: '$prices.ageGroups',
+												input: { $ifNull: ['$prices.ageGroups', []] },
 												as: 'ag',
 												cond: {
 													$eq: ['$$ag.code', AgeGroupCode.ADULTS],
@@ -112,8 +112,19 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 										0,
 									],
 								},
+								firstGroup: {
+									$arrayElemAt: [
+										{ $ifNull: ['$prices.ageGroups', []] },
+										0,
+									],
+								},
 							},
-							in: { $ifNull: ['$$adultsGroup.price', 0] },
+							in: {
+								$ifNull: [
+									'$$adultsGroup.price',
+									{ $ifNull: ['$$firstGroup.price', 0] },
+								],
+							},
 						},
 					},
 				},
