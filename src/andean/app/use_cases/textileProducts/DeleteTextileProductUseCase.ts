@@ -1,20 +1,14 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { TextileProductRepository } from '../../datastore/textileProducts/TextileProduct.repo';
-import { TextileProduct } from 'src/andean/domain/entities/textileProducts/TextileProduct';
-import { ShopRepository } from '../../datastore/Shop.repo';
-import { SellerProfileRepository } from '../../datastore/Seller.repo';
 import { AccountRole } from 'src/andean/domain/enums/AccountRole';
-import { assertTextileProductSellerAccess } from './assertTextileProductSellerAccess';
+import { SellerResourceAccessService } from 'src/andean/infra/services/seller/SellerResourceAccessService';
 
 @Injectable()
 export class DeleteTextileProductUseCase {
 	constructor(
 		@Inject(TextileProductRepository)
 		private readonly textileProductRepository: TextileProductRepository,
-		@Inject(ShopRepository)
-		private readonly shopRepository: ShopRepository,
-		@Inject(SellerProfileRepository)
-		private readonly sellerProfileRepository: SellerProfileRepository,
+		private readonly sellerResourceAccess: SellerResourceAccessService,
 	) {}
 
 	async handle(
@@ -28,12 +22,11 @@ export class DeleteTextileProductUseCase {
 			throw new NotFoundException('Textile product not found');
 		}
 
-		await assertTextileProductSellerAccess(
-			productFound,
+		await this.sellerResourceAccess.assertSellerCanManageOwner(
 			requestingUserId,
 			roles,
-			this.shopRepository,
-			this.sellerProfileRepository,
+			productFound.baseInfo.ownerType,
+			productFound.baseInfo.ownerId,
 		);
 
 		await this.textileProductRepository.deleteTextileProduct(id);

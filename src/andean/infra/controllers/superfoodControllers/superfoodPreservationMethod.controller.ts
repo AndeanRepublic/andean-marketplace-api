@@ -2,6 +2,7 @@ import {
 	Controller,
 	Get,
 	Post,
+	Put,
 	Delete,
 	Body,
 	Param,
@@ -23,6 +24,7 @@ import { CreateManySuperfoodPreservationMethodsUseCase } from '../../../app/use_
 import { GetSuperfoodPreservationMethodByIdUseCase } from '../../../app/use_cases/superfoods/preservationMethod/GetSuperfoodPreservationMethodByIdUseCase';
 import { ListSuperfoodPreservationMethodsUseCase } from '../../../app/use_cases/superfoods/preservationMethod/ListSuperfoodPreservationMethodsUseCase';
 import { DeleteSuperfoodPreservationMethodUseCase } from '../../../app/use_cases/superfoods/preservationMethod/DeleteSuperfoodPreservationMethodUseCase';
+import { UpdateSuperfoodPreservationMethodUseCase } from '../../../app/use_cases/superfoods/preservationMethod/UpdateSuperfoodPreservationMethodUseCase';
 
 @ApiTags('Superfood Preservation Methods')
 @Controller('superfood-preservation-methods')
@@ -33,10 +35,11 @@ export class SuperfoodPreservationMethodController {
 		private readonly getSuperfoodPreservationMethodByIdUseCase: GetSuperfoodPreservationMethodByIdUseCase,
 		private readonly listSuperfoodPreservationMethodsUseCase: ListSuperfoodPreservationMethodsUseCase,
 		private readonly deleteSuperfoodPreservationMethodUseCase: DeleteSuperfoodPreservationMethodUseCase,
+		private readonly updateSuperfoodPreservationMethodUseCase: UpdateSuperfoodPreservationMethodUseCase,
 	) {}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@Post('/bulk')
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -60,7 +63,7 @@ export class SuperfoodPreservationMethodController {
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -98,6 +101,85 @@ export class SuperfoodPreservationMethodController {
 		SuperfoodPreservationMethodResponse[]
 	> {
 		return await this.listSuperfoodPreservationMethodsUseCase.handle();
+	}
+
+	@Public()
+	@Get('/:id')
+	@ApiOperation({
+		summary: 'Obtener método por ID',
+		description: 'Retorna un método de preservación específico por su ID',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID del método',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Método encontrado',
+		type: SuperfoodPreservationMethodResponse,
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Método no encontrado',
+	})
+	async getPreservationMethodById(
+		@Param('id') id: string,
+	): Promise<SuperfoodPreservationMethodResponse> {
+		return await this.getSuperfoodPreservationMethodByIdUseCase.handle(id);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
+	@Put('/:id')
+	@ApiOperation({
+		summary: 'Actualizar método de preservación',
+		description: 'Actualiza un método de preservación por su ID',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID del método',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Método actualizado exitosamente',
+		type: SuperfoodPreservationMethodResponse,
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Método no encontrado',
+	})
+	async updatePreservationMethod(
+		@Param('id') id: string,
+		@Body() dto: CreateSuperfoodPreservationMethodDto,
+	): Promise<SuperfoodPreservationMethodResponse> {
+		return await this.updateSuperfoodPreservationMethodUseCase.handle(id, dto);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
+	@Delete('/:id')
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@ApiOperation({
+		summary: 'Eliminar método de preservación',
+		description: 'Elimina un método de preservación por su ID',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID del método a eliminar',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 204,
+		description: 'Método eliminado exitosamente',
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Método no encontrado',
+	})
+	async deletePreservationMethod(@Param('id') id: string): Promise<void> {
+		await this.deleteSuperfoodPreservationMethodUseCase.handle(id);
 	}
 
 	// @Get('/:id')

@@ -18,11 +18,10 @@ import { TextileCertificationRepository } from '../../datastore/textileProducts/
 import { ShopRepository } from '../../datastore/Shop.repo';
 import { OriginProductCommunityRepository } from '../../datastore/originProductCommunity.repo';
 import { OwnerType } from 'src/andean/domain/enums/OwnerType';
-import { assertTextileProductSellerAccess } from './assertTextileProductSellerAccess';
+import { SellerResourceAccessService } from 'src/andean/infra/services/seller/SellerResourceAccessService';
 import { CommunityRepository } from '../../datastore/community/community.repo';
 import { ColorOptionAlternativeRepository } from '../../datastore/textileProducts/ColorOptionAlternative.repo';
 import { SizeOptionAlternativeRepository } from '../../datastore/textileProducts/SizeOptionAlternative.repo';
-import { SellerProfileRepository } from '../../datastore/Seller.repo';
 import { AccountRole } from 'src/andean/domain/enums/AccountRole';
 import { MediaItemRepository } from '../../datastore/MediaItem.repo';
 import { validateTextileProductBaseInfoMedia } from './validateTextileProductBaseInfoMedia';
@@ -54,10 +53,9 @@ export class UpdateTextileProductUseCase {
 		private readonly colorOptionAlternativeRepository: ColorOptionAlternativeRepository,
 		@Inject(SizeOptionAlternativeRepository)
 		private readonly sizeOptionAlternativeRepository: SizeOptionAlternativeRepository,
-		@Inject(SellerProfileRepository)
-		private readonly sellerProfileRepository: SellerProfileRepository,
 		@Inject(MediaItemRepository)
 		private readonly mediaItemRepository: MediaItemRepository,
+		private readonly sellerResourceAccess: SellerResourceAccessService,
 	) {}
 
 	async handle(
@@ -72,12 +70,11 @@ export class UpdateTextileProductUseCase {
 			throw new NotFoundException('Textile product not found');
 		}
 
-		await assertTextileProductSellerAccess(
-			productFound,
+		await this.sellerResourceAccess.assertSellerCanManageOwner(
 			requestingUserId,
 			roles,
-			this.shopRepository,
-			this.sellerProfileRepository,
+			productFound.baseInfo.ownerType,
+			productFound.baseInfo.ownerId,
 		);
 
 		// Validate categoryId solo si existe

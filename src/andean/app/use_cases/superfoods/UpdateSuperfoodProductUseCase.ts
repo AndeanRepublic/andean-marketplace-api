@@ -3,8 +3,8 @@ import {
 	Inject,
 	NotFoundException,
 	BadRequestException,
-	ForbiddenException,
 } from '@nestjs/common';
+import { OwnerType } from '../../../domain/enums/OwnerType';
 import { SuperfoodProductRepository } from '../../datastore/superfoods/SuperfoodProduct.repo';
 import { UpdateSuperfoodDto } from '../../../infra/controllers/dto/superfoods/UpdateSuperfoodDto';
 import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
@@ -12,13 +12,12 @@ import { SuperfoodProductMapper } from '../../../infra/services/superfood/Superf
 import { SuperfoodCategoryRepository } from '../../datastore/superfoods/SuperfoodCategory.repo';
 import { CommunityRepository } from '../../datastore/community/community.repo';
 import { ShopRepository } from '../../datastore/Shop.repo';
-import { OwnerType } from '../../../domain/enums/OwnerType';
 import { instanceToPlain } from 'class-transformer';
 import { CreateSuperfoodDto } from '../../../infra/controllers/dto/superfoods/CreateSuperfoodDto';
 import { CreateDetailSourceProductUseCase } from '../detailSourceProduct/CreateDetailSourceProductUseCase';
 import { UpdateDetailSourceProductUseCase } from '../detailSourceProduct/UpdateDetailSourceProductUseCase';
-import { SellerProfileRepository } from '../../datastore/Seller.repo';
 import { AccountRole } from 'src/andean/domain/enums/AccountRole';
+import { SellerResourceAccessService } from 'src/andean/infra/services/seller/SellerResourceAccessService';
 import { SuperfoodColorRepository } from '../../datastore/superfoods/SuperfoodColor.repo';
 import { SuperfoodCertificationRepository } from '../../datastore/superfoods/SuperfoodCertification.repo';
 import { SuperfoodPreservationMethodRepository } from '../../datastore/superfoods/SuperfoodPreservationMethod.repo';
@@ -44,8 +43,7 @@ export class UpdateSuperfoodProductUseCase {
 
 		private readonly createDetailSourceProductUseCase: CreateDetailSourceProductUseCase,
 		private readonly updateDetailSourceProductUseCase: UpdateDetailSourceProductUseCase,
-		@Inject(SellerProfileRepository)
-		private readonly sellerProfileRepository: SellerProfileRepository,
+		private readonly sellerResourceAccess: SellerResourceAccessService,
 		@Inject(SuperfoodColorRepository)
 		private readonly superfoodColorRepository: SuperfoodColorRepository,
 
@@ -216,22 +214,12 @@ export class UpdateSuperfoodProductUseCase {
 			throw new NotFoundException(`Product with id ${productId} not found`);
 		}
 
-		// Ownership check
-		const isAdmin = roles.includes(AccountRole.ADMIN);
-		if (!isAdmin) {
-			if (existingProduct.baseInfo.ownerType === OwnerType.COMMUNITY) {
-				throw new ForbiddenException('You can only modify your own resource');
-			}
-			const seller =
-				await this.sellerProfileRepository.getSellerByUserId(requestingUserId);
-			if (!seller)
-				throw new ForbiddenException('You can only modify your own resource');
-			const shops = await this.shopRepository.getAllBySellerId(seller.id);
-			const shopIds = shops.map((s) => s.id);
-			if (!shopIds.includes(existingProduct.baseInfo.ownerId)) {
-				throw new ForbiddenException('You can only modify your own resource');
-			}
-		}
+		await this.sellerResourceAccess.assertSellerCanManageOwner(
+			requestingUserId,
+			roles,
+			existingProduct.baseInfo.ownerType,
+			existingProduct.baseInfo.ownerId,
+		);
 
 		// 2. Validar categoría y color de catálogo
 		const categoryFound = await this.categoryRepository.getCategoryById(

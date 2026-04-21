@@ -1,6 +1,7 @@
 import {
 	Body,
 	Controller,
+	DefaultValuePipe,
 	Post,
 	Get,
 	Patch,
@@ -32,6 +33,7 @@ import { CreateTextileProductDto } from '../dto/textileProducts/CreateTextilePro
 import { UpdateTextileProductDto } from '../dto/textileProducts/UpdateTextileProductDto';
 import { UpdateTextileProductUseCase } from 'src/andean/app/use_cases/textileProducts/UpdateTextileProductUseCase';
 import { GetAllTextileProductsUseCase } from 'src/andean/app/use_cases/textileProducts/GetAllTextileProductsUseCase';
+import { GetAllTextileProductsForManagementUseCase } from 'src/andean/app/use_cases/textileProducts/GetAllTextileProductsForManagementUseCase';
 import { GetTextileProductForSellerUseCase } from 'src/andean/app/use_cases/textileProducts/GetTextileProductForSellerUseCase';
 import { DeleteTextileProductUseCase } from 'src/andean/app/use_cases/textileProducts/DeleteTextileProductUseCase';
 import {
@@ -52,6 +54,7 @@ export class TextileProductController {
 		private readonly createTextileProductUseCase: CreateTextileProductUseCase,
 		private readonly updateTextileProductUseCase: UpdateTextileProductUseCase,
 		private readonly getAllTextileProductsUseCase: GetAllTextileProductsUseCase,
+		private readonly getAllTextileProductsForManagementUseCase: GetAllTextileProductsForManagementUseCase,
 		private readonly getTextileProductForSellerUseCase: GetTextileProductForSellerUseCase,
 		private readonly deleteTextileProductUseCase: DeleteTextileProductUseCase,
 		private readonly getByIdTextileProductDetailUseCase: GetByIdTextileProductDetailUseCase,
@@ -233,6 +236,43 @@ export class TextileProductController {
 
 		return this.getAllTextileProductsUseCase.handle(
 			Object.keys(filters).length > 0 ? filters : undefined,
+		);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
+	@Get('management')
+	@ApiOperation({
+		summary: 'Listar textiles para dashboard (admin)',
+		description:
+			'Lista paginada con stock 0 incluido y cualquier estado. Para el catálogo público usar GET /textile-products.',
+	})
+	@ApiQuery({
+		name: 'page',
+		required: false,
+		type: Number,
+		description: 'Número de página (por defecto: 1)',
+		example: 1,
+	})
+	@ApiQuery({
+		name: 'per_page',
+		required: false,
+		type: Number,
+		description: 'Items por página (por defecto: 10)',
+		example: 10,
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista paginada para gestión',
+		type: PaginatedTextileProductsResponse,
+	})
+	async getAllTextileProductsForManagement(
+		@Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+		@Query('per_page', new DefaultValuePipe(10), ParseIntPipe) perPage: number,
+	): Promise<PaginatedProductsResponse<TextileProductListItem>> {
+		return this.getAllTextileProductsForManagementUseCase.handle(
+			page,
+			perPage,
 		);
 	}
 

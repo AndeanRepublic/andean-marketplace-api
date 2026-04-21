@@ -29,6 +29,7 @@ import {
 import { Public } from '../../core/public.decorator';
 import { CreateBoxUseCase } from '../../../app/use_cases/boxes/CreateBoxUseCase';
 import { GetAllBoxesUseCase } from '../../../app/use_cases/boxes/GetAllBoxesUseCase';
+import { GetAllBoxesForManagementUseCase } from '../../../app/use_cases/boxes/GetAllBoxesForManagementUseCase';
 import { GetBoxDetailUseCase } from '../../../app/use_cases/boxes/GetBoxDetailUseCase';
 import { GetBoxCatalogSuperfoodsUseCase } from '../../../app/use_cases/boxes/GetBoxCatalogSuperfoodsUseCase';
 import { GetBoxCatalogTextileProductsUseCase } from '../../../app/use_cases/boxes/GetBoxCatalogTextileProductsUseCase';
@@ -39,6 +40,7 @@ import { GetBoxCatalogSuperfoodProductMediaUseCase } from '../../../app/use_case
 import { Box } from '../../../domain/entities/box/Box';
 import { CreateBoxDto } from '../dto/box/CreateBoxDto';
 import { BoxListPaginatedResponse } from '../../../app/models/box/BoxListResponse';
+import { BoxManagementListPaginatedResponse } from '../../../app/models/box/BoxManagementListResponse';
 import { BoxDetailResponse } from '../../../app/models/box/BoxDetailResponse';
 import {
 	BoxCatalogSuperfoodsResponseDto,
@@ -57,6 +59,7 @@ export class BoxController {
 	constructor(
 		private readonly createBoxUseCase: CreateBoxUseCase,
 		private readonly getAllBoxesUseCase: GetAllBoxesUseCase,
+		private readonly getAllBoxesForManagementUseCase: GetAllBoxesForManagementUseCase,
 		private readonly getBoxDetailUseCase: GetBoxDetailUseCase,
 		private readonly getBoxCatalogSuperfoodsUseCase: GetBoxCatalogSuperfoodsUseCase,
 		private readonly getBoxCatalogTextileProductsUseCase: GetBoxCatalogTextileProductsUseCase,
@@ -96,9 +99,9 @@ export class BoxController {
 	@Public()
 	@Get('')
 	@ApiOperation({
-		summary: 'Listar boxes paginados',
+		summary: 'Listar boxes paginados (solo con stock armable)',
 		description:
-			'Retorna una lista paginada de todos los boxes disponibles con información resumida.',
+			'Lista paginada de boxes con fulfillableQuantity mayor a cero (misma regla que el mínimo de tres variantes). Para el listado completo del admin usar GET /boxes/management.',
 	})
 	@ApiQuery({
 		name: 'page',
@@ -124,6 +127,40 @@ export class BoxController {
 		@Query('per_page', new DefaultValuePipe(10), ParseIntPipe) perPage: number,
 	): Promise<BoxListPaginatedResponse> {
 		return this.getAllBoxesUseCase.handle(page, perPage);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
+	@Get('management')
+	@ApiOperation({
+		summary: 'Listar boxes para dashboard (admin)',
+		description:
+			'Todos los boxes paginados con campos mínimos: nombre, eslogan, precio, conteo por tipo y stock armable.',
+	})
+	@ApiQuery({
+		name: 'page',
+		required: false,
+		type: Number,
+		description: 'Número de página (por defecto: 1)',
+		example: 1,
+	})
+	@ApiQuery({
+		name: 'per_page',
+		required: false,
+		type: Number,
+		description: 'Items por página (por defecto: 10)',
+		example: 10,
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista paginada para gestión',
+		type: BoxManagementListPaginatedResponse,
+	})
+	async getAllBoxesForManagement(
+		@Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+		@Query('per_page', new DefaultValuePipe(10), ParseIntPipe) perPage: number,
+	): Promise<BoxManagementListPaginatedResponse> {
+		return this.getAllBoxesForManagementUseCase.handle(page, perPage);
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)

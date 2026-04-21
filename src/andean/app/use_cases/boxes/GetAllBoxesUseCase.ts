@@ -14,6 +14,7 @@ import { OwnerType } from '../../../domain/enums/OwnerType';
 import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
 import { TextileProduct } from '../../../domain/entities/textileProducts/TextileProduct';
 import { MediaItem } from '../../../domain/entities/MediaItem';
+import { computeBoxListMetrics } from '../../../infra/services/box/boxListMetrics';
 
 @Injectable()
 export class GetAllBoxesUseCase {
@@ -27,9 +28,21 @@ export class GetAllBoxesUseCase {
 		page: number = 1,
 		perPage: number = 10,
 	): Promise<BoxListPaginatedResponse> {
-		const { data: boxes, total } = await this.boxRepository.getAll(
-			page,
-			perPage,
+		const { items, total } =
+			await this.boxRepository.getIdsPageWithPositiveFulfillableStock(
+				page,
+				perPage,
+			);
+
+		if (items.length === 0) {
+			return {
+				data: [],
+				pagination: { total, page, per_page: perPage },
+			};
+		}
+
+		const boxes = await this.boxRepository.getByIdsInOrder(
+			items.map((i) => i.id),
 		);
 
 		const dependencies =
@@ -39,23 +52,9 @@ export class GetAllBoxesUseCase {
 		const enrichedBoxes: BoxListItemResponse[] = await Promise.all(
 			boxes.map(async (box) => {
 				let discartedPrice = 0;
-				let superfoodCount = 0;
-				let textileCount = 0;
 
-				const stocks: number[] = [];
-				for (const p of box.products) {
-					if (!p.variantId) continue;
-					const variant = dependencies.variantMap.get(p.variantId);
-					const stock = variant
-						? Math.max(0, Math.floor(Number(variant.stock ?? 0)))
-						: 0;
-					stocks.push(stock);
-				}
-
-				let fulfillableQuantity = 0;
-				if (stocks.length === 3) {
-					fulfillableQuantity = Math.min(stocks[0]!, stocks[1]!, stocks[2]!);
-				}
+				const metrics = computeBoxListMetrics(box, dependencies.variantMap);
+				const fulfillableQuantity = metrics.fulfillableQuantity;
 
 				for (const product of box.products) {
 					if (!product.variantId) continue;
@@ -67,8 +66,6 @@ export class GetAllBoxesUseCase {
 						catalog,
 					);
 					discartedPrice += price;
-					if (variant.productType === ProductType.SUPERFOOD) superfoodCount++;
-					else if (variant.productType === ProductType.TEXTILE) textileCount++;
 				}
 
 				const products = await this.buildListProducts(
@@ -94,7 +91,10 @@ export class GetAllBoxesUseCase {
 					name: box.name,
 					slogan: box.slogan,
 					status: box.status,
-					itemCount: { textiles: textileCount, superfoods: superfoodCount },
+					itemCount: {
+						textiles: metrics.textileCount,
+						superfoods: metrics.superfoodCount,
+					},
 					discartedPrice,
 					price: box.price,
 					porcentageDiscount,

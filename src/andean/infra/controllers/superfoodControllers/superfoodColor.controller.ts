@@ -2,6 +2,7 @@ import {
 	Controller,
 	Get,
 	Post,
+	Put,
 	Delete,
 	Body,
 	Param,
@@ -23,6 +24,7 @@ import { CreateManySuperfoodColorsUseCase } from '../../../app/use_cases/superfo
 import { ListSuperfoodColorsUseCase } from '../../../app/use_cases/superfoods/color/ListSuperfoodColorsUseCase';
 import { GetSuperfoodColorByIdUseCase } from '../../../app/use_cases/superfoods/color/GetSuperfoodColorByIdUseCase';
 import { DeleteSuperfoodColorUseCase } from '../../../app/use_cases/superfoods/color/DeleteSuperfoodColorUseCase';
+import { UpdateSuperfoodColorUseCase } from '../../../app/use_cases/superfoods/color/UpdateSuperfoodColorUseCase';
 
 @ApiTags('Superfood Colors')
 @Controller('superfood-colors')
@@ -33,10 +35,11 @@ export class SuperfoodColorController {
 		private readonly listSuperfoodColorsUseCase: ListSuperfoodColorsUseCase,
 		private readonly getSuperfoodColorByIdUseCase: GetSuperfoodColorByIdUseCase,
 		private readonly deleteSuperfoodColorUseCase: DeleteSuperfoodColorUseCase,
+		private readonly updateSuperfoodColorUseCase: UpdateSuperfoodColorUseCase,
 	) {}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@Post('/bulk')
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -51,7 +54,7 @@ export class SuperfoodColorController {
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({ summary: 'Crear color superfood' })
@@ -81,7 +84,21 @@ export class SuperfoodColorController {
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
+	@Put('/:id')
+	@ApiOperation({ summary: 'Actualizar color superfood' })
+	@ApiParam({ name: 'id', description: 'ID del color' })
+	@ApiResponse({ status: 200, type: SuperfoodColorResponse })
+	@ApiResponse({ status: 404, description: 'No encontrado' })
+	async update(
+		@Param('id') id: string,
+		@Body() dto: CreateSuperfoodColorDto,
+	): Promise<SuperfoodColorResponse> {
+		return await this.updateSuperfoodColorUseCase.handle(id, dto);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
 	@Delete('/:id')
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@ApiOperation({ summary: 'Eliminar color superfood' })

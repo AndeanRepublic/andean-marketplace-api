@@ -1,17 +1,10 @@
-import {
-	Injectable,
-	Inject,
-	NotFoundException,
-	ForbiddenException,
-} from '@nestjs/common';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { ExperienceRepository } from '../../datastore/experiences/Experience.repo';
 import { ExperiencePricesRepository } from '../../datastore/experiences/ExperiencePrices.repo';
 import { ExperienceAvailabilityRepository } from '../../datastore/experiences/ExperienceAvailability.repo';
 import { ExperienceItineraryRepository } from '../../datastore/experiences/ExperienceItinerary.repo';
-import { ShopRepository } from '../../datastore/Shop.repo';
-import { SellerProfileRepository } from '../../datastore/Seller.repo';
-import { OwnerType } from 'src/andean/domain/enums/OwnerType';
 import { AccountRole } from 'src/andean/domain/enums/AccountRole';
+import { SellerResourceAccessService } from 'src/andean/infra/services/seller/SellerResourceAccessService';
 
 @Injectable()
 export class DeleteExperienceUseCase {
@@ -24,10 +17,7 @@ export class DeleteExperienceUseCase {
 		private readonly availabilityRepository: ExperienceAvailabilityRepository,
 		@Inject(ExperienceItineraryRepository)
 		private readonly itineraryRepository: ExperienceItineraryRepository,
-		@Inject(ShopRepository)
-		private readonly shopRepository: ShopRepository,
-		@Inject(SellerProfileRepository)
-		private readonly sellerProfileRepository: SellerProfileRepository,
+		private readonly sellerResourceAccess: SellerResourceAccessService,
 	) {}
 
 	async handle(
@@ -40,22 +30,12 @@ export class DeleteExperienceUseCase {
 			throw new NotFoundException('Experience not found');
 		}
 
-		// Ownership check
-		const isAdmin = roles.includes(AccountRole.ADMIN);
-		if (!isAdmin) {
-			if (experience.basicInfo.ownerType === OwnerType.COMMUNITY) {
-				throw new ForbiddenException('You can only modify your own resource');
-			}
-			const seller =
-				await this.sellerProfileRepository.getSellerByUserId(requestingUserId);
-			if (!seller)
-				throw new ForbiddenException('You can only modify your own resource');
-			const shops = await this.shopRepository.getAllBySellerId(seller.id);
-			const shopIds = shops.map((s) => s.id);
-			if (!shopIds.includes(experience.basicInfo.ownerId)) {
-				throw new ForbiddenException('You can only modify your own resource');
-			}
-		}
+		await this.sellerResourceAccess.assertSellerCanManageOwner(
+			requestingUserId,
+			roles,
+			experience.basicInfo.ownerType,
+			experience.basicInfo.ownerId,
+		);
 
 		// basicInfo, mediaInfo y detailInfo se eliminan automáticamente al borrar el documento padre
 		await Promise.all([

@@ -1,9 +1,4 @@
-import {
-	Injectable,
-	Inject,
-	NotFoundException,
-	ForbiddenException,
-} from '@nestjs/common';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { ExperienceRepository } from '../../datastore/experiences/Experience.repo';
 import { Experience } from 'src/andean/domain/entities/experiences/Experience';
 import { UpdateExperienceDto } from 'src/andean/infra/controllers/dto/experiences/UpdateExperienceDto';
@@ -15,10 +10,8 @@ import { UpdateExperienceAvailabilityUseCase } from './availability/UpdateExperi
 import { UpdateExperienceItineraryUseCase } from './itinerary/UpdateExperienceItineraryUseCase';
 import { OwnerStrategyResolver } from 'src/andean/infra/services/experiences/OwnerStrategyResolver';
 import { MediaItemRepository } from '../../datastore/MediaItem.repo';
-import { ShopRepository } from '../../datastore/Shop.repo';
-import { SellerProfileRepository } from '../../datastore/Seller.repo';
-import { OwnerType } from 'src/andean/domain/enums/OwnerType';
 import { AccountRole } from 'src/andean/domain/enums/AccountRole';
+import { SellerResourceAccessService } from 'src/andean/infra/services/seller/SellerResourceAccessService';
 
 @Injectable()
 export class UpdateExperienceUseCase {
@@ -31,10 +24,7 @@ export class UpdateExperienceUseCase {
 		private readonly updatePricesUseCase: UpdateExperiencePricesUseCase,
 		private readonly updateAvailabilityUseCase: UpdateExperienceAvailabilityUseCase,
 		private readonly updateItineraryUseCase: UpdateExperienceItineraryUseCase,
-		@Inject(ShopRepository)
-		private readonly shopRepository: ShopRepository,
-		@Inject(SellerProfileRepository)
-		private readonly sellerProfileRepository: SellerProfileRepository,
+		private readonly sellerResourceAccess: SellerResourceAccessService,
 	) {}
 
 	async handle(
@@ -48,22 +38,12 @@ export class UpdateExperienceUseCase {
 			throw new NotFoundException('Experience not found');
 		}
 
-		// Ownership check — read from existing (DB), NEVER from dto
-		const isAdmin = roles.includes(AccountRole.ADMIN);
-		if (!isAdmin) {
-			if (existing.basicInfo.ownerType === OwnerType.COMMUNITY) {
-				throw new ForbiddenException('You can only modify your own resource');
-			}
-			const seller =
-				await this.sellerProfileRepository.getSellerByUserId(requestingUserId);
-			if (!seller)
-				throw new ForbiddenException('You can only modify your own resource');
-			const shops = await this.shopRepository.getAllBySellerId(seller.id);
-			const shopIds = shops.map((s) => s.id);
-			if (!shopIds.includes(existing.basicInfo.ownerId)) {
-				throw new ForbiddenException('You can only modify your own resource');
-			}
-		}
+		await this.sellerResourceAccess.assertSellerCanManageOwner(
+			requestingUserId,
+			roles,
+			existing.basicInfo.ownerType,
+			existing.basicInfo.ownerId,
+		);
 
 		const experienceUpdate: Partial<Experience> = {};
 

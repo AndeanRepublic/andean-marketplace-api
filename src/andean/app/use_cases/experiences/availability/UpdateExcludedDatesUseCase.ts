@@ -1,16 +1,9 @@
-import {
-	ForbiddenException,
-	Inject,
-	Injectable,
-	NotFoundException,
-} from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ExperienceRepository } from '../../../datastore/experiences/Experience.repo';
 import { ExperienceAvailabilityRepository } from '../../../datastore/experiences/ExperienceAvailability.repo';
 import { ExperienceAvailability } from 'src/andean/domain/entities/experiences/ExperienceAvailability';
-import { SellerProfileRepository } from '../../../datastore/Seller.repo';
-import { ShopRepository } from '../../../datastore/Shop.repo';
-import { OwnerType } from 'src/andean/domain/enums/OwnerType';
 import { AccountRole } from 'src/andean/domain/enums/AccountRole';
+import { SellerResourceAccessService } from 'src/andean/infra/services/seller/SellerResourceAccessService';
 
 export interface UpdateExcludedDatesDto {
 	excludedDates: string[];
@@ -23,10 +16,7 @@ export class UpdateExcludedDatesUseCase {
 		private readonly experienceRepo: ExperienceRepository,
 		@Inject(ExperienceAvailabilityRepository)
 		private readonly availabilityRepo: ExperienceAvailabilityRepository,
-		@Inject(SellerProfileRepository)
-		private readonly sellerProfileRepository: SellerProfileRepository,
-		@Inject(ShopRepository)
-		private readonly shopRepository: ShopRepository,
+		private readonly sellerResourceAccess: SellerResourceAccessService,
 	) {}
 
 	async handle(
@@ -42,22 +32,12 @@ export class UpdateExcludedDatesUseCase {
 			);
 		}
 
-		// Ownership check — read from existing (DB), NEVER from dto
-		const isAdmin = roles.includes(AccountRole.ADMIN);
-		if (!isAdmin) {
-			if (experience.basicInfo.ownerType === OwnerType.COMMUNITY) {
-				throw new ForbiddenException('You can only modify your own resource');
-			}
-			const seller =
-				await this.sellerProfileRepository.getSellerByUserId(requestingUserId);
-			if (!seller)
-				throw new ForbiddenException('You can only modify your own resource');
-			const shops = await this.shopRepository.getAllBySellerId(seller.id);
-			const shopIds = shops.map((s) => s.id);
-			if (!shopIds.includes(experience.basicInfo.ownerId)) {
-				throw new ForbiddenException('You can only modify your own resource');
-			}
-		}
+		await this.sellerResourceAccess.assertSellerCanManageOwner(
+			requestingUserId,
+			roles,
+			experience.basicInfo.ownerType,
+			experience.basicInfo.ownerId,
+		);
 
 		const availability = await this.availabilityRepo.getById(
 			experience.availabilityId,

@@ -99,7 +99,7 @@ export class CommunityController {
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@Put(path_seals_id)
 	@ApiOperation({ summary: 'Actualizar sello' })
 	@ApiParam({ name: 'id', description: 'Sello ID' })
@@ -114,7 +114,7 @@ export class CommunityController {
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@Delete(path_seals_id)
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@ApiOperation({ summary: 'Eliminar sello' })
@@ -126,7 +126,7 @@ export class CommunityController {
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({ summary: 'Create a new community' })
@@ -173,7 +173,7 @@ export class CommunityController {
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@Patch(':id')
 	@ApiOperation({ summary: 'Update community' })
 	@ApiParam({ name: 'id', description: 'Community ID' })
