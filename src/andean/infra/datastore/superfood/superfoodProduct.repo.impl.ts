@@ -134,8 +134,9 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 			query['baseInfo.ownerId'] = filters.ownerId;
 		}
 
-		// Solo productos con stock disponible
-		query['priceInventory.totalStock'] = { $gt: 0 };
+		if (!filters.includeZeroStock) {
+			query['priceInventory.totalStock'] = { $gt: 0 };
+		}
 
 		return query;
 	}

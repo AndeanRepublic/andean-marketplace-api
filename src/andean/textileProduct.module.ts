@@ -69,6 +69,7 @@ import { DeleteTextilePrincipalUseUseCase } from './app/use_cases/textileProduct
 import { CreateTextileProductUseCase } from './app/use_cases/textileProducts/CreateTextileProductUseCase';
 import { UpdateTextileProductUseCase } from './app/use_cases/textileProducts/UpdateTextileProductUseCase';
 import { GetAllTextileProductsUseCase } from './app/use_cases/textileProducts/GetAllTextileProductsUseCase';
+import { GetAllTextileProductsForManagementUseCase } from './app/use_cases/textileProducts/GetAllTextileProductsForManagementUseCase';
 import { GetTextileProductForSellerUseCase } from './app/use_cases/textileProducts/GetTextileProductForSellerUseCase';
 import { GetByIdTextileProductDetailUseCase } from './app/use_cases/textileProducts/GetByIdTextileProductDetailUseCase';
 import { DeleteTextileProductUseCase } from './app/use_cases/textileProducts/DeleteTextileProductUseCase';
@@ -127,6 +128,7 @@ import { MediaItemSchema } from './infra/persistence/mediaItem.schema';
 import { TextileProductAttributesAssembler } from './infra/services/textileProducts/TextileProductAttributesAssembler';
 import { MediaUrlResolver } from './infra/services/media/MediaUrlResolver';
 import { OwnerInfoResolver } from './infra/services/owner/OwnerInfoResolver';
+import { SellerResourceAccessModule } from './sellerResourceAccess.module';
 
 @Module({
 	imports: [
@@ -196,6 +198,7 @@ import { OwnerInfoResolver } from './infra/services/owner/OwnerInfoResolver';
 		forwardRef(() => VariantModule),
 		MediaItemModule,
 		forwardRef(() => SuperfoodModule),
+		SellerResourceAccessModule,
 	],
 	controllers: [
 		TextileCategoryController,
@@ -243,6 +246,7 @@ import { OwnerInfoResolver } from './infra/services/owner/OwnerInfoResolver';
 		CreateTextileProductUseCase,
 		UpdateTextileProductUseCase,
 		GetAllTextileProductsUseCase,
+		GetAllTextileProductsForManagementUseCase,
 		GetTextileProductForSellerUseCase,
 		GetByIdTextileProductDetailUseCase,
 		DeleteTextileProductUseCase,

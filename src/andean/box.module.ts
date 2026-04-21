@@ -11,6 +11,7 @@ import { BoxRepoImpl } from './infra/datastore/box/box.repo.impl';
 // Use Cases
 import { CreateBoxUseCase } from './app/use_cases/boxes/CreateBoxUseCase';
 import { GetAllBoxesUseCase } from './app/use_cases/boxes/GetAllBoxesUseCase';
+import { GetAllBoxesForManagementUseCase } from './app/use_cases/boxes/GetAllBoxesForManagementUseCase';
 import { GetBoxDetailUseCase } from './app/use_cases/boxes/GetBoxDetailUseCase';
 import { GetBoxCatalogSuperfoodsUseCase } from './app/use_cases/boxes/GetBoxCatalogSuperfoodsUseCase';
 import { GetBoxCatalogTextileProductsUseCase } from './app/use_cases/boxes/GetBoxCatalogTextileProductsUseCase';
@@ -71,6 +72,7 @@ import { OwnerNameResolver } from './infra/services/OwnerNameResolver';
 		// Use Cases
 		CreateBoxUseCase,
 		GetAllBoxesUseCase,
+		GetAllBoxesForManagementUseCase,
 		GetBoxDetailUseCase,
 		GetBoxCatalogSuperfoodsUseCase,
 		GetBoxCatalogTextileProductsUseCase,

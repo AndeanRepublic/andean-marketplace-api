@@ -1,5 +1,6 @@
 import {
 	Controller,
+	DefaultValuePipe,
 	Get,
 	Post,
 	Patch,
@@ -33,6 +34,7 @@ import { CreateSuperfoodProductUseCase } from '../../../app/use_cases/superfoods
 import { UpdateSuperfoodProductUseCase } from '../../../app/use_cases/superfoods/UpdateSuperfoodProductUseCase';
 import { DeleteSuperfoodProductUseCase } from '../../../app/use_cases/superfoods/DeleteSuperfoodProductUseCase';
 import { GetAllSuperfoodProductsUseCase } from '../../../app/use_cases/superfoods/GetAllSuperfoodProductsUseCase';
+import { GetAllSuperfoodProductsForManagementUseCase } from '../../../app/use_cases/superfoods/GetAllSuperfoodProductsForManagementUseCase';
 import { PaginatedProductsResponse } from '../../../app/models/shared/PaginatedProductsResponse';
 import { SuperfoodProductListItem } from '../../../app/models/superfoods/SuperfoodProductListItem';
 import { PaginatedSuperfoodProductsResponse } from '../../../app/models/superfoods/PaginatedSuperfoodProductsResponse';
@@ -49,6 +51,7 @@ export class SuperfoodController {
 	constructor(
 		private readonly createSuperfoodProductUseCase: CreateSuperfoodProductUseCase,
 		private readonly getAllSuperfoodProductsUseCase: GetAllSuperfoodProductsUseCase,
+		private readonly getAllSuperfoodProductsForManagementUseCase: GetAllSuperfoodProductsForManagementUseCase,
 		private readonly updateSuperfoodProductUseCase: UpdateSuperfoodProductUseCase,
 		private readonly deleteSuperfoodProductUseCase: DeleteSuperfoodProductUseCase,
 		private readonly getByIdSuperfoodProductDetailUseCase: GetByIdSuperfoodProductDetailUseCase,
@@ -170,6 +173,43 @@ export class SuperfoodController {
 
 		return this.getAllSuperfoodProductsUseCase.handle(
 			Object.keys(filters).length > 0 ? filters : undefined,
+		);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
+	@Get('management')
+	@ApiOperation({
+		summary: 'Listar superfoods para dashboard (admin)',
+		description:
+			'Lista paginada incluyendo stock 0 y cualquier estado (PUBLISHED/HIDDEN). Para el catálogo público usar GET /superfoods.',
+	})
+	@ApiQuery({
+		name: 'page',
+		required: false,
+		type: Number,
+		description: 'Número de página (por defecto: 1)',
+		example: 1,
+	})
+	@ApiQuery({
+		name: 'per_page',
+		required: false,
+		type: Number,
+		description: 'Items por página (por defecto: 10)',
+		example: 10,
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista paginada para gestión',
+		type: PaginatedSuperfoodProductsResponse,
+	})
+	async getAllSuperfoodProductsForManagement(
+		@Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+		@Query('per_page', new DefaultValuePipe(10), ParseIntPipe) perPage: number,
+	): Promise<PaginatedProductsResponse<SuperfoodProductListItem>> {
+		return this.getAllSuperfoodProductsForManagementUseCase.handle(
+			page,
+			perPage,
 		);
 	}
 

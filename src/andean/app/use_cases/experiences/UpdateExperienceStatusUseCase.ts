@@ -1,20 +1,15 @@
-import { ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ExperienceRepository } from '../../datastore/experiences/Experience.repo';
 import { ExperienceStatus } from '../../../domain/enums/ExperienceStatus';
 import { AccountRole } from '../../../domain/enums/AccountRole';
-import { OwnerType } from '../../../domain/enums/OwnerType';
-import { ShopRepository } from '../../datastore/Shop.repo';
-import { SellerProfileRepository } from '../../datastore/Seller.repo';
+import { SellerResourceAccessService } from 'src/andean/infra/services/seller/SellerResourceAccessService';
 
 @Injectable()
 export class UpdateExperienceStatusUseCase {
 	constructor(
 		@Inject(ExperienceRepository)
 		private readonly experienceRepository: ExperienceRepository,
-		@Inject(ShopRepository)
-		private readonly shopRepository: ShopRepository,
-		@Inject(SellerProfileRepository)
-		private readonly sellerProfileRepository: SellerProfileRepository,
+		private readonly sellerResourceAccess: SellerResourceAccessService,
 	) {}
 
 	async handle(
@@ -25,18 +20,12 @@ export class UpdateExperienceStatusUseCase {
 	) {
 		const experience = await this.experienceRepository.getById(id);
 		if (!experience) throw new NotFoundException('Experience not found');
-		const isAdmin = roles.includes(AccountRole.ADMIN);
-		if (!isAdmin) {
-			if (experience.basicInfo.ownerType === OwnerType.COMMUNITY) {
-				throw new ForbiddenException('You can only modify your own resource');
-			}
-			const seller = await this.sellerProfileRepository.getSellerByUserId(requestingUserId);
-			if (!seller) throw new ForbiddenException('You can only modify your own resource');
-			const shopIds = (await this.shopRepository.getAllBySellerId(seller.id)).map((s) => s.id);
-			if (!shopIds.includes(experience.basicInfo.ownerId)) {
-				throw new ForbiddenException('You can only modify your own resource');
-			}
-		}
+		await this.sellerResourceAccess.assertSellerCanManageOwner(
+			requestingUserId,
+			roles,
+			experience.basicInfo.ownerType,
+			experience.basicInfo.ownerId,
+		);
 		const updated = await this.experienceRepository.updateStatus(id, status);
 		if (!updated) throw new NotFoundException('Experience not found');
 		return updated;
