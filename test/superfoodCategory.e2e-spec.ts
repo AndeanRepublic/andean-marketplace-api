@@ -10,6 +10,7 @@ import { CreateManySuperfoodCategoriesUseCase } from '../src/andean/app/use_case
 import { GetSuperfoodCategoryByIdUseCase } from '../src/andean/app/use_cases/superfoods/category/GetSuperfoodCategoryByIdUseCase';
 import { ListSuperfoodCategoriesUseCase } from '../src/andean/app/use_cases/superfoods/category/ListSuperfoodCategoriesUseCase';
 import { DeleteSuperfoodCategoryUseCase } from '../src/andean/app/use_cases/superfoods/category/DeleteSuperfoodCategoryUseCase';
+import { UpdateSuperfoodCategoryUseCase } from '../src/andean/app/use_cases/superfoods/category/UpdateSuperfoodCategoryUseCase';
 import { FixtureLoader } from './helpers/fixture-loader';
 
 describe('SuperfoodCategoryController (e2e)', () => {
@@ -54,6 +55,10 @@ describe('SuperfoodCategoryController (e2e)', () => {
 					provide: DeleteSuperfoodCategoryUseCase,
 					useValue: { handle: jest.fn().mockResolvedValue(undefined) },
 				},
+				{
+					provide: UpdateSuperfoodCategoryUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue(mockResponse) },
+				},
 			],
 		})
 			.overrideGuard(JwtAuthGuard)
@@ -80,7 +85,9 @@ describe('SuperfoodCategoryController (e2e)', () => {
 	});
 
 	afterAll(async () => {
-		await app.close();
+		if (app) {
+			await app.close();
+		}
 	});
 	afterEach(() => {
 		jest.clearAllMocks();

@@ -12,6 +12,7 @@ import { createAllowAllGuard, mockAuthUsers } from './helpers/auth-test.helper';
 // ─── Use Cases ──────────────────────────────────────────────────────────────
 import { CreateBoxUseCase } from '../src/andean/app/use_cases/boxes/CreateBoxUseCase';
 import { GetAllBoxesUseCase } from '../src/andean/app/use_cases/boxes/GetAllBoxesUseCase';
+import { GetAllBoxesForManagementUseCase } from '../src/andean/app/use_cases/boxes/GetAllBoxesForManagementUseCase';
 import { GetBoxDetailUseCase } from '../src/andean/app/use_cases/boxes/GetBoxDetailUseCase';
 import { GetBoxCatalogSuperfoodsUseCase } from '../src/andean/app/use_cases/boxes/GetBoxCatalogSuperfoodsUseCase';
 import { GetBoxCatalogTextileProductsUseCase } from '../src/andean/app/use_cases/boxes/GetBoxCatalogTextileProductsUseCase';
@@ -54,6 +55,10 @@ describe('BoxController (e2e)', () => {
 				},
 				{
 					provide: GetAllBoxesUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue(listResponse) },
+				},
+				{
+					provide: GetAllBoxesForManagementUseCase,
 					useValue: { handle: jest.fn().mockResolvedValue(listResponse) },
 				},
 				{
@@ -136,7 +141,9 @@ describe('BoxController (e2e)', () => {
 	});
 
 	afterAll(async () => {
-		await app.close();
+		if (app) {
+			await app.close();
+		}
 	});
 	afterEach(() => {
 		jest.clearAllMocks();
