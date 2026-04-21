@@ -19,6 +19,7 @@ import { CreateSuperfoodProductUseCase } from '../src/andean/app/use_cases/super
 import { GetByIdSuperfoodProductDetailUseCase } from '../src/andean/app/use_cases/superfoods/GetByIdSuperfoodProductDetailUseCase';
 import { GetSuperfoodProductByIdUseCase } from '../src/andean/app/use_cases/superfoods/GetSuperfoodProductByIdUseCase';
 import { GetAllSuperfoodProductsUseCase } from '../src/andean/app/use_cases/superfoods/GetAllSuperfoodProductsUseCase';
+import { GetAllSuperfoodProductsForManagementUseCase } from '../src/andean/app/use_cases/superfoods/GetAllSuperfoodProductsForManagementUseCase';
 import { UpdateSuperfoodProductUseCase } from '../src/andean/app/use_cases/superfoods/UpdateSuperfoodProductUseCase';
 import { DeleteSuperfoodProductUseCase } from '../src/andean/app/use_cases/superfoods/DeleteSuperfoodProductUseCase';
 import { CreateDetailSourceProductUseCase } from '../src/andean/app/use_cases/detailSourceProduct/CreateDetailSourceProductUseCase';
@@ -79,6 +80,12 @@ describe('SuperfoodController (e2e)', () => {
 				},
 				{
 					provide: GetAllSuperfoodProductsUseCase,
+					useValue: {
+						handle: jest.fn().mockResolvedValue(mockPaginatedResponse),
+					},
+				},
+				{
+					provide: GetAllSuperfoodProductsForManagementUseCase,
 					useValue: {
 						handle: jest.fn().mockResolvedValue(mockPaginatedResponse),
 					},
@@ -168,7 +175,9 @@ describe('SuperfoodController (e2e)', () => {
 	});
 
 	afterAll(async () => {
-		await app.close();
+		if (app) {
+			await app.close();
+		}
 	});
 	afterEach(() => {
 		jest.clearAllMocks();
@@ -723,6 +732,12 @@ describe('SuperfoodController (e2e)', () => {
 						},
 					},
 					{
+						provide: GetAllSuperfoodProductsForManagementUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockPaginatedResponse),
+						},
+					},
+					{
 						provide: UpdateSuperfoodProductUseCase,
 						useValue: {
 							handle: jest.fn().mockResolvedValue(mockSuperfoodProduct),
@@ -951,6 +966,12 @@ describe('SuperfoodController (e2e)', () => {
 					},
 					{
 						provide: GetAllSuperfoodProductsUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockPaginatedResponse),
+						},
+					},
+					{
+						provide: GetAllSuperfoodProductsForManagementUseCase,
 						useValue: {
 							handle: jest.fn().mockResolvedValue(mockPaginatedResponse),
 						},

@@ -17,6 +17,7 @@ import {
 } from './helpers/auth-test.helper';
 import { CreateTextileProductUseCase } from '../src/andean/app/use_cases/textileProducts/CreateTextileProductUseCase';
 import { GetAllTextileProductsUseCase } from '../src/andean/app/use_cases/textileProducts/GetAllTextileProductsUseCase';
+import { GetAllTextileProductsForManagementUseCase } from '../src/andean/app/use_cases/textileProducts/GetAllTextileProductsForManagementUseCase';
 import { GetByIdTextileProductUseCase } from '../src/andean/app/use_cases/textileProducts/GetByIdTextileProductUseCase';
 import { UpdateTextileProductUseCase } from '../src/andean/app/use_cases/textileProducts/UpdateTextileProductUseCase';
 import { DeleteTextileProductUseCase } from '../src/andean/app/use_cases/textileProducts/DeleteTextileProductUseCase';
@@ -117,6 +118,12 @@ describe('TextileProductController (e2e)', () => {
 				},
 				{
 					provide: GetAllTextileProductsUseCase,
+					useValue: {
+						handle: jest.fn().mockResolvedValue(mockPaginatedResponse),
+					},
+				},
+				{
+					provide: GetAllTextileProductsForManagementUseCase,
 					useValue: {
 						handle: jest.fn().mockResolvedValue(mockPaginatedResponse),
 					},
@@ -313,7 +320,9 @@ describe('TextileProductController (e2e)', () => {
 	});
 
 	afterAll(async () => {
-		await app.close();
+		if (app) {
+			await app.close();
+		}
 	});
 	afterEach(() => {
 		jest.clearAllMocks();
@@ -1112,6 +1121,12 @@ describe('TextileProductController (e2e)', () => {
 						},
 					},
 					{
+						provide: GetAllTextileProductsForManagementUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockPaginatedResponse),
+						},
+					},
+					{
 						provide: GetByIdTextileProductUseCase,
 						useValue: {
 							handle: jest.fn().mockResolvedValue(mockTextileProduct),
@@ -1449,6 +1464,12 @@ describe('TextileProductController (e2e)', () => {
 					},
 					{
 						provide: GetAllTextileProductsUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockPaginatedResponse),
+						},
+					},
+					{
+						provide: GetAllTextileProductsForManagementUseCase,
 						useValue: {
 							handle: jest.fn().mockResolvedValue(mockPaginatedResponse),
 						},
