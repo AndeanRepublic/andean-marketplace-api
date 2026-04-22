@@ -29,6 +29,7 @@ export interface SubResourceTestConfig {
 		getById: any;
 		list: any;
 		delete: any;
+		update?: any;
 	};
 	/** If true, adds tests for "name already exists" (expects 500) */
 	hasAlreadyExistsTest?: boolean;
@@ -75,30 +76,53 @@ export function createSuperfoodSubResourceTests(
 		let deleteUseCase: any;
 
 		beforeAll(async () => {
+			const providers: any[] = [
+				{
+					provide: config.useCases.create,
+					useValue: { handle: jest.fn().mockResolvedValue(mockResponse) },
+				},
+				{
+					provide: config.useCases.createMany,
+					useValue: { handle: jest.fn().mockResolvedValue([mockResponse]) },
+				},
+				{
+					provide: config.useCases.getById,
+					useValue: { handle: jest.fn().mockResolvedValue(mockResponse) },
+				},
+				{
+					provide: config.useCases.list,
+					useValue: { handle: jest.fn().mockResolvedValue([mockResponse]) },
+				},
+				{
+					provide: config.useCases.delete,
+					useValue: { handle: jest.fn().mockResolvedValue(undefined) },
+				},
+			];
+
+			if (config.useCases.update) {
+				providers.push({
+					provide: config.useCases.update,
+					useValue: { handle: jest.fn().mockResolvedValue(mockResponse) },
+				});
+			}
+
+			const controllerDeps: any[] =
+				Reflect.getMetadata('design:paramtypes', config.controller) ?? [];
+			for (const dependency of controllerDeps) {
+				const alreadyMocked = providers.some(
+					(provider) => provider.provide === dependency,
+				);
+				if (!alreadyMocked) {
+					providers.push({
+						provide: dependency,
+						useValue: { handle: jest.fn() },
+					});
+				}
+			}
+
 			const moduleFixture: TestingModule = await Test.createTestingModule({
 				controllers: [config.controller],
-				providers: [
-					{
-						provide: config.useCases.create,
-						useValue: { handle: jest.fn().mockResolvedValue(mockResponse) },
-					},
-					{
-						provide: config.useCases.createMany,
-						useValue: { handle: jest.fn().mockResolvedValue([mockResponse]) },
-					},
-					{
-						provide: config.useCases.getById,
-						useValue: { handle: jest.fn().mockResolvedValue(mockResponse) },
-					},
-					{
-						provide: config.useCases.list,
-						useValue: { handle: jest.fn().mockResolvedValue([mockResponse]) },
-					},
-					{
-						provide: config.useCases.delete,
-						useValue: { handle: jest.fn().mockResolvedValue(undefined) },
-					},
-				],
+				providers,
 			})
 				.overrideGuard(JwtAuthGuard)
 				.useValue(createAllowAllGuard(mockAuthUsers.seller))
@@ -124,7 +148,9 @@ export function createSuperfoodSubResourceTests(
 		});
 
 		afterAll(async () => {
-			await app.close();
+			if (app) {
+				await app.close();
+			}
 		});
 
 		afterEach(() => {

@@ -11,6 +11,8 @@ export interface SuperfoodProductFilters {
 	categoryId?: string;
 	ownerId?: string;
 	sortBy?: ProductSortBy;
+	/** Si es true, incluye productos con totalStock <= 0 (p. ej. dashboard admin). */
+	includeZeroStock?: boolean;
 }
 
 export interface BoxCatalogSuperfoodItem {

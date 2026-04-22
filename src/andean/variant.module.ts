@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { TextileProductModule } from './textileProduct.module';
 import { ShopsModule } from './shop.module';
 import { UsersModule } from './users.module';
+import { SellerResourceAccessModule } from './sellerResourceAccess.module';
 
 // Schema
 import { VariantSchema } from './infra/persistence/variant.schema';
@@ -30,6 +31,7 @@ import { VariantController } from './infra/controllers/variantControllers/varian
 		forwardRef(() => TextileProductModule),
 		ShopsModule,
 		UsersModule,
+		SellerResourceAccessModule,
 	],
 	controllers: [VariantController],
 	providers: [
