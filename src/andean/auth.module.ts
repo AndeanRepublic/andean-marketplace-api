@@ -19,6 +19,8 @@ import { PasswordResetCodeRepoImpl } from './infra/datastore/passwordResetCode.r
 import { EmailRepository } from './app/datastore/Email.repo';
 import { SesEmailRepoImpl } from './infra/datastore/email.repo.impl';
 import { SesClientService } from './infra/services/email/SesClientService';
+import { ResendClientService } from './infra/services/email/ResendClientService';
+import { ResendEmailRepoImpl } from './infra/datastore/email.resend.impl';
 
 @Module({
 	imports: [
@@ -58,13 +60,36 @@ import { SesClientService } from './infra/services/email/SesClientService';
 		VerifyResetCodeUseCase,
 		HashService,
 		SesClientService,
+		ResendClientService,
 		{
 			provide: PasswordResetCodeRepository,
 			useClass: PasswordResetCodeRepoImpl,
 		},
 		{
 			provide: EmailRepository,
-			useClass: SesEmailRepoImpl,
+			useFactory: (
+				configService: ConfigService,
+				resendClient: ResendClientService,
+				sesClient: SesClientService,
+			): EmailRepository => {
+				const provider = configService.get<string>('EMAIL_PROVIDER') || 'ses';
+				if (provider === 'resend') {
+					const apiKey = configService.get<string>('RESEND_API_KEY');
+					if (!apiKey) {
+						throw new Error(
+							'RESEND_API_KEY is required when EMAIL_PROVIDER=resend',
+						);
+					}
+					return new ResendEmailRepoImpl(resendClient);
+				}
+				if (provider !== 'ses') {
+					throw new Error(
+						`Invalid EMAIL_PROVIDER: '${provider}'. Valid values: 'resend' | 'ses'`,
+					);
+				}
+				return new SesEmailRepoImpl(sesClient);
+			},
+			inject: [ConfigService, ResendClientService, SesClientService],
 		},
 		{
 			provide: APP_GUARD,
