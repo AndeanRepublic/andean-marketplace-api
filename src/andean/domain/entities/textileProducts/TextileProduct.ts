@@ -17,7 +17,7 @@ export class TextileProduct {
 		public updatedAt: Date,
 		public isDiscountActive: boolean,
 
-		public categoryId?: string,
+		public categoryId: string,
 		public atribute?: Atribute,
 		public detailTraceability?: DetailTraceability,
 		public productTraceability?: ProductTraceability,

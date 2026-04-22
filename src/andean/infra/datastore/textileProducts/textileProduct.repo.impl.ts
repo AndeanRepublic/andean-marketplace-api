@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
 	TextileProductRepository,
 	ProductFilters,
+	BoxCatalogTextileItem,
 } from '../../../app/datastore/textileProducts/TextileProduct.repo';
 import { Model, FilterQuery, PipelineStage, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -10,11 +11,12 @@ import { VariantDocument } from '../../persistence/variant.schema';
 import { TextileProduct } from 'src/andean/domain/entities/textileProducts/TextileProduct';
 import { TextileProductMapper } from '../../services/textileProducts/TextileProductMapper';
 import { MongoIdUtils } from '../../utils/MongoIdUtils';
-import { FilterCount } from 'src/andean/app/modules/shared/PaginatedProductsResponse';
-import { TextileProductListItem } from '../../../app/modules/textile/TextileProductListItemResponse';
+import { FilterCount } from 'src/andean/app/models/shared/PaginatedProductsResponse';
+import { TextileProductListItem } from '../../../app/models/textile/TextileProductListItemResponse';
 import { ProductSortBy } from 'src/andean/domain/enums/ProductSortBy';
 import { VariantMapper } from '../../services/VariantMapper';
 import { TextileProductAttributesAssembler } from '../../services/textileProducts/TextileProductAttributesAssembler';
+import { TextileProductStatus } from '../../../domain/enums/TextileProductStatus';
 
 @Injectable()
 export class TextileProductRepositoryImpl extends TextileProductRepository {
@@ -66,10 +68,11 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 	private buildBaseQuery(
 		filters?: ProductFilters,
 	): FilterQuery<TextileProductDocument> {
-		const baseQuery: FilterQuery<TextileProductDocument> = {
-			// Solo mostrar productos con stock disponible (totalStock > 0)
-			'priceInventary.totalStock': { $gt: 0 },
-		};
+		const baseQuery: FilterQuery<TextileProductDocument> = {};
+
+		if (!filters?.includeZeroStock) {
+			baseQuery['priceInventary.totalStock'] = { $gt: 0 };
+		}
 
 		if (filters?.categoryId) {
 			baseQuery.categoryId = filters.categoryId;
@@ -482,6 +485,7 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 				},
 				price: '$priceInventary.basePrice',
 				totalStock: { $ifNull: ['$priceInventary.totalStock', 0] },
+				status: '$status',
 				options: { $ifNull: ['$options', []] },
 			},
 		};
@@ -764,6 +768,7 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 					title: product.title,
 					categoryName: product.categoryName,
 					productorName: product.productorName,
+					status: product.status,
 					principalImgUrl: product.principalImgUrl,
 					price: product.price,
 					variantInfo: attrs.variantInfo,
@@ -776,6 +781,63 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 			products,
 			total: countResult,
 		};
+	}
+
+	async getBoxCatalogAll(): Promise<Array<BoxCatalogTextileItem>> {
+		const match: FilterQuery<TextileProductDocument> = {
+			'priceInventary.totalStock': { $gt: 0 },
+		};
+
+		const pipeline: PipelineStage[] = [
+			{ $match: match },
+			{ $sort: { createdAt: -1 } },
+			...this.buildCategoryAndSellerLookups(),
+			{
+				$project: {
+					_id: 0,
+					id: { $toString: '$_id' },
+					title: '$baseInfo.title',
+					categoryName: {
+						$ifNull: [{ $arrayElemAt: ['$category.name', 0] }, ''],
+					},
+					imgId: {
+						$ifNull: [{ $arrayElemAt: ['$baseInfo.mediaIds', 0] }, ''],
+					},
+					catalogPrice: '$priceInventary.basePrice',
+					totalStock: { $ifNull: ['$priceInventary.totalStock', 0] },
+				},
+			},
+		];
+
+		const rows = await this.textileProductModel.aggregate(pipeline).exec();
+		return rows as Array<BoxCatalogTextileItem>;
+	}
+
+	async getBoxCatalogAllIncludingZeroStock(): Promise<
+		Array<BoxCatalogTextileItem>
+	> {
+		const pipeline: PipelineStage[] = [
+			{ $sort: { createdAt: -1 } },
+			...this.buildCategoryAndSellerLookups(),
+			{
+				$project: {
+					_id: 0,
+					id: { $toString: '$_id' },
+					title: '$baseInfo.title',
+					categoryName: {
+						$ifNull: [{ $arrayElemAt: ['$category.name', 0] }, ''],
+					},
+					imgId: {
+						$ifNull: [{ $arrayElemAt: ['$baseInfo.mediaIds', 0] }, ''],
+					},
+					catalogPrice: '$priceInventary.basePrice',
+					totalStock: { $ifNull: ['$priceInventary.totalStock', 0] },
+				},
+			},
+		];
+
+		const rows = await this.textileProductModel.aggregate(pipeline).exec();
+		return rows as Array<BoxCatalogTextileItem>;
 	}
 
 	async getByIds(ids: string[]): Promise<TextileProduct[]> {
@@ -799,6 +861,39 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 					$inc: { 'priceInventary.totalStock': -quantity },
 					$set: { updatedAt: new Date() },
 				},
+				{ new: true },
+			)
+			.exec();
+		return updated ? TextileProductMapper.fromDocument(updated) : null;
+	}
+
+	async adjustTotalStock(
+		id: string,
+		delta: number,
+	): Promise<TextileProduct | null> {
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		const updated = await this.textileProductModel
+			.findByIdAndUpdate(
+				objectId,
+				{
+					$inc: { 'priceInventary.totalStock': delta },
+					$set: { updatedAt: new Date() },
+				},
+				{ new: true },
+			)
+			.exec();
+		return updated ? TextileProductMapper.fromDocument(updated) : null;
+	}
+
+	async updateStatus(
+		id: string,
+		status: TextileProductStatus,
+	): Promise<TextileProduct | null> {
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		const updated = await this.textileProductModel
+			.findByIdAndUpdate(
+				objectId,
+				{ $set: { status, updatedAt: new Date() } },
 				{ new: true },
 			)
 			.exec();

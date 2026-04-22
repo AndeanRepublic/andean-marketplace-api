@@ -9,11 +9,15 @@ import { TextileProductSchema } from './infra/persistence/textileProducts/textil
 import { TextileCertificationSchema } from './infra/persistence/textileProducts/textileCertification.schema';
 import { ColorOptionAlternativeSchema } from './infra/persistence/textileProducts/ColorOptionAlternative.schema';
 import { SizeOptionAlternativeSchema } from './infra/persistence/textileProducts/SizeOptionAlternative.schema';
+import { AccountSchema } from './infra/persistence/account.schema';
 import { UsersModule } from './users.module';
 import { ShopsModule } from './shop.module';
 import { CommunityModule } from './community.module';
 import { MediaItemModule } from './mediaItem.module';
 import { OriginProductModule } from './originProduct.module';
+import { ProviderInfoModule } from './providerInfo.module';
+import { AccountRepository } from './app/datastore/Account.repo';
+import { AccountReviewRepositoryImpl } from './infra/datastore/AccountReviewOnly.repo.impl';
 import { CreateTextileCategoryUseCase } from './app/use_cases/textileProducts/CreateTextileCategoryUseCase';
 import { CreateManyTextileCategoriesUseCase } from './app/use_cases/textileProducts/CreateManyTextileCategoriesUseCase';
 import { TextileCategoryRepository } from './app/datastore/textileProducts/TextileCategory.repo';
@@ -65,9 +69,11 @@ import { DeleteTextilePrincipalUseUseCase } from './app/use_cases/textileProduct
 import { CreateTextileProductUseCase } from './app/use_cases/textileProducts/CreateTextileProductUseCase';
 import { UpdateTextileProductUseCase } from './app/use_cases/textileProducts/UpdateTextileProductUseCase';
 import { GetAllTextileProductsUseCase } from './app/use_cases/textileProducts/GetAllTextileProductsUseCase';
-import { GetByIdTextileProductUseCase } from './app/use_cases/textileProducts/GetByIdTextileProductUseCase';
+import { GetAllTextileProductsForManagementUseCase } from './app/use_cases/textileProducts/GetAllTextileProductsForManagementUseCase';
+import { GetTextileProductForSellerUseCase } from './app/use_cases/textileProducts/GetTextileProductForSellerUseCase';
 import { GetByIdTextileProductDetailUseCase } from './app/use_cases/textileProducts/GetByIdTextileProductDetailUseCase';
 import { DeleteTextileProductUseCase } from './app/use_cases/textileProducts/DeleteTextileProductUseCase';
+import { UpdateTextileProductStatusUseCase } from './app/use_cases/textileProducts/UpdateTextileProductStatusUseCase';
 import { TextileCraftTechniqueRepository } from './app/datastore/textileProducts/TextileCraftTechnique.repo';
 import { TextileCraftTechniqueRepositoryImpl } from './infra/datastore/textileProducts/textileCraftTechnique.repo.impl';
 import { TextilePrincipalUseRepository } from './app/datastore/textileProducts/TextilePrincipalUse.repo';
@@ -120,7 +126,9 @@ import { VariantModule } from './variant.module';
 import { VariantSchema } from './infra/persistence/variant.schema';
 import { MediaItemSchema } from './infra/persistence/mediaItem.schema';
 import { TextileProductAttributesAssembler } from './infra/services/textileProducts/TextileProductAttributesAssembler';
-import { MediaUrlResolver } from './infra/services/textileProducts/MediaUrlResolver';
+import { MediaUrlResolver } from './infra/services/media/MediaUrlResolver';
+import { OwnerInfoResolver } from './infra/services/owner/OwnerInfoResolver';
+import { SellerResourceAccessModule } from './sellerResourceAccess.module';
 
 @Module({
 	imports: [
@@ -177,14 +185,20 @@ import { MediaUrlResolver } from './infra/services/textileProducts/MediaUrlResol
 				name: 'MediaItem',
 				schema: MediaItemSchema,
 			},
+			{
+				name: 'Account',
+				schema: AccountSchema,
+			},
 		]),
 		UsersModule,
 		ShopsModule,
 		CommunityModule,
+		ProviderInfoModule,
 		OriginProductModule,
 		forwardRef(() => VariantModule),
 		MediaItemModule,
 		forwardRef(() => SuperfoodModule),
+		SellerResourceAccessModule,
 	],
 	controllers: [
 		TextileCategoryController,
@@ -232,9 +246,11 @@ import { MediaUrlResolver } from './infra/services/textileProducts/MediaUrlResol
 		CreateTextileProductUseCase,
 		UpdateTextileProductUseCase,
 		GetAllTextileProductsUseCase,
-		GetByIdTextileProductUseCase,
+		GetAllTextileProductsForManagementUseCase,
+		GetTextileProductForSellerUseCase,
 		GetByIdTextileProductDetailUseCase,
 		DeleteTextileProductUseCase,
+		UpdateTextileProductStatusUseCase,
 		CreateTextileCertificationUseCase,
 		CreateManyTextileCertificationsUseCase,
 		UpdateTextileCertificationUseCase,
@@ -264,6 +280,7 @@ import { MediaUrlResolver } from './infra/services/textileProducts/MediaUrlResol
 		DecrementDislikesUseCase,
 		TextileProductAttributesAssembler,
 		MediaUrlResolver,
+		OwnerInfoResolver,
 		{
 			provide: TextileCategoryRepository,
 			useClass: TextileCategoryRepositoryImpl,
@@ -312,8 +329,14 @@ import { MediaUrlResolver } from './infra/services/textileProducts/MediaUrlResol
 			provide: MediaItemRepository,
 			useClass: MediaItemRepoImpl,
 		},
+		{
+			provide: AccountRepository,
+			useClass: AccountReviewRepositoryImpl,
+		},
 	],
 	exports: [
+		MediaUrlResolver,
+		TextileProductAttributesAssembler,
 		TextileCategoryRepository,
 		TextileTypeRepository,
 		TextileStyleRepository,

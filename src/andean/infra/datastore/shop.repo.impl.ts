@@ -6,6 +6,7 @@ import { ShopDocument } from '../persistence/shop.schema';
 import { Shop } from '../../domain/entities/Shop';
 import { ShopMapper } from '../services/ShopMapper';
 import { ShopCategory } from '../../domain/enums/ShopCategory';
+import { AdminEntityStatus } from '../../domain/enums/AdminEntityStatus';
 
 @Injectable()
 export class ShopRepoImpl extends ShopRepository {
@@ -15,13 +16,24 @@ export class ShopRepoImpl extends ShopRepository {
 		super();
 	}
 
+	async getAll(): Promise<Shop[]> {
+		const docs = await this.shopModel.find({}).exec();
+		return docs.map((doc: ShopDocument) => ShopMapper.fromDocument(doc));
+	}
+
 	async getAllBySellerId(sellerId: string): Promise<Shop[]> {
 		const docs = await this.shopModel.find({ sellerId }).exec();
 		return docs.map((doc: ShopDocument) => ShopMapper.fromDocument(doc));
 	}
 
 	async getById(id: string): Promise<Shop | null> {
-		const doc = await this.shopModel.findOne({ id }).exec();
+		// Legacy-safe lookup: most records use Mongo _id, but some flows
+		// historically queried an "id" field.
+		const doc = await this.shopModel
+			.findOne({
+				$or: [{ _id: id }, { id }],
+			})
+			.exec();
 		return doc ? ShopMapper.fromDocument(doc) : null;
 	}
 
@@ -43,7 +55,27 @@ export class ShopRepoImpl extends ShopRepository {
 
 	async updateShop(id: string, data: Partial<Shop>): Promise<Shop> {
 		const doc = await this.shopModel
-			.findOneAndUpdate({ id }, { $set: ShopMapper.toPersistence(data) }, { new: true })
+			.findOneAndUpdate(
+				{
+					$or: [{ _id: id }, { id }],
+				},
+				{ $set: ShopMapper.toPersistence(data) },
+				{ new: true },
+			)
+			.exec();
+		if (!doc) {
+			throw new NotFoundException('Shop not found');
+		}
+		return ShopMapper.fromDocument(doc);
+	}
+
+	async updateStatus(id: string, status: AdminEntityStatus): Promise<Shop> {
+		const doc = await this.shopModel
+			.findOneAndUpdate(
+				{ $or: [{ _id: id }, { id }] },
+				{ $set: { status } },
+				{ new: true },
+			)
 			.exec();
 		if (!doc) {
 			throw new NotFoundException('Shop not found');

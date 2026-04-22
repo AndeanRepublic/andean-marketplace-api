@@ -24,7 +24,11 @@ export class TextileProductMapper {
 			...plain.priceInventary,
 			currency: plain.priceInventary?.currency ?? ProductCurrency.USD,
 		};
-		const baseInfo = plainToInstance(BaseInfo, plain.baseInfo);
+		const baseInfoPlain = {
+			...plain.baseInfo,
+			information: plain.baseInfo?.information ?? '',
+		};
+		const baseInfo = plainToInstance(BaseInfo, baseInfoPlain);
 		const priceInventary = plainToInstance(PriceInventary, priceInventaryPlain);
 
 		let atribute: Atribute | undefined;
@@ -81,6 +85,11 @@ export class TextileProductMapper {
 		return plainToInstance(TextileProduct, {
 			id: plain._id.toString(),
 			...plain,
+			status:
+				plain.status === TextileProductStatus.PUBLISHED
+					? TextileProductStatus.PUBLISHED
+					: TextileProductStatus.HIDDEN,
+			categoryId: plain.categoryId ?? '',
 			baseInfo,
 			priceInventary,
 			atribute,
@@ -139,7 +148,7 @@ export class TextileProductMapper {
 		const plain = {
 			id: new Types.ObjectId().toString(),
 			...textileProductData,
-			status: TextileProductStatus.PUBLISHED,
+			status: TextileProductStatus.HIDDEN,
 			baseInfo,
 			priceInventary,
 			atribute,
@@ -158,6 +167,7 @@ export class TextileProductMapper {
 		id: string,
 		dto: UpdateTextileProductDto,
 		existingStatus: TextileProductStatus,
+		existingCategoryId: string,
 	): TextileProduct {
 		const { ...textileProductData } = dto;
 		const baseInfo = plainToInstance(BaseInfo, dto.baseInfo);
@@ -207,6 +217,7 @@ export class TextileProductMapper {
 		const plain = {
 			id: id,
 			...textileProductData,
+			categoryId: dto.categoryId ?? existingCategoryId,
 			status: dto.status ?? existingStatus,
 			baseInfo,
 			priceInventary,

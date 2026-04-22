@@ -6,7 +6,7 @@ import {
 	ForbiddenException,
 	NotFoundException,
 } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { ShopController } from '../src/andean/infra/controllers/shop.controller';
 import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';
 import { RolesGuard } from '../src/andean/infra/core/roles.guard';
@@ -21,6 +21,9 @@ import { GetShopsBySellerIdUseCase } from '../src/andean/app/use_cases/shops/Get
 import { CreateShopUseCase } from '../src/andean/app/use_cases/shops/CreateShopUseCase';
 import { DeleteShopUseCase } from '../src/andean/app/use_cases/shops/DeleteShopUseCase';
 import { UpdateShopUseCase } from '../src/andean/app/use_cases/shops/UpdateShopUseCase';
+import { ListAllShopsUseCase } from '../src/andean/app/use_cases/shops/ListAllShopsUseCase';
+import { UpdateShopStatusUseCase } from '../src/andean/app/use_cases/shops/UpdateShopStatusUseCase';
+import { MediaUrlResolver } from '../src/andean/infra/services/media/MediaUrlResolver';
 
 describe('ShopController (e2e) — ownership', () => {
 	const mockShopId = 'shop-uuid-001';
@@ -40,6 +43,10 @@ describe('ShopController (e2e) — ownership', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			controllers: [ShopController],
 			providers: [
+				{
+					provide: ListAllShopsUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue([mockShop]) },
+				},
 				{
 					provide: GetShopByIdUseCase,
 					useValue: { handle: jest.fn().mockResolvedValue(mockShop) },
@@ -63,6 +70,17 @@ describe('ShopController (e2e) — ownership', () => {
 				{
 					provide: UpdateShopUseCase,
 					useValue: { handle: jest.fn().mockResolvedValue(mockShop) },
+				},
+				{
+					provide: UpdateShopStatusUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue(mockShop) },
+				},
+				{
+					provide: MediaUrlResolver,
+					useValue: {
+						resolveUrl: jest.fn().mockResolvedValue(''),
+						resolveUrls: jest.fn().mockResolvedValue(new Map()),
+					},
 				},
 			],
 		})

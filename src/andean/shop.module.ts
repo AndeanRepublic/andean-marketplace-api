@@ -13,13 +13,17 @@ import { GetShopsByCategoryUseCase } from './app/use_cases/shops/GetShopsByCateg
 import { GetShopsBySellerIdUseCase } from './app/use_cases/shops/GetShopsBySellerIdUseCase';
 import { DeleteShopUseCase } from './app/use_cases/shops/DeleteShopUseCase';
 import { UpdateShopUseCase } from './app/use_cases/shops/UpdateShopUseCase';
+import { ListAllShopsUseCase } from './app/use_cases/shops/ListAllShopsUseCase';
+import { UpdateShopStatusUseCase } from './app/use_cases/shops/UpdateShopStatusUseCase';
 import { UsersModule } from './users.module';
+import { MediaItemModule } from './mediaItem.module';
 
 @Module({
 	imports: [
 		MongooseModule.forFeature([{ name: 'Shop', schema: ShopSchema }]),
 		UsersModule,
 		ProviderInfoModule,
+		MediaItemModule,
 	],
 	controllers: [ShopController],
 	providers: [
@@ -29,6 +33,8 @@ import { UsersModule } from './users.module';
 		GetShopsBySellerIdUseCase,
 		DeleteShopUseCase,
 		UpdateShopUseCase,
+		UpdateShopStatusUseCase,
+		ListAllShopsUseCase,
 		{
 			provide: ShopRepository,
 			useClass: ShopRepoImpl,

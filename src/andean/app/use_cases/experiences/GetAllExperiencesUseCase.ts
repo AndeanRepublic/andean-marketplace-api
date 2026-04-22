@@ -6,14 +6,14 @@ import {
 import {
 	PaginatedExperiencesResponse,
 	ExperienceListItem,
-} from '../../modules/experiences/ExperienceListItemResponse';
+} from '../../models/experiences/ExperienceListItemResponse';
 
 @Injectable()
 export class GetAllExperiencesUseCase {
 	constructor(
 		@Inject(ExperienceRepository)
 		private readonly experienceRepository: ExperienceRepository,
-	) { }
+	) {}
 
 	async handle(
 		filters?: ExperienceFilters,
@@ -21,10 +21,9 @@ export class GetAllExperiencesUseCase {
 		const page = filters?.page || 1;
 		const perPage = filters?.perPage || 20;
 
-		const { items, total } =
-			await this.experienceRepository.getAllWithFilters(
-				filters || { page, perPage },
-			);
+		const { items, total } = await this.experienceRepository.getAllWithFilters(
+			filters || { page, perPage },
+		);
 
 		const experiences: ExperienceListItem[] = items.map((raw) => ({
 			id: raw.id,
@@ -33,6 +32,7 @@ export class GetAllExperiencesUseCase {
 			price: raw.adultsPrice,
 			place: raw.ubication,
 			days: raw.days,
+			status: raw.status,
 			mainImage: {
 				name: raw.mainImageName,
 				url: raw.mainImageUrl,

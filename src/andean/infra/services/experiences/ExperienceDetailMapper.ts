@@ -1,12 +1,12 @@
-import { MediaItem } from 'src/andean/domain/entities/MediaItem';
-import { MediaItemRole } from 'src/andean/domain/enums/MediaItemRole';
-import { MediaItemType } from 'src/andean/domain/enums/MediaItemType';
-import { AgeGroupCode } from 'src/andean/domain/enums/AgeGroupCode';
-import { Review } from 'src/andean/domain/entities/Review';
-import { Experience } from 'src/andean/domain/entities/experiences/Experience';
-import { ExperienceItinerary } from 'src/andean/domain/entities/experiences/ExperienceItinerary';
-import { AgeGroup } from 'src/andean/domain/entities/experiences/AgeGroup';
-import { ExperienceListRawItem } from 'src/andean/app/datastore/experiences/Experience.repo';
+import { MediaItem } from '../../../domain/entities/MediaItem';
+import { MediaItemRole } from '../../../domain/enums/MediaItemRole';
+import { MediaItemType } from '../../../domain/enums/MediaItemType';
+import { AgeGroupCode } from '../../../domain/enums/AgeGroupCode';
+import { Review } from '../../../domain/entities/Review';
+import { Experience } from '../../../domain/entities/experiences/Experience';
+import { ExperienceItinerary } from '../../../domain/entities/experiences/ExperienceItinerary';
+import { AgeGroup } from '../../../domain/entities/experiences/AgeGroup';
+import { ExperienceListRawItem } from '../../../app/datastore/experiences/Experience.repo';
 
 import {
 	ExperienceDetailResponse,
@@ -19,8 +19,8 @@ import {
 	QuestionSectionResponse,
 	ExperienceAvailabilityResponse,
 	AgePricingInfoResponse,
-} from 'src/andean/app/modules/experiences/ExperienceDetailResponse';
-import { ExperiencePrices } from 'src/andean/domain/entities/experiences/ExperiencePrices';
+} from '../../../app/models/experiences/ExperienceDetailResponse';
+import { ExperiencePrices } from '../../../domain/entities/experiences/ExperiencePrices';
 
 interface OwnerInfo {
 	title: string;
@@ -40,13 +40,13 @@ export class ExperienceDetailMapper {
 
 	static toMediaFullDetail(
 		item: MediaItem,
-		storageBaseUrl: string,
+		url: string,
 	): MediaItemFullDetail {
 		return {
 			id: item.id,
 			type: item.type,
 			name: item.name,
-			url: `${storageBaseUrl}/${item.key}`,
+			url,
 			role: item.role,
 			key: item.key,
 			createdAt: item.createdAt,
@@ -56,22 +56,20 @@ export class ExperienceDetailMapper {
 	static toMediaFullDetailFromMap(
 		mediaId: string,
 		mediaMap: Map<string, MediaItem>,
-		storageBaseUrl: string,
+		mediaUrlById: Map<string, string>,
 	): MediaItemFullDetail | null {
 		const item = mediaMap.get(mediaId);
 		if (!item) return null;
-		return this.toMediaFullDetail(item, storageBaseUrl);
+		return this.toMediaFullDetail(item, mediaUrlById.get(mediaId) || '');
 	}
 
 	static toMediaFullDetailList(
 		ids: string[],
 		mediaMap: Map<string, MediaItem>,
-		storageBaseUrl: string,
+		mediaUrlById: Map<string, string>,
 	): MediaItemFullDetail[] {
 		return ids
-			.map((mid) =>
-				this.toMediaFullDetailFromMap(mid, mediaMap, storageBaseUrl),
-			)
+			.map((mid) => this.toMediaFullDetailFromMap(mid, mediaMap, mediaUrlById))
 			.filter((m): m is MediaItemFullDetail => m !== null);
 	}
 
@@ -136,7 +134,7 @@ export class ExperienceDetailMapper {
 		let totalStars = 0;
 
 		reviews.forEach((r) => {
-			const s = r.numberStarts;
+			const s = r.numberStars;
 			if (s >= 1 && s <= 5) {
 				counts[s as keyof typeof counts]++;
 				totalStars += s;
@@ -166,7 +164,7 @@ export class ExperienceDetailMapper {
 			idReview: review.id,
 			nameUser: userNames[i]?.name || 'Usuario Anónimo',
 			content: review.content,
-			numberStarts: review.numberStarts,
+			numberStars: review.numberStars,
 			date: review.createdAt,
 			likes: review.numberLikes,
 			dislikes: review.numberDislikes,
@@ -180,13 +178,13 @@ export class ExperienceDetailMapper {
 	static toItineraryResponse(
 		itineraries: ExperienceItinerary[],
 		mediaMap: Map<string, MediaItem>,
-		storageBaseUrl: string,
+		mediaUrlById: Map<string, string>,
 	): ItineraryItemResponse[] {
 		return itineraries.map((it) => ({
 			numberDay: it.numberDay,
 			nameDay: it.nameDay,
 			descriptionDay: it.descriptionDay,
-			photos: this.toMediaFullDetailList(it.photos, mediaMap, storageBaseUrl),
+			photos: this.toMediaFullDetailList(it.photos, mediaMap, mediaUrlById),
 			schedule: it.schedule.map((s) => ({
 				time: s.time,
 				activity: s.activity,
@@ -199,7 +197,7 @@ export class ExperienceDetailMapper {
 	static toMoreExperiencesResponse(
 		items: ExperienceListRawItem[],
 		currentId: string,
-		storageBaseUrl: string,
+		resolveKey: (key?: string | null) => string,
 	): MoreExperienceItemResponse[] {
 		return items
 			.filter((exp) => exp.id !== currentId)
@@ -215,7 +213,7 @@ export class ExperienceDetailMapper {
 					id: exp.mainImageName || '',
 					type: MediaItemType.IMG,
 					name: exp.mainImageName || '',
-					url: exp.mainImageUrl ? `${storageBaseUrl}/${exp.mainImageUrl}` : '',
+					url: resolveKey(exp.mainImageUrl),
 					role: MediaItemRole.PRINCIPAL,
 					key: exp.mainImageUrl || '',
 				},

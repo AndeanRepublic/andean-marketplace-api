@@ -6,7 +6,7 @@ import {
 	ForbiddenException,
 	NotFoundException,
 } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { ReviewController } from '../src/andean/infra/controllers/Review.controller';
 import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';
 import {
@@ -28,6 +28,7 @@ import { MediaItemType } from '../src/andean/domain/enums/MediaItemType';
 import { MediaItemRole } from '../src/andean/domain/enums/MediaItemRole';
 import { AccountRole } from '../src/andean/domain/enums/AccountRole';
 import { FixtureLoader } from './helpers/fixture-loader';
+import { VoteResult } from '../src/andean/app/models/review/VoteResult';
 
 describe('ReviewController (e2e)', () => {
 	let app: INestApplication;
@@ -147,8 +148,8 @@ describe('ReviewController (e2e)', () => {
 			return request(app.getHttpServer())
 				.post('/reviews')
 				.field('content', createDto.content)
-				.field('numberStarts', createDto.numberStarts)
-				.field('customerId', createDto.customerId)
+				.field('numberStars', createDto.numberStars)
+				.field('accountId', createDto.accountId)
 				.field('productId', createDto.productId)
 				.field('productType', createDto.productType)
 				.expect(HttpStatus.CREATED)
@@ -156,8 +157,8 @@ describe('ReviewController (e2e)', () => {
 					expect(res.body).toMatchObject({
 						id: expect.any(String),
 						content: expect.any(String),
-						numberStarts: expect.any(Number),
-						customerId: expect.any(String),
+						numberStars: expect.any(Number),
+						accountId: expect.any(String),
 						productId: expect.any(String),
 						productType: expect.any(String),
 					});
@@ -166,8 +167,8 @@ describe('ReviewController (e2e)', () => {
 					expect(createReviewUseCase.handle).toHaveBeenCalledWith(
 						expect.objectContaining({
 							content: createDto.content,
-							numberStarts: createDto.numberStarts,
-							customerId: createDto.customerId,
+							numberStars: createDto.numberStars,
+							accountId: createDto.accountId,
 							productId: createDto.productId,
 							productType: createDto.productType,
 						}),
@@ -189,8 +190,8 @@ describe('ReviewController (e2e)', () => {
 					contentType: 'image/jpeg',
 				})
 				.field('content', createDtoWithMedia.content)
-				.field('numberStarts', createDtoWithMedia.numberStarts)
-				.field('customerId', createDtoWithMedia.customerId)
+				.field('numberStars', createDtoWithMedia.numberStars)
+				.field('accountId', createDtoWithMedia.accountId)
 				.field('productId', createDtoWithMedia.productId)
 				.field('productType', createDtoWithMedia.productType)
 				.field('mediaType', createDtoWithMedia.mediaType)
@@ -201,7 +202,7 @@ describe('ReviewController (e2e)', () => {
 					expect(res.body).toMatchObject({
 						id: expect.any(String),
 						content: expect.any(String),
-						numberStarts: expect.any(Number),
+						numberStars: expect.any(Number),
 						mediaId: expect.any(String),
 					});
 					expect(createReviewUseCase.handle).toHaveBeenCalledWith(
@@ -223,28 +224,28 @@ describe('ReviewController (e2e)', () => {
 		it('should return 400 when content is missing', () => {
 			return request(app.getHttpServer())
 				.post('/reviews')
-				.field('numberStarts', 5)
-				.field('customerId', 'customer-123')
+				.field('numberStars', 5)
+				.field('accountId', 'customer-123')
 				.field('productId', 'product-456')
 				.field('productType', ProductType.TEXTILE)
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 
-		it('should return 400 when numberStarts is missing', () => {
+		it('should return 400 when numberStars is missing', () => {
 			return request(app.getHttpServer())
 				.post('/reviews')
 				.field('content', 'Great product')
-				.field('customerId', 'customer-123')
+				.field('accountId', 'customer-123')
 				.field('productId', 'product-456')
 				.field('productType', ProductType.TEXTILE)
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 
-		it('should return 400 when customerId is missing', () => {
+		it('should return 400 when accountId is missing', () => {
 			return request(app.getHttpServer())
 				.post('/reviews')
 				.field('content', 'Great product')
-				.field('numberStarts', 5)
+				.field('numberStars', 5)
 				.field('productId', 'product-456')
 				.field('productType', ProductType.TEXTILE)
 				.expect(HttpStatus.BAD_REQUEST);
@@ -254,8 +255,8 @@ describe('ReviewController (e2e)', () => {
 			return request(app.getHttpServer())
 				.post('/reviews')
 				.field('content', 'Great product')
-				.field('numberStarts', 5)
-				.field('customerId', 'customer-123')
+				.field('numberStars', 5)
+				.field('accountId', 'customer-123')
 				.field('productType', ProductType.TEXTILE)
 				.expect(HttpStatus.BAD_REQUEST);
 		});
@@ -264,8 +265,8 @@ describe('ReviewController (e2e)', () => {
 			return request(app.getHttpServer())
 				.post('/reviews')
 				.field('content', 'Great product')
-				.field('numberStarts', 5)
-				.field('customerId', 'customer-123')
+				.field('numberStars', 5)
+				.field('accountId', 'customer-123')
 				.field('productId', 'product-456')
 				.expect(HttpStatus.BAD_REQUEST);
 		});
@@ -280,8 +281,8 @@ describe('ReviewController (e2e)', () => {
 					contentType: 'image/jpeg',
 				})
 				.field('content', 'Great product')
-				.field('numberStarts', 5)
-				.field('customerId', 'customer-123')
+				.field('numberStars', 5)
+				.field('accountId', 'customer-123')
 				.field('productId', 'product-456')
 				.field('productType', ProductType.TEXTILE)
 				.field('mediaType', MediaItemType.IMG)
@@ -299,8 +300,8 @@ describe('ReviewController (e2e)', () => {
 					contentType: 'text/plain',
 				})
 				.field('content', 'Great product')
-				.field('numberStarts', 5)
-				.field('customerId', 'customer-123')
+				.field('numberStars', 5)
+				.field('accountId', 'customer-123')
 				.field('productId', 'product-456')
 				.field('productType', ProductType.TEXTILE)
 				.field('mediaType', MediaItemType.IMG)
@@ -319,8 +320,8 @@ describe('ReviewController (e2e)', () => {
 					contentType: 'image/jpeg',
 				})
 				.field('content', 'Great')
-				.field('numberStarts', 5)
-				.field('customerId', 'customer-123')
+				.field('numberStars', 5)
+				.field('accountId', 'customer-123')
 				.field('productId', 'product-456')
 				.field('productType', ProductType.TEXTILE)
 				.field('mediaType', MediaItemType.IMG)
@@ -335,8 +336,8 @@ describe('ReviewController (e2e)', () => {
 					contentType: 'image/png',
 				})
 				.field('content', 'Great')
-				.field('numberStarts', 5)
-				.field('customerId', 'customer-123')
+				.field('numberStars', 5)
+				.field('accountId', 'customer-123')
 				.field('productId', 'product-456')
 				.field('productType', ProductType.TEXTILE)
 				.field('mediaType', MediaItemType.IMG)
@@ -351,8 +352,8 @@ describe('ReviewController (e2e)', () => {
 					contentType: 'image/webp',
 				})
 				.field('content', 'Great')
-				.field('numberStarts', 5)
-				.field('customerId', 'customer-123')
+				.field('numberStars', 5)
+				.field('accountId', 'customer-123')
 				.field('productId', 'product-456')
 				.field('productType', ProductType.TEXTILE)
 				.field('mediaType', MediaItemType.IMG)
@@ -376,7 +377,7 @@ describe('ReviewController (e2e)', () => {
 					expect(res.body[0]).toMatchObject({
 						id: expect.any(String),
 						content: expect.any(String),
-						numberStarts: expect.any(Number),
+						numberStars: expect.any(Number),
 					});
 				});
 		});
@@ -405,7 +406,7 @@ describe('ReviewController (e2e)', () => {
 					expect(res.body).toMatchObject({
 						id: mockReview.id,
 						content: mockReview.content,
-						numberStarts: mockReview.numberStarts,
+						numberStars: mockReview.numberStars,
 					});
 				});
 		});
@@ -678,6 +679,252 @@ describe('ReviewController (e2e)', () => {
 						numberDislikes: Math.max(0, mockReview.numberDislikes - 1),
 					});
 				});
+		});
+	});
+
+	// ─── Voting scenarios (VoteResult shape) ──────────────────────────────────
+	describe('Voting scenarios (PATCH/DELETE likes & dislikes)', () => {
+		const userId = mockAuthUsers.customer.userId;
+
+		// ── SC-1: First-time like ─────────────────────────────────────────────
+		it('SC-1: should like a review for the first time (userVote = like, likes +1)', () => {
+			const voteResult: VoteResult = {
+				numberLikes: mockReview.numberLikes + 1,
+				numberDislikes: mockReview.numberDislikes,
+				userVote: 'like',
+			};
+			jest
+				.spyOn(incrementLikesUseCase, 'handle')
+				.mockResolvedValueOnce(voteResult);
+
+			return request(app.getHttpServer())
+				.patch(`/reviews/${mockReview.id}/likes`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					expect(res.body).toMatchObject({
+						numberLikes: mockReview.numberLikes + 1,
+						numberDislikes: mockReview.numberDislikes,
+						userVote: 'like',
+					});
+					expect(incrementLikesUseCase.handle).toHaveBeenCalledWith(
+						mockReview.id,
+						userId,
+					);
+				});
+		});
+
+		// ── SC-2: Like is idempotent (already liked) ──────────────────────────
+		it('SC-2: should be idempotent when user already liked the review', () => {
+			const voteResult: VoteResult = {
+				numberLikes: mockReview.numberLikes,
+				numberDislikes: mockReview.numberDislikes,
+				userVote: 'like',
+			};
+			jest
+				.spyOn(incrementLikesUseCase, 'handle')
+				.mockResolvedValueOnce(voteResult);
+
+			return request(app.getHttpServer())
+				.patch(`/reviews/${mockReview.id}/likes`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					expect(res.body).toMatchObject({
+						numberLikes: mockReview.numberLikes,
+						numberDislikes: mockReview.numberDislikes,
+						userVote: 'like',
+					});
+				});
+		});
+
+		// ── SC-3: Toggle dislike → like ───────────────────────────────────────
+		it('SC-3: should toggle from dislike to like (likes +1, dislikes -1)', () => {
+			const voteResult: VoteResult = {
+				numberLikes: mockReview.numberLikes + 1,
+				numberDislikes: mockReview.numberDislikes - 1,
+				userVote: 'like',
+			};
+			jest
+				.spyOn(incrementLikesUseCase, 'handle')
+				.mockResolvedValueOnce(voteResult);
+
+			return request(app.getHttpServer())
+				.patch(`/reviews/${mockReview.id}/likes`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					expect(res.body).toMatchObject({
+						numberLikes: mockReview.numberLikes + 1,
+						numberDislikes: mockReview.numberDislikes - 1,
+						userVote: 'like',
+					});
+				});
+		});
+
+		// ── SC-4: First-time dislike ──────────────────────────────────────────
+		it('SC-4: should dislike a review for the first time (userVote = dislike, dislikes +1)', () => {
+			const voteResult: VoteResult = {
+				numberLikes: mockReview.numberLikes,
+				numberDislikes: mockReview.numberDislikes + 1,
+				userVote: 'dislike',
+			};
+			jest
+				.spyOn(incrementDislikesUseCase, 'handle')
+				.mockResolvedValueOnce(voteResult);
+
+			return request(app.getHttpServer())
+				.patch(`/reviews/${mockReview.id}/dislikes`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					expect(res.body).toMatchObject({
+						numberLikes: mockReview.numberLikes,
+						numberDislikes: mockReview.numberDislikes + 1,
+						userVote: 'dislike',
+					});
+					expect(incrementDislikesUseCase.handle).toHaveBeenCalledWith(
+						mockReview.id,
+						userId,
+					);
+				});
+		});
+
+		// ── SC-5: Dislike is idempotent (already disliked) ───────────────────
+		it('SC-5: should be idempotent when user already disliked the review', () => {
+			const voteResult: VoteResult = {
+				numberLikes: mockReview.numberLikes,
+				numberDislikes: mockReview.numberDislikes,
+				userVote: 'dislike',
+			};
+			jest
+				.spyOn(incrementDislikesUseCase, 'handle')
+				.mockResolvedValueOnce(voteResult);
+
+			return request(app.getHttpServer())
+				.patch(`/reviews/${mockReview.id}/dislikes`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					expect(res.body).toMatchObject({
+						numberLikes: mockReview.numberLikes,
+						numberDislikes: mockReview.numberDislikes,
+						userVote: 'dislike',
+					});
+				});
+		});
+
+		// ── SC-6: Toggle like → dislike ───────────────────────────────────────
+		it('SC-6: should toggle from like to dislike (dislikes +1, likes -1)', () => {
+			const voteResult: VoteResult = {
+				numberLikes: mockReview.numberLikes - 1,
+				numberDislikes: mockReview.numberDislikes + 1,
+				userVote: 'dislike',
+			};
+			jest
+				.spyOn(incrementDislikesUseCase, 'handle')
+				.mockResolvedValueOnce(voteResult);
+
+			return request(app.getHttpServer())
+				.patch(`/reviews/${mockReview.id}/dislikes`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					expect(res.body).toMatchObject({
+						numberLikes: mockReview.numberLikes - 1,
+						numberDislikes: mockReview.numberDislikes + 1,
+						userVote: 'dislike',
+					});
+				});
+		});
+
+		// ── SC-7: Remove like ─────────────────────────────────────────────────
+		it('SC-7: should remove a like (likes -1, userVote = null)', () => {
+			const voteResult = {
+				numberLikes: mockReview.numberLikes - 1,
+				numberDislikes: mockReview.numberDislikes,
+				userVote: null,
+			};
+			jest
+				.spyOn(decrementLikesUseCase, 'handle')
+				.mockResolvedValueOnce(voteResult);
+
+			return request(app.getHttpServer())
+				.delete(`/reviews/${mockReview.id}/likes`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					expect(res.body).toMatchObject({
+						numberLikes: mockReview.numberLikes - 1,
+						numberDislikes: mockReview.numberDislikes,
+						userVote: null,
+					});
+					expect(decrementLikesUseCase.handle).toHaveBeenCalledWith(
+						mockReview.id,
+						userId,
+					);
+				});
+		});
+
+		// ── SC-8: Remove dislike ──────────────────────────────────────────────
+		it('SC-8: should remove a dislike (dislikes -1, userVote = null)', () => {
+			const voteResult = {
+				numberLikes: mockReview.numberLikes,
+				numberDislikes: mockReview.numberDislikes - 1,
+				userVote: null,
+			};
+			jest
+				.spyOn(decrementDislikesUseCase, 'handle')
+				.mockResolvedValueOnce(voteResult);
+
+			return request(app.getHttpServer())
+				.delete(`/reviews/${mockReview.id}/dislikes`)
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					expect(res.body).toMatchObject({
+						numberLikes: mockReview.numberLikes,
+						numberDislikes: mockReview.numberDislikes - 1,
+						userVote: null,
+					});
+					expect(decrementDislikesUseCase.handle).toHaveBeenCalledWith(
+						mockReview.id,
+						userId,
+					);
+				});
+		});
+
+		// ── 404: review not found ─────────────────────────────────────────────
+		it('should return 404 when review does not exist (PATCH /likes)', () => {
+			jest
+				.spyOn(incrementLikesUseCase, 'handle')
+				.mockRejectedValueOnce(new NotFoundException('Review not found'));
+
+			return request(app.getHttpServer())
+				.patch('/reviews/non-existent-id/likes')
+				.expect(HttpStatus.NOT_FOUND);
+		});
+
+		it('should return 404 when review does not exist (PATCH /dislikes)', () => {
+			jest
+				.spyOn(incrementDislikesUseCase, 'handle')
+				.mockRejectedValueOnce(new NotFoundException('Review not found'));
+
+			return request(app.getHttpServer())
+				.patch('/reviews/non-existent-id/dislikes')
+				.expect(HttpStatus.NOT_FOUND);
+		});
+
+		it('should return 404 when review does not exist (DELETE /likes)', () => {
+			jest
+				.spyOn(decrementLikesUseCase, 'handle')
+				.mockRejectedValueOnce(new NotFoundException('Review not found'));
+
+			return request(app.getHttpServer())
+				.delete('/reviews/non-existent-id/likes')
+				.expect(HttpStatus.NOT_FOUND);
+		});
+
+		it('should return 404 when review does not exist (DELETE /dislikes)', () => {
+			jest
+				.spyOn(decrementDislikesUseCase, 'handle')
+				.mockRejectedValueOnce(new NotFoundException('Review not found'));
+
+			return request(app.getHttpServer())
+				.delete('/reviews/non-existent-id/dislikes')
+				.expect(HttpStatus.NOT_FOUND);
 		});
 	});
 

@@ -3,6 +3,7 @@ import {
 	Controller,
 	Post,
 	Get,
+	Patch,
 	Param,
 	Put,
 	Delete,
@@ -29,12 +30,17 @@ import { CreateExperienceUseCase } from 'src/andean/app/use_cases/experiences/Cr
 import { UpdateExperienceUseCase } from 'src/andean/app/use_cases/experiences/UpdateExperienceUseCase';
 import { DeleteExperienceUseCase } from 'src/andean/app/use_cases/experiences/DeleteExperienceUseCase';
 import { GetAllExperiencesUseCase } from 'src/andean/app/use_cases/experiences/GetAllExperiencesUseCase';
+import { GetAllExperiencesForManagementUseCase } from 'src/andean/app/use_cases/experiences/GetAllExperiencesForManagementUseCase';
 import { GetByIdExperienceUseCase } from 'src/andean/app/use_cases/experiences/GetByIdExperienceUseCase';
 import { CreateExperienceDto } from '../dto/experiences/CreateExperienceDto';
 import { UpdateExperienceDto } from '../dto/experiences/UpdateExperienceDto';
 import { Experience } from 'src/andean/domain/entities/experiences/Experience';
-import { PaginatedExperiencesResponse } from 'src/andean/app/modules/experiences/ExperienceListItemResponse';
-import { ExperienceDetailResponse } from 'src/andean/app/modules/experiences/ExperienceDetailResponse';
+import { PaginatedExperiencesResponse } from 'src/andean/app/models/experiences/ExperienceListItemResponse';
+import { ExperienceDetailResponse } from 'src/andean/app/models/experiences/ExperienceDetailResponse';
+import { UpdateExperienceStatusUseCase } from 'src/andean/app/use_cases/experiences/UpdateExperienceStatusUseCase';
+import { GetExperienceForEditUseCase } from 'src/andean/app/use_cases/experiences/GetExperienceForEditUseCase';
+import { UpdateExperienceStatusDto } from '../dto/experiences/UpdateExperienceStatusDto';
+import { ExperienceFilters } from 'src/andean/app/datastore/experiences/Experience.repo';
 
 @ApiTags('Experiences')
 @Controller('experiences')
@@ -44,7 +50,10 @@ export class ExperienceController {
 		private readonly updateExperienceUseCase: UpdateExperienceUseCase,
 		private readonly deleteExperienceUseCase: DeleteExperienceUseCase,
 		private readonly getAllExperiencesUseCase: GetAllExperiencesUseCase,
+		private readonly getAllExperiencesForManagementUseCase: GetAllExperiencesForManagementUseCase,
 		private readonly getByIdExperienceUseCase: GetByIdExperienceUseCase,
+		private readonly updateExperienceStatusUseCase: UpdateExperienceStatusUseCase,
+		private readonly getExperienceForEditUseCase: GetExperienceForEditUseCase,
 	) {}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
@@ -103,6 +112,112 @@ export class ExperienceController {
 		return this.updateExperienceUseCase.handle(
 			id,
 			body,
+			requestingUser.userId,
+			requestingUser.roles,
+		);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
+	@Get('management')
+	@ApiOperation({
+		summary: 'Listar experiencias para dashboard (admin)',
+		description:
+			'Misma lista paginada que el endpoint público (incluye HIDDEN), requiere rol ADMIN. Para el catálogo público usar GET /experiences.',
+	})
+	@ApiQuery({
+		name: 'page',
+		required: false,
+		type: Number,
+		description: 'Número de página (por defecto: 1)',
+		example: 1,
+	})
+	@ApiQuery({
+		name: 'per_page',
+		required: false,
+		type: Number,
+		description: 'Cantidad por página (por defecto: 20)',
+		example: 20,
+	})
+	@ApiQuery({
+		name: 'category',
+		required: false,
+		type: String,
+		description: 'Filtrar por categoría de experiencia',
+		example: 'trekking',
+	})
+	@ApiQuery({
+		name: 'owner_id',
+		required: false,
+		type: String,
+		description: 'Filtrar por ID del propietario (comunidad)',
+		example: '507f1f77bcf86cd799439013',
+	})
+	@ApiQuery({
+		name: 'min_price',
+		required: false,
+		type: Number,
+		description: 'Precio mínimo (basado en precio ADULTS)',
+		example: 50,
+	})
+	@ApiQuery({
+		name: 'max_price',
+		required: false,
+		type: Number,
+		description: 'Precio máximo (basado en precio ADULTS)',
+		example: 500,
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista paginada para gestión',
+		type: PaginatedExperiencesResponse,
+	})
+	async getAllForManagement(
+		@Query('page', new ParseIntPipe({ optional: true })) page?: number,
+		@Query('per_page', new ParseIntPipe({ optional: true }))
+		perPage?: number,
+		@Query('category') category?: string,
+		@Query('owner_id') ownerId?: string,
+		@Query('min_price', new ParseIntPipe({ optional: true }))
+		minPrice?: number,
+		@Query('max_price', new ParseIntPipe({ optional: true }))
+		maxPrice?: number,
+	): Promise<PaginatedExperiencesResponse> {
+		const filters: ExperienceFilters = {};
+		if (page !== undefined) filters.page = page;
+		if (perPage !== undefined) filters.perPage = perPage;
+		if (category) filters.category = category;
+		if (ownerId) filters.ownerId = ownerId;
+		if (minPrice !== undefined) filters.minPrice = minPrice;
+		if (maxPrice !== undefined) filters.maxPrice = maxPrice;
+
+		return this.getAllExperiencesForManagementUseCase.handle(
+			Object.keys(filters).length > 0 ? filters : undefined,
+		);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Get(':experienceId/edit')
+	@ApiOperation({
+		summary: 'Obtener experiencia para edición (admin)',
+		description:
+			'Payload alineado al formulario de alta (CreateExperienceDto) más mediaPreviewUrls. Misma regla de acceso que PUT. Declarar antes del GET público /:id.',
+	})
+	@ApiParam({
+		name: 'experienceId',
+		description: 'ID único de la experiencia',
+		example: '507f1f77bcf86cd799439011',
+	})
+	@ApiResponse({ status: 200, description: 'Payload para hidratar el formulario' })
+	@ApiResponse({ status: 403, description: 'Sin permiso sobre este recurso' })
+	@ApiResponse({ status: 404, description: 'Experiencia no encontrada' })
+	async getForEdit(
+		@Param('experienceId') experienceId: string,
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
+	): Promise<Record<string, unknown>> {
+		return this.getExperienceForEditUseCase.handle(
+			experienceId,
 			requestingUser.userId,
 			requestingUser.roles,
 		);
@@ -208,6 +323,22 @@ export class ExperienceController {
 
 		return this.getAllExperiencesUseCase.handle(
 			Object.keys(filters).length > 0 ? filters : undefined,
+		);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Patch('/:id/status')
+	async updateStatus(
+		@Param('id') id: string,
+		@Body() body: UpdateExperienceStatusDto,
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
+	): Promise<Experience> {
+		return this.updateExperienceStatusUseCase.handle(
+			id,
+			body.status,
+			requestingUser.userId,
+			requestingUser.roles,
 		);
 	}
 

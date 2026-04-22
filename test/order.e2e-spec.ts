@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, HttpStatus, ValidationPipe } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { FixtureLoader } from './helpers/fixture-loader';
 
 // ─── Controller ─────────────────────────────────────────────────────────────
@@ -13,6 +13,7 @@ import { createAllowAllGuard, mockAuthUsers } from './helpers/auth-test.helper';
 import { CreateOrderUseCase } from '../src/andean/app/use_cases/orders/CreateOrderUseCase';
 import { CreateOrderFromCartUseCase } from '../src/andean/app/use_cases/orders/CreateOrderFromCartUseCase';
 import { GetOrderByIdUseCase } from '../src/andean/app/use_cases/orders/GetOrderByIdUseCase';
+import { GetAllOrdersUseCase } from '../src/andean/app/use_cases/orders/GetAllOrdersUseCase';
 import { GetOrdersByCustomerUseCase } from '../src/andean/app/use_cases/orders/GetOrdersByCustomerUseCase';
 import { UpdateOrderStatusUseCase } from '../src/andean/app/use_cases/orders/UpdateOrderStatusUseCase';
 import { CreatePayPalOrderUseCase } from '../src/andean/app/use_cases/payments/CreatePayPalOrderUseCase';
@@ -28,6 +29,7 @@ describe('OrderController (e2e)', () => {
 	let getOrderByIdUseCase: GetOrderByIdUseCase;
 	let getOrdersByCustomerUseCase: GetOrdersByCustomerUseCase;
 	let updateOrderStatusUseCase: UpdateOrderStatusUseCase;
+	let getAllOrdersUseCase: GetAllOrdersUseCase;
 
 	// Load mock data from JSON fixture
 	const fixture = FixtureLoader.loadOrder();
@@ -93,6 +95,10 @@ describe('OrderController (e2e)', () => {
 						}),
 					},
 				},
+				{
+					provide: GetAllOrdersUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue([]) },
+				},
 			],
 		})
 			.overrideGuard(JwtAuthGuard)
@@ -116,6 +122,7 @@ describe('OrderController (e2e)', () => {
 		getOrderByIdUseCase = moduleFixture.get(GetOrderByIdUseCase);
 		getOrdersByCustomerUseCase = moduleFixture.get(GetOrdersByCustomerUseCase);
 		updateOrderStatusUseCase = moduleFixture.get(UpdateOrderStatusUseCase);
+		getAllOrdersUseCase = moduleFixture.get(GetAllOrdersUseCase);
 	});
 
 	afterAll(async () => {
@@ -127,8 +134,9 @@ describe('OrderController (e2e)', () => {
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// POST /orders  —  Create a new Order
+	// ⚠️ SKIPPED: Endpoints commented out in OrderController
 	// ═══════════════════════════════════════════════════════════════════════════
-	describe('POST /orders', () => {
+	describe.skip('POST /orders (SKIPPED - endpoint commented out)', () => {
 		it('should create a new order', () => {
 			jest.spyOn(createOrderUseCase, 'handle').mockResolvedValueOnce(mockOrder);
 			return request(app.getHttpServer())
@@ -309,8 +317,9 @@ describe('OrderController (e2e)', () => {
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// POST /orders/from-cart  —  Create order from cart
+	// ⚠️ SKIPPED: Endpoints commented out in OrderController
 	// ═══════════════════════════════════════════════════════════════════════════
-	describe('POST /orders/from-cart', () => {
+	describe.skip('POST /orders/from-cart (SKIPPED - endpoint commented out)', () => {
 		it('should create an order from cart with customerId query', () => {
 			jest
 				.spyOn(createOrderFromCartUseCase, 'handle')

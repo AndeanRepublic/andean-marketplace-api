@@ -1,11 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { MediaItemRepository } from 'src/andean/app/datastore/MediaItem.repo';
-import { Variant } from 'src/andean/domain/entities/Variant';
-import { TextileProduct } from 'src/andean/domain/entities/textileProducts/TextileProduct';
-import { TextileOptions } from 'src/andean/domain/entities/textileProducts/TextileOptions';
-import { TextileOptionName } from 'src/andean/domain/enums/TextileOptionName';
+import { Variant } from '../../../domain/entities/Variant';
+import { TextileProduct } from '../../../domain/entities/textileProducts/TextileProduct';
+import { ProductType } from '../../../domain/enums/ProductType';
+import { TextileOptions } from '../../../domain/entities/textileProducts/TextileOptions';
+import { TextileOptionName } from '../../../domain/enums/TextileOptionName';
 import { ColorOptionAlternativeRepository } from '../../../app/datastore/textileProducts/ColorOptionAlternative.repo';
 import { SizeOptionAlternativeRepository } from '../../../app/datastore/textileProducts/SizeOptionAlternative.repo';
+import { MediaUrlResolver } from '../media/MediaUrlResolver';
 
 export interface TextileAvailableColor {
 	color: string;
@@ -28,16 +29,35 @@ export interface TextileProductAttributes {
 
 @Injectable()
 export class TextileProductAttributesAssembler {
-	private readonly storageBaseUrl = process.env.STORAGE_BASE_URL || '';
-
 	constructor(
 		@Inject(ColorOptionAlternativeRepository)
 		private readonly colorOptionAlternativeRepository: ColorOptionAlternativeRepository,
 		@Inject(SizeOptionAlternativeRepository)
 		private readonly sizeOptionAlternativeRepository: SizeOptionAlternativeRepository,
-		@Inject(MediaItemRepository)
-		private readonly mediaItemRepository: MediaItemRepository,
+		private readonly mediaUrlResolver: MediaUrlResolver,
 	) {}
+
+	/**
+	 * Resuelve etiqueta + hex del catálogo para un ítem de carrito textil.
+	 * El producto debe cargarse fuera (evita ciclo Assembler → Repository → Assembler).
+	 */
+	async resolveColorOptionForProductAndVariant(
+		product: Pick<TextileProduct, 'id' | 'options'>,
+		variant: Variant,
+	): Promise<{ label: string; hexCode: string } | null> {
+		if (variant.productType !== ProductType.TEXTILE) {
+			return null;
+		}
+		const attrs = await this.buildForProduct(product, [variant]);
+		const info = attrs.variantInfo.find((v) => v.variantId === variant.id);
+		if (!info) {
+			return null;
+		}
+		return {
+			label: info.color.color,
+			hexCode: info.color.hexCode,
+		};
+	}
 
 	async buildForProduct(
 		product: Pick<TextileProduct, 'id' | 'options'>,
@@ -57,11 +77,10 @@ export class TextileProductAttributesAssembler {
 		const sizeAltById = new Map(sizeAlts.map((item) => [item.id, item]));
 
 		const mediaIds = this.collectColorMediaIds(products);
-		const mediaItems =
+		const mediaUrlById =
 			mediaIds.length > 0
-				? await this.mediaItemRepository.getByIds(mediaIds)
-				: [];
-		const mediaById = new Map(mediaItems.map((item) => [item.id, item]));
+				? await this.mediaUrlResolver.resolveUrls(mediaIds)
+				: new Map<string, string>();
 
 		const variantsByProductId = new Map<string, Variant[]>();
 		for (const variant of variants) {
@@ -89,7 +108,7 @@ export class TextileProductAttributesAssembler {
 					materialOption,
 					sizeAltById,
 					colorAltById,
-					mediaById,
+					mediaUrlById,
 				),
 			});
 		}
@@ -148,7 +167,7 @@ export class TextileProductAttributesAssembler {
 		colorOption: TextileOptions | undefined,
 		combinationValue: string,
 		colorAltById: Map<string, { nameLabel: string; hexCode: string }>,
-		mediaById: Map<string, { key: string }>,
+		mediaUrlById: Map<string, string>,
 	): TextileAvailableColor {
 		if (!colorOption || !combinationValue) {
 			return { color: '', hexCode: '#000000', imgUrl: '' };
@@ -164,11 +183,11 @@ export class TextileProductAttributesAssembler {
 			: undefined;
 		const colorName = (colorAlt?.nameLabel || optionValue.label || '').trim();
 		const firstMediaId = optionValue.mediaIds?.[0];
-		const media = firstMediaId ? mediaById.get(firstMediaId) : undefined;
+		const mediaUrl = firstMediaId ? mediaUrlById.get(firstMediaId) : undefined;
 		return {
 			color: colorName,
 			hexCode: colorAlt?.hexCode || '#000000',
-			imgUrl: media ? `${this.storageBaseUrl}/${media.key}` : '',
+			imgUrl: mediaUrl ?? '',
 		};
 	}
 
@@ -179,7 +198,7 @@ export class TextileProductAttributesAssembler {
 		materialOption: TextileOptions | undefined,
 		sizeAltById: Map<string, { nameLabel: string }>,
 		colorAltById: Map<string, { nameLabel: string; hexCode: string }>,
-		mediaById: Map<string, { key: string }>,
+		mediaUrlById: Map<string, string>,
 	): TextileVariantInfo[] {
 		return variants.map((variant) => {
 			const sizeCombo = this.getCombinationValue(variant.combination, [
@@ -216,7 +235,7 @@ export class TextileProductAttributesAssembler {
 					colorOption,
 					colorCombo,
 					colorAltById,
-					mediaById,
+					mediaUrlById,
 				),
 				material: materialResolved.label,
 				price: variant.price,

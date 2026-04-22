@@ -2,6 +2,7 @@ import {
 	Controller,
 	Get,
 	Post,
+	Put,
 	Delete,
 	Body,
 	Param,
@@ -17,12 +18,13 @@ import { AccountRole } from '../../../domain/enums/AccountRole';
 import { Public } from '../../core/public.decorator';
 import { CreateSuperfoodCertificationDto } from '../dto/superfoods/CreateSuperfoodCertificationDto';
 import { CreateManySuperfoodCertificationsDto } from '../dto/superfoods/CreateManySuperfoodCertificationsDto';
-import { SuperfoodCertificationResponse } from '../../../app/modules/superfoods/SuperfoodCertificationResponse';
+import { SuperfoodCertificationResponse } from '../../../app/models/superfoods/SuperfoodCertificationResponse';
 import { CreateSuperfoodCertificationUseCase } from '../../../app/use_cases/superfoods/certification/CreateSuperfoodCertificationUseCase';
 import { CreateManySuperfoodCertificationsUseCase } from '../../../app/use_cases/superfoods/certification/CreateManySuperfoodCertificationsUseCase';
 import { GetSuperfoodCertificationByIdUseCase } from '../../../app/use_cases/superfoods/certification/GetSuperfoodCertificationByIdUseCase';
 import { ListSuperfoodCertificationsUseCase } from '../../../app/use_cases/superfoods/certification/ListSuperfoodCertificationsUseCase';
 import { DeleteSuperfoodCertificationUseCase } from '../../../app/use_cases/superfoods/certification/DeleteSuperfoodCertificationUseCase';
+import { UpdateSuperfoodCertificationUseCase } from '../../../app/use_cases/superfoods/certification/UpdateSuperfoodCertificationUseCase';
 
 @ApiTags('Superfood Certifications')
 @Controller('superfood-certifications')
@@ -33,10 +35,11 @@ export class SuperfoodCertificationController {
 		private readonly getSuperfoodCertificationByIdUseCase: GetSuperfoodCertificationByIdUseCase,
 		private readonly listSuperfoodCertificationsUseCase: ListSuperfoodCertificationsUseCase,
 		private readonly deleteSuperfoodCertificationUseCase: DeleteSuperfoodCertificationUseCase,
+		private readonly updateSuperfoodCertificationUseCase: UpdateSuperfoodCertificationUseCase,
 	) {}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@Post('/bulk')
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -60,7 +63,7 @@ export class SuperfoodCertificationController {
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -96,6 +99,85 @@ export class SuperfoodCertificationController {
 	})
 	async listCertifications(): Promise<SuperfoodCertificationResponse[]> {
 		return await this.listSuperfoodCertificationsUseCase.handle();
+	}
+
+	@Public()
+	@Get('/:id')
+	@ApiOperation({
+		summary: 'Obtener certificación por ID',
+		description: 'Retorna una certificación específica por su ID',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID de la certificación',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Certificación encontrada',
+		type: SuperfoodCertificationResponse,
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Certificación no encontrada',
+	})
+	async getCertificationById(
+		@Param('id') id: string,
+	): Promise<SuperfoodCertificationResponse> {
+		return await this.getSuperfoodCertificationByIdUseCase.handle(id);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
+	@Put('/:id')
+	@ApiOperation({
+		summary: 'Actualizar certificación',
+		description: 'Actualiza una certificación por su ID',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID de la certificación',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Certificación actualizada exitosamente',
+		type: SuperfoodCertificationResponse,
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Certificación no encontrada',
+	})
+	async updateCertification(
+		@Param('id') id: string,
+		@Body() dto: CreateSuperfoodCertificationDto,
+	): Promise<SuperfoodCertificationResponse> {
+		return await this.updateSuperfoodCertificationUseCase.handle(id, dto);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
+	@Delete('/:id')
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@ApiOperation({
+		summary: 'Eliminar certificación',
+		description: 'Elimina una certificación por su ID',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID de la certificación a eliminar',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 204,
+		description: 'Certificación eliminada exitosamente',
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Certificación no encontrada',
+	})
+	async deleteCertification(@Param('id') id: string): Promise<void> {
+		await this.deleteSuperfoodCertificationUseCase.handle(id);
 	}
 
 	// @Get('/:id')

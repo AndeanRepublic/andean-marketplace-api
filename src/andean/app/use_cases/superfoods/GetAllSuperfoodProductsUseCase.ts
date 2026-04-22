@@ -3,14 +3,18 @@ import {
 	SuperfoodProductFilters,
 	SuperfoodProductRepository,
 } from '../../datastore/superfoods/SuperfoodProduct.repo';
-import { PaginatedProductsResponse } from '../../modules/shared/PaginatedProductsResponse';
-import { SuperfoodProductListItem } from '../../modules/superfoods/SuperfoodProductListItem';
+import { PaginatedProductsResponse } from '../../models/shared/PaginatedProductsResponse';
+import { SuperfoodProductListItem } from '../../models/superfoods/SuperfoodProductListItem';
+import { SuperfoodProductListColorResolver } from '../../../infra/services/superfood/SuperfoodProductListColorResolver';
+import { SuperfoodProductListMediaResolver } from '../../../infra/services/superfood/SuperfoodProductListMediaResolver';
 
 @Injectable()
 export class GetAllSuperfoodProductsUseCase {
 	constructor(
 		@Inject(SuperfoodProductRepository)
 		private readonly superfoodProductRepository: SuperfoodProductRepository,
+		private readonly superfoodProductListColorResolver: SuperfoodProductListColorResolver,
+		private readonly superfoodProductListMediaResolver: SuperfoodProductListMediaResolver,
 	) {}
 
 	async handle(
@@ -26,8 +30,17 @@ export class GetAllSuperfoodProductsUseCase {
 				throw new NotFoundException('No superfood products found');
 			}
 
+			const withMedia =
+				await this.superfoodProductListMediaResolver.attachListMediaFromAggregate(
+					products,
+				);
+			const withColors =
+				await this.superfoodProductListColorResolver.attachCatalogColorFromAggregate(
+					withMedia,
+				);
+
 			return {
-				products,
+				products: withColors,
 				pagination: {
 					total,
 					page: 1,
@@ -49,8 +62,17 @@ export class GetAllSuperfoodProductsUseCase {
 		const page = filters.page || 1;
 		const perPage = filters.perPage || 10;
 
+		const withMedia =
+			await this.superfoodProductListMediaResolver.attachListMediaFromAggregate(
+				products,
+			);
+		const withColors =
+			await this.superfoodProductListColorResolver.attachCatalogColorFromAggregate(
+				withMedia,
+			);
+
 		return {
-			products,
+			products: withColors,
 			pagination: {
 				total,
 				page,

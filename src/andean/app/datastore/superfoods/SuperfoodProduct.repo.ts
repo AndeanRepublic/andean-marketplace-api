@@ -1,6 +1,7 @@
 import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
 import { ProductSortBy } from '../../../domain/enums/ProductSortBy';
-import { SuperfoodProductListItem } from '../../modules/superfoods/SuperfoodProductListItem';
+import { SuperfoodProductListAggregateRow } from '../../models/superfoods/SuperfoodProductListItem';
+import { SuperfoodProductStatus } from '../../../domain/enums/SuperfoodProductStatus';
 
 export interface SuperfoodProductFilters {
 	minPrice?: number;
@@ -10,6 +11,17 @@ export interface SuperfoodProductFilters {
 	categoryId?: string;
 	ownerId?: string;
 	sortBy?: ProductSortBy;
+	/** Si es true, incluye productos con totalStock <= 0 (p. ej. dashboard admin). */
+	includeZeroStock?: boolean;
+}
+
+export interface BoxCatalogSuperfoodItem {
+	id: string;
+	title: string;
+	categoryName: string;
+	imgId: string;
+	catalogPrice: number;
+	totalStock: number;
 }
 
 export abstract class SuperfoodProductRepository {
@@ -19,7 +31,7 @@ export abstract class SuperfoodProductRepository {
 
 	abstract getAllWithFilters(
 		filters: SuperfoodProductFilters,
-	): Promise<{ products: SuperfoodProductListItem[]; total: number }>;
+	): Promise<{ products: SuperfoodProductListAggregateRow[]; total: number }>;
 
 	abstract saveSuperfoodProduct(
 		product: SuperfoodProduct,
@@ -37,4 +49,15 @@ export abstract class SuperfoodProductRepository {
 		id: string,
 		quantity: number,
 	): Promise<SuperfoodProduct | null>;
+	abstract updateStatus(
+		id: string,
+		status: SuperfoodProductStatus,
+	): Promise<SuperfoodProduct | null>;
+
+	/** Listado completo (sin paginar) para el formulario admin de box. */
+	abstract getBoxCatalogAll(): Promise<Array<BoxCatalogSuperfoodItem>>;
+	/** Variante para box-admin: incluye productos con stock 0. */
+	abstract getBoxCatalogAllIncludingZeroStock(): Promise<
+		Array<BoxCatalogSuperfoodItem>
+	>;
 }

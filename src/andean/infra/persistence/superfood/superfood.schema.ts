@@ -1,35 +1,54 @@
 import { Document, Schema } from 'mongoose';
 import { SuperfoodProductStatus } from '../../../domain/enums/SuperfoodProductStatus';
-import { SuperfoodColor } from '../../../domain/enums/SuperfoodColor';
 import { SuperfoodConsumptionWay } from '../../../domain/enums/SuperfoodConsumptionWay';
 import { SuperfoodProductionMethod } from '../../../domain/enums/SuperfoodProductionMethod';
-import { SuperfoodOwnerType } from '../../../domain/enums/SuperfoodOwnerType';
+import { OwnerType } from '../../../domain/enums/OwnerType';
+import { ProductCurrency } from '../../../domain/enums/ProductCurrency';
 import { TraceabilityProcessName } from '../../../domain/enums/TraceabilityProcessName';
+import { SuperfoodOptionName } from '../../../domain/enums/SuperfoodOptionName';
 
 // Nested schemas
 const SuperfoodOptionsItemSchema = new Schema({
-	id: { type: String, required: true },
 	label: { type: String, required: true },
 	mediaIds: { type: [String], default: [] },
+	idOptionAlternative: { type: String, required: false },
 });
 
 const SuperfoodOptionsSchema = new Schema({
-	id: { type: String, required: true },
-	name: { type: String, required: true },
+	name: {
+		type: String,
+		enum: Object.values(SuperfoodOptionName),
+		required: true,
+	},
 	values: { type: [SuperfoodOptionsItemSchema], default: [] },
 });
+
+const SuperfoodProductMediaSchema = new Schema(
+	{
+		mainImgId: { type: String, required: true },
+		plateImgId: { type: String, required: false },
+		sourceProductImgId: { type: String, required: false },
+		closestSourceProductImgId: { type: String, required: false },
+		otherImagesId: { type: [String], default: [] },
+	},
+	{ _id: false },
+);
 
 const SuperfoodBasicInfoSchema = new Schema(
 	{
 		title: { type: String, required: true },
-		mediaIds: { type: [String], default: [] }, // IDs referencing MediaItem collection
-		description: { type: String, required: true },
+		productMedia: {
+			type: SuperfoodProductMediaSchema,
+			required: true,
+		},
+		shortDescription: { type: String, required: true },
+		detailedDescription: { type: String, required: true },
 		general_features: { type: [String], default: [] },
 		nutritional_features: { type: [String], default: [] }, // IDs
 		benefits: { type: [String], default: [] }, // IDs
 		ownerType: {
 			type: String,
-			enum: Object.values(SuperfoodOwnerType),
+			enum: Object.values(OwnerType),
 			required: true,
 		},
 		ownerId: { type: String, required: true },
@@ -41,43 +60,83 @@ const SuperfoodPriceInventorySchema = new Schema(
 	{
 		basePrice: { type: Number, required: true },
 		totalStock: { type: Number, required: true },
+		currency: {
+			type: String,
+			enum: Object.values(ProductCurrency),
+			required: true,
+			default: ProductCurrency.PEN,
+		},
 		SKU: { type: String, required: false },
 	},
 	{ _id: false },
 );
 
-const SuperfoodElaborationTimeSchema = new Schema(
-	{
-		days: { type: Number, required: false },
-		hours: { type: Number, required: false },
-	},
-	{ _id: false },
-);
-
 const SuperfoodNutritionalItemSchema = new Schema({
-	id: { type: String, required: true },
-	quantity: { type: String, required: true },
+	quantityNumber: { type: Number, required: true },
+	quantityUnit: {
+		type: String,
+		enum: ['g', 'mg', 'µg', 'kcal', 'cal', 'kJ'],
+		required: true,
+	},
 	nutrient: { type: String, required: true },
 	strikingFeature: { type: String, required: true },
 	selected: { type: Boolean, default: false },
 });
 
+const SuperfoodServingNutritionSchema = new Schema(
+	{
+		servingSize: { type: Number, required: true },
+		servingUnit: { type: String, enum: ['g', 'mg'], required: true },
+		servingNutritionalContent: {
+			type: [SuperfoodNutritionalItemSchema],
+			default: [],
+			required: true,
+		},
+	},
+	{ _id: false },
+);
+
+const SuperfoodProductDimensionsSchema = new Schema(
+	{
+		length: { type: Number, required: true },
+		width: { type: Number, required: true },
+		height: { type: Number, required: true },
+	},
+	{ _id: false },
+);
+
 const SuperfoodDetailTraceabilitySchema = new Schema(
 	{
-		handmade: { type: Boolean, required: false },
-		secondaryMaterials: { type: [String], default: [] },
-		originProductCommunityId: { type: String, required: false },
+		productOrigin: { type: String, required: false },
+		exactSpeciesOrVarietyId: { type: String, required: false },
 		productionMethod: {
 			type: String,
 			enum: Object.values(SuperfoodProductionMethod),
 			required: false,
 		},
-		preservationMethod: { type: String, required: false }, // ID reference
-		isArtesanal: { type: Boolean, required: false },
+		preservationMethodId: { type: String, required: false },
+		certificationIds: { type: [String], default: [] },
+		sanitaryRegistryNumber: { type: String, required: false },
+		expirationDate: { type: Date, required: false },
+		productionDate: { type: Date, required: false },
+		lotNumber: { type: String, required: false },
 		isNatural: { type: Boolean, required: false },
+		isArtesanal: { type: Boolean, required: false },
 		isEatableWithoutPrep: { type: Boolean, required: false },
 		canCauseAllergies: { type: Boolean, required: false },
-		certification: { type: String }, // ID reference
+		allergens: { type: [String], default: [] },
+		primaryPackaging: { type: String, required: false },
+		secondaryPackaging: { type: String, required: false },
+		packagingSpecification: { type: String, required: false },
+		netWeight: { type: String, required: false },
+		grossWeight: { type: String, required: false },
+		dimensionsWithPackage: {
+			type: SuperfoodProductDimensionsSchema,
+			required: false,
+		},
+		storageConditions: { type: String, required: false },
+		estimatedDeliveryDays: { type: Number, required: false },
+		isCustomizableOrMixable: { type: Boolean, required: false },
 	},
 	{ _id: false },
 );
@@ -108,58 +167,39 @@ const SuperfoodProductTraceabilitySchema = new Schema(
 
 const SuperfoodDetailProductSchema = new Schema(
 	{
-		type: { type: String, required: false }, // ID reference
-		productPresentation: { type: String, required: false }, // ID reference
+		type: { type: String, required: false },
+		productPresentation: { type: String, required: false },
 		consumptionWay: {
 			type: String,
 			enum: Object.values(SuperfoodConsumptionWay),
 			required: false,
 		},
 		consumptionSuggestions: { type: String },
-		salesUnitSize: { type: String, required: false }, // ID reference
+		salesUnitSize: { type: String, required: false },
 		medicRecommendations: { type: String },
 		healthWarnings: { type: String },
-		elaborationTime: { type: SuperfoodElaborationTimeSchema, required: false },
-		handmade: { type: Boolean, required: false },
-		secondaryMaterials: { type: [String], default: [] },
-		originProductCommunityId: { type: String, required: false },
-		productionMethod: {
-			type: String,
-			enum: Object.values(SuperfoodProductionMethod),
-			required: false,
-		},
-		preservationMethod: { type: String, required: false },
-		isArtesanal: { type: Boolean, required: false },
-		isNatural: { type: Boolean, required: false },
-		isEatableWithoutPrep: { type: Boolean, required: false },
-		canCauseAllergies: { type: Boolean, required: false },
-		certification: { type: String },
+		ingredients: { type: String, required: false },
+		customerExpectations: { type: String, required: false },
 	},
 	{ _id: false },
 );
 
 // Main schema
 export const SuperfoodProductSchema = new Schema({
+	/** Mismo valor que `_id` en hex; usado en `findOne({ id })`. Opcional por datos legacy. */
+	id: { type: String, required: false },
 	categoryId: { type: String, required: false },
 	status: {
 		type: String,
 		enum: Object.values(SuperfoodProductStatus),
 		required: true,
 	},
-	color: {
-		type: String,
-		enum: Object.values(SuperfoodColor),
-		required: false,
-	},
+	colorId: { type: String, required: false },
 	detailSourceProductId: { type: String, required: false },
 	baseInfo: { type: SuperfoodBasicInfoSchema, required: true },
 	priceInventory: { type: SuperfoodPriceInventorySchema, required: true },
 	detailProduct: { type: SuperfoodDetailProductSchema, required: false },
-	nutritionalContent: {
-		type: [SuperfoodNutritionalItemSchema],
-		default: [],
-		required: false,
-	},
+	servingNutrition: { type: SuperfoodServingNutritionSchema, required: false },
 	detailTraceability: {
 		type: SuperfoodDetailTraceabilitySchema,
 		required: false,
@@ -175,14 +215,15 @@ export const SuperfoodProductSchema = new Schema({
 });
 
 export interface SuperfoodProductDocument extends Document {
+	id?: string;
 	categoryId?: string;
 	status: SuperfoodProductStatus;
-	color?: SuperfoodColor;
+	colorId?: string;
 	detailSourceProductId?: string;
 	baseInfo: any;
 	priceInventory: any;
 	detailProduct?: any;
-	nutritionalContent?: any[];
+	servingNutrition?: any;
 	detailTraceability?: any;
 	productTraceability?: any;
 	options?: any[];

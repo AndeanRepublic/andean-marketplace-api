@@ -5,7 +5,7 @@ import {
 	ValidationPipe,
 	ForbiddenException,
 } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 
 import { ExperiencePricesController } from '../src/andean/infra/controllers/experienceControllers/experience-prices.controller';
 import { ExperienceAvailabilityController } from '../src/andean/infra/controllers/experienceControllers/experience-availability.controller';

@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ConfigService } from '@nestjs/config';
 import { OrderSchema } from './infra/persistence/order/order.schema';
 import { OrderController } from './infra/controllers/order.controller';
 import { CreateOrderUseCase } from './app/use_cases/orders/CreateOrderUseCase';
@@ -18,6 +19,7 @@ import { TextileProductModule } from './textileProduct.module';
 import { SuperfoodModule } from './superfood.module';
 import { BoxModule } from './box.module';
 import { CreateOrderFromCartUseCase } from './app/use_cases/orders/CreateOrderFromCartUseCase';
+import { GetAllOrdersUseCase } from './app/use_cases/orders/GetAllOrdersUseCase';
 import { BoxProductInfoProvider } from './infra/services/products/BoxProductInfoProvider';
 import { PayPalClientService } from './infra/services/paypal/PayPalClientService';
 import { CreatePayPalOrderService } from './infra/services/paypal/CreatePayPalOrderService';
@@ -29,6 +31,13 @@ import { TextileStockReducer } from './infra/services/stock/TextileStockReducer'
 import { SuperfoodStockReducer } from './infra/services/stock/SuperfoodStockReducer';
 import { BoxStockReducer } from './infra/services/stock/BoxStockReducer';
 import { StockReducerRegistry } from './infra/services/stock/StockReducerRegistry';
+import { IStockReducerRegistry } from './infra/services/stock/IStockReducerRegistry';
+import { EmailRepository } from './app/datastore/Email.repo';
+import { SesClientService } from './infra/services/email/SesClientService';
+import { SesEmailRepoImpl } from './infra/datastore/email.repo.impl';
+import { ResendClientService } from './infra/services/email/ResendClientService';
+import { ResendEmailRepoImpl } from './infra/datastore/email.resend.impl';
+import { SendOrderConfirmationUseCase } from './app/use_cases/email/SendOrderConfirmationUseCase';
 
 @Module({
 	imports: [
@@ -51,6 +60,7 @@ import { StockReducerRegistry } from './infra/services/stock/StockReducerRegistr
 		CreateOrderFromCartUseCase,
 		GetOrderByIdUseCase,
 		GetOrdersByCustomerUseCase,
+		GetAllOrdersUseCase,
 		UpdateOrderStatusUseCase,
 		{
 			provide: OrderRepository,
@@ -71,7 +81,41 @@ import { StockReducerRegistry } from './infra/services/stock/StockReducerRegistr
 		SuperfoodStockReducer,
 		BoxStockReducer,
 		StockReducerRegistry,
+		{
+			provide: IStockReducerRegistry,
+			useExisting: StockReducerRegistry,
+		},
 		ReduceStockFromOrderUseCase,
+		// Email Services
+		SesClientService,
+		ResendClientService,
+		SendOrderConfirmationUseCase,
+		{
+			provide: EmailRepository,
+			useFactory: (
+				configService: ConfigService,
+				resendClient: ResendClientService,
+				sesClient: SesClientService,
+			): EmailRepository => {
+				const provider = configService.get<string>('EMAIL_PROVIDER') || 'ses';
+				if (provider === 'resend') {
+					const apiKey = configService.get<string>('RESEND_API_KEY');
+					if (!apiKey) {
+						throw new Error(
+							'RESEND_API_KEY is required when EMAIL_PROVIDER=resend',
+						);
+					}
+					return new ResendEmailRepoImpl(resendClient);
+				}
+				if (provider !== 'ses') {
+					throw new Error(
+						`Invalid EMAIL_PROVIDER: '${provider}'. Valid values: 'resend' | 'ses'`,
+					);
+				}
+				return new SesEmailRepoImpl(sesClient);
+			},
+			inject: [ConfigService, ResendClientService, SesClientService],
+		},
 	],
 	exports: [OrderRepository],
 })

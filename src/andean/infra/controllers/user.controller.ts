@@ -29,8 +29,8 @@ import { UpdateCustomerProfileUseCase } from '../../app/use_cases/users/UpdateCu
 import { UpdateCustomerProfileDto } from './dto/UpdateCustomerProfileDto';
 import { UpdateSellerProfileDto } from './dto/UpdateSellerProfileDto';
 import { UpdateSellerProfileUseCase } from '../../app/use_cases/users/UpdateSellerProfileUseCase';
-import { CustomerProfileResponse } from '../../app/modules/users/CustomerProfileResponse';
-import { SellerProfileResponse } from '../../app/modules/users/SellerProfileResponse';
+import { CustomerProfileResponse } from '../../app/models/users/CustomerProfileResponse';
+import { SellerProfileResponse } from '../../app/models/users/SellerProfileResponse';
 import { JwtAuthGuard } from '../core/jwtAuth.guard';
 import { CurrentUser } from '../core/current-user.decorator';
 import { AccountRole } from '../../domain/enums/AccountRole';

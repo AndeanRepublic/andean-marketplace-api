@@ -4,24 +4,62 @@
 		"status": "PUBLISHED",
 		"baseInfo": {
 			"title": "Quinua Premium",
-			"mediaIds": [],
-			"description": "Quinua orgánica de los Andes peruanos",
+			"productMedia": {
+				"mainImgId": "507f1f77bcf86cd799439012",
+				"plateImgId": "507f1f77bcf86cd799439013",
+				"sourceProductImgId": "507f1f77bcf86cd799439014",
+				"closestSourceProductImgId": "507f1f77bcf86cd799439015",
+				"otherImagesId": []
+			},
+			"shortDescription": "Quinua orgánica andina",
+			"detailedDescription": "Quinua orgánica de los Andes peruanos",
 			"general_features": [
 				"Orgánica",
 				"Sin gluten",
 				"Alto en proteínas"
 			],
 			"nutritional_features": [],
-			"benefits": [],
+			"benefits": ["507f1f77bcf86cd799439020"],
 			"ownerType": "SHOP",
 			"ownerId": "shop-123"
 		},
 		"priceInventory": {
 			"basePrice": 25.50,
 			"totalStock": 100,
+			"currency": "PEN",
 			"SKU": "QUINUA-PREM-001"
 		},
-		"color": "PURPLE",
+		"servingNutrition": {
+			"servingSize": 30,
+			"servingUnit": "g",
+			"servingNutritionalContent": [
+				{
+					"nutrient": "Proteína",
+					"quantityNumber": 14,
+					"quantityUnit": "g",
+					"strikingFeature": "—",
+					"selected": false
+				}
+			]
+		},
+		"options": [
+			{
+				"name": "SIZE",
+				"values": [
+					{
+						"label": "500 g",
+						"idOptionAlternative": "size-alt-500g",
+						"sizeNumber": 500,
+						"sizeUnit": "g",
+						"servingsPerContainer": 16.67,
+						"price": 25.5,
+						"stock": 100,
+						"sku": "QUINUA-PREM-500G"
+					}
+				]
+			}
+		],
+		"colorId": "507f1f77bcf86cd799439011",
 		"detailSourceProductId": "detail-source-123",
 		"categoryId": "category-quinua-001",
 		"createdAt": "2026-01-01T00:00:00.000Z",
@@ -31,24 +69,61 @@
 		"status": "PUBLISHED",
 		"baseInfo": {
 			"title": "Quinua Premium",
-			"mediaIds": [],
-			"description": "Quinua orgánica de los Andes peruanos",
+			"productMedia": {
+				"mainImgId": "507f1f77bcf86cd799439012",
+				"plateImgId": "507f1f77bcf86cd799439013",
+				"sourceProductImgId": "507f1f77bcf86cd799439014",
+				"closestSourceProductImgId": "507f1f77bcf86cd799439015",
+				"otherImagesId": []
+			},
+			"shortDescription": "Quinua orgánica andina",
+			"detailedDescription": "Quinua orgánica de los Andes peruanos",
 			"general_features": [
 				"Orgánica",
 				"Sin gluten",
 				"Alto en proteínas"
 			],
 			"nutritional_features": [],
-			"benefits": [],
+			"benefits": ["507f1f77bcf86cd799439020"],
 			"ownerType": "SHOP",
 			"ownerId": "shop-123"
 		},
 		"priceInventory": {
 			"basePrice": 25.50,
 			"totalStock": 100,
+			"currency": "PEN",
 			"SKU": "QUINUA-PREM-001"
 		},
-		"color": "PURPLE",
+		"servingNutrition": {
+			"servingSize": 30,
+			"servingUnit": "g",
+			"servingNutritionalContent": [
+				{
+					"nutrient": "Proteína",
+					"quantityNumber": 14,
+					"quantityUnit": "g",
+					"strikingFeature": "—",
+					"selected": false
+				}
+			]
+		},
+		"options": [
+			{
+				"name": "SIZE",
+				"values": [
+					{
+						"label": "500 g",
+						"sizeNumber": 500,
+						"sizeUnit": "g",
+						"servingsPerContainer": 16.67,
+						"price": 25.5,
+						"stock": 100,
+						"sku": "QUINUA-PREM-500G"
+					}
+				]
+			}
+		],
+		"colorId": "507f1f77bcf86cd799439011",
 		"detailSourceProduct": {
 			"name": "Origen Andino Premium",
 			"description": "Producto cultivado en las altas montañas de los Andes peruanos",
@@ -64,25 +139,61 @@
 		"status": "PUBLISHED",
 		"baseInfo": {
 			"title": "Quinua Premium Actualizada",
-			"mediaIds": [],
-			"description": "Quinua orgánica de los Andes peruanos - Actualizada",
+			"productMedia": {
+				"mainImgId": "507f1f77bcf86cd799439012",
+				"plateImgId": "507f1f77bcf86cd799439013",
+				"sourceProductImgId": "507f1f77bcf86cd799439014",
+				"closestSourceProductImgId": "507f1f77bcf86cd799439015",
+				"otherImagesId": []
+			},
+			"shortDescription": "Quinua orgánica andina",
+			"detailedDescription": "Quinua orgánica de los Andes peruanos - Actualizada",
 			"general_features": [
 				"Orgánica",
 				"Sin gluten",
-				"Alto en proteínas",
-				"Certificado"
+				"Alto en proteínas"
 			],
 			"nutritional_features": [],
-			"benefits": [],
+			"benefits": ["507f1f77bcf86cd799439020"],
 			"ownerType": "SHOP",
 			"ownerId": "shop-123"
 		},
 		"priceInventory": {
 			"basePrice": 30.00,
 			"totalStock": 150,
+			"currency": "USD",
 			"SKU": "QUINUA-PREM-001"
 		},
-		"color": "RED",
+		"servingNutrition": {
+			"servingSize": 30,
+			"servingUnit": "g",
+			"servingNutritionalContent": [
+				{
+					"nutrient": "Proteína",
+					"quantityNumber": 15,
+					"quantityUnit": "g",
+					"strikingFeature": "—",
+					"selected": false
+				}
+			]
+		},
+		"options": [
+			{
+				"name": "SIZE",
+				"values": [
+					{
+						"label": "1 kg",
+						"sizeNumber": 1,
+						"sizeUnit": "kg",
+						"servingsPerContainer": 33.33,
+						"price": 30,
+						"stock": 150,
+						"sku": "QUINUA-PREM-1KG"
+					}
+				]
+			}
+		],
+		"colorId": "507f191e810c19729de860ea",
 		"detailSourceProduct": {
 			"name": "Origen Andino Premium Actualizado",
 			"description": "Producto cultivado en las altas montañas de los Andes peruanos - Versión mejorada",
@@ -97,7 +208,10 @@
 	},
 	"listItem": {
 		"id": "superfood-uuid-123",
-		"color": "Púrpura",
+		"color": {
+			"name": "PURPLE",
+			"hexCodeColor": "#7c3aed"
+		},
 		"title": "Quinua Premium",
 		"ownerName": "Artesanos Andinos",
 		"price": 25.50,
@@ -120,7 +234,10 @@
 		"products": [
 			{
 				"id": "superfood-uuid-123",
-				"color": "Púrpura",
+				"color": {
+			"name": "PURPLE",
+			"hexCodeColor": "#7c3aed"
+		},
 				"title": "Quinua Premium",
 				"ownerName": "Artesanos Andinos",
 				"price": 25.50,
@@ -162,6 +279,7 @@
 		},
 		"heroDetail": {
 			"title": "Quinua Premium",
+			"shortDescription": "Quinua orgánica andina",
 			"description": "Quinua orgánica de los Andes peruanos",
 			"nutritionalFeatures": [
 				{
@@ -172,28 +290,20 @@
 			],
 			"basePrice": 25.50,
 			"totalStock": 100,
-			"isDiscountActive": false,
-			"traceabilityInfo": {
-				"blockchainLink": "https://blockchain.example.com/tx/123",
-				"origen": [
-					{
-						"title": "Cosecha",
-						"supplier": "Cooperativa Andina",
-						"country": "Perú",
-						"city": "Cusco",
-						"description": "Cosecha manual en los Andes"
-					}
-				],
-				"processing": [],
-				"development": [],
-				"merchandising": []
+			"isDiscountActive": false
+		},
+		"ownerInfo": {
+			"ownerType": "SHOP",
+			"shop": {
+				"ownerImage": "",
+				"shopName": "Artesanos Andinos",
+				"originPlace": "",
+				"seals": []
 			}
 		},
-		"owner": {
-			"id": "shop-123",
-			"type": "SHOP",
-			"name": "Artesanos Andinos",
-			"imgUrl": ""
+		"color": {
+			"name": "PURPLE",
+			"hexCodeColor": "#7c3aed"
 		},
 		"benefitsInfo": [
 			{
@@ -201,7 +311,7 @@
 				"name": "Energía natural",
 				"iconUrl": "https://example.com/icon-energy.png",
 				"description": "Fuente de energía sostenida",
-				"color": "GREEN"
+				"color": "#22c55e"
 			}
 		],
 		"sourceProductInfo": {
@@ -215,7 +325,6 @@
 		},
 		"strikingNutritionalItems": [
 			{
-				"id": "nutri-001",
 				"quantity": "14g",
 				"name": "Proteína",
 				"strikingFeature": "Alto contenido"
@@ -223,12 +332,10 @@
 		],
 		"nutritionalInformation": [
 			{
-				"id": "nutri-001",
 				"quantity": "14g",
 				"name": "Proteína"
 			},
 			{
-				"id": "nutri-002",
 				"quantity": "7g",
 				"name": "Fibra"
 			}

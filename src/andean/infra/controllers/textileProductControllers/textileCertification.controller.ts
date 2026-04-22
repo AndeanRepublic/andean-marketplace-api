@@ -16,7 +16,7 @@ import { RolesGuard } from '../../core/roles.guard';
 import { Roles } from '../../core/roles.decorator';
 import { AccountRole } from '../../../domain/enums/AccountRole';
 import { Public } from '../../core/public.decorator';
-import { TextileCertificationResponse } from 'src/andean/app/modules/textile/TextileCertificationResponse';
+import { TextileCertificationResponse } from 'src/andean/app/models/textile/TextileCertificationResponse';
 import { CreateTextileCertificationUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileCertificationUseCase';
 import { CreateManyTextileCertificationsUseCase } from 'src/andean/app/use_cases/textileProducts/CreateManyTextileCertificationsUseCase';
 import { TextileCertification } from 'src/andean/domain/entities/textileProducts/TextileCertification';
@@ -87,31 +87,33 @@ export class TextileCertificationController {
 		return this.createTextileCertificationUseCase.handle(body);
 	}
 
-	// @Put('/:id')
-	// @ApiOperation({
-	// 	summary: 'Actualizar certificación textil',
-	// 	description: 'Actualiza los datos de una certificación textil existente',
-	// })
-	// @ApiParam({
-	// 	name: 'id',
-	// 	description: 'ID de la certificación',
-	// 	example: 'uuid-1234-5678',
-	// })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'Certificación actualizada exitosamente',
-	// 	type: TextileCertification,
-	// })
-	// @ApiResponse({
-	// 	status: 404,
-	// 	description: 'Certificación no encontrada',
-	// })
-	// async updateTextileCertification(
-	// 	@Param('id') id: string,
-	// 	@Body() body: CreateTextileCertificationDto,
-	// ): Promise<TextileCertification> {
-	// 	return this.updateTextileCertificationUseCase.handle(id, body);
-	// }
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Put('/:id')
+	@ApiOperation({
+		summary: 'Actualizar certificación textil',
+		description: 'Actualiza los datos de una certificación textil existente',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID de la certificación',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Certificación actualizada exitosamente',
+		type: TextileCertification,
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Certificación no encontrada',
+	})
+	async updateTextileCertification(
+		@Param('id') id: string,
+		@Body() body: CreateTextileCertificationDto,
+	): Promise<TextileCertification> {
+		return this.updateTextileCertificationUseCase.handle(id, body);
+	}
 
 	@Public()
 	@Get()
@@ -129,51 +131,54 @@ export class TextileCertificationController {
 		return this.getAllTextileCertificationsUseCase.handle();
 	}
 
-	// @Get('/:id')
-	// @ApiOperation({
-	// 	summary: 'Obtener certificación por ID',
-	// 	description: 'Retorna una certificación textil específica por su ID',
-	// })
-	// @ApiParam({
-	// 	name: 'id',
-	// 	description: 'ID de la certificación',
-	// 	example: 'uuid-1234-5678',
-	// })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'Certificación encontrada',
-	// 	type: TextileCertification,
-	// })
-	// @ApiResponse({
-	// 	status: 404,
-	// 	description: 'Certificación no encontrada',
-	// })
-	// async getByIdTextileCertification(
-	// 	@Param('id') id: string,
-	// ): Promise<TextileCertification> {
-	// 	return this.getByIdTextileCertificationUseCase.handle(id);
-	// }
+	@Public()
+	@Get('/:id')
+	@ApiOperation({
+		summary: 'Obtener certificación por ID',
+		description: 'Retorna una certificación textil específica por su ID',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID de la certificación',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Certificación encontrada',
+		type: TextileCertification,
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Certificación no encontrada',
+	})
+	async getByIdTextileCertification(
+		@Param('id') id: string,
+	): Promise<TextileCertification> {
+		return this.getByIdTextileCertificationUseCase.handle(id);
+	}
 
-	// @Delete('/:id')
-	// @HttpCode(HttpStatus.NO_CONTENT)
-	// @ApiOperation({
-	// 	summary: 'Eliminar certificación textil',
-	// 	description: 'Elimina una certificación textil por su ID',
-	// })
-	// @ApiParam({
-	// 	name: 'id',
-	// 	description: 'ID de la certificación a eliminar',
-	// 	example: 'uuid-1234-5678',
-	// })
-	// @ApiResponse({
-	// 	status: 204,
-	// 	description: 'Certificación eliminada exitosamente',
-	// })
-	// @ApiResponse({
-	// 	status: 404,
-	// 	description: 'Certificación no encontrada',
-	// })
-	// async deleteTextileCertification(@Param('id') id: string): Promise<void> {
-	// 	return this.deleteTextileCertificationUseCase.handle(id);
-	// }
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Delete('/:id')
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@ApiOperation({
+		summary: 'Eliminar certificación textil',
+		description: 'Elimina una certificación textil por su ID',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID de la certificación a eliminar',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 204,
+		description: 'Certificación eliminada exitosamente',
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Certificación no encontrada',
+	})
+	async deleteTextileCertification(@Param('id') id: string): Promise<void> {
+		return this.deleteTextileCertificationUseCase.handle(id);
+	}
 }

@@ -6,7 +6,7 @@ import {
 	ForbiddenException,
 	NotFoundException,
 } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 
 import { ExperienceController } from '../src/andean/infra/controllers/experienceControllers/experience.controller';
 import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';
@@ -20,7 +20,10 @@ import { CreateExperienceUseCase } from '../src/andean/app/use_cases/experiences
 import { UpdateExperienceUseCase } from '../src/andean/app/use_cases/experiences/UpdateExperienceUseCase';
 import { DeleteExperienceUseCase } from '../src/andean/app/use_cases/experiences/DeleteExperienceUseCase';
 import { GetAllExperiencesUseCase } from '../src/andean/app/use_cases/experiences/GetAllExperiencesUseCase';
+import { GetAllExperiencesForManagementUseCase } from '../src/andean/app/use_cases/experiences/GetAllExperiencesForManagementUseCase';
 import { GetByIdExperienceUseCase } from '../src/andean/app/use_cases/experiences/GetByIdExperienceUseCase';
+import { UpdateExperienceStatusUseCase } from '../src/andean/app/use_cases/experiences/UpdateExperienceStatusUseCase';
+import { GetExperienceForEditUseCase } from '../src/andean/app/use_cases/experiences/GetExperienceForEditUseCase';
 
 import { ExperienceStatus } from '../src/andean/domain/enums/ExperienceStatus';
 import { Experience } from '../src/andean/domain/entities/experiences/Experience';
@@ -61,6 +64,12 @@ describe('ExperienceController (e2e)', () => {
 					},
 				},
 				{
+					provide: GetAllExperiencesForManagementUseCase,
+					useValue: {
+						handle: jest.fn().mockResolvedValue(mockPaginatedResponse),
+					},
+				},
+				{
 					provide: UpdateExperienceUseCase,
 					useValue: {
 						handle: jest.fn().mockResolvedValue({
@@ -80,6 +89,14 @@ describe('ExperienceController (e2e)', () => {
 					useValue: {
 						handle: jest.fn().mockResolvedValue(mockDetailResponse),
 					},
+				},
+				{
+					provide: UpdateExperienceStatusUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue(mockExperience) },
+				},
+				{
+					provide: GetExperienceForEditUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue(mockExperience) },
 				},
 			],
 		})
@@ -119,7 +136,9 @@ describe('ExperienceController (e2e)', () => {
 	});
 
 	afterAll(async () => {
-		await app.close();
+		if (app) {
+			await app.close();
+		}
 	});
 
 	afterEach(() => {
@@ -854,6 +873,12 @@ describe('ExperienceController (e2e)', () => {
 						},
 					},
 					{
+						provide: GetAllExperiencesForManagementUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockPaginatedResponse),
+						},
+					},
+					{
 						provide: UpdateExperienceUseCase,
 						useValue: { handle: jest.fn().mockResolvedValue(mockExperience) },
 					},
@@ -866,6 +891,14 @@ describe('ExperienceController (e2e)', () => {
 						useValue: {
 							handle: jest.fn().mockResolvedValue(mockDetailResponse),
 						},
+					},
+					{
+						provide: UpdateExperienceStatusUseCase,
+						useValue: { handle: jest.fn().mockResolvedValue(mockExperience) },
+					},
+					{
+						provide: GetExperienceForEditUseCase,
+						useValue: { handle: jest.fn().mockResolvedValue(mockExperience) },
 					},
 				],
 			})
@@ -1051,6 +1084,12 @@ describe('ExperienceController (e2e)', () => {
 							},
 						},
 						{
+							provide: GetAllExperiencesForManagementUseCase,
+							useValue: {
+								handle: jest.fn().mockResolvedValue(mockPaginatedResponse),
+							},
+						},
+						{
 							provide: UpdateExperienceUseCase,
 							useValue: {
 								handle: jest.fn().mockResolvedValue(mockExperience),
@@ -1065,6 +1104,14 @@ describe('ExperienceController (e2e)', () => {
 							useValue: {
 								handle: jest.fn().mockResolvedValue(mockDetailResponse),
 							},
+						},
+						{
+							provide: UpdateExperienceStatusUseCase,
+							useValue: { handle: jest.fn().mockResolvedValue(mockExperience) },
+						},
+						{
+							provide: GetExperienceForEditUseCase,
+							useValue: { handle: jest.fn().mockResolvedValue(mockExperience) },
 						},
 					],
 				})

@@ -1,7 +1,8 @@
 import { TextileProduct } from '../../../domain/entities/textileProducts/TextileProduct';
 import { ProductSortBy } from '../../../domain/enums/ProductSortBy';
-import { FilterCount } from '../../modules/shared/PaginatedProductsResponse';
-import { TextileProductListItem } from '../../modules/textile/TextileProductListItemResponse';
+import { FilterCount } from '../../models/shared/PaginatedProductsResponse';
+import { TextileProductListItem } from '../../models/textile/TextileProductListItemResponse';
+import { TextileProductStatus } from '../../../domain/enums/TextileProductStatus';
 
 export interface ProductFilters {
 	color?: string;
@@ -13,6 +14,17 @@ export interface ProductFilters {
 	categoryId?: string;
 	ownerId?: string;
 	sortBy?: ProductSortBy;
+	/** Si es true, incluye productos con totalStock <= 0 (p. ej. panel de carga). */
+	includeZeroStock?: boolean;
+}
+
+export interface BoxCatalogTextileItem {
+	id: string;
+	title: string;
+	categoryName: string;
+	imgId: string;
+	catalogPrice: number;
+	totalStock: number;
 }
 
 export abstract class TextileProductRepository {
@@ -24,6 +36,13 @@ export abstract class TextileProductRepository {
 	abstract getAllWithFilters(
 		filters: ProductFilters,
 	): Promise<{ products: TextileProductListItem[]; total: number }>;
+
+	/** Catálogo completo para formulario de box (sin paginar). */
+	abstract getBoxCatalogAll(): Promise<Array<BoxCatalogTextileItem>>;
+	/** Variante para box-admin: incluye productos con stock 0. */
+	abstract getBoxCatalogAllIncludingZeroStock(): Promise<
+		Array<BoxCatalogTextileItem>
+	>;
 	abstract getFilterCounts(filters?: ProductFilters): Promise<FilterCount>;
 	abstract getTextileProductById(id: string): Promise<TextileProduct | null>;
 	abstract saveTextileProduct(product: TextileProduct): Promise<TextileProduct>;
@@ -36,5 +55,13 @@ export abstract class TextileProductRepository {
 	abstract reduceStock(
 		id: string,
 		quantity: number,
+	): Promise<TextileProduct | null>;
+	abstract adjustTotalStock(
+		id: string,
+		delta: number,
+	): Promise<TextileProduct | null>;
+	abstract updateStatus(
+		id: string,
+		status: TextileProductStatus,
 	): Promise<TextileProduct | null>;
 }

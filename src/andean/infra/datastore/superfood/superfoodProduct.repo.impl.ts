@@ -10,7 +10,9 @@ import { SuperfoodProductDocument } from '../../persistence/superfood/superfood.
 import { SuperfoodProductMapper } from '../../services/superfood/SuperfoodProductMapper';
 import { MongoIdUtils } from '../../utils/MongoIdUtils';
 import { ProductSortBy } from '../../../domain/enums/ProductSortBy';
-import { SuperfoodProductListItem } from '../../../app/modules/superfoods/SuperfoodProductListItem';
+import { SuperfoodProductListAggregateRow } from '../../../app/models/superfoods/SuperfoodProductListItem';
+import { BoxCatalogSuperfoodItem } from '../../../app/datastore/superfoods/SuperfoodProduct.repo';
+import { SuperfoodProductStatus } from '../../../domain/enums/SuperfoodProductStatus';
 
 @Injectable()
 export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
@@ -29,9 +31,11 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 		product: SuperfoodProduct,
 	): Promise<SuperfoodProduct> {
 		const persistenceData = SuperfoodProductMapper.toPersistence(product);
+		const _id = new Types.ObjectId(product.id);
 		const newDoc = new this.model({
-			_id: crypto.randomUUID(),
 			...persistenceData,
+			_id,
+			id: product.id,
 		});
 		const savedDoc = await newDoc.save();
 		return SuperfoodProductMapper.fromDocument(savedDoc);
@@ -86,6 +90,21 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 		return updated ? SuperfoodProductMapper.fromDocument(updated) : null;
 	}
 
+	async updateStatus(
+		id: string,
+		status: SuperfoodProductStatus,
+	): Promise<SuperfoodProduct | null> {
+		const objectId = MongoIdUtils.stringToObjectId(id);
+		const updated = await this.model
+			.findByIdAndUpdate(
+				objectId,
+				{ $set: { status, updatedAt: new Date() } },
+				{ new: true },
+			)
+			.exec();
+		return updated ? SuperfoodProductMapper.fromDocument(updated) : null;
+	}
+
 	/**
 	 * Construye el query base con los filtros proporcionados
 	 */
@@ -115,8 +134,9 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 			query['baseInfo.ownerId'] = filters.ownerId;
 		}
 
-		// Solo productos con stock disponible
-		query['priceInventory.totalStock'] = { $gt: 0 };
+		if (!filters.includeZeroStock) {
+			query['priceInventory.totalStock'] = { $gt: 0 };
+		}
 
 		return query;
 	}
@@ -209,49 +229,13 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 		];
 	}
 
-	/**
-	 * Construye los lookups para MediaItems
-	 */
-	private buildMediaLookups(): PipelineStage[] {
-		return [
-			{
-				$lookup: {
-					from: 'mediaitems',
-					let: { mediaIds: '$baseInfo.mediaIds' },
-					pipeline: [
-						{
-							$match: {
-								$expr: {
-									$in: [{ $toString: '$_id' }, '$$mediaIds'],
-								},
-							},
-						},
-						{
-							$project: {
-								_id: 1,
-								name: 1,
-								key: 1,
-								role: 1,
-							},
-						},
-					],
-					as: 'mediaItems',
-				},
-			},
-		];
-	}
-
-	/**
-	 * Construye la proyección final del formato de respuesta
-	 */
+	/** Proyección del listado; medios se resuelven en el use case (batch). */
 	private buildFinalProjection(): PipelineStage {
 		return {
 			$project: {
 				_id: 0,
 				id: { $toString: '$_id' },
-				color: {
-					$ifNull: ['$color', null],
-				},
+				colorId: '$colorId',
 				title: '$baseInfo.title',
 				ownerName: {
 					$cond: {
@@ -268,55 +252,20 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 				},
 				price: '$priceInventory.basePrice',
 				totalStock: '$priceInventory.totalStock',
-				mainImage: {
-					$let: {
-						vars: {
-							principalMedia: {
-								$arrayElemAt: [
-									{
-										$filter: {
-											input: '$mediaItems',
-											as: 'media',
-											cond: { $eq: ['$$media.role', 'PRINCIPAL'] },
-										},
-									},
-									0,
-								],
-							},
-						},
-						in: {
-							name: { $ifNull: ['$$principalMedia.name', ''] },
-							url: { $ifNull: ['$$principalMedia.key', ''] },
-						},
-					},
+				status: '$status',
+				mainImgId: {
+					$ifNull: ['$baseInfo.productMedia.mainImgId', ''],
 				},
-				sourceProductImage: {
-					$let: {
-						vars: {
-							noneMedia: {
-								$arrayElemAt: [
-									{
-										$filter: {
-											input: '$mediaItems',
-											as: 'media',
-											cond: { $eq: ['$$media.role', 'NONE'] },
-										},
-									},
-									0,
-								],
-							},
-						},
-						in: {
-							name: { $ifNull: ['$$noneMedia.name', ''] },
-							url: { $ifNull: ['$$noneMedia.key', ''] },
-						},
-					},
+				sourceProductImgId: {
+					$ifNull: ['$baseInfo.productMedia.sourceProductImgId', ''],
 				},
 				nutritionItems: {
 					$map: {
 						input: {
 							$filter: {
-								input: { $ifNull: ['$nutritionalContent', []] },
+								input: {
+									$ifNull: ['$servingNutrition.servingNutritionalContent', []],
+								},
 								as: 'item',
 								cond: { $eq: ['$$item.selected', true] },
 							},
@@ -331,7 +280,7 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 
 	async getAllWithFilters(
 		filters: SuperfoodProductFilters,
-	): Promise<{ products: SuperfoodProductListItem[]; total: number }> {
+	): Promise<{ products: SuperfoodProductListAggregateRow[]; total: number }> {
 		const query = this.buildBaseQuery(filters);
 
 		// Paginación
@@ -344,7 +293,6 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 			{ $match: query },
 			...this.buildSortStages(filters.sortBy),
 			...this.buildSellerLookups(),
-			...this.buildMediaLookups(),
 			this.buildFinalProjection(),
 			{ $skip: skip },
 			{ $limit: perPage },
@@ -356,8 +304,114 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 		]);
 
 		return {
-			products: products as SuperfoodProductListItem[],
+			products: products as SuperfoodProductListAggregateRow[],
 			total: countResult,
 		};
+	}
+
+	async getBoxCatalogAll(): Promise<Array<BoxCatalogSuperfoodItem>> {
+		const match: FilterQuery<SuperfoodProductDocument> = {
+			'priceInventory.totalStock': { $gt: 0 },
+		};
+
+		const pipeline: PipelineStage[] = [
+			{ $match: match },
+			{ $sort: { createdAt: -1 } },
+			{
+				$lookup: {
+					from: 'superfoodcategories',
+					let: {
+						cid: {
+							$convert: {
+								input: '$categoryId',
+								to: 'objectId',
+								onError: null,
+								onNull: null,
+							},
+						},
+					},
+					pipeline: [
+						{
+							$match: {
+								$expr: {
+									$and: [{ $ne: ['$$cid', null] }, { $eq: ['$_id', '$$cid'] }],
+								},
+							},
+						},
+						{ $limit: 1 },
+					],
+					as: 'cat',
+				},
+			},
+			{
+				$project: {
+					_id: 0,
+					id: { $toString: '$_id' },
+					title: '$baseInfo.title',
+					categoryName: {
+						$ifNull: [{ $arrayElemAt: ['$cat.name', 0] }, ''],
+					},
+					imgId: {
+						$ifNull: ['$baseInfo.productMedia.mainImgId', ''],
+					},
+					catalogPrice: '$priceInventory.basePrice',
+					totalStock: '$priceInventory.totalStock',
+				},
+			},
+		];
+
+		const rows = await this.model.aggregate(pipeline).exec();
+
+		return rows as Array<BoxCatalogSuperfoodItem>;
+	}
+
+	async getBoxCatalogAllIncludingZeroStock(): Promise<Array<BoxCatalogSuperfoodItem>> {
+		const pipeline: PipelineStage[] = [
+			{ $sort: { createdAt: -1 } },
+			{
+				$lookup: {
+					from: 'superfoodcategories',
+					let: {
+						cid: {
+							$convert: {
+								input: '$categoryId',
+								to: 'objectId',
+								onError: null,
+								onNull: null,
+							},
+						},
+					},
+					pipeline: [
+						{
+							$match: {
+								$expr: {
+									$and: [{ $ne: ['$$cid', null] }, { $eq: ['$_id', '$$cid'] }],
+								},
+							},
+						},
+						{ $limit: 1 },
+					],
+					as: 'cat',
+				},
+			},
+			{
+				$project: {
+					_id: 0,
+					id: { $toString: '$_id' },
+					title: '$baseInfo.title',
+					categoryName: {
+						$ifNull: [{ $arrayElemAt: ['$cat.name', 0] }, ''],
+					},
+					imgId: {
+						$ifNull: ['$baseInfo.productMedia.mainImgId', ''],
+					},
+					catalogPrice: '$priceInventory.basePrice',
+					totalStock: '$priceInventory.totalStock',
+				},
+			},
+		];
+
+		const rows = await this.model.aggregate(pipeline).exec();
+		return rows as Array<BoxCatalogSuperfoodItem>;
 	}
 }

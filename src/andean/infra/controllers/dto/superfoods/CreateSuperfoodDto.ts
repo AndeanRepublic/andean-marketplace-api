@@ -1,18 +1,21 @@
 import {
 	IsArray,
+	ArrayMinSize,
 	IsEnum,
 	IsNotEmpty,
+	IsIn,
 	IsNumber,
 	IsOptional,
 	IsString,
 	ValidateNested,
 	Min,
 	IsBoolean,
+	IsMongoId,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { SuperfoodProductStatus } from '../../../../domain/enums/SuperfoodProductStatus';
-import { SuperfoodColor } from '../../../../domain/enums/SuperfoodColor';
+import { ProductCurrency } from '../../../../domain/enums/ProductCurrency';
 import { CreateSuperfoodBasicInfoDto } from './CreateSuperfoodBasicInfoDto';
 import { CreateSuperfoodDetailDto } from './CreateSuperfoodDetailDto';
 import { CreateSuperfoodNutritionalDto } from './CreateSuperfoodNutritionalDto';
@@ -42,16 +45,53 @@ export class CreateSuperfoodPriceInventoryDto {
 	@Min(0, { message: 'Total stock cannot be negative' })
 	totalStock!: number;
 
+	@ApiProperty({ enum: ProductCurrency, example: ProductCurrency.PEN })
+	@IsEnum(ProductCurrency)
+	@IsNotEmpty()
+	currency!: ProductCurrency;
+
 	@ApiProperty()
 	@IsString()
 	@IsOptional()
 	SKU?: string;
 }
 
+export class CreateSuperfoodServingNutritionDto {
+	@ApiProperty({
+		description: 'Tamaño de la porción para la tabla nutricional',
+		example: 30,
+		minimum: 0.01,
+	})
+	@IsNumber()
+	@Min(0.01)
+	@IsNotEmpty()
+	servingSize!: number;
+
+	@ApiProperty({
+		description: 'Unidad del tamaño de porción',
+		enum: ['g', 'mg'],
+		example: 'g',
+	})
+	@IsIn(['g', 'mg'])
+	@IsNotEmpty()
+	servingUnit!: 'g' | 'mg';
+
+	@ApiProperty({
+		type: [CreateSuperfoodNutritionalDto],
+		description: 'Tabla de contenido nutricional por porción',
+		minItems: 1,
+	})
+	@IsArray()
+	@ArrayMinSize(1)
+	@ValidateNested({ each: true })
+	@Type(() => CreateSuperfoodNutritionalDto)
+	servingNutritionalContent!: CreateSuperfoodNutritionalDto[];
+}
+
 export class CreateSuperfoodDto {
 	@ApiProperty({
 		enum: SuperfoodProductStatus,
-		default: SuperfoodProductStatus.PENDING,
+		default: SuperfoodProductStatus.HIDDEN,
 	})
 	@IsEnum(SuperfoodProductStatus)
 	@IsNotEmpty()
@@ -67,14 +107,13 @@ export class CreateSuperfoodDto {
 	@Type(() => CreateSuperfoodPriceInventoryDto)
 	priceInventory!: CreateSuperfoodPriceInventoryDto;
 
-	@ApiPropertyOptional({
-		description: 'Color del producto superfood',
-		enum: SuperfoodColor,
-		example: SuperfoodColor.PURPLE,
+	@ApiProperty({
+		description: 'ID del color en catálogo (`GET /superfood-colors`)',
+		example: '507f1f77bcf86cd799439011',
 	})
-	@IsEnum(SuperfoodColor)
-	@IsOptional()
-	color?: SuperfoodColor;
+	@IsMongoId({ message: 'colorId must be a valid catalog color ObjectId' })
+	@IsNotEmpty()
+	colorId!: string;
 
 	@ApiPropertyOptional({
 		description:
@@ -86,10 +125,10 @@ export class CreateSuperfoodDto {
 	@IsOptional()
 	detailSourceProduct?: CreateDetailSourceProductDto;
 
-	@ApiProperty({ description: 'ID de categoría de superfood', required: false })
+	@ApiProperty({ description: 'ID de categoría de superfood' })
 	@IsString()
-	@IsOptional()
-	categoryId?: string;
+	@IsNotEmpty()
+	categoryId!: string;
 
 	@ApiProperty({ type: CreateSuperfoodDetailDto, required: false })
 	@ValidateNested()
@@ -97,12 +136,13 @@ export class CreateSuperfoodDto {
 	@IsOptional()
 	detailProduct?: CreateSuperfoodDetailDto;
 
-	@ApiProperty({ type: [CreateSuperfoodNutritionalDto], required: false })
-	@IsArray()
-	@IsOptional()
-	@ValidateNested({ each: true })
-	@Type(() => CreateSuperfoodNutritionalDto)
-	nutritionalContent?: CreateSuperfoodNutritionalDto[];
+	@ApiProperty({
+		type: CreateSuperfoodServingNutritionDto,
+		description: 'Contenido nutricional por porción',
+	})
+	@ValidateNested()
+	@Type(() => CreateSuperfoodServingNutritionDto)
+	servingNutrition!: CreateSuperfoodServingNutritionDto;
 
 	@ApiProperty({ type: [CreateSuperfoodOptionsDto], required: false })
 	@IsArray()

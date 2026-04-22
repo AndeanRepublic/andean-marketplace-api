@@ -16,7 +16,7 @@ import { RolesGuard } from '../../core/roles.guard';
 import { Roles } from '../../core/roles.decorator';
 import { AccountRole } from '../../../domain/enums/AccountRole';
 import { Public } from '../../core/public.decorator';
-import { TextileTypeResponse } from 'src/andean/app/modules/textile/TextileTypeResponse';
+import { TextileTypeResponse } from 'src/andean/app/models/textile/TextileTypeResponse';
 import { CreateTextileTypeUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileTypeUseCase';
 import { CreateManyTextileTypesUseCase } from 'src/andean/app/use_cases/textileProducts/CreateManyTextileTypesUseCase';
 import { TextileType } from 'src/andean/domain/entities/textileProducts/TextileType';
@@ -87,31 +87,33 @@ export class TextileTypeController {
 		return this.createTextileTypeUseCase.handle(body);
 	}
 
-	// @Put('/:id')
-	// @ApiOperation({
-	// 	summary: 'Actualizar tipo de textil',
-	// 	description: 'Actualiza los datos de un tipo de textil existente',
-	// })
-	// @ApiParam({
-	// 	name: 'id',
-	// 	description: 'ID del tipo',
-	// 	example: 'uuid-1234-5678',
-	// })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'Tipo actualizado exitosamente',
-	// 	type: TextileType,
-	// })
-	// @ApiResponse({
-	// 	status: 404,
-	// 	description: 'Tipo no encontrado',
-	// })
-	// async updateTextileType(
-	// 	@Param('id') id: string,
-	// 	@Body() body: CreateTextileTypeDto,
-	// ): Promise<TextileType> {
-	// 	return this.updateTextileTypeUseCase.handle(id, body);
-	// }
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Put('/:id')
+	@ApiOperation({
+		summary: 'Actualizar tipo de textil',
+		description: 'Actualiza los datos de un tipo de textil existente',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID del tipo',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Tipo actualizado exitosamente',
+		type: TextileType,
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Tipo no encontrado',
+	})
+	async updateTextileType(
+		@Param('id') id: string,
+		@Body() body: CreateTextileTypeDto,
+	): Promise<TextileType> {
+		return this.updateTextileTypeUseCase.handle(id, body);
+	}
 
 	@Public()
 	@Get()
@@ -128,49 +130,52 @@ export class TextileTypeController {
 		return this.getAllTextileTypesUseCase.handle();
 	}
 
-	// @Get('/:id')
-	// @ApiOperation({
-	// 	summary: 'Obtener tipo por ID',
-	// 	description: 'Retorna un tipo de textil específico por su ID',
-	// })
-	// @ApiParam({
-	// 	name: 'id',
-	// 	description: 'ID del tipo',
-	// 	example: 'uuid-1234-5678',
-	// })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'Tipo encontrado',
-	// 	type: TextileType,
-	// })
-	// @ApiResponse({
-	// 	status: 404,
-	// 	description: 'Tipo no encontrado',
-	// })
-	// async getByIdTextileType(@Param('id') id: string): Promise<TextileType> {
-	// 	return this.getByIdTextileTypeUseCase.handle(id);
-	// }
+	@Public()
+	@Get('/:id')
+	@ApiOperation({
+		summary: 'Obtener tipo por ID',
+		description: 'Retorna un tipo de textil específico por su ID',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID del tipo',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Tipo encontrado',
+		type: TextileType,
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Tipo no encontrado',
+	})
+	async getByIdTextileType(@Param('id') id: string): Promise<TextileType> {
+		return this.getByIdTextileTypeUseCase.handle(id);
+	}
 
-	// @Delete('/:id')
-	// @HttpCode(HttpStatus.NO_CONTENT)
-	// @ApiOperation({
-	// 	summary: 'Eliminar tipo de textil',
-	// 	description: 'Elimina un tipo de textil por su ID',
-	// })
-	// @ApiParam({
-	// 	name: 'id',
-	// 	description: 'ID del tipo a eliminar',
-	// 	example: 'uuid-1234-5678',
-	// })
-	// @ApiResponse({
-	// 	status: 204,
-	// 	description: 'Tipo eliminado exitosamente',
-	// })
-	// @ApiResponse({
-	// 	status: 404,
-	// 	description: 'Tipo no encontrado',
-	// })
-	// async deleteTextileType(@Param('id') id: string): Promise<void> {
-	// 	return this.deleteTextileTypeUseCase.handle(id);
-	// }
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Delete('/:id')
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@ApiOperation({
+		summary: 'Eliminar tipo de textil',
+		description: 'Elimina un tipo de textil por su ID',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID del tipo a eliminar',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 204,
+		description: 'Tipo eliminado exitosamente',
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Tipo no encontrado',
+	})
+	async deleteTextileType(@Param('id') id: string): Promise<void> {
+		return this.deleteTextileTypeUseCase.handle(id);
+	}
 }

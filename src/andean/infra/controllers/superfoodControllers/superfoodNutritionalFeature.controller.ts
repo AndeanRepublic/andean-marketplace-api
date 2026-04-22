@@ -2,6 +2,7 @@ import {
 	Controller,
 	Get,
 	Post,
+	Put,
 	Delete,
 	Body,
 	Param,
@@ -17,12 +18,13 @@ import { AccountRole } from '../../../domain/enums/AccountRole';
 import { Public } from '../../core/public.decorator';
 import { CreateSuperfoodNutritionalFeatureDto } from '../dto/superfoods/CreateSuperfoodNutritionalFeatureDto';
 import { CreateManySuperfoodNutritionalFeaturesDto } from '../dto/superfoods/CreateManySuperfoodNutritionalFeaturesDto';
-import { SuperfoodNutritionalFeatureResponse } from '../../../app/modules/superfoods/SuperfoodNutritionalFeatureResponse';
+import { SuperfoodNutritionalFeatureResponse } from '../../../app/models/superfoods/SuperfoodNutritionalFeatureResponse';
 import { CreateSuperfoodNutritionalFeatureUseCase } from '../../../app/use_cases/superfoods/nutritionalFeature/CreateSuperfoodNutritionalFeatureUseCase';
 import { CreateManySuperfoodNutritionalFeaturesUseCase } from '../../../app/use_cases/superfoods/nutritionalFeature/CreateManySuperfoodNutritionalFeaturesUseCase';
 import { GetSuperfoodNutritionalFeatureByIdUseCase } from '../../../app/use_cases/superfoods/nutritionalFeature/GetSuperfoodNutritionalFeatureByIdUseCase';
 import { ListSuperfoodNutritionalFeaturesUseCase } from '../../../app/use_cases/superfoods/nutritionalFeature/ListSuperfoodNutritionalFeaturesUseCase';
 import { DeleteSuperfoodNutritionalFeatureUseCase } from '../../../app/use_cases/superfoods/nutritionalFeature/DeleteSuperfoodNutritionalFeatureUseCase';
+import { UpdateSuperfoodNutritionalFeatureUseCase } from '../../../app/use_cases/superfoods/nutritionalFeature/UpdateSuperfoodNutritionalFeatureUseCase';
 
 @ApiTags('Superfood Nutritional Features')
 @Controller('superfood-nutritional-features')
@@ -33,10 +35,11 @@ export class SuperfoodNutritionalFeatureController {
 		private readonly getSuperfoodNutritionalFeatureByIdUseCase: GetSuperfoodNutritionalFeatureByIdUseCase,
 		private readonly listSuperfoodNutritionalFeaturesUseCase: ListSuperfoodNutritionalFeaturesUseCase,
 		private readonly deleteSuperfoodNutritionalFeatureUseCase: DeleteSuperfoodNutritionalFeatureUseCase,
+		private readonly updateSuperfoodNutritionalFeatureUseCase: UpdateSuperfoodNutritionalFeatureUseCase,
 	) {}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@Post('/bulk')
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -60,7 +63,7 @@ export class SuperfoodNutritionalFeatureController {
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -98,6 +101,85 @@ export class SuperfoodNutritionalFeatureController {
 		SuperfoodNutritionalFeatureResponse[]
 	> {
 		return await this.listSuperfoodNutritionalFeaturesUseCase.handle();
+	}
+
+	@Public()
+	@Get('/:id')
+	@ApiOperation({
+		summary: 'Obtener característica por ID',
+		description: 'Retorna una característica nutricional específica por su ID',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID de la característica',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Característica encontrada',
+		type: SuperfoodNutritionalFeatureResponse,
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Característica no encontrada',
+	})
+	async getNutritionalFeatureById(
+		@Param('id') id: string,
+	): Promise<SuperfoodNutritionalFeatureResponse> {
+		return await this.getSuperfoodNutritionalFeatureByIdUseCase.handle(id);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
+	@Put('/:id')
+	@ApiOperation({
+		summary: 'Actualizar característica nutricional',
+		description: 'Actualiza una característica nutricional por su ID',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID de la característica',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Característica actualizada exitosamente',
+		type: SuperfoodNutritionalFeatureResponse,
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Característica no encontrada',
+	})
+	async updateNutritionalFeature(
+		@Param('id') id: string,
+		@Body() dto: CreateSuperfoodNutritionalFeatureDto,
+	): Promise<SuperfoodNutritionalFeatureResponse> {
+		return await this.updateSuperfoodNutritionalFeatureUseCase.handle(id, dto);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
+	@Delete('/:id')
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@ApiOperation({
+		summary: 'Eliminar característica nutricional',
+		description: 'Elimina una característica nutricional por su ID',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID de la característica a eliminar',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 204,
+		description: 'Característica eliminada exitosamente',
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Característica no encontrada',
+	})
+	async deleteNutritionalFeature(@Param('id') id: string): Promise<void> {
+		await this.deleteSuperfoodNutritionalFeatureUseCase.handle(id);
 	}
 
 	// @Get('/:id')

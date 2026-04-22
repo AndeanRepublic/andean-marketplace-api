@@ -1,13 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, HttpStatus, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as request from 'supertest';
+import request from 'supertest';
 import { MediaItemController } from '../src/andean/infra/controllers/mediaItem.controller';
 import { UploadMediaItemUseCase } from '../src/andean/app/use_cases/media/UploadMediaItemUseCase';
 import { GetMediaItemByIdUseCase } from '../src/andean/app/use_cases/media/GetMediaItemByIdUseCase';
 import { ListMediaItemsUseCase } from '../src/andean/app/use_cases/media/ListMediaItemsUseCase';
 import { UpdateMediaItemUseCase } from '../src/andean/app/use_cases/media/UpdateMediaItemUseCase';
 import { DeleteMediaItemUseCase } from '../src/andean/app/use_cases/media/DeleteMediaItemUseCase';
+import { MediaUrlResolver } from '../src/andean/infra/services/media/MediaUrlResolver';
 import { MediaItemType } from '../src/andean/domain/enums/MediaItemType';
 import { MediaItemRole } from '../src/andean/domain/enums/MediaItemRole';
 import { FixtureLoader } from './helpers/fixture-loader';
@@ -67,6 +68,17 @@ describe('MediaItemController (e2e)', () => {
 				{
 					provide: ConfigService,
 					useValue: { get: jest.fn().mockReturnValue(storageBaseUrl) },
+				},
+				{
+					provide: MediaUrlResolver,
+					useValue: {
+						resolveKey: (key: string) =>
+							key?.startsWith('http')
+								? key
+								: `${storageBaseUrl.replace(/\/$/, '')}/${String(key || '').replace(/^\//, '')}`,
+						resolveUrl: jest.fn().mockResolvedValue(''),
+						resolveUrls: jest.fn().mockResolvedValue(new Map()),
+					},
 				},
 			],
 		})

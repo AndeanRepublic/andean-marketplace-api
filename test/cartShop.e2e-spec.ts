@@ -6,7 +6,7 @@ import {
 	ForbiddenException,
 	NotFoundException,
 } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { CartShopController } from '../src/andean/infra/controllers/cartShop.controller';
 import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';
 import {
@@ -33,6 +33,8 @@ describe('CartShopController (e2e)', () => {
 
 	// Mock responses using fixtures
 	const mockAddItemResponse = {
+		productId: textileFixtures.entity.id,
+		variantId: textileFixtures.variants[0].id,
 		ownerName: textileFixtures.shop.name,
 		title: textileFixtures.entity.baseInfo.title,
 		combinationVariant: textileFixtures.variants[0].combination,
@@ -48,6 +50,8 @@ describe('CartShopController (e2e)', () => {
 	const mockGetCartResponse = {
 		items: [
 			{
+				productId: textileFixtures.entity.id,
+				variantId: textileFixtures.variants[0].id,
 				ownerName: textileFixtures.shop.name,
 				title: textileFixtures.entity.baseInfo.title,
 				combinationVariant: textileFixtures.variants[0].combination,
@@ -60,6 +64,8 @@ describe('CartShopController (e2e)', () => {
 				productType: ProductType.TEXTILE,
 			},
 			{
+				productId: superfoodFixtures.superfood.id,
+				variantId: superfoodFixtures.variants[0].id,
 				ownerName: superfoodFixtures.community.name,
 				title: superfoodFixtures.superfood.baseInfo.title,
 				combinationVariant: superfoodFixtures.variants[0].combination,
@@ -87,7 +93,7 @@ describe('CartShopController (e2e)', () => {
 	// Mock response for adding a box item to the cart
 	const mockAddBoxItemResponse = {
 		ownerName: '',
-		title: boxFixtures.entity.title,
+		title: boxFixtures.entity.name,
 		combinationVariant: {},
 		thumbnailImgUrl: boxFixtures.entity.thumbnailImageId,
 		unitPrice: boxFixtures.entity.price,
@@ -129,7 +135,7 @@ describe('CartShopController (e2e)', () => {
 			},
 			{
 				ownerName: '',
-				title: boxFixtures.entity.title,
+				title: boxFixtures.entity.name,
 				combinationVariant: {},
 				thumbnailImgUrl: boxFixtures.entity.thumbnailImageId,
 				unitPrice: boxFixtures.entity.price,
@@ -398,7 +404,7 @@ describe('CartShopController (e2e)', () => {
 				.expect((res) => {
 					expect(res.body).toMatchObject({
 						ownerName: '',
-						title: boxFixtures.entity.title,
+						title: boxFixtures.entity.name,
 						combinationVariant: {},
 						unitPrice: boxFixtures.entity.price,
 						quantity: 1,
@@ -666,7 +672,7 @@ describe('CartShopController (e2e)', () => {
 					const boxItem = res.body.items[1];
 					expect(boxItem.productType).toBe(ProductType.BOX);
 					expect(boxItem.ownerName).toBe('');
-					expect(boxItem.title).toBe(boxFixtures.entity.title);
+					expect(boxItem.title).toBe(boxFixtures.entity.name);
 					expect(boxItem.combinationVariant).toEqual({});
 					expect(boxItem.quantity).toBe(1);
 					expect(boxItem.maxStock).toBe(1);

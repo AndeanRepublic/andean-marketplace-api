@@ -1,8 +1,9 @@
-import { ShoppingCartItemResponse } from '../../../app/modules/cart/ShoppingCartItemResponse';
-import { BoxContentItemResponse } from '../../../app/modules/cart/BoxContentItemResponse';
+import { ShoppingCartItemResponse } from '../../../app/models/cart/ShoppingCartItemResponse';
+import { CartColorOptionResponse } from '../../../app/models/cart/CartColorOptionResponse';
+import { BoxContentItemResponse } from '../../../app/models/cart/BoxContentItemResponse';
 import { CartItem } from '../../../domain/entities/CartItem';
 import { Variant } from '../../../domain/entities/Variant';
-import { ProductInfo } from '../../../domain/interfaces/ProductInfo';
+import { ProductInfo } from '../../../app/models/shared/ProductInfo';
 import { ProductType } from '../../../domain/enums/ProductType';
 
 /**
@@ -23,11 +24,15 @@ export class ShoppingCartItemMapper {
 		variant: Variant | null,
 		productInfo: ProductInfo,
 		ownerName: string,
+		colorOption?: CartColorOptionResponse | null,
 	): ShoppingCartItemResponse {
 		return {
+			productId: item.productId,
+			variantId: item.variantProductId ?? null,
 			ownerName,
 			title: productInfo.title,
 			combinationVariant: variant?.combination || {},
+			colorOption: colorOption ?? undefined,
 			thumbnailImgUrl: productInfo.thumbnailImgUrl,
 			unitPrice: item.unitPrice,
 			quantity: item.quantity,
@@ -40,23 +45,25 @@ export class ShoppingCartItemMapper {
 
 	/**
 	 * Transforma un CartItem de tipo BOX en ShoppingCartItemResponse.
-	 * Las cajas tienen quantity=1, maxStock=1, ownerName vacío y sin variante.
-	 * Incluye el contenido de la caja (boxContent) para mostrar productos internos.
+	 * ownerName vacío y sin variante; maxStock según disponibilidad de variantes internas.
 	 */
 	static toBoxResponse(
 		item: CartItem,
 		productInfo: ProductInfo,
 		boxContent: BoxContentItemResponse[],
+		maxStock: number,
 	): ShoppingCartItemResponse {
 		return {
+			productId: item.productId,
+			variantId: item.variantProductId ?? null,
 			ownerName: '',
 			title: productInfo.title,
 			combinationVariant: {},
 			thumbnailImgUrl: productInfo.thumbnailImgUrl,
 			unitPrice: item.unitPrice,
-			quantity: 1,
+			quantity: item.quantity,
 			idShoppingCartItem: item.id,
-			maxStock: 1,
+			maxStock,
 			isDiscountActive: false,
 			productType: ProductType.BOX,
 			boxContent,
@@ -75,11 +82,15 @@ export class ShoppingCartItemMapper {
 		productInfo: ProductInfo;
 		ownerName: string;
 		quantity: number;
+		colorOption?: CartColorOptionResponse | null;
 	}): ShoppingCartItemResponse {
 		return {
+			productId: params.variant.productId,
+			variantId: params.variant.id,
 			ownerName: params.ownerName,
 			title: params.productInfo.title,
 			combinationVariant: params.variant.combination,
+			colorOption: params.colorOption ?? undefined,
 			thumbnailImgUrl: params.productInfo.thumbnailImgUrl,
 			unitPrice: params.variant.price,
 			quantity: params.quantity,

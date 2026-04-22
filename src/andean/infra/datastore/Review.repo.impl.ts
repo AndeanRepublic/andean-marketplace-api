@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ReviewRepository } from '../../app/datastore/Review.repo';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -58,62 +58,138 @@ export class ReviewRepositoryImpl extends ReviewRepository {
 		return docs.map((doc) => ReviewMapper.fromDocument(doc));
 	}
 
-	async incrementLikes(id: string): Promise<Review> {
-		const objectId = MongoIdUtils.stringToObjectId(id);
+	async addLike(reviewId: string, userId: string): Promise<Review> {
+		const objectId = MongoIdUtils.stringToObjectId(reviewId);
 		const updated = await this.reviewModel
-			.findByIdAndUpdate(
-				objectId,
-				{ $inc: { numberLikes: 1 }, $set: { updatedAt: new Date() } },
+			.findOneAndUpdate(
+				{ _id: objectId },
+				[
+					{
+						$set: {
+							likedBy: {
+								$setUnion: [{ $ifNull: ['$likedBy', []] }, [userId]],
+							},
+							dislikedBy: {
+								$filter: {
+									input: { $ifNull: ['$dislikedBy', []] },
+									cond: { $ne: ['$$this', userId] },
+								},
+							},
+						},
+					},
+					{
+						$set: {
+							numberLikes: { $size: '$likedBy' },
+							numberDislikes: { $size: '$dislikedBy' },
+							updatedAt: '$$NOW',
+						},
+					},
+				],
 				{ new: true },
 			)
 			.exec();
 		if (!updated) {
-			throw new Error('Review not found');
+			throw new NotFoundException('Review not found');
 		}
 		return ReviewMapper.fromDocument(updated);
 	}
 
-	async incrementDislikes(id: string): Promise<Review> {
-		const objectId = MongoIdUtils.stringToObjectId(id);
+	async removeLike(reviewId: string, userId: string): Promise<Review> {
+		const objectId = MongoIdUtils.stringToObjectId(reviewId);
 		const updated = await this.reviewModel
-			.findByIdAndUpdate(
-				objectId,
-				{ $inc: { numberDislikes: 1 }, $set: { updatedAt: new Date() } },
+			.findOneAndUpdate(
+				{ _id: objectId },
+				[
+					{
+						$set: {
+							likedBy: {
+								$filter: {
+									input: { $ifNull: ['$likedBy', []] },
+									cond: { $ne: ['$$this', userId] },
+								},
+							},
+						},
+					},
+					{
+						$set: {
+							numberLikes: { $size: '$likedBy' },
+							updatedAt: '$$NOW',
+						},
+					},
+				],
 				{ new: true },
 			)
 			.exec();
 		if (!updated) {
-			throw new Error('Review not found');
+			throw new NotFoundException('Review not found');
 		}
 		return ReviewMapper.fromDocument(updated);
 	}
 
-	async decrementLikes(id: string): Promise<Review> {
-		const objectId = MongoIdUtils.stringToObjectId(id);
+	async addDislike(reviewId: string, userId: string): Promise<Review> {
+		const objectId = MongoIdUtils.stringToObjectId(reviewId);
 		const updated = await this.reviewModel
-			.findByIdAndUpdate(
-				objectId,
-				{ $inc: { numberLikes: -1 }, $set: { updatedAt: new Date() } },
+			.findOneAndUpdate(
+				{ _id: objectId },
+				[
+					{
+						$set: {
+							dislikedBy: {
+								$setUnion: [{ $ifNull: ['$dislikedBy', []] }, [userId]],
+							},
+							likedBy: {
+								$filter: {
+									input: { $ifNull: ['$likedBy', []] },
+									cond: { $ne: ['$$this', userId] },
+								},
+							},
+						},
+					},
+					{
+						$set: {
+							numberLikes: { $size: '$likedBy' },
+							numberDislikes: { $size: '$dislikedBy' },
+							updatedAt: '$$NOW',
+						},
+					},
+				],
 				{ new: true },
 			)
 			.exec();
 		if (!updated) {
-			throw new Error('Review not found');
+			throw new NotFoundException('Review not found');
 		}
 		return ReviewMapper.fromDocument(updated);
 	}
 
-	async decrementDislikes(id: string): Promise<Review> {
-		const objectId = MongoIdUtils.stringToObjectId(id);
+	async removeDislike(reviewId: string, userId: string): Promise<Review> {
+		const objectId = MongoIdUtils.stringToObjectId(reviewId);
 		const updated = await this.reviewModel
-			.findByIdAndUpdate(
-				objectId,
-				{ $inc: { numberDislikes: -1 }, $set: { updatedAt: new Date() } },
+			.findOneAndUpdate(
+				{ _id: objectId },
+				[
+					{
+						$set: {
+							dislikedBy: {
+								$filter: {
+									input: { $ifNull: ['$dislikedBy', []] },
+									cond: { $ne: ['$$this', userId] },
+								},
+							},
+						},
+					},
+					{
+						$set: {
+							numberDislikes: { $size: '$dislikedBy' },
+							updatedAt: '$$NOW',
+						},
+					},
+				],
 				{ new: true },
 			)
 			.exec();
 		if (!updated) {
-			throw new Error('Review not found');
+			throw new NotFoundException('Review not found');
 		}
 		return ReviewMapper.fromDocument(updated);
 	}

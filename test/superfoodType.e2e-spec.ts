@@ -5,6 +5,7 @@ import { CreateManySuperfoodTypesUseCase } from '../src/andean/app/use_cases/sup
 import { GetSuperfoodTypeByIdUseCase } from '../src/andean/app/use_cases/superfoods/type/GetSuperfoodTypeByIdUseCase';
 import { ListSuperfoodTypesUseCase } from '../src/andean/app/use_cases/superfoods/type/ListSuperfoodTypesUseCase';
 import { DeleteSuperfoodTypeUseCase } from '../src/andean/app/use_cases/superfoods/type/DeleteSuperfoodTypeUseCase';
+import { UpdateSuperfoodTypeUseCase } from '../src/andean/app/use_cases/superfoods/type/UpdateSuperfoodTypeUseCase';
 
 createSuperfoodSubResourceTests({
 	name: 'SuperfoodType',
@@ -17,6 +18,7 @@ createSuperfoodSubResourceTests({
 		getById: GetSuperfoodTypeByIdUseCase,
 		list: ListSuperfoodTypesUseCase,
 		delete: DeleteSuperfoodTypeUseCase,
+		update: UpdateSuperfoodTypeUseCase,
 	},
 	hasAlreadyExistsTest: true,
 	hasNotStringTest: true,

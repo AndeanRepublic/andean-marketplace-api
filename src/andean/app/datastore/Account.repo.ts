@@ -3,7 +3,7 @@ import { AccountStatus } from '../../domain/enums/AccountStatus';
 import { AccountRole } from '../../domain/enums/AccountRole';
 
 export abstract class AccountRepository {
-	abstract getAccountByUserId(userId: string): Promise<Account | null>;
+	abstract getAccountById(id: string): Promise<Account | null>;
 	abstract saveAccount(account: Account): Promise<Account>;
 	abstract getAccountByEmail(email: string): Promise<Account | null>;
 	abstract updateAccountStatus(
@@ -11,8 +11,11 @@ export abstract class AccountRepository {
 		status: AccountStatus,
 	): Promise<void>;
 	abstract updateAccountRoles(
-		userId: string,
+		accountId: string,
 		roles: AccountRole[],
 	): Promise<void>;
-	// deleteAccountByUserId(userId: string): Promise<void>;
+	abstract updatePassword(
+		accountId: string,
+		hashedPassword: string,
+	): Promise<void>;
 }

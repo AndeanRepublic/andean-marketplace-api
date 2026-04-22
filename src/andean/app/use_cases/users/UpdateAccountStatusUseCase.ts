@@ -7,12 +7,12 @@ import { Account } from '../../../domain/entities/Account';
 export class UpdateAccountStatusUseCase {
 	constructor(private readonly accountRepository: AccountRepository) {}
 
-	async handle(userId: string, dto: UpdateAccountStatusDto): Promise<void> {
+	async handle(accountId: string, dto: UpdateAccountStatusDto): Promise<void> {
 		const accountFound: Account | null =
-			await this.accountRepository.getAccountByUserId(userId);
+			await this.accountRepository.getAccountById(accountId);
 		if (!accountFound) {
 			throw new NotFoundException();
 		}
-		return this.accountRepository.updateAccountStatus(userId, dto.status);
+		return this.accountRepository.updateAccountStatus(accountId, dto.status);
 	}
 }

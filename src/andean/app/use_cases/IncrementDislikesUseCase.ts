@@ -1,6 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ReviewRepository } from '../datastore/Review.repo';
-import { Review } from 'src/andean/domain/entities/Review';
+import { VoteResult } from '../models/review/VoteResult';
 
 @Injectable()
 export class IncrementDislikesUseCase {
@@ -9,11 +9,22 @@ export class IncrementDislikesUseCase {
 		private readonly reviewRepository: ReviewRepository,
 	) {}
 
-	async handle(id: string): Promise<Review> {
-		const reviewFound = await this.reviewRepository.getById(id);
-		if (!reviewFound) {
+	async handle(reviewId: string, userId: string): Promise<VoteResult> {
+		const review = await this.reviewRepository.addDislike(reviewId, userId);
+		if (!review) {
 			throw new NotFoundException('Review not found');
 		}
-		return this.reviewRepository.incrementDislikes(id);
+
+		const userVote = review.likedBy?.includes(userId)
+			? 'like'
+			: review.dislikedBy?.includes(userId)
+				? 'dislike'
+				: null;
+
+		return {
+			numberLikes: review.numberLikes,
+			numberDislikes: review.numberDislikes,
+			userVote,
+		};
 	}
 }

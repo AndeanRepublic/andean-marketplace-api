@@ -13,7 +13,8 @@ import { TextileProductRepository } from '../../datastore/textileProducts/Textil
 import { SuperfoodProductRepository } from '../../datastore/superfoods/SuperfoodProduct.repo';
 import { ProductType } from '../../../domain/enums/ProductType';
 import { AccountRole } from '../../../domain/enums/AccountRole';
-import { CartItemQuantityResponse } from '../../modules/cart/CartItemQuantityResponse';
+import { CartItemQuantityResponse } from '../../models/cart/CartItemQuantityResponse';
+import { BoxCartAvailabilityService } from '../../../infra/services/cart/BoxCartAvailabilityService';
 
 @Injectable()
 export class UpdateCartItemQuantityUseCase {
@@ -30,6 +31,7 @@ export class UpdateCartItemQuantityUseCase {
 		private readonly textileProductRepository: TextileProductRepository,
 		@Inject(SuperfoodProductRepository)
 		private readonly superfoodProductRepository: SuperfoodProductRepository,
+		private readonly boxCartAvailability: BoxCartAvailabilityService,
 	) {}
 
 	async handle(
@@ -93,6 +95,10 @@ export class UpdateCartItemQuantityUseCase {
 					throw new NotFoundException('SuperfoodProduct not found');
 				}
 				maxStock = product.priceInventory.totalStock;
+			} else if (cartItem.productType === ProductType.BOX) {
+				maxStock = await this.boxCartAvailability.maxSellableForBoxId(
+					cartItem.productId,
+				);
 			} else {
 				throw new BadRequestException(
 					`ProductType ${cartItem.productType} is not supported for stock retrieval`,

@@ -1,7 +1,7 @@
 import { SuperfoodCertificationDocument } from '../../persistence/superfood/superfoodCertification.schema';
 import { SuperfoodCertification } from '../../../domain/entities/superfoods/SuperfoodCertification';
 import { CreateSuperfoodCertificationDto } from '../../controllers/dto/superfoods/CreateSuperfoodCertificationDto';
-import { SuperfoodCertificationResponse } from '../../../app/modules/superfoods/SuperfoodCertificationResponse';
+import { SuperfoodCertificationResponse } from '../../../app/models/superfoods/SuperfoodCertificationResponse';
 import { MongoIdUtils } from '../../utils/MongoIdUtils';
 import { Types } from 'mongoose';
 
@@ -17,6 +17,7 @@ export class SuperfoodCertificationMapper {
 		return new SuperfoodCertification(
 			MongoIdUtils.objectIdToString(plain._id), // ObjectId → string
 			plain.name,
+			plain.certifyingEntity,
 			plain.createdAt,
 			plain.updatedAt,
 		);
@@ -28,6 +29,7 @@ export class SuperfoodCertificationMapper {
 		return new SuperfoodCertification(
 			new Types.ObjectId().toString(), // Generar ObjectId temporal como string
 			dto.name,
+			dto.certifyingEntity,
 			new Date(),
 			new Date(),
 		);
@@ -39,6 +41,7 @@ export class SuperfoodCertificationMapper {
 		return {
 			id: entity.id,
 			name: entity.name,
+			certifyingEntity: entity.certifyingEntity,
 			createdAt: entity.createdAt!,
 			updatedAt: entity.updatedAt!,
 		};
@@ -51,6 +54,7 @@ export class SuperfoodCertificationMapper {
 	static toPersistence(entity: SuperfoodCertification): any {
 		return {
 			name: entity.name,
+			certifyingEntity: entity.certifyingEntity,
 			createdAt: entity.createdAt || new Date(),
 			updatedAt: entity.updatedAt || new Date(),
 		};

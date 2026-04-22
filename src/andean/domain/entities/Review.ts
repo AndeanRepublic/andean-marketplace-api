@@ -4,8 +4,8 @@ export class Review {
 	constructor(
 		public id: string,
 		public content: string,
-		public numberStarts: number,
-		public customerId: string,
+		public numberStars: number,
+		public accountId: string,
 		public productId: string,
 		public productType: ProductType,
 		public numberLikes: number,
@@ -13,5 +13,7 @@ export class Review {
 		public createdAt: Date,
 		public updatedAt: Date,
 		public mediaId?: string,
-	) { }
+		public likedBy?: string[],
+		public dislikedBy?: string[],
+	) {}
 }

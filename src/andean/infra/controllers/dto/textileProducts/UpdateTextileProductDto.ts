@@ -3,10 +3,11 @@ import { IsEnum, IsOptional } from 'class-validator';
 import { TextileProductStatus } from 'src/andean/domain/enums/TextileProductStatus';
 import { CreateTextileProductDto } from './CreateTextileProductDto';
 
+/** Igual que crear: incluye categoryId obligatorio; status es opcional (si no se envía se mantiene el actual). */
 export class UpdateTextileProductDto extends CreateTextileProductDto {
 	@ApiPropertyOptional({
 		description:
-			'Estado del producto: PUBLISHED, PENDING, SOLD_OUT, HIDDEN. Si no se envía, se mantiene el actual.',
+			'Estado del producto: PUBLISHED u HIDDEN. Si no se envía, se mantiene el actual.',
 		enum: TextileProductStatus,
 	})
 	@IsEnum(TextileProductStatus)

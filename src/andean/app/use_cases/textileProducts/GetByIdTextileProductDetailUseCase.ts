@@ -1,9 +1,10 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { TextileProductRepository } from '../../datastore/textileProducts/TextileProduct.repo';
 import {
+	OwnerInfoResponse,
 	TextileProductDetailResponse,
 	TraceabilityInfoResponse,
-} from '../../modules/textile/TextileProductDetailResponse';
+} from '../../models/textile/TextileProductDetailResponse';
 import { ProductType } from '../../../domain/enums/ProductType';
 import { OwnerType } from '../../../domain/enums/OwnerType';
 import { ReviewRepository } from '../../datastore/Review.repo';
@@ -17,8 +18,10 @@ import { AccountRepository } from '../../datastore/Account.repo';
 import { Review } from 'src/andean/domain/entities/Review';
 import { MediaItemRepository } from '../../datastore/MediaItem.repo';
 import { TextileProductAttributesAssembler } from '../../../infra/services/textileProducts/TextileProductAttributesAssembler';
-import { MediaUrlResolver } from '../../../infra/services/textileProducts/MediaUrlResolver';
+import { MediaUrlResolver } from '../../../infra/services/media/MediaUrlResolver';
 import { TraceabilityProcessName } from '../../../domain/enums/TraceabilityProcessName';
+import { TextileProduct } from 'src/andean/domain/entities/textileProducts/TextileProduct';
+import { OwnerInfoResolver } from '../../../infra/services/owner/OwnerInfoResolver';
 
 @Injectable()
 export class GetByIdTextileProductDetailUseCase {
@@ -45,6 +48,7 @@ export class GetByIdTextileProductDetailUseCase {
 		private readonly mediaItemRepository: MediaItemRepository,
 		private readonly mediaUrlResolver: MediaUrlResolver,
 		private readonly textileProductAttributesAssembler: TextileProductAttributesAssembler,
+		private readonly ownerInfoResolver: OwnerInfoResolver,
 	) {}
 
 	async handle(id: string): Promise<TextileProductDetailResponse> {
@@ -59,10 +63,13 @@ export class GetByIdTextileProductDetailUseCase {
 		const mediaItems = await this.mediaItemRepository.getByIds(
 			product.baseInfo.mediaIds || [],
 		);
+		const imageUrlById = await this.mediaUrlResolver.resolveUrls(
+			mediaItems.map((mediaItem) => mediaItem.id),
+		);
 		const images = mediaItems.map((mediaItem) => ({
 			name: mediaItem.name,
 			role: mediaItem.role,
-			url: `${process.env.STORAGE_BASE_URL || ''}/${mediaItem.key}`,
+			url: imageUrlById.get(mediaItem.id) ?? '',
 		}));
 
 		// -- Obtener reviews del producto
@@ -71,16 +78,9 @@ export class GetByIdTextileProductDetailUseCase {
 			ProductType.TEXTILE,
 		);
 
-		// -- Obtener customers para las reviews y sus nombres de Account
-		const customerPromises = reviews.map((review) =>
-			this.customerProfileRepository.getCustomerById(review.customerId),
-		);
-		const customers = await Promise.all(customerPromises);
-
-		const accountPromises = customers.map((customer) =>
-			customer
-				? this.accountRepository.getAccountByUserId(customer.userId)
-				: Promise.resolve(null),
+		// -- Obtener accounts para las reviews
+		const accountPromises = reviews.map((review) =>
+			this.accountRepository.getAccountById(review.accountId),
 		);
 		const accounts = await Promise.all(accountPromises);
 
@@ -92,7 +92,7 @@ export class GetByIdTextileProductDetailUseCase {
 			idReview: review.id,
 			nameUser: accounts[index]?.name || 'Usuario Anónimo',
 			content: review.content,
-			numberStarts: review.numberStarts,
+			numberStars: review.numberStars,
 			date: review.createdAt,
 			likes: review.numberLikes,
 			dislikes: review.numberDislikes,
@@ -129,48 +129,11 @@ export class GetByIdTextileProductDetailUseCase {
 			product.categoryId,
 		);
 
-		// -- Obtener communityInfo si es COMMUNITY
-		let communityInfo:
-			| {
-					bannerImageUrl: string;
-					name: string;
-					seals: { title: string; description: string; logoMediaId: string }[];
-			  }
-			| undefined = undefined;
-		if (product.baseInfo.ownerType === OwnerType.COMMUNITY) {
-			const community = await this.communityRepository.getById(
+		const ownerInfo: OwnerInfoResponse | undefined =
+			await this.ownerInfoResolver.resolveDetailed(
+				product.baseInfo.ownerType,
 				product.baseInfo.ownerId,
 			);
-			if (community) {
-				const seals = community.seals
-					? await Promise.all(
-							community.seals.map((sealId) =>
-								this.sealRepository.getById(sealId),
-							),
-						)
-					: [];
-
-				let bannerImageUrl = '';
-				if (community.bannerImageId) {
-					const urlMap = await this.mediaUrlResolver.resolveUrls([
-						community.bannerImageId,
-					]);
-					bannerImageUrl = urlMap.get(community.bannerImageId) ?? '';
-				}
-
-				communityInfo = {
-					bannerImageUrl,
-					name: community.name,
-					seals: seals
-						.filter((seal): seal is NonNullable<typeof seal> => seal !== null)
-						.map((seal) => ({
-							title: seal.name,
-							description: seal.description,
-							logoMediaId: seal.logoMediaId,
-						})),
-				};
-			}
-		}
 
 		// -- Obtener category name
 		let categoryName = '';
@@ -197,7 +160,7 @@ export class GetByIdTextileProductDetailUseCase {
 				comments,
 			},
 			similarProducts,
-			...(communityInfo && { communityInfo }),
+			...(ownerInfo && { ownerInfo }),
 		};
 	}
 
@@ -206,7 +169,7 @@ export class GetByIdTextileProductDetailUseCase {
 		let totalStars = 0;
 
 		reviews.forEach((review) => {
-			const stars = review.numberStarts;
+			const stars = review.numberStars;
 			if (stars >= 1 && stars <= 5) {
 				counts[stars as keyof typeof counts]++;
 				totalStars += stars;
@@ -299,23 +262,56 @@ export class GetByIdTextileProductDetailUseCase {
 			stock: number;
 		}[]
 	> {
-		if (!categoryId) {
-			return [];
-		}
-
+		const SIMILAR_LIMIT = 4;
 		const allProducts =
 			await this.textileProductRepository.getAllTextileProducts();
-		const similarProducts = allProducts.filter(
-			(p) => p.id !== currentProductId && p.categoryId === categoryId,
-		);
-		const limitedProducts = similarProducts.slice(0, 5);
+
+		const selectedIds = new Set<string>();
+		const limitedProducts: TextileProduct[] = [];
+
+		if (categoryId) {
+			const sameCategory = allProducts.filter(
+				(p) => p.id !== currentProductId && p.categoryId === categoryId,
+			);
+			for (const p of sameCategory.slice(0, SIMILAR_LIMIT)) {
+				selectedIds.add(p.id);
+				limitedProducts.push(p);
+			}
+		}
+
+		if (limitedProducts.length < SIMILAR_LIMIT) {
+			const need = SIMILAR_LIMIT - limitedProducts.length;
+			const fillers = allProducts
+				.filter((p) => p.id !== currentProductId && !selectedIds.has(p.id))
+				.slice(0, need);
+			for (const p of fillers) {
+				selectedIds.add(p.id);
+				limitedProducts.push(p);
+			}
+		}
 
 		if (limitedProducts.length === 0) {
 			return [];
 		}
 
-		const category =
-			await this.textileCategoryRepository.getCategoryById(categoryId);
+		const uniqueCategoryIds = [
+			...new Set(
+				limitedProducts
+					.map((p) => p.categoryId)
+					.filter((cid): cid is string => Boolean(cid)),
+			),
+		];
+		const categories = await Promise.all(
+			uniqueCategoryIds.map((cid) =>
+				this.textileCategoryRepository.getCategoryById(cid),
+			),
+		);
+		const categoryNameById = new Map<string, string>();
+		for (const cat of categories) {
+			if (cat) {
+				categoryNameById.set(cat.id, cat.name);
+			}
+		}
 
 		const allVariants = (
 			await Promise.all(
@@ -351,7 +347,9 @@ export class GetByIdTextileProductDetailUseCase {
 				return {
 					id: product.id,
 					title: product.baseInfo.title,
-					categoryName: category?.name || '',
+					categoryName: product.categoryId
+						? (categoryNameById.get(product.categoryId) ?? '')
+						: '',
 					productorName,
 					variantInfo: attrs.variantInfo,
 					principalImgUrl: product.baseInfo.mediaIds?.[0] || '',

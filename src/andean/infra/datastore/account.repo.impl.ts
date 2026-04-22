@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { AccountRepository } from '../../app/datastore/Account.repo';
 import { InjectModel } from '@nestjs/mongoose';
 import { AccountDocument } from '../persistence/account.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Account } from '../../domain/entities/Account';
 import { AccountMapper } from '../services/AccountMapper';
 import { HashService } from '../services/HashService';
@@ -19,16 +19,16 @@ export class AccountRepoImpl extends AccountRepository {
 		super();
 	}
 
-	async getAccountByUserId(userId: string): Promise<Account | null> {
-		const doc = await this.accountModel.findOne({ userId }).exec();
+	async getAccountById(id: string): Promise<Account | null> {
+		// Convertir string a ObjectId para MongoDB
+		const objectId = new Types.ObjectId(id);
+		const doc = await this.accountModel.findById(objectId).exec();
 		return doc ? AccountMapper.fromDocument(doc) : null;
 	}
 
 	async saveAccount(account: Account): Promise<Account> {
 		const hashedPassword = await this.hashService.hash(account.password);
 		const created = new this.accountModel({
-			_id: crypto.randomUUID(),
-			userId: account.userId,
 			name: account.name,
 			email: account.email,
 			password: hashedPassword,
@@ -36,14 +36,7 @@ export class AccountRepoImpl extends AccountRepository {
 			status: account.status,
 		});
 		const savedAccount = await created.save();
-		return new Account(
-			savedAccount.userId,
-			savedAccount.name,
-			savedAccount.email,
-			savedAccount.password,
-			savedAccount.status,
-			savedAccount.type,
-		);
+		return AccountMapper.fromDocument(savedAccount);
 	}
 
 	async getAccountByEmail(email: string): Promise<Account | null> {
@@ -52,18 +45,27 @@ export class AccountRepoImpl extends AccountRepository {
 	}
 
 	async updateAccountStatus(
-		userId: string,
+		accountId: string,
 		status: AccountStatus,
 	): Promise<void> {
-		await this.accountModel.findOneAndUpdate({ userId }, { status }).exec();
+		await this.accountModel.findByIdAndUpdate(accountId, { status }).exec();
 	}
 
 	async updateAccountRoles(
-		userId: string,
+		accountId: string,
 		roles: AccountRole[],
 	): Promise<void> {
 		await this.accountModel
-			.findOneAndUpdate({ userId }, { type: roles })
+			.findByIdAndUpdate(accountId, { type: roles })
+			.exec();
+	}
+
+	async updatePassword(
+		accountId: string,
+		hashedPassword: string,
+	): Promise<void> {
+		await this.accountModel
+			.findByIdAndUpdate(accountId, { password: hashedPassword })
 			.exec();
 	}
 }

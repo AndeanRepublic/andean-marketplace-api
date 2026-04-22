@@ -6,7 +6,7 @@ import {
 	ForbiddenException,
 	NotFoundException,
 } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { TextileProductController } from '../src/andean/infra/controllers/textileProductControllers';
 import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';
 import { RolesGuard } from '../src/andean/infra/core/roles.guard';
@@ -17,6 +17,7 @@ import {
 } from './helpers/auth-test.helper';
 import { CreateTextileProductUseCase } from '../src/andean/app/use_cases/textileProducts/CreateTextileProductUseCase';
 import { GetAllTextileProductsUseCase } from '../src/andean/app/use_cases/textileProducts/GetAllTextileProductsUseCase';
+import { GetAllTextileProductsForManagementUseCase } from '../src/andean/app/use_cases/textileProducts/GetAllTextileProductsForManagementUseCase';
 import { GetByIdTextileProductUseCase } from '../src/andean/app/use_cases/textileProducts/GetByIdTextileProductUseCase';
 import { UpdateTextileProductUseCase } from '../src/andean/app/use_cases/textileProducts/UpdateTextileProductUseCase';
 import { DeleteTextileProductUseCase } from '../src/andean/app/use_cases/textileProducts/DeleteTextileProductUseCase';
@@ -60,6 +61,8 @@ import { GetByIdColorOptionAlternativeUseCase } from '../src/andean/app/use_case
 import { DeleteColorOptionAlternativeUseCase } from '../src/andean/app/use_cases/textileProducts/DeleteColorOptionAlternativeUseCase';
 import { CreateManyColorOptionAlternativesUseCase } from '../src/andean/app/use_cases/textileProducts/CreateManyColorOptionAlternativesUseCase';
 import { GetByIdTextileProductDetailUseCase } from '../src/andean/app/use_cases/textileProducts/GetByIdTextileProductDetailUseCase';
+import { GetTextileProductForSellerUseCase } from '../src/andean/app/use_cases/textileProducts/GetTextileProductForSellerUseCase';
+import { UpdateTextileProductStatusUseCase } from '../src/andean/app/use_cases/textileProducts/UpdateTextileProductStatusUseCase';
 import { FixtureLoader } from './helpers/fixture-loader';
 
 /**
@@ -120,6 +123,12 @@ describe('TextileProductController (e2e)', () => {
 					},
 				},
 				{
+					provide: GetAllTextileProductsForManagementUseCase,
+					useValue: {
+						handle: jest.fn().mockResolvedValue(mockPaginatedResponse),
+					},
+				},
+				{
 					provide: GetByIdTextileProductUseCase,
 					useValue: { handle: jest.fn().mockResolvedValue(mockTextileProduct) },
 				},
@@ -145,6 +154,14 @@ describe('TextileProductController (e2e)', () => {
 				{
 					provide: GetByIdTextileProductDetailUseCase,
 					useValue: { handle: jest.fn().mockResolvedValue(mockDetailResponse) },
+				},
+				{
+					provide: GetTextileProductForSellerUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue(mockTextileProduct) },
+				},
+				{
+					provide: UpdateTextileProductStatusUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue(mockTextileProduct) },
 				},
 				// ── Category use cases ──────────────────────────────────────────
 				{
@@ -303,7 +320,9 @@ describe('TextileProductController (e2e)', () => {
 	});
 
 	afterAll(async () => {
-		await app.close();
+		if (app) {
+			await app.close();
+		}
 	});
 	afterEach(() => {
 		jest.clearAllMocks();
@@ -355,6 +374,16 @@ describe('TextileProductController (e2e)', () => {
 				.send({
 					...createDto,
 					baseInfo: { ...createDto.baseInfo, title: undefined },
+				})
+				.expect(HttpStatus.BAD_REQUEST);
+		});
+
+		it('should return 400 when baseInfo.information is empty', () => {
+			return request(app.getHttpServer())
+				.post('/textile-products')
+				.send({
+					...createDto,
+					baseInfo: { ...createDto.baseInfo, information: '   ' },
 				})
 				.expect(HttpStatus.BAD_REQUEST);
 		});
@@ -1092,6 +1121,12 @@ describe('TextileProductController (e2e)', () => {
 						},
 					},
 					{
+						provide: GetAllTextileProductsForManagementUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockPaginatedResponse),
+						},
+					},
+					{
 						provide: GetByIdTextileProductUseCase,
 						useValue: {
 							handle: jest.fn().mockResolvedValue(mockTextileProduct),
@@ -1112,6 +1147,16 @@ describe('TextileProductController (e2e)', () => {
 						useValue: {
 							handle: jest.fn().mockResolvedValue(mockDetailResponse),
 						},
+					},
+					{
+						provide: GetTextileProductForSellerUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockTextileProduct),
+						},
+					},
+					{
+						provide: UpdateTextileProductStatusUseCase,
+						useValue: { handle: jest.fn().mockResolvedValue(mockTextileProduct) },
 					},
 					{
 						provide: CreateTextileCategoryUseCase,
@@ -1424,6 +1469,12 @@ describe('TextileProductController (e2e)', () => {
 						},
 					},
 					{
+						provide: GetAllTextileProductsForManagementUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockPaginatedResponse),
+						},
+					},
+					{
 						provide: GetByIdTextileProductUseCase,
 						useValue: {
 							handle: jest.fn().mockResolvedValue(mockTextileProduct),
@@ -1444,6 +1495,16 @@ describe('TextileProductController (e2e)', () => {
 						useValue: {
 							handle: jest.fn().mockResolvedValue(mockDetailResponse),
 						},
+					},
+					{
+						provide: GetTextileProductForSellerUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockTextileProduct),
+						},
+					},
+					{
+						provide: UpdateTextileProductStatusUseCase,
+						useValue: { handle: jest.fn().mockResolvedValue(mockTextileProduct) },
 					},
 					{
 						provide: CreateTextileCategoryUseCase,

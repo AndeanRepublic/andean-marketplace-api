@@ -20,4 +20,13 @@ export class CreateSuperfoodCertificationDto {
 	@IsString()
 	@IsOptional()
 	icon?: string;
+
+	@ApiProperty({
+		description: 'Entidad certificadora',
+		example: 'USDA Organic',
+		required: false,
+	})
+	@IsString()
+	@IsOptional()
+	certifyingEntity?: string;
 }

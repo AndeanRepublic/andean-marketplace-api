@@ -3,12 +3,12 @@ import {
 	Get,
 	Post,
 	Patch,
+	Put,
 	Delete,
 	Body,
 	Param,
 	HttpCode,
 	HttpStatus,
-	Inject,
 	UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../core/jwtAuth.guard';
@@ -26,6 +26,7 @@ import { Public } from '../core/public.decorator';
 import { CreateCommunityUseCase } from '../../app/use_cases/community/CreateCommunityUseCase';
 import { UpdateCommunityUseCase } from '../../app/use_cases/community/UpdateCommunityUseCase';
 import { GetCommunityByIdUseCase } from '../../app/use_cases/community/GetCommunityByIdUseCase';
+import type { CommunityWithProviderInfo } from '../../app/use_cases/community/GetCommunityByIdUseCase';
 import { ListCommunityUseCase } from '../../app/use_cases/community/ListCommunityUseCase';
 import { DeleteCommunityUseCase } from '../../app/use_cases/community/DeleteCommunityUseCase';
 import { CreateSealUseCase } from '../../app/use_cases/community/CreateSealUseCase';
@@ -38,13 +39,18 @@ import { CreateCommunityDto } from './dto/community/CreateCommunityDto';
 import { UpdateCommunityDto } from './dto/community/UpdateCommunityDto';
 import { CreateSealDto } from './dto/community/CreateSealDto';
 import { CreateManySealsDto } from './dto/community/CreateManySealsDto';
-import { CommunityResponse } from '../../app/modules/community/CommunityResponse';
-import { SealResponse } from '../../app/modules/community/SealResponse';
+import { CommunityResponse } from '../../app/models/community/CommunityResponse';
+import { CommunityDetailResponse } from '../../app/models/community/CommunityDetailResponse';
+import { SealResponse } from '../../app/models/community/SealResponse';
 import { Community } from '../../domain/entities/community/Community';
 import { Seal } from '../../domain/entities/community/Seal';
+import { ProviderInfo } from '../../domain/entities/ProviderInfo';
+import { MediaUrlResolver } from '../services/media/MediaUrlResolver';
+import { UpdateCommunityStatusUseCase } from '../../app/use_cases/community/UpdateCommunityStatusUseCase';
+import { UpdateEntityStatusDto } from './dto/UpdateEntityStatusDto';
 
-const path_seals = '/seals';
-const path_seals_id = '/seals/:id';
+const path_seals = 'seals';
+const path_seals_id = 'seals/:id';
 
 @ApiTags('Communities')
 @Controller('communities')
@@ -61,6 +67,8 @@ export class CommunityController {
 		private readonly getByIdSealUseCase: GetByIdSealUseCase,
 		private readonly updateSealUseCase: UpdateSealUseCase,
 		private readonly deleteSealUseCase: DeleteSealUseCase,
+		private readonly mediaUrlResolver: MediaUrlResolver,
+		private readonly updateCommunityStatusUseCase: UpdateCommunityStatusUseCase,
 	) {}
 
 	@Public()
@@ -74,12 +82,51 @@ export class CommunityController {
 		description: 'Lista de sellos',
 		type: [SealResponse],
 	})
-	async getAllSeals(): Promise<Seal[]> {
-		return this.getAllSealsUseCase.handle();
+	async getAllSeals(): Promise<SealResponse[]> {
+		const seals = await this.getAllSealsUseCase.handle();
+		return Promise.all(seals.map((seal) => this.toSealResponse(seal)));
+	}
+
+	@Public()
+	@Get(path_seals_id)
+	@ApiOperation({ summary: 'Obtener sello por ID' })
+	@ApiParam({ name: 'id', description: 'Sello ID' })
+	@ApiResponse({ status: 200, description: 'Sello encontrado', type: SealResponse })
+	@ApiResponse({ status: 404, description: 'Sello no encontrado' })
+	async getByIdSeal(@Param('id') id: string): Promise<SealResponse> {
+		const seal = await this.getByIdSealUseCase.handle(id);
+		return this.toSealResponse(seal);
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
+	@Put(path_seals_id)
+	@ApiOperation({ summary: 'Actualizar sello' })
+	@ApiParam({ name: 'id', description: 'Sello ID' })
+	@ApiResponse({ status: 200, description: 'Sello actualizado', type: SealResponse })
+	@ApiResponse({ status: 404, description: 'Sello no encontrado' })
+	async updateSeal(
+		@Param('id') id: string,
+		@Body() body: CreateSealDto,
+	): Promise<SealResponse> {
+		const seal = await this.updateSealUseCase.handle(id, body);
+		return this.toSealResponse(seal);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
+	@Delete(path_seals_id)
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@ApiOperation({ summary: 'Eliminar sello' })
+	@ApiParam({ name: 'id', description: 'Sello ID' })
+	@ApiResponse({ status: 204, description: 'Sello eliminado' })
+	@ApiResponse({ status: 404, description: 'Sello no encontrado' })
+	async deleteSeal(@Param('id') id: string): Promise<void> {
+		return this.deleteSealUseCase.handle(id);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({ summary: 'Create a new community' })
@@ -98,21 +145,6 @@ export class CommunityController {
 	}
 
 	@Public()
-	@Get(':id')
-	@ApiOperation({ summary: 'Get community by ID' })
-	@ApiParam({ name: 'id', description: 'Community ID' })
-	@ApiResponse({
-		status: 200,
-		description: 'The community has been found.',
-		type: CommunityResponse,
-	})
-	@ApiResponse({ status: 404, description: 'Community not found.' })
-	async getById(@Param('id') id: string): Promise<CommunityResponse> {
-		const community = await this.getCommunityByIdUseCase.execute(id);
-		return this.toResponse(community);
-	}
-
-	@Public()
 	@Get()
 	@ApiOperation({ summary: 'List all communities' })
 	@ApiResponse({
@@ -125,15 +157,30 @@ export class CommunityController {
 		return communities.map((c) => this.toResponse(c));
 	}
 
+	@Public()
+	@Get(':id')
+	@ApiOperation({ summary: 'Get community by ID (detalle para edición)' })
+	@ApiParam({ name: 'id', description: 'Community ID' })
+	@ApiResponse({
+		status: 200,
+		description: 'The community has been found.',
+		type: CommunityDetailResponse,
+	})
+	@ApiResponse({ status: 404, description: 'Community not found.' })
+	async getById(@Param('id') id: string): Promise<CommunityDetailResponse> {
+		const community = await this.getCommunityByIdUseCase.execute(id);
+		return this.toDetailResponse(community);
+	}
+
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@Patch(':id')
 	@ApiOperation({ summary: 'Update community' })
 	@ApiParam({ name: 'id', description: 'Community ID' })
 	@ApiResponse({
 		status: 200,
 		description: 'The community has been successfully updated.',
-		type: CommunityResponse,
+		type: CommunityDetailResponse,
 	})
 	@ApiResponse({ status: 404, description: 'Community not found.' })
 	@ApiResponse({
@@ -143,24 +190,40 @@ export class CommunityController {
 	async update(
 		@Param('id') id: string,
 		@Body() dto: UpdateCommunityDto,
-	): Promise<CommunityResponse> {
-		const community = await this.updateCommunityUseCase.execute(id, dto);
-		return this.toResponse(community);
+	): Promise<CommunityDetailResponse> {
+		await this.updateCommunityUseCase.execute(id, dto);
+		const community = await this.getCommunityByIdUseCase.execute(id);
+		return this.toDetailResponse(community);
 	}
-
-	// @Delete(':id')
-	// @HttpCode(HttpStatus.NO_CONTENT)
-	// @ApiOperation({ summary: 'Delete community' })
-	// @ApiParam({ name: 'id', description: 'Community ID' })
-	// @ApiResponse({ status: 204, description: 'The community has been deleted.' })
-	// @ApiResponse({ status: 404, description: 'Community not found.' })
-	// async delete(@Param('id') id: string): Promise<void> {
-	// 	await this.deleteCommunityUseCase.execute(id);
-	// }
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
-	@Post(`${path_seals}/bulk`)
+	@Patch(':id/status')
+	@ApiOperation({ summary: 'Update community status' })
+	async updateStatus(
+		@Param('id') id: string,
+		@Body() dto: UpdateEntityStatusDto,
+	): Promise<CommunityDetailResponse> {
+		await this.updateCommunityStatusUseCase.execute(id, dto.status);
+		const community = await this.getCommunityByIdUseCase.execute(id);
+		return this.toDetailResponse(community);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Delete(':id')
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@ApiOperation({ summary: 'Delete community' })
+	@ApiParam({ name: 'id', description: 'Community ID' })
+	@ApiResponse({ status: 204, description: 'The community has been deleted.' })
+	@ApiResponse({ status: 404, description: 'Community not found.' })
+	async delete(@Param('id') id: string): Promise<void> {
+		await this.deleteCommunityUseCase.execute(id);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Post(`/${path_seals}/bulk`)
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
 		summary: 'Crear múltiples sellos',
@@ -175,13 +238,14 @@ export class CommunityController {
 	})
 	@ApiResponse({ status: 400, description: 'Datos de entrada inválidos' })
 	@ApiResponse({ status: 404, description: 'MediaItem no encontrado' })
-	async createManySeals(@Body() body: CreateManySealsDto): Promise<Seal[]> {
-		return this.createManySealsUseCase.handle(body);
+	async createManySeals(@Body() body: CreateManySealsDto): Promise<SealResponse[]> {
+		const seals = await this.createManySealsUseCase.handle(body);
+		return Promise.all(seals.map((seal) => this.toSealResponse(seal)));
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
-	@Post(path_seals)
+	@Post(`/${path_seals}`)
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
 		summary: 'Crear un nuevo sello',
@@ -196,34 +260,76 @@ export class CommunityController {
 	})
 	@ApiResponse({ status: 400, description: 'Datos de entrada inválidos' })
 	@ApiResponse({ status: 404, description: 'MediaItem no encontrado' })
-	async createSeal(@Body() body: CreateSealDto): Promise<Seal> {
-		return this.createSealUseCase.handle(body);
+	async createSeal(@Body() body: CreateSealDto): Promise<SealResponse> {
+		const seal = await this.createSealUseCase.handle(body);
+		return this.toSealResponse(seal);
 	}
-
-	// @Get(path_seals_id)
-	// async getByIdSeal(@Param('id') id: string): Promise<Seal> {
-	// 	return this.getByIdSealUseCase.handle(id);
-	// }
-
-	// @Put(path_seals_id)
-	// async updateSeal(
-	// 	@Param('id') id: string,
-	// 	@Body() body: CreateSealDto,
-	// ): Promise<Seal> {
-	// 	return this.updateSealUseCase.handle(id, body);
-	// }
-
-	// @Delete(path_seals_id)
-	// async deleteSeal(@Param('id') id: string): Promise<void> {
-	// 	return this.deleteSealUseCase.handle(id);
-	// }
 
 	private toResponse(community: Community): CommunityResponse {
 		return {
 			id: community.id,
 			name: community.name,
+			status: community.status,
 			createdAt: community.createdAt,
 			updatedAt: community.updatedAt,
+		};
+	}
+
+	private async toDetailResponse(
+		data: CommunityWithProviderInfo,
+	): Promise<CommunityDetailResponse> {
+		const base = this.toResponse(data);
+		return {
+			...base,
+			bannerImageId: data.bannerImageId,
+			bannerImageUrl: await this.mediaUrlResolver.resolveUrl(data.bannerImageId),
+			seals: data.seals ?? [],
+			providerInfo: data.providerInfo
+				? this.providerInfoToPlain(data.providerInfo)
+				: undefined,
+		};
+	}
+
+	private async toSealResponse(seal: Seal): Promise<SealResponse> {
+		return {
+			id: seal.id,
+			name: seal.name,
+			description: seal.description,
+			logoMediaId: seal.logoMediaId,
+			logoUrl: await this.mediaUrlResolver.resolveUrl(seal.logoMediaId),
+		};
+	}
+
+	private providerInfoToPlain(p: ProviderInfo): Record<string, unknown> {
+		return {
+			craftType: p.craftType,
+			tagline: p.tagline,
+			shortBio: p.shortBio,
+			originPlace: p.originPlace,
+			testimonialsOrAwards: p.testimonialsOrAwards,
+			workplacePhotoMediaId: p.workplacePhotoMediaId,
+			presentationVideoMediaId: p.presentationVideoMediaId,
+			isPartOfOrganization: p.isPartOfOrganization,
+			organizationName: p.organizationName,
+			memberCount: p.memberCount,
+			exactLocation: p.exactLocation,
+			contactAddress: p.contactAddress,
+			contactPhone: p.contactPhone,
+			contactEmail: p.contactEmail,
+			spokenLanguages: p.spokenLanguages,
+			hasInternetAccess: p.hasInternetAccess,
+			connectionTypes: p.connectionTypes,
+			extendedStory: p.extendedStory,
+			foundingYear: p.foundingYear,
+			projectTimeline: p.projectTimeline,
+			womenArtisanPercentage: p.womenArtisanPercentage,
+			includesPeopleWithDisabilities: p.includesPeopleWithDisabilities,
+			hasYouthInvolvement: p.hasYouthInvolvement,
+			indirectBeneficiaryChildren: p.indirectBeneficiaryChildren,
+			averageArtisanAge: p.averageArtisanAge,
+			parallelActivities: p.parallelActivities,
+			programParticipation: p.programParticipation,
+			trainingReceived: p.trainingReceived,
 		};
 	}
 }

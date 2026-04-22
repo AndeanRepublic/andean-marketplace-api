@@ -3,13 +3,12 @@ import { BoxRepository } from '../../../app/datastore/box/Box.repo';
 import { SuperfoodProductRepository } from '../../../app/datastore/superfoods/SuperfoodProduct.repo';
 import { TextileProductRepository } from '../../../app/datastore/textileProducts/TextileProduct.repo';
 import { VariantRepository } from '../../../app/datastore/Variant.repo';
-import { BoxContentItemResponse } from '../../../app/modules/cart/BoxContentItemResponse';
+import { BoxContentItemResponse } from '../../../app/models/cart/BoxContentItemResponse';
 import { ProductType } from '../../../domain/enums/ProductType';
 
 /**
  * Resuelve el contenido de una caja (Box) para el contexto del carrito.
- * Retorna la lista de productos contenidos con su título y tipo,
- * para que el front pueda asignar el icono correspondiente (textile/superfood).
+ * Cada línea referencia una variante (superfood o textil).
  */
 @Injectable()
 export class BoxCartContentResolver {
@@ -24,11 +23,6 @@ export class BoxCartContentResolver {
 		private readonly variantRepository: VariantRepository,
 	) {}
 
-	/**
-	 * Dado un boxId, resuelve los productos contenidos en la caja.
-	 * - Si el BoxProduct tiene productId → es un Superfood.
-	 * - Si el BoxProduct tiene variantId → es un Textile (se busca la variante y luego el producto).
-	 */
 	async resolve(boxId: string): Promise<BoxContentItemResponse[]> {
 		const box = await this.boxRepository.getById(boxId);
 		if (!box) return [];
@@ -36,10 +30,17 @@ export class BoxCartContentResolver {
 		const items: BoxContentItemResponse[] = [];
 
 		for (const boxProduct of box.products) {
-			if (boxProduct.productId) {
+			if (!boxProduct.variantId) continue;
+
+			const variant = await this.variantRepository.getById(
+				boxProduct.variantId,
+			);
+			if (!variant) continue;
+
+			if (variant.productType === ProductType.SUPERFOOD) {
 				const superfood =
 					await this.superfoodProductRepository.getSuperfoodProductById(
-						boxProduct.productId,
+						variant.productId,
 					);
 				if (superfood) {
 					items.push({
@@ -47,21 +48,16 @@ export class BoxCartContentResolver {
 						productType: ProductType.SUPERFOOD,
 					});
 				}
-			} else if (boxProduct.variantId) {
-				const variant = await this.variantRepository.getById(
-					boxProduct.variantId,
-				);
-				if (variant) {
-					const textile =
-						await this.textileProductRepository.getTextileProductById(
-							variant.productId,
-						);
-					if (textile) {
-						items.push({
-							title: textile.baseInfo?.title || '',
-							productType: ProductType.TEXTILE,
-						});
-					}
+			} else if (variant.productType === ProductType.TEXTILE) {
+				const textile =
+					await this.textileProductRepository.getTextileProductById(
+						variant.productId,
+					);
+				if (textile) {
+					items.push({
+						title: textile.baseInfo?.title || '',
+						productType: ProductType.TEXTILE,
+					});
 				}
 			}
 		}

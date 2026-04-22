@@ -2,6 +2,7 @@ import {
 	Controller,
 	Get,
 	Post,
+	Put,
 	Delete,
 	Body,
 	Param,
@@ -17,12 +18,13 @@ import { AccountRole } from '../../../domain/enums/AccountRole';
 import { Public } from '../../core/public.decorator';
 import { CreateSuperfoodTypeDto } from '../dto/superfoods/CreateSuperfoodTypeDto';
 import { CreateManySuperfoodTypesDto } from '../dto/superfoods/CreateManySuperfoodTypesDto';
-import { SuperfoodTypeResponse } from '../../../app/modules/superfoods/SuperfoodTypeResponse';
+import { SuperfoodTypeResponse } from '../../../app/models/superfoods/SuperfoodTypeResponse';
 import { CreateSuperfoodTypeUseCase } from '../../../app/use_cases/superfoods/type/CreateSuperfoodTypeUseCase';
 import { CreateManySuperfoodTypesUseCase } from '../../../app/use_cases/superfoods/type/CreateManySuperfoodTypesUseCase';
 import { GetSuperfoodTypeByIdUseCase } from '../../../app/use_cases/superfoods/type/GetSuperfoodTypeByIdUseCase';
 import { ListSuperfoodTypesUseCase } from '../../../app/use_cases/superfoods/type/ListSuperfoodTypesUseCase';
 import { DeleteSuperfoodTypeUseCase } from '../../../app/use_cases/superfoods/type/DeleteSuperfoodTypeUseCase';
+import { UpdateSuperfoodTypeUseCase } from '../../../app/use_cases/superfoods/type/UpdateSuperfoodTypeUseCase';
 
 @ApiTags('Superfood Types')
 @Controller('superfood-types')
@@ -33,10 +35,11 @@ export class SuperfoodTypeController {
 		private readonly getSuperfoodTypeByIdUseCase: GetSuperfoodTypeByIdUseCase,
 		private readonly listSuperfoodTypesUseCase: ListSuperfoodTypesUseCase,
 		private readonly deleteSuperfoodTypeUseCase: DeleteSuperfoodTypeUseCase,
+		private readonly updateSuperfoodTypeUseCase: UpdateSuperfoodTypeUseCase,
 	) {}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@Post('/bulk')
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -60,7 +63,7 @@ export class SuperfoodTypeController {
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -95,6 +98,83 @@ export class SuperfoodTypeController {
 	})
 	async listTypes(): Promise<SuperfoodTypeResponse[]> {
 		return await this.listSuperfoodTypesUseCase.handle();
+	}
+
+	@Public()
+	@Get('/:id')
+	@ApiOperation({
+		summary: 'Obtener tipo por ID',
+		description: 'Retorna un tipo específico por su ID',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID del tipo',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Tipo encontrado',
+		type: SuperfoodTypeResponse,
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Tipo no encontrado',
+	})
+	async getTypeById(@Param('id') id: string): Promise<SuperfoodTypeResponse> {
+		return await this.getSuperfoodTypeByIdUseCase.handle(id);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
+	@Put('/:id')
+	@ApiOperation({
+		summary: 'Actualizar tipo',
+		description: 'Actualiza un tipo de superfood por su ID',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID del tipo',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Tipo actualizado exitosamente',
+		type: SuperfoodTypeResponse,
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Tipo no encontrado',
+	})
+	async updateType(
+		@Param('id') id: string,
+		@Body() dto: CreateSuperfoodTypeDto,
+	): Promise<SuperfoodTypeResponse> {
+		return await this.updateSuperfoodTypeUseCase.handle(id, dto);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
+	@Delete('/:id')
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@ApiOperation({
+		summary: 'Eliminar tipo',
+		description: 'Elimina un tipo de superfood por su ID',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID del tipo a eliminar',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 204,
+		description: 'Tipo eliminado exitosamente',
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Tipo no encontrado',
+	})
+	async deleteType(@Param('id') id: string): Promise<void> {
+		await this.deleteSuperfoodTypeUseCase.handle(id);
 	}
 
 	// @Get('/:id')

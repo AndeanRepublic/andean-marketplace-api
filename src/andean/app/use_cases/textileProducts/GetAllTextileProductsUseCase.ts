@@ -1,11 +1,11 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import {
 	TextileProductRepository,
 	ProductFilters,
 } from '../../datastore/textileProducts/TextileProduct.repo';
-import { MediaUrlResolver } from '../../../infra/services/textileProducts/MediaUrlResolver';
-import { PaginatedProductsResponse } from '../../modules/shared/PaginatedProductsResponse';
-import { TextileProductListItem } from '../../modules/textile/TextileProductListItemResponse';
+import { MediaUrlResolver } from '../../../infra/services/media/MediaUrlResolver';
+import { PaginatedProductsResponse } from '../../models/shared/PaginatedProductsResponse';
+import { TextileProductListItem } from '../../models/textile/TextileProductListItemResponse';
 
 @Injectable()
 export class GetAllTextileProductsUseCase {
@@ -26,10 +26,6 @@ export class GetAllTextileProductsUseCase {
 				this.textileProductRepository.getFilterCounts(),
 			]);
 
-			if (products.length === 0) {
-				throw new NotFoundException('No textile products found');
-			}
-
 			const enrichedProducts = await this.enrichPrincipalImgUrls(products);
 
 			return {
@@ -48,12 +44,6 @@ export class GetAllTextileProductsUseCase {
 			this.textileProductRepository.getAllWithFilters(filters),
 			this.textileProductRepository.getFilterCounts(filters),
 		]);
-
-		if (products.length === 0) {
-			throw new NotFoundException(
-				'No textile products found with the specified filters',
-			);
-		}
 
 		const page = filters.page || 1;
 		const perPage = filters.perPage || 10;

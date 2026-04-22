@@ -2,21 +2,29 @@ import { Injectable } from '@nestjs/common';
 import { SuperfoodProductRepository } from '../../../app/datastore/superfoods/SuperfoodProduct.repo';
 import { VariantRepository } from '../../../app/datastore/Variant.repo';
 import { TextileProductRepository } from '../../../app/datastore/textileProducts/TextileProduct.repo';
-import { CommunityRepository } from '../../../app/datastore/community/community.repo';
 import { MediaItemRepository } from '../../../app/datastore/MediaItem.repo';
 import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
 import { Variant } from '../../../domain/entities/Variant';
 import { TextileProduct } from '../../../domain/entities/textileProducts/TextileProduct';
-import { Community } from '../../../domain/entities/community/Community';
 import { MediaItem } from '../../../domain/entities/MediaItem';
 import { Box, BoxProduct } from '../../../domain/entities/box/Box';
-import { BoxImageResponse } from '../../../app/modules/box/BoxImageResponse';
+import { ProductType } from '../../../domain/enums/ProductType';
+import { BoxImageResponse } from '../../../app/models/box/BoxImageResponse';
+import { MediaUrlResolver } from '../media/MediaUrlResolver';
+import { TextileVariantPickerMediaService } from './TextileVariantPickerMediaService';
+
+/** Variantes + media del box (miniatura). Para listado sin catálogo padre. */
+export interface BoxListDependencies {
+	superfoodMap: Map<string, SuperfoodProduct>;
+	textileMap: Map<string, TextileProduct>;
+	variantMap: Map<string, Variant>;
+	mediaMap: Map<string, MediaItem>;
+}
 
 export interface BoxDependencies {
 	superfoodMap: Map<string, SuperfoodProduct>;
 	variantMap: Map<string, Variant>;
 	textileMap: Map<string, TextileProduct>;
-	communityMap: Map<string, Community>;
 	mediaMap: Map<string, MediaItem>;
 }
 
@@ -26,78 +34,137 @@ export class BoxProductResolutionService {
 		private readonly superfoodProductRepository: SuperfoodProductRepository,
 		private readonly variantRepository: VariantRepository,
 		private readonly textileProductRepository: TextileProductRepository,
-		private readonly communityRepository: CommunityRepository,
 		private readonly mediaItemRepository: MediaItemRepository,
+		private readonly mediaUrlResolver: MediaUrlResolver,
+		private readonly textileVariantPickerMediaService: TextileVariantPickerMediaService,
 	) {}
 
 	/**
-	 * Bulk fetch all dependencies needed to resolve box products
-	 * Uses parallel queries and $in operator to minimize database roundtrips
+	 * Solo variantes y media de miniatura del box (listado).
+	 */
+	async bulkFetchBoxDependenciesForList(
+		boxes: Box[],
+	): Promise<BoxListDependencies> {
+		const variantIds = new Set<string>();
+		const allMediaIds = new Set<string>();
+
+		for (const box of boxes) {
+			allMediaIds.add(box.thumbnailImageId);
+			for (const product of box.products) {
+				if (product.variantId) variantIds.add(product.variantId);
+			}
+		}
+
+		const variants =
+			variantIds.size > 0
+				? await this.variantRepository.getByIds([...variantIds])
+				: [];
+		const variantMap = new Map<string, Variant>(variants.map((v) => [v.id, v]));
+
+		const textileProductIds = new Set<string>();
+		const superfoodProductIds = new Set<string>();
+		for (const variant of variants) {
+			if (!variant.productId) continue;
+			if (variant.productType === ProductType.TEXTILE) {
+				textileProductIds.add(variant.productId);
+			} else if (variant.productType === ProductType.SUPERFOOD) {
+				superfoodProductIds.add(variant.productId);
+			}
+		}
+
+		const [textiles, superfoods] = await Promise.all([
+			this.textileProductRepository.getByIds([...textileProductIds]),
+			this.superfoodProductRepository.getByIds([...superfoodProductIds]),
+		]);
+
+		const superfoodMap = new Map<string, SuperfoodProduct>(
+			superfoods.map((s) => [s.id, s]),
+		);
+		const textileMap = new Map<string, TextileProduct>(
+			textiles.map((t) => [t.id, t]),
+		);
+
+		for (const superfood of superfoods) {
+			const mainId = superfood.baseInfo?.productMedia?.mainImgId?.trim();
+			if (mainId) allMediaIds.add(mainId);
+		}
+		for (const textile of textiles) {
+			if (textile.baseInfo?.mediaIds?.length) {
+				const mediaId = textile.baseInfo.mediaIds[0]?.trim();
+				if (mediaId) allMediaIds.add(mediaId);
+			}
+		}
+
+		const mediaItems =
+			allMediaIds.size > 0
+				? await this.mediaItemRepository.getByIds([...allMediaIds])
+				: [];
+		const mediaMap = new Map<string, MediaItem>(
+			mediaItems.map((m) => [m.id, m]),
+		);
+
+		return { superfoodMap, textileMap, variantMap, mediaMap };
+	}
+
+	/**
+	 * Bulk para detalle: variantes, padres catálogo, media (box, líneas, sellos, productos).
 	 */
 	async bulkFetchBoxDependencies(boxes: Box[]): Promise<BoxDependencies> {
-		// 1. Collect all unique IDs across all boxes
-		const allSuperfoodIds = new Set<string>();
-		const allVariantIds = new Set<string>();
+		const variantIds = new Set<string>();
 		const allMediaIds = new Set<string>();
 
 		for (const box of boxes) {
 			allMediaIds.add(box.thumbnailImageId);
 			allMediaIds.add(box.mainImageId);
 			for (const product of box.products) {
-				if (product.productId) allSuperfoodIds.add(product.productId);
-				if (product.variantId) allVariantIds.add(product.variantId);
+				if (product.variantId) variantIds.add(product.variantId);
+				const nar = product.narrativeImgId?.trim();
+				if (nar) allMediaIds.add(nar);
 			}
 		}
 
-		// 2. Bulk fetch superfoods and variants in parallel
-		const [superfoods, variants] = await Promise.all([
-			this.superfoodProductRepository.getByIds([...allSuperfoodIds]),
-			this.variantRepository.getByIds([...allVariantIds]),
+		const variants =
+			variantIds.size > 0
+				? await this.variantRepository.getByIds([...variantIds])
+				: [];
+		const variantMap = new Map<string, Variant>(variants.map((v) => [v.id, v]));
+
+		const textileProductIds = new Set<string>();
+		const superfoodProductIds = new Set<string>();
+		for (const variant of variants) {
+			if (!variant.productId) continue;
+			if (variant.productType === ProductType.TEXTILE) {
+				textileProductIds.add(variant.productId);
+			} else if (variant.productType === ProductType.SUPERFOOD) {
+				superfoodProductIds.add(variant.productId);
+			}
+		}
+
+		const [textiles, superfoods] = await Promise.all([
+			this.textileProductRepository.getByIds([...textileProductIds]),
+			this.superfoodProductRepository.getByIds([...superfoodProductIds]),
 		]);
 
 		const superfoodMap = new Map<string, SuperfoodProduct>(
 			superfoods.map((s) => [s.id, s]),
 		);
-		const variantMap = new Map<string, Variant>(variants.map((v) => [v.id, v]));
-
-		// 3. Collect textile IDs from resolved variants + owner IDs + media IDs
-		const allTextileIds = new Set<string>();
-		const allOwnerIds = new Set<string>();
-
-		for (const superfood of superfoods) {
-			if (superfood.baseInfo?.ownerId)
-				allOwnerIds.add(superfood.baseInfo.ownerId);
-			if (superfood.baseInfo?.mediaIds?.length)
-				allMediaIds.add(superfood.baseInfo.mediaIds[0]);
-		}
-		for (const variant of variants) {
-			if (variant.productId) allTextileIds.add(variant.productId);
-		}
-
-		// 4. Bulk fetch textiles
-		const textiles = await this.textileProductRepository.getByIds([
-			...allTextileIds,
-		]);
 		const textileMap = new Map<string, TextileProduct>(
 			textiles.map((t) => [t.id, t]),
 		);
 
-		// 5. Collect owner/media IDs from textiles
+		for (const superfood of superfoods) {
+			const mainId = superfood.baseInfo?.productMedia?.mainImgId?.trim();
+			if (mainId) allMediaIds.add(mainId);
+		}
 		for (const textile of textiles) {
-			if (textile.baseInfo?.ownerId) allOwnerIds.add(textile.baseInfo.ownerId);
 			if (textile.baseInfo?.mediaIds?.length)
 				allMediaIds.add(textile.baseInfo.mediaIds[0]);
 		}
 
-		// 6. Bulk fetch communities and media items in parallel
-		const [communities, mediaItems] = await Promise.all([
-			this.communityRepository.getByIds([...allOwnerIds]),
-			this.mediaItemRepository.getByIds([...allMediaIds]),
-		]);
-
-		const communityMap = new Map<string, Community>(
-			communities.map((c) => [c.id, c]),
-		);
+		const mediaItems =
+			allMediaIds.size > 0
+				? await this.mediaItemRepository.getByIds([...allMediaIds])
+				: [];
 		const mediaMap = new Map<string, MediaItem>(
 			mediaItems.map((m) => [m.id, m]),
 		);
@@ -106,45 +173,70 @@ export class BoxProductResolutionService {
 			superfoodMap,
 			variantMap,
 			textileMap,
-			communityMap,
 			mediaMap,
 		};
 	}
 
-	/**
-	 * Resolve media item to image response
-	 */
 	resolveImage(
 		mediaId: string | undefined,
 		mediaMap: Map<string, MediaItem>,
 	): BoxImageResponse {
 		if (!mediaId) return { url: '', name: '' };
 		const media = mediaMap.get(mediaId);
-		return media ? { url: media.key, name: media.name } : { url: '', name: '' };
+		return media
+			? { url: this.mediaUrlResolver.resolveKey(media.key), name: media.name }
+			: { url: '', name: '' };
 	}
 
-	/**
-	 * Get superfood product price
-	 */
-	getSuperfoodPrice(superfood: SuperfoodProduct): number {
-		return superfood.priceInventory?.basePrice || 0;
-	}
-
-	/**
-	 * Get variant price
-	 */
 	getVariantPrice(variant: Variant): number {
 		return variant.price;
 	}
 
-	/**
-	 * Resolve community name from owner ID
-	 */
-	resolveCommunityName(
-		ownerId: string | undefined,
-		communityMap: Map<string, Community>,
+	resolveLinePrice(product: BoxProduct, catalogPrice: number): number {
+		if (
+			product.boxPrice != null &&
+			!Number.isNaN(product.boxPrice) &&
+			product.boxPrice > 0
+		) {
+			return product.boxPrice;
+		}
+		return catalogPrice;
+	}
+
+	resolveListProductThumbnailUrl(
+		variant: Variant,
+		textileMap: Map<string, TextileProduct>,
+		superfoodMap: Map<string, SuperfoodProduct>,
+		mediaMap: Map<string, MediaItem>,
 	): string {
-		if (!ownerId) return '';
-		return communityMap.get(ownerId)?.name || '';
+		// Priority 1: variant image when available (textile picker heuristic)
+		if (variant.productType === ProductType.TEXTILE) {
+			const textile = textileMap.get(variant.productId);
+			if (textile) {
+				const variantMediaId =
+					this.textileVariantPickerMediaService.resolveVariantMainMediaId(
+						textile,
+						variant,
+					);
+				if (variantMediaId) {
+					return this.resolveImage(variantMediaId, mediaMap).url;
+				}
+			}
+		}
+
+		// Priority 2: fallback to product image
+		if (variant.productType === ProductType.SUPERFOOD) {
+			const superfood = superfoodMap.get(variant.productId);
+			const mediaId = superfood?.baseInfo?.productMedia?.mainImgId?.trim();
+			return mediaId ? this.resolveImage(mediaId, mediaMap).url : '';
+		}
+
+		if (variant.productType === ProductType.TEXTILE) {
+			const textile = textileMap.get(variant.productId);
+			const mediaId = textile?.baseInfo?.mediaIds?.[0]?.trim();
+			return mediaId ? this.resolveImage(mediaId, mediaMap).url : '';
+		}
+
+		return '';
 	}
 }

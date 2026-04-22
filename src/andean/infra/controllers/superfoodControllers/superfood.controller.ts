@@ -1,7 +1,9 @@
 import {
 	Controller,
+	DefaultValuePipe,
 	Get,
 	Post,
+	Patch,
 	Put,
 	Delete,
 	Body,
@@ -32,12 +34,16 @@ import { CreateSuperfoodProductUseCase } from '../../../app/use_cases/superfoods
 import { UpdateSuperfoodProductUseCase } from '../../../app/use_cases/superfoods/UpdateSuperfoodProductUseCase';
 import { DeleteSuperfoodProductUseCase } from '../../../app/use_cases/superfoods/DeleteSuperfoodProductUseCase';
 import { GetAllSuperfoodProductsUseCase } from '../../../app/use_cases/superfoods/GetAllSuperfoodProductsUseCase';
-import { PaginatedProductsResponse } from '../../../app/modules/shared/PaginatedProductsResponse';
-import { SuperfoodProductListItem } from '../../../app/modules/superfoods/SuperfoodProductListItem';
-import { PaginatedSuperfoodProductsResponse } from '../../../app/modules/superfoods/PaginatedSuperfoodProductsResponse';
+import { GetAllSuperfoodProductsForManagementUseCase } from '../../../app/use_cases/superfoods/GetAllSuperfoodProductsForManagementUseCase';
+import { PaginatedProductsResponse } from '../../../app/models/shared/PaginatedProductsResponse';
+import { SuperfoodProductListItem } from '../../../app/models/superfoods/SuperfoodProductListItem';
+import { PaginatedSuperfoodProductsResponse } from '../../../app/models/superfoods/PaginatedSuperfoodProductsResponse';
 import { ProductSortBy } from '../../../domain/enums/ProductSortBy';
 import { GetByIdSuperfoodProductDetailUseCase } from '../../../app/use_cases/superfoods/GetByIdSuperfoodProductDetailUseCase';
-import { SuperfoodProductDetailResponse } from '../../../app/modules/superfoods/SuperfoodProductDetailResponse';
+import { GetSuperfoodProductByIdUseCase } from '../../../app/use_cases/superfoods/GetSuperfoodProductByIdUseCase';
+import { SuperfoodProductDetailResponse } from '../../../app/models/superfoods/SuperfoodProductDetailResponse';
+import { UpdateSuperfoodStatusUseCase } from '../../../app/use_cases/superfoods/UpdateSuperfoodStatusUseCase';
+import { UpdateSuperfoodStatusDto } from '../dto/superfoods/UpdateSuperfoodStatusDto';
 
 @ApiTags('Superfoods')
 @Controller('superfoods')
@@ -45,9 +51,12 @@ export class SuperfoodController {
 	constructor(
 		private readonly createSuperfoodProductUseCase: CreateSuperfoodProductUseCase,
 		private readonly getAllSuperfoodProductsUseCase: GetAllSuperfoodProductsUseCase,
+		private readonly getAllSuperfoodProductsForManagementUseCase: GetAllSuperfoodProductsForManagementUseCase,
 		private readonly updateSuperfoodProductUseCase: UpdateSuperfoodProductUseCase,
 		private readonly deleteSuperfoodProductUseCase: DeleteSuperfoodProductUseCase,
 		private readonly getByIdSuperfoodProductDetailUseCase: GetByIdSuperfoodProductDetailUseCase,
+		private readonly getSuperfoodProductByIdUseCase: GetSuperfoodProductByIdUseCase,
+		private readonly updateSuperfoodStatusUseCase: UpdateSuperfoodStatusUseCase,
 	) {}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
@@ -167,12 +176,74 @@ export class SuperfoodController {
 		);
 	}
 
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
+	@Get('management')
+	@ApiOperation({
+		summary: 'Listar superfoods para dashboard (admin)',
+		description:
+			'Lista paginada incluyendo stock 0 y cualquier estado (PUBLISHED/HIDDEN). Para el catálogo público usar GET /superfoods.',
+	})
+	@ApiQuery({
+		name: 'page',
+		required: false,
+		type: Number,
+		description: 'Número de página (por defecto: 1)',
+		example: 1,
+	})
+	@ApiQuery({
+		name: 'per_page',
+		required: false,
+		type: Number,
+		description: 'Items por página (por defecto: 10)',
+		example: 10,
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista paginada para gestión',
+		type: PaginatedSuperfoodProductsResponse,
+	})
+	async getAllSuperfoodProductsForManagement(
+		@Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+		@Query('per_page', new DefaultValuePipe(10), ParseIntPipe) perPage: number,
+	): Promise<PaginatedProductsResponse<SuperfoodProductListItem>> {
+		return this.getAllSuperfoodProductsForManagementUseCase.handle(
+			page,
+			perPage,
+		);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Get(':productId/edit')
+	@ApiOperation({
+		summary: 'Obtener producto superfood para edición',
+		description:
+			'Devuelve el documento completo (baseInfo, priceInventory, detailProduct, etc.) para hidratar el formulario de administración. Requiere rol vendedor o admin.',
+	})
+	@ApiParam({
+		name: 'productId',
+		description: 'ID único del producto superfood',
+		example: '6973d8ffddef7b59c2d4dcfb',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Entidad persistida lista para edición',
+		type: SuperfoodProduct,
+	})
+	@ApiResponse({ status: 404, description: 'Producto no encontrado' })
+	async getSuperfoodForEdit(
+		@Param('productId') productId: string,
+	): Promise<SuperfoodProduct> {
+		return this.getSuperfoodProductByIdUseCase.handle(productId);
+	}
+
 	@Public()
 	@Get('/:productId')
 	@ApiOperation({
-		summary: 'Obtener detalle completo de producto superfood por ID',
+		summary: 'Obtener detalle de producto superfood por ID (vista pública)',
 		description:
-			'Retorna toda la información completa de un producto superfood específico incluyendo imágenes por rol, hero detail, owner, beneficios, información nutricional, trazabilidad, productos similares y reviews',
+			'Información para ficha de producto: imágenes, hero, owner, beneficios con URLs, color de catálogo, productTraceability (blockchain/epochs), similares y reseñas. Sin payload interno de edición.',
 	})
 	@ApiParam({
 		name: 'productId',
@@ -229,6 +300,22 @@ export class SuperfoodController {
 		return this.updateSuperfoodProductUseCase.handle(
 			productId,
 			dto,
+			requestingUser.userId,
+			requestingUser.roles,
+		);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Patch('/:productId/status')
+	async updateSuperfoodStatus(
+		@Param('productId') productId: string,
+		@Body() dto: UpdateSuperfoodStatusDto,
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
+	): Promise<SuperfoodProduct> {
+		return this.updateSuperfoodStatusUseCase.handle(
+			productId,
+			dto.status,
 			requestingUser.userId,
 			requestingUser.roles,
 		);

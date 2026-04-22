@@ -1,6 +1,5 @@
 import {
 	BadRequestException,
-	ForbiddenException,
 	Inject,
 	Injectable,
 	NotFoundException,
@@ -19,11 +18,13 @@ import { TextileCertificationRepository } from '../../datastore/textileProducts/
 import { ShopRepository } from '../../datastore/Shop.repo';
 import { OriginProductCommunityRepository } from '../../datastore/originProductCommunity.repo';
 import { OwnerType } from 'src/andean/domain/enums/OwnerType';
+import { SellerResourceAccessService } from 'src/andean/infra/services/seller/SellerResourceAccessService';
 import { CommunityRepository } from '../../datastore/community/community.repo';
 import { ColorOptionAlternativeRepository } from '../../datastore/textileProducts/ColorOptionAlternative.repo';
 import { SizeOptionAlternativeRepository } from '../../datastore/textileProducts/SizeOptionAlternative.repo';
-import { SellerProfileRepository } from '../../datastore/Seller.repo';
 import { AccountRole } from 'src/andean/domain/enums/AccountRole';
+import { MediaItemRepository } from '../../datastore/MediaItem.repo';
+import { validateTextileProductBaseInfoMedia } from './validateTextileProductBaseInfoMedia';
 
 @Injectable()
 export class UpdateTextileProductUseCase {
@@ -52,8 +53,9 @@ export class UpdateTextileProductUseCase {
 		private readonly colorOptionAlternativeRepository: ColorOptionAlternativeRepository,
 		@Inject(SizeOptionAlternativeRepository)
 		private readonly sizeOptionAlternativeRepository: SizeOptionAlternativeRepository,
-		@Inject(SellerProfileRepository)
-		private readonly sellerProfileRepository: SellerProfileRepository,
+		@Inject(MediaItemRepository)
+		private readonly mediaItemRepository: MediaItemRepository,
+		private readonly sellerResourceAccess: SellerResourceAccessService,
 	) {}
 
 	async handle(
@@ -68,22 +70,12 @@ export class UpdateTextileProductUseCase {
 			throw new NotFoundException('Textile product not found');
 		}
 
-		// Ownership check
-		const isAdmin = roles.includes(AccountRole.ADMIN);
-		if (!isAdmin) {
-			if (productFound.baseInfo.ownerType === OwnerType.COMMUNITY) {
-				throw new ForbiddenException('You can only modify your own resource');
-			}
-			const seller =
-				await this.sellerProfileRepository.getSellerByUserId(requestingUserId);
-			if (!seller)
-				throw new ForbiddenException('You can only modify your own resource');
-			const shops = await this.shopRepository.getAllBySellerId(seller.id);
-			const shopIds = shops.map((s) => s.id);
-			if (!shopIds.includes(productFound.baseInfo.ownerId)) {
-				throw new ForbiddenException('You can only modify your own resource');
-			}
-		}
+		await this.sellerResourceAccess.assertSellerCanManageOwner(
+			requestingUserId,
+			roles,
+			productFound.baseInfo.ownerType,
+			productFound.baseInfo.ownerId,
+		);
 
 		// Validate categoryId solo si existe
 		if (dto.categoryId) {
@@ -111,6 +103,11 @@ export class UpdateTextileProductUseCase {
 				throw new NotFoundException('Community not found');
 			}
 		}
+
+		await validateTextileProductBaseInfoMedia(
+			this.mediaItemRepository,
+			dto.baseInfo.mediaIds,
+		);
 
 		// Validate detailTraceability solo si existe
 		if (dto.detailTraceability) {
@@ -250,6 +247,7 @@ export class UpdateTextileProductUseCase {
 			id,
 			dto,
 			productFound.status,
+			productFound.categoryId,
 		);
 		return this.textileProductRepository.updateTextileProduct(id, toUpdate);
 	}

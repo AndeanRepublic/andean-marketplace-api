@@ -2,6 +2,7 @@ import {
 	Controller,
 	Get,
 	Post,
+	Put,
 	Delete,
 	Body,
 	Param,
@@ -17,12 +18,13 @@ import { AccountRole } from '../../../domain/enums/AccountRole';
 import { Public } from '../../core/public.decorator';
 import { CreateSuperfoodCategoryDto } from '../dto/superfoods/CreateSuperfoodCategoryDto';
 import { CreateManySuperfoodCategoriesDto } from '../dto/superfoods/CreateManySuperfoodCategoriesDto';
-import { SuperfoodCategoryResponse } from '../../../app/modules/superfoods/SuperfoodCategoryResponse';
+import { SuperfoodCategoryResponse } from '../../../app/models/superfoods/SuperfoodCategoryResponse';
 import { CreateSuperfoodCategoryUseCase } from '../../../app/use_cases/superfoods/category/CreateSuperfoodCategoryUseCase';
 import { CreateManySuperfoodCategoriesUseCase } from '../../../app/use_cases/superfoods/category/CreateManySuperfoodCategoriesUseCase';
 import { GetSuperfoodCategoryByIdUseCase } from '../../../app/use_cases/superfoods/category/GetSuperfoodCategoryByIdUseCase';
 import { ListSuperfoodCategoriesUseCase } from '../../../app/use_cases/superfoods/category/ListSuperfoodCategoriesUseCase';
 import { DeleteSuperfoodCategoryUseCase } from '../../../app/use_cases/superfoods/category/DeleteSuperfoodCategoryUseCase';
+import { UpdateSuperfoodCategoryUseCase } from '../../../app/use_cases/superfoods/category/UpdateSuperfoodCategoryUseCase';
 
 @ApiTags('Superfood Categories')
 @Controller('superfood-categories')
@@ -33,10 +35,11 @@ export class SuperfoodCategoryController {
 		private readonly getSuperfoodCategoryByIdUseCase: GetSuperfoodCategoryByIdUseCase,
 		private readonly listSuperfoodCategoriesUseCase: ListSuperfoodCategoriesUseCase,
 		private readonly deleteSuperfoodCategoryUseCase: DeleteSuperfoodCategoryUseCase,
+		private readonly updateSuperfoodCategoryUseCase: UpdateSuperfoodCategoryUseCase,
 	) {}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@Post('/bulk')
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -60,7 +63,7 @@ export class SuperfoodCategoryController {
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -96,6 +99,85 @@ export class SuperfoodCategoryController {
 	})
 	async listCategories(): Promise<SuperfoodCategoryResponse[]> {
 		return await this.listSuperfoodCategoriesUseCase.handle();
+	}
+
+	@Public()
+	@Get('/:id')
+	@ApiOperation({
+		summary: 'Obtener categoría por ID',
+		description: 'Retorna una categoría específica por su ID',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID de la categoría',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Categoría encontrada',
+		type: SuperfoodCategoryResponse,
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Categoría no encontrada',
+	})
+	async getCategoryById(
+		@Param('id') id: string,
+	): Promise<SuperfoodCategoryResponse> {
+		return await this.getSuperfoodCategoryByIdUseCase.handle(id);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
+	@Put('/:id')
+	@ApiOperation({
+		summary: 'Actualizar categoría',
+		description: 'Actualiza una categoría de superfood por su ID',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID de la categoría',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Categoría actualizada exitosamente',
+		type: SuperfoodCategoryResponse,
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Categoría no encontrada',
+	})
+	async updateCategory(
+		@Param('id') id: string,
+		@Body() dto: CreateSuperfoodCategoryDto,
+	): Promise<SuperfoodCategoryResponse> {
+		return await this.updateSuperfoodCategoryUseCase.handle(id, dto);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
+	@Delete('/:id')
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@ApiOperation({
+		summary: 'Eliminar categoría',
+		description: 'Elimina una categoría de superfood por su ID',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID de la categoría a eliminar',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 204,
+		description: 'Categoría eliminada exitosamente',
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Categoría no encontrada',
+	})
+	async deleteCategory(@Param('id') id: string): Promise<void> {
+		await this.deleteSuperfoodCategoryUseCase.handle(id);
 	}
 
 	// @Get('/:id')

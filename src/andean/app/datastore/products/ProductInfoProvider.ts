@@ -1,5 +1,5 @@
 import { ProductType } from '../../../domain/enums/ProductType';
-import { ProductInfo } from '../../../domain/interfaces/ProductInfo';
+import { ProductInfo } from '../../models/shared/ProductInfo';
 
 /**
  * Clase abstracta que define el contrato para obtener información de productos.

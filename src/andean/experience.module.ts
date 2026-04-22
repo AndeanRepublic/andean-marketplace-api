@@ -38,12 +38,15 @@ import { CreateExperienceUseCase } from './app/use_cases/experiences/CreateExper
 import { UpdateExperienceUseCase } from './app/use_cases/experiences/UpdateExperienceUseCase';
 import { DeleteExperienceUseCase } from './app/use_cases/experiences/DeleteExperienceUseCase';
 import { GetAllExperiencesUseCase } from './app/use_cases/experiences/GetAllExperiencesUseCase';
+import { GetAllExperiencesForManagementUseCase } from './app/use_cases/experiences/GetAllExperiencesForManagementUseCase';
 import { GetByIdExperienceUseCase } from './app/use_cases/experiences/GetByIdExperienceUseCase';
 import { GetAvailabilityModeByIdUseCase } from './app/use_cases/experiences/GetAvailabilityModeByIdUseCase';
 import { GetFutureUnavailableDatesUseCase } from './app/use_cases/experiences/GetFutureUnavailableDatesUseCase';
+import { UpdateExperienceStatusUseCase } from './app/use_cases/experiences/UpdateExperienceStatusUseCase';
 
 // Strategy
 import { OwnerStrategyResolver } from './infra/services/experiences/OwnerStrategyResolver';
+import { OwnerInfoResolver } from './infra/services/owner/OwnerInfoResolver';
 
 // Controllers
 import { ExperienceController } from './infra/controllers/experienceControllers/experience.controller';
@@ -56,6 +59,8 @@ import { MediaItemModule } from './mediaItem.module';
 import { UsersModule } from './users.module';
 import { ShopsModule } from './shop.module';
 import { BookingModule } from './booking.module';
+import { SellerResourceAccessModule } from './sellerResourceAccess.module';
+import { GetExperienceForEditUseCase } from './app/use_cases/experiences/GetExperienceForEditUseCase';
 
 @Module({
 	imports: [
@@ -71,6 +76,7 @@ import { BookingModule } from './booking.module';
 		UsersModule,
 		ShopsModule,
 		forwardRef(() => BookingModule),
+		SellerResourceAccessModule,
 	],
 	controllers: [
 		ExperienceController,
@@ -102,6 +108,7 @@ import { BookingModule } from './booking.module';
 
 		// Strategy
 		OwnerStrategyResolver,
+		OwnerInfoResolver,
 
 		// Sub-table Use Cases
 		CreateExperiencePricesUseCase,
@@ -119,11 +126,14 @@ import { BookingModule } from './booking.module';
 		// Main Use Cases
 		CreateExperienceUseCase,
 		UpdateExperienceUseCase,
+		UpdateExperienceStatusUseCase,
 		DeleteExperienceUseCase,
 		GetAllExperiencesUseCase,
+		GetAllExperiencesForManagementUseCase,
 		GetByIdExperienceUseCase,
 		GetAvailabilityModeByIdUseCase,
 		GetFutureUnavailableDatesUseCase,
+		GetExperienceForEditUseCase,
 	],
 	exports: [
 		ExperiencePricesRepository,

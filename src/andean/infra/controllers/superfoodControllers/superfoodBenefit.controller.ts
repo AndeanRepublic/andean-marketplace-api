@@ -2,6 +2,7 @@ import {
 	Controller,
 	Get,
 	Post,
+	Put,
 	Delete,
 	Body,
 	Param,
@@ -17,12 +18,13 @@ import { AccountRole } from '../../../domain/enums/AccountRole';
 import { Public } from '../../core/public.decorator';
 import { CreateSuperfoodBenefitDto } from '../dto/superfoods/CreateSuperfoodBenefitDto';
 import { CreateManySuperfoodBenefitsDto } from '../dto/superfoods/CreateManySuperfoodBenefitsDto';
-import { SuperfoodBenefitResponse } from '../../../app/modules/superfoods/SuperfoodBenefitResponse';
+import { SuperfoodBenefitResponse } from '../../../app/models/superfoods/SuperfoodBenefitResponse';
 import { CreateSuperfoodBenefitUseCase } from '../../../app/use_cases/superfoods/benefit/CreateSuperfoodBenefitUseCase';
 import { CreateManySuperfoodBenefitsUseCase } from '../../../app/use_cases/superfoods/benefit/CreateManySuperfoodBenefitsUseCase';
 import { GetSuperfoodBenefitByIdUseCase } from '../../../app/use_cases/superfoods/benefit/GetSuperfoodBenefitByIdUseCase';
 import { ListSuperfoodBenefitsUseCase } from '../../../app/use_cases/superfoods/benefit/ListSuperfoodBenefitsUseCase';
 import { DeleteSuperfoodBenefitUseCase } from '../../../app/use_cases/superfoods/benefit/DeleteSuperfoodBenefitUseCase';
+import { UpdateSuperfoodBenefitUseCase } from '../../../app/use_cases/superfoods/benefit/UpdateSuperfoodBenefitUseCase';
 
 @ApiTags('Superfood Benefits')
 @Controller('superfood-benefits')
@@ -33,10 +35,11 @@ export class SuperfoodBenefitController {
 		private readonly getSuperfoodBenefitByIdUseCase: GetSuperfoodBenefitByIdUseCase,
 		private readonly listSuperfoodBenefitsUseCase: ListSuperfoodBenefitsUseCase,
 		private readonly deleteSuperfoodBenefitUseCase: DeleteSuperfoodBenefitUseCase,
+		private readonly updateSuperfoodBenefitUseCase: UpdateSuperfoodBenefitUseCase,
 	) {}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@Post('/bulk')
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -60,7 +63,7 @@ export class SuperfoodBenefitController {
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -96,6 +99,85 @@ export class SuperfoodBenefitController {
 	})
 	async listBenefits(): Promise<SuperfoodBenefitResponse[]> {
 		return await this.listSuperfoodBenefitsUseCase.handle();
+	}
+
+	@Public()
+	@Get('/:id')
+	@ApiOperation({
+		summary: 'Obtener beneficio por ID',
+		description: 'Retorna un beneficio específico por su ID',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID del beneficio',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Beneficio encontrado',
+		type: SuperfoodBenefitResponse,
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Beneficio no encontrado',
+	})
+	async getBenefitById(
+		@Param('id') id: string,
+	): Promise<SuperfoodBenefitResponse> {
+		return await this.getSuperfoodBenefitByIdUseCase.handle(id);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
+	@Put('/:id')
+	@ApiOperation({
+		summary: 'Actualizar beneficio',
+		description: 'Actualiza un beneficio por su ID',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID del beneficio',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Beneficio actualizado exitosamente',
+		type: SuperfoodBenefitResponse,
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Beneficio no encontrado',
+	})
+	async updateBenefit(
+		@Param('id') id: string,
+		@Body() dto: CreateSuperfoodBenefitDto,
+	): Promise<SuperfoodBenefitResponse> {
+		return await this.updateSuperfoodBenefitUseCase.handle(id, dto);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
+	@Delete('/:id')
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@ApiOperation({
+		summary: 'Eliminar beneficio',
+		description: 'Elimina un beneficio por su ID',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID del beneficio a eliminar',
+		example: 'uuid-1234-5678',
+	})
+	@ApiResponse({
+		status: 204,
+		description: 'Beneficio eliminado exitosamente',
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Beneficio no encontrado',
+	})
+	async deleteBenefit(@Param('id') id: string): Promise<void> {
+		await this.deleteSuperfoodBenefitUseCase.handle(id);
 	}
 
 	// @Get('/:id')

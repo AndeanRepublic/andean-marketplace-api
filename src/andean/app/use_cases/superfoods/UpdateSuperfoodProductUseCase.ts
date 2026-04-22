@@ -3,8 +3,8 @@ import {
 	Inject,
 	NotFoundException,
 	BadRequestException,
-	ForbiddenException,
 } from '@nestjs/common';
+import { OwnerType } from '../../../domain/enums/OwnerType';
 import { SuperfoodProductRepository } from '../../datastore/superfoods/SuperfoodProduct.repo';
 import { UpdateSuperfoodDto } from '../../../infra/controllers/dto/superfoods/UpdateSuperfoodDto';
 import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
@@ -12,13 +12,22 @@ import { SuperfoodProductMapper } from '../../../infra/services/superfood/Superf
 import { SuperfoodCategoryRepository } from '../../datastore/superfoods/SuperfoodCategory.repo';
 import { CommunityRepository } from '../../datastore/community/community.repo';
 import { ShopRepository } from '../../datastore/Shop.repo';
-import { SuperfoodOwnerType } from '../../../domain/enums/SuperfoodOwnerType';
 import { instanceToPlain } from 'class-transformer';
 import { CreateSuperfoodDto } from '../../../infra/controllers/dto/superfoods/CreateSuperfoodDto';
 import { CreateDetailSourceProductUseCase } from '../detailSourceProduct/CreateDetailSourceProductUseCase';
 import { UpdateDetailSourceProductUseCase } from '../detailSourceProduct/UpdateDetailSourceProductUseCase';
-import { SellerProfileRepository } from '../../datastore/Seller.repo';
 import { AccountRole } from 'src/andean/domain/enums/AccountRole';
+import { SellerResourceAccessService } from 'src/andean/infra/services/seller/SellerResourceAccessService';
+import { SuperfoodColorRepository } from '../../datastore/superfoods/SuperfoodColor.repo';
+import { SuperfoodCertificationRepository } from '../../datastore/superfoods/SuperfoodCertification.repo';
+import { SuperfoodPreservationMethodRepository } from '../../datastore/superfoods/SuperfoodPreservationMethod.repo';
+import { DetailSourceProductRepository } from '../../datastore/DetailSourceProduct.repo';
+import { SuperfoodOptionName } from '../../../domain/enums/SuperfoodOptionName';
+import { SuperfoodSizeOptionAlternativeRepository } from '../../datastore/superfoods/SuperfoodSizeOptionAlternative.repo';
+import { SuperfoodSizeOptionAlternativeMapper } from '../../../infra/services/superfood/SuperfoodSizeOptionAlternativeMapper';
+import { VariantRepository } from '../../datastore/Variant.repo';
+import { VariantMapper } from '../../../infra/services/VariantMapper';
+import { ProductType } from '../../../domain/enums/ProductType';
 
 @Injectable()
 export class UpdateSuperfoodProductUseCase {
@@ -34,9 +43,163 @@ export class UpdateSuperfoodProductUseCase {
 
 		private readonly createDetailSourceProductUseCase: CreateDetailSourceProductUseCase,
 		private readonly updateDetailSourceProductUseCase: UpdateDetailSourceProductUseCase,
-		@Inject(SellerProfileRepository)
-		private readonly sellerProfileRepository: SellerProfileRepository,
+		private readonly sellerResourceAccess: SellerResourceAccessService,
+		@Inject(SuperfoodColorRepository)
+		private readonly superfoodColorRepository: SuperfoodColorRepository,
+
+		@Inject(SuperfoodCertificationRepository)
+		private readonly superfoodCertificationRepository: SuperfoodCertificationRepository,
+
+		@Inject(SuperfoodPreservationMethodRepository)
+		private readonly superfoodPreservationMethodRepository: SuperfoodPreservationMethodRepository,
+
+		@Inject(DetailSourceProductRepository)
+		private readonly detailSourceProductRepository: DetailSourceProductRepository,
+		@Inject(SuperfoodSizeOptionAlternativeRepository)
+		private readonly superfoodSizeOptionAlternativeRepository: SuperfoodSizeOptionAlternativeRepository,
+		@Inject(VariantRepository)
+		private readonly variantRepository: VariantRepository,
 	) {}
+
+	private async validateDetailTraceability(
+		dto: CreateSuperfoodDto['detailTraceability'],
+	): Promise<void> {
+		if (!dto) return;
+		const pm = dto.preservationMethodId?.trim();
+		if (pm) {
+			const m = await this.superfoodPreservationMethodRepository.getById(pm);
+			if (!m) {
+				throw new NotFoundException(
+					`SuperfoodPreservationMethod with id ${pm} not found`,
+				);
+			}
+		}
+		const speciesId = dto.exactSpeciesOrVarietyId?.trim();
+		if (speciesId) {
+			const dsp = await this.detailSourceProductRepository.getById(speciesId);
+			if (!dsp) {
+				throw new NotFoundException(
+					`DetailSourceProduct with id ${speciesId} not found`,
+				);
+			}
+		}
+		if (dto.certificationIds?.length) {
+			for (const rawId of dto.certificationIds) {
+				const id = rawId?.trim();
+				if (!id) continue;
+				const c = await this.superfoodCertificationRepository.getById(id);
+				if (!c) {
+					throw new NotFoundException(
+						`SuperfoodCertification with id ${id} not found`,
+					);
+				}
+			}
+		}
+	}
+
+	private validateOptions(dto: CreateSuperfoodDto): void {
+		if (!dto.options?.length) return;
+		const optionNames = dto.options.map((opt) => opt.name);
+		const uniqueOptionNames = new Set(optionNames);
+		if (optionNames.length !== uniqueOptionNames.size) {
+			throw new BadRequestException('Duplicate option names are not allowed');
+		}
+
+		for (const option of dto.options) {
+			const labels = option.values.map((v) => v.label);
+			const uniqueLabels = new Set(labels);
+			if (labels.length !== uniqueLabels.size) {
+				throw new BadRequestException(
+					`Duplicate labels in option ${option.name} are not allowed`,
+				);
+			}
+
+			if (option.name === SuperfoodOptionName.SIZE) {
+				for (const value of option.values) {
+					if (
+						typeof value.sizeNumber !== 'number' ||
+						!value.sizeUnit ||
+						typeof value.servingsPerContainer !== 'number' ||
+						typeof value.price !== 'number' ||
+						typeof value.stock !== 'number'
+					) {
+						throw new BadRequestException(
+							'Each SIZE option value requires sizeNumber, sizeUnit, servingsPerContainer, price, and stock',
+						);
+					}
+				}
+			}
+		}
+	}
+
+	private collectExistingSizeAlternativeIds(
+		existingProduct: SuperfoodProduct,
+	): string[] {
+		return (existingProduct.options ?? [])
+			.filter((option) => option.name === SuperfoodOptionName.SIZE)
+			.flatMap((option) =>
+				option.values
+					.map((value) => value.idOptionAlternative?.trim())
+					.filter((id): id is string => Boolean(id)),
+			);
+	}
+
+	private async replaceSizeAlternatives(
+		dto: CreateSuperfoodDto,
+	): Promise<void> {
+		if (!dto.options?.length) return;
+		for (const option of dto.options) {
+			if (option.name !== SuperfoodOptionName.SIZE || !option.values.length) {
+				continue;
+			}
+			const created =
+				await this.superfoodSizeOptionAlternativeRepository.createMany(
+					option.values.map((value) =>
+						SuperfoodSizeOptionAlternativeMapper.fromInput({
+							sizeNumber: value.sizeNumber!,
+							sizeUnit: value.sizeUnit!,
+							servingsPerContainer: value.servingsPerContainer!,
+						}),
+					),
+				);
+			option.values = option.values.map((value, idx) => ({
+				...value,
+				idOptionAlternative: created[idx]?.id,
+				label: created[idx]?.nameLabel ?? value.label,
+			}));
+		}
+	}
+
+	private async replaceVariants(
+		productId: string,
+		dto: CreateSuperfoodDto,
+	): Promise<void> {
+		await this.variantRepository.deleteByProductId(productId);
+
+		const sizeOptions =
+			dto.options?.filter(
+				(option) => option.name === SuperfoodOptionName.SIZE,
+			) ?? [];
+		if (!sizeOptions.length) return;
+
+		const variants = sizeOptions.flatMap((option) =>
+			option.values
+				.filter((value) => value.idOptionAlternative)
+				.map((value) =>
+					VariantMapper.fromCreateDto({
+						productId,
+						productType: ProductType.SUPERFOOD,
+						combination: { SIZE: value.idOptionAlternative! },
+						price: value.price!,
+						stock: value.stock!,
+						sku: value.sku,
+					}),
+				),
+		);
+
+		if (!variants.length) return;
+		await this.variantRepository.createMany(variants);
+	}
 
 	async handle(
 		productId: string,
@@ -51,37 +214,43 @@ export class UpdateSuperfoodProductUseCase {
 			throw new NotFoundException(`Product with id ${productId} not found`);
 		}
 
-		// Ownership check
-		const isAdmin = roles.includes(AccountRole.ADMIN);
-		if (!isAdmin) {
-			if (existingProduct.baseInfo.ownerType === SuperfoodOwnerType.COMMUNITY) {
-				throw new ForbiddenException('You can only modify your own resource');
-			}
-			const seller =
-				await this.sellerProfileRepository.getSellerByUserId(requestingUserId);
-			if (!seller)
-				throw new ForbiddenException('You can only modify your own resource');
-			const shops = await this.shopRepository.getAllBySellerId(seller.id);
-			const shopIds = shops.map((s) => s.id);
-			if (!shopIds.includes(existingProduct.baseInfo.ownerId)) {
-				throw new ForbiddenException('You can only modify your own resource');
-			}
+		await this.sellerResourceAccess.assertSellerCanManageOwner(
+			requestingUserId,
+			roles,
+			existingProduct.baseInfo.ownerType,
+			existingProduct.baseInfo.ownerId,
+		);
+
+		// 2. Validar categoría y color de catálogo
+		const categoryFound = await this.categoryRepository.getCategoryById(
+			dto.categoryId,
+		);
+		if (!categoryFound) {
+			throw new NotFoundException(
+				`Category with id ${dto.categoryId} not found`,
+			);
 		}
 
-		// 2. Validar categoryId solo si existe en el DTO
-		if (dto.categoryId) {
-			const categoryFound = await this.categoryRepository.getCategoryById(
-				dto.categoryId,
+		const colorId = dto.colorId.trim();
+		const color = await this.superfoodColorRepository.getById(colorId);
+		if (!color) {
+			throw new BadRequestException(
+				`Superfood color with id ${colorId} not found`,
 			);
-			if (!categoryFound) {
-				throw new NotFoundException(
-					`Category with id ${dto.categoryId} not found`,
-				);
-			}
 		}
+
+		await this.validateDetailTraceability(dto.detailTraceability);
+		this.validateOptions(dto);
+		const oldSizeAlternativeIds =
+			this.collectExistingSizeAlternativeIds(existingProduct);
+		await this.superfoodSizeOptionAlternativeRepository.deleteManyByIds(
+			oldSizeAlternativeIds,
+		);
+		await this.replaceSizeAlternatives(dto);
+		await this.replaceVariants(productId, dto);
 
 		// 3. Validar ownerId según ownerType solo si existe en el DTO
-		if (dto.baseInfo?.ownerType === SuperfoodOwnerType.SHOP) {
+		if (dto.baseInfo?.ownerType === OwnerType.SHOP) {
 			if (dto.baseInfo?.ownerId) {
 				const shopFound = await this.shopRepository.getById(
 					dto.baseInfo.ownerId,
@@ -92,7 +261,7 @@ export class UpdateSuperfoodProductUseCase {
 					);
 				}
 			}
-		} else if (dto.baseInfo?.ownerType === SuperfoodOwnerType.COMMUNITY) {
+		} else if (dto.baseInfo?.ownerType === OwnerType.COMMUNITY) {
 			if (dto.baseInfo?.ownerId) {
 				const communityFound = await this.communityRepository.getById(
 					dto.baseInfo.ownerId,

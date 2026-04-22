@@ -1,8 +1,10 @@
 import {
 	Body,
 	Controller,
+	DefaultValuePipe,
 	Post,
 	Get,
+	Patch,
 	Param,
 	Put,
 	Delete,
@@ -31,16 +33,19 @@ import { CreateTextileProductDto } from '../dto/textileProducts/CreateTextilePro
 import { UpdateTextileProductDto } from '../dto/textileProducts/UpdateTextileProductDto';
 import { UpdateTextileProductUseCase } from 'src/andean/app/use_cases/textileProducts/UpdateTextileProductUseCase';
 import { GetAllTextileProductsUseCase } from 'src/andean/app/use_cases/textileProducts/GetAllTextileProductsUseCase';
-import { GetByIdTextileProductUseCase } from 'src/andean/app/use_cases/textileProducts/GetByIdTextileProductUseCase';
+import { GetAllTextileProductsForManagementUseCase } from 'src/andean/app/use_cases/textileProducts/GetAllTextileProductsForManagementUseCase';
+import { GetTextileProductForSellerUseCase } from 'src/andean/app/use_cases/textileProducts/GetTextileProductForSellerUseCase';
 import { DeleteTextileProductUseCase } from 'src/andean/app/use_cases/textileProducts/DeleteTextileProductUseCase';
 import {
 	PaginatedProductsResponse,
 	PaginatedTextileProductsResponse,
-} from 'src/andean/app/modules/shared/PaginatedProductsResponse';
-import { TextileProductListItem } from 'src/andean/app/modules/textile/TextileProductListItemResponse';
-import { TextileProductDetailResponse } from 'src/andean/app/modules/textile/TextileProductDetailResponse';
+} from 'src/andean/app/models/shared/PaginatedProductsResponse';
+import { TextileProductListItem } from 'src/andean/app/models/textile/TextileProductListItemResponse';
+import { TextileProductDetailResponse } from 'src/andean/app/models/textile/TextileProductDetailResponse';
 import { GetByIdTextileProductDetailUseCase } from 'src/andean/app/use_cases/textileProducts/GetByIdTextileProductDetailUseCase';
 import { ProductSortBy } from 'src/andean/domain/enums/ProductSortBy';
+import { UpdateTextileProductStatusUseCase } from 'src/andean/app/use_cases/textileProducts/UpdateTextileProductStatusUseCase';
+import { UpdateTextileProductStatusDto } from '../dto/textileProducts/UpdateTextileProductStatusDto';
 
 @ApiTags('Textile Products')
 @Controller('textile-products')
@@ -49,9 +54,11 @@ export class TextileProductController {
 		private readonly createTextileProductUseCase: CreateTextileProductUseCase,
 		private readonly updateTextileProductUseCase: UpdateTextileProductUseCase,
 		private readonly getAllTextileProductsUseCase: GetAllTextileProductsUseCase,
-		private readonly getByIdTextileProductUseCase: GetByIdTextileProductUseCase,
+		private readonly getAllTextileProductsForManagementUseCase: GetAllTextileProductsForManagementUseCase,
+		private readonly getTextileProductForSellerUseCase: GetTextileProductForSellerUseCase,
 		private readonly deleteTextileProductUseCase: DeleteTextileProductUseCase,
 		private readonly getByIdTextileProductDetailUseCase: GetByIdTextileProductDetailUseCase,
+		private readonly updateTextileProductStatusUseCase: UpdateTextileProductStatusUseCase,
 	) {}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
@@ -191,6 +198,14 @@ export class TextileProductController {
 			'Criterio de ordenamiento: "latest" (más recientes primero) o "popular" (más comprados primero)',
 		example: 'latest',
 	})
+	@ApiQuery({
+		name: 'include_zero_stock',
+		required: false,
+		type: Boolean,
+		description:
+			'Si es true, incluye productos sin stock (totalStock = 0). Por defecto solo hay stock > 0.',
+		example: false,
+	})
 	@ApiResponse({
 		status: 200,
 		description:
@@ -221,6 +236,43 @@ export class TextileProductController {
 
 		return this.getAllTextileProductsUseCase.handle(
 			Object.keys(filters).length > 0 ? filters : undefined,
+		);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.ADMIN)
+	@Get('management')
+	@ApiOperation({
+		summary: 'Listar textiles para dashboard (admin)',
+		description:
+			'Lista paginada con stock 0 incluido y cualquier estado. Para el catálogo público usar GET /textile-products.',
+	})
+	@ApiQuery({
+		name: 'page',
+		required: false,
+		type: Number,
+		description: 'Número de página (por defecto: 1)',
+		example: 1,
+	})
+	@ApiQuery({
+		name: 'per_page',
+		required: false,
+		type: Number,
+		description: 'Items por página (por defecto: 10)',
+		example: 10,
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista paginada para gestión',
+		type: PaginatedTextileProductsResponse,
+	})
+	async getAllTextileProductsForManagement(
+		@Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+		@Query('per_page', new DefaultValuePipe(10), ParseIntPipe) perPage: number,
+	): Promise<PaginatedProductsResponse<TextileProductListItem>> {
+		return this.getAllTextileProductsForManagementUseCase.handle(
+			page,
+			perPage,
 		);
 	}
 
@@ -256,6 +308,53 @@ export class TextileProductController {
 		@Param('id') id: string,
 	): Promise<TextileProductDetailResponse> {
 		return this.getByIdTextileProductDetailUseCase.handle(id);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Get('/:id')
+	@ApiOperation({
+		summary: 'Obtener producto textil (admin / edición)',
+		description:
+			'Devuelve la entidad completa del producto para cargar formularios de edición. Misma regla de acceso que PUT/DELETE.',
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID único del producto textil',
+		example: '6973d8ffddef7b59c2d4dcfb',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Producto encontrado',
+		type: TextileProduct,
+	})
+	@ApiResponse({ status: 403, description: 'Sin permiso sobre este producto' })
+	@ApiResponse({ status: 404, description: 'Producto no encontrado' })
+	async getTextileProductForSeller(
+		@Param('id') id: string,
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
+	): Promise<TextileProduct> {
+		return this.getTextileProductForSellerUseCase.handle(
+			id,
+			requestingUser.userId,
+			requestingUser.roles,
+		);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Patch('/:id/status')
+	async updateTextileProductStatus(
+		@Param('id') id: string,
+		@Body() body: UpdateTextileProductStatusDto,
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
+	): Promise<TextileProduct> {
+		return this.updateTextileProductStatusUseCase.handle(
+			id,
+			body.status,
+			requestingUser.userId,
+			requestingUser.roles,
+		);
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)

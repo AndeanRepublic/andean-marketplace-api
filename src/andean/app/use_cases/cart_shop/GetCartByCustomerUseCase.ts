@@ -11,14 +11,18 @@ import { CustomerProfileRepository } from '../../datastore/Customer.repo';
 import { CartShopItemRepository } from '../../datastore/CartShopItem.repo';
 import { VariantRepository } from '../../datastore/Variant.repo';
 import { Types } from 'mongoose';
-import { GetCartResponse } from '../../modules/cart/GetCartResponse';
-import { ShoppingCartItemResponse } from '../../modules/cart/ShoppingCartItemResponse';
+import { GetCartResponse } from '../../models/cart/GetCartResponse';
+import { ShoppingCartItemResponse } from '../../models/cart/ShoppingCartItemResponse';
 import { ProductInfoProviderRegistry } from '../../../infra/services/products/ProductInfoProviderRegistry';
 import { OwnerNameResolver } from '../../../infra/services/OwnerNameResolver';
 import { CartItem } from '../../../domain/entities/CartItem';
 import { ShoppingCartItemMapper } from '../../../infra/services/cart/ShoppingCartItemMapper';
 import { ProductType } from '../../../domain/enums/ProductType';
 import { BoxCartContentResolver } from '../../../infra/services/cart/BoxCartContentResolver';
+import { BoxCartAvailabilityService } from '../../../infra/services/cart/BoxCartAvailabilityService';
+import { TextileProductAttributesAssembler } from '../../../infra/services/textileProducts/TextileProductAttributesAssembler';
+import { CartColorOptionResponse } from '../../models/cart/CartColorOptionResponse';
+import { TextileProductRepository } from '../../datastore/textileProducts/TextileProduct.repo';
 
 @Injectable()
 export class GetCartByCustomerUseCase {
@@ -34,6 +38,10 @@ export class GetCartByCustomerUseCase {
 		private readonly productInfoRegistry: ProductInfoProviderRegistry,
 		private readonly ownerNameResolver: OwnerNameResolver,
 		private readonly boxCartContentResolver: BoxCartContentResolver,
+		private readonly boxCartAvailability: BoxCartAvailabilityService,
+		private readonly textileProductAttributesAssembler: TextileProductAttributesAssembler,
+		@Inject(TextileProductRepository)
+		private readonly textileProductRepository: TextileProductRepository,
 	) {}
 
 	async handle(
@@ -100,9 +108,9 @@ export class GetCartByCustomerUseCase {
 			cart.id,
 		);
 
-		// 4. Enriquecer cada item con información del producto
+		const boxMaxStockById = new Map<string, number>();
 		const enrichedItems = await Promise.all(
-			cartItems.map((item) => this.enrichCartItem(item)),
+			cartItems.map((item) => this.enrichCartItem(item, boxMaxStockById)),
 		);
 
 		// 5. Construir y retornar la respuesta
@@ -120,15 +128,28 @@ export class GetCartByCustomerUseCase {
 	 */
 	private async enrichCartItem(
 		item: CartItem,
+		boxMaxStockById: Map<string, number>,
 	): Promise<ShoppingCartItemResponse> {
-		// Obtener información del producto
 		const productInfo = await this.productInfoRegistry.getProductInfo(
 			item.productType,
 			item.productId,
 		);
 
-		// Flujo especial para BOX: sin variante, sin owner, con contenido de caja
 		if (item.productType === ProductType.BOX) {
+			let maxStock = boxMaxStockById.get(item.productId);
+			if (maxStock === undefined) {
+				try {
+					maxStock = await this.boxCartAvailability.maxSellableForBoxId(
+						item.productId,
+					);
+				} catch (err) {
+					if (!(err instanceof NotFoundException)) {
+						throw err;
+					}
+					maxStock = 0;
+				}
+				boxMaxStockById.set(item.productId, maxStock);
+			}
 			const boxContent = await this.boxCartContentResolver.resolve(
 				item.productId,
 			);
@@ -136,6 +157,7 @@ export class GetCartByCustomerUseCase {
 				item,
 				productInfo,
 				boxContent,
+				maxStock,
 			);
 		}
 
@@ -149,11 +171,31 @@ export class GetCartByCustomerUseCase {
 			productInfo.ownerId,
 		);
 
+		let colorOption: CartColorOptionResponse | undefined;
+		if (item.productType === ProductType.TEXTILE && variant) {
+			const textileProduct =
+				await this.textileProductRepository.getTextileProductById(item.productId);
+			if (textileProduct) {
+				const resolved =
+					await this.textileProductAttributesAssembler.resolveColorOptionForProductAndVariant(
+						textileProduct,
+						variant,
+					);
+				if (resolved) {
+					colorOption = {
+						label: resolved.label,
+						hexCode: resolved.hexCode,
+					};
+				}
+			}
+		}
+
 		return ShoppingCartItemMapper.toResponse(
 			item,
 			variant,
 			productInfo,
 			ownerName,
+			colorOption,
 		);
 	}
 }

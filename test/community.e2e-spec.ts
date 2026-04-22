@@ -5,7 +5,7 @@ import {
 	ValidationPipe,
 	BadRequestException,
 } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { CommunityController } from '../src/andean/infra/controllers/community.controller';
 import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';
 import { RolesGuard } from '../src/andean/infra/core/roles.guard';
@@ -21,7 +21,9 @@ import { GetByIdSealUseCase } from '../src/andean/app/use_cases/community/GetByI
 import { UpdateSealUseCase } from '../src/andean/app/use_cases/community/UpdateSealUseCase';
 import { DeleteSealUseCase } from '../src/andean/app/use_cases/community/DeleteSealUseCase';
 import { CreateManySealsUseCase } from '../src/andean/app/use_cases/community/CreateManySealsUseCase';
+import { UpdateCommunityStatusUseCase } from '../src/andean/app/use_cases/community/UpdateCommunityStatusUseCase';
 import { Community } from '../src/andean/domain/entities/community/Community';
+import { MediaUrlResolver } from '../src/andean/infra/services/media/MediaUrlResolver';
 import { FixtureLoader } from './helpers/fixture-loader';
 
 describe('CommunityController (e2e)', () => {
@@ -95,6 +97,14 @@ describe('CommunityController (e2e)', () => {
 				{
 					provide: DeleteSealUseCase,
 					useValue: { handle: jest.fn().mockResolvedValue(undefined) },
+				},
+				{
+					provide: MediaUrlResolver,
+					useValue: { resolveUrls: jest.fn().mockImplementation((x) => x) },
+				},
+				{
+					provide: UpdateCommunityStatusUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue(mockCommunity) },
 				},
 			],
 		})

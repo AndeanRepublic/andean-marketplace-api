@@ -1,7 +1,7 @@
 import { SuperfoodTypeDocument } from '../../persistence/superfood/superfoodType.schema';
 import { SuperfoodType } from '../../../domain/entities/superfoods/SuperfoodType';
 import { CreateSuperfoodTypeDto } from '../../controllers/dto/superfoods/CreateSuperfoodTypeDto';
-import { SuperfoodTypeResponse } from '../../../app/modules/superfoods/SuperfoodTypeResponse';
+import { SuperfoodTypeResponse } from '../../../app/models/superfoods/SuperfoodTypeResponse';
 import { MongoIdUtils } from '../../utils/MongoIdUtils';
 import { Types } from 'mongoose';
 

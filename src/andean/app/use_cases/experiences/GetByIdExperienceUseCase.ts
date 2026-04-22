@@ -13,23 +13,23 @@ import { CommunityRepository } from '../../datastore/community/community.repo';
 import { ShopRepository } from '../../datastore/Shop.repo';
 import { BookingRepository } from '../../datastore/booking/Booking.repo';
 
-import { MediaItem } from 'src/andean/domain/entities/MediaItem';
-import { Review } from 'src/andean/domain/entities/Review';
-import { ProductType } from 'src/andean/domain/enums/ProductType';
-import { OwnerType } from 'src/andean/domain/enums/OwnerType';
-import { ExperienceAvailabilityMode } from 'src/andean/domain/enums/ExperienceAvailabilityMode';
+import { MediaItem } from '../../../domain/entities/MediaItem';
+import { Review } from '../../../domain/entities/Review';
+import { ProductType } from '../../../domain/enums/ProductType';
+import { OwnerType } from '../../../domain/enums/OwnerType';
+import { ExperienceAvailabilityMode } from '../../../domain/enums/ExperienceAvailabilityMode';
 
 import {
 	ExperienceAvailabilityResponse,
 	ExperienceDetailResponse,
-} from '../../modules/experiences/ExperienceDetailResponse';
-import { ExperienceDetailMapper } from 'src/andean/infra/services/experiences/ExperienceDetailMapper';
+} from '../../models/experiences/ExperienceDetailResponse';
+import { ExperienceDetailMapper } from '../../../infra/services/experiences/ExperienceDetailMapper';
 import { GetFutureUnavailableDatesUseCase } from './GetFutureUnavailableDatesUseCase';
+import { MediaUrlResolver } from '../../../infra/services/media/MediaUrlResolver';
+import { OwnerInfoResolver } from '../../../infra/services/owner/OwnerInfoResolver';
 
 @Injectable()
 export class GetByIdExperienceUseCase {
-	private readonly storageBaseUrl: string;
-
 	constructor(
 		@Inject(ExperienceRepository)
 		private readonly experienceRepo: ExperienceRepository,
@@ -54,14 +54,11 @@ export class GetByIdExperienceUseCase {
 		@Inject(BookingRepository)
 		private readonly bookingRepository: BookingRepository,
 		private readonly configService: ConfigService,
+		private readonly mediaUrlResolver: MediaUrlResolver,
+		private readonly ownerInfoResolver: OwnerInfoResolver,
 		@Inject(GetFutureUnavailableDatesUseCase)
 		private readonly getFutureUnavailableDatesUseCase: GetFutureUnavailableDatesUseCase,
-	) {
-		this.storageBaseUrl = this.configService.get<string>(
-			'STORAGE_BASE_URL',
-			'',
-		);
-	}
+	) {}
 
 	async handle(id: string): Promise<ExperienceDetailResponse> {
 		// -- Fetch experience principal
@@ -86,6 +83,9 @@ export class GetByIdExperienceUseCase {
 
 		// -- Batch-fetch de todos los media IDs únicos
 		const mediaMap = await this.buildMediaMap(experience, itineraries);
+		const mediaUrlById = await this.mediaUrlResolver.resolveUrls([
+			...mediaMap.keys(),
+		]);
 
 		// -- Resolver owner, reviews en paralelo
 		const [ownerInfo, reviewResponse] = await Promise.all([
@@ -111,12 +111,12 @@ export class GetByIdExperienceUseCase {
 			ExperienceDetailMapper.toMediaFullDetailFromMap(
 				experience.mediaInfo.landscapeImg,
 				mediaMap,
-				this.storageBaseUrl,
+				mediaUrlById,
 			)?.url || '';
 		const photos = ExperienceDetailMapper.toMediaFullDetailList(
 			experience.mediaInfo.photos ?? [],
 			mediaMap,
-			this.storageBaseUrl,
+			mediaUrlById,
 		);
 
 		return ExperienceDetailMapper.toDetailResponse({
@@ -131,12 +131,12 @@ export class GetByIdExperienceUseCase {
 			itinerary: ExperienceDetailMapper.toItineraryResponse(
 				itineraries,
 				mediaMap,
-				this.storageBaseUrl,
+				mediaUrlById,
 			),
 			moreExperiences: ExperienceDetailMapper.toMoreExperiencesResponse(
 				moreExperiences.items,
 				id,
-				this.storageBaseUrl,
+				(key) => this.mediaUrlResolver.resolveKey(key),
 			),
 			review: reviewResponse,
 		});
@@ -175,34 +175,31 @@ export class GetByIdExperienceUseCase {
 		ownerId: string,
 		ownerType: OwnerType,
 	): Promise<{ title: string; imgUrl: string }> {
-		if (ownerType === OwnerType.COMMUNITY) {
-			const community = await this.communityRepository.getById(ownerId);
-			let imgUrl = '';
-			if (community?.bannerImageId) {
-				const bannerMedia = await this.mediaItemRepo.getById(
-					community.bannerImageId,
-				);
-				imgUrl = bannerMedia ? `${this.storageBaseUrl}/${bannerMedia.key}` : '';
-			}
-			return { title: community?.name || '', imgUrl };
+		const resolved = await this.ownerInfoResolver.resolveDetailed(
+			ownerType,
+			ownerId,
+		);
+		if (!resolved) {
+			return { title: '', imgUrl: '' };
 		}
 
-		const shop = await this.shopRepository.getById(ownerId);
-		return { title: shop?.name || '', imgUrl: '' };
+		if (resolved.ownerType === OwnerType.COMMUNITY) {
+			return {
+				title: resolved.community?.name || '',
+				imgUrl: resolved.community?.bannerImageUrl || '',
+			};
+		}
+
+		return {
+			title: resolved.shop?.shopName || '',
+			imgUrl: resolved.shop?.ownerImage || '',
+		};
 	}
 
 	private async buildReviews(reviews: Review[]) {
-		const customers = await Promise.all(
-			reviews.map((r) =>
-				this.customerProfileRepository.getCustomerById(r.customerId),
-			),
-		);
+		// Obtener accounts directamente usando accountId
 		const accounts = await Promise.all(
-			customers.map((c) =>
-				c
-					? this.accountRepository.getAccountByUserId(c.userId)
-					: Promise.resolve(null),
-			),
+			reviews.map((r) => this.accountRepository.getAccountById(r.accountId)),
 		);
 
 		const userNames = accounts.map((a) => ({

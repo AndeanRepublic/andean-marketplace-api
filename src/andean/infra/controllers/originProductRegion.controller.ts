@@ -25,7 +25,7 @@ import { DeleteOriginProductRegionUseCase } from '../../app/use_cases/origin/Del
 import { CreateOriginProductRegionDto } from './dto/origin/CreateOriginProductRegionDto';
 import { CreateManyOriginProductRegionsDto } from './dto/origin/CreateManyOriginProductRegionsDto';
 import { UpdateOriginProductRegionDto } from './dto/origin/UpdateOriginProductRegionDto';
-import { OriginProductRegionResponse } from '../../app/modules/shared/OriginProductRegionResponse';
+import { OriginProductRegionResponse } from '../../app/models/shared/OriginProductRegionResponse';
 import { OriginProductRegion } from '../../domain/entities/origin/OriginProductRegion';
 
 @ApiTags('Origin Product Regions')
@@ -82,20 +82,6 @@ export class OriginProductRegionController {
 		return this.toResponse(region);
 	}
 
-	// @Get(':id')
-	// @ApiOperation({ summary: 'Get origin product region by ID' })
-	// @ApiParam({ name: 'id', description: 'Region ID' })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'The region has been found.',
-	// 	type: OriginProductRegionResponse,
-	// })
-	// @ApiResponse({ status: 404, description: 'Region not found.' })
-	// async getById(@Param('id') id: string): Promise<OriginProductRegionResponse> {
-	// 	const region = await this.getRegionByIdUseCase.execute(id);
-	// 	return this.toResponse(region);
-	// }
-
 	@Public()
 	@Get()
 	@ApiOperation({ summary: 'List all origin product regions' })
@@ -109,36 +95,55 @@ export class OriginProductRegionController {
 		return regions.map((r) => this.toResponse(r));
 	}
 
-	// @Put(':id')
-	// @ApiOperation({ summary: 'Update origin product region' })
-	// @ApiParam({ name: 'id', description: 'Region ID' })
-	// @ApiResponse({
-	// 	status: 200,
-	// 	description: 'The region has been successfully updated.',
-	// 	type: OriginProductRegionResponse,
-	// })
-	// @ApiResponse({ status: 404, description: 'Region not found.' })
-	// @ApiResponse({
-	// 	status: 400,
-	// 	description: 'Bad Request - Region name already exists.',
-	// })
-	// async update(
-	// 	@Param('id') id: string,
-	// 	@Body() dto: UpdateOriginProductRegionDto,
-	// ): Promise<OriginProductRegionResponse> {
-	// 	const region = await this.updateRegionUseCase.execute(id, dto);
-	// 	return this.toResponse(region);
-	// }
+	@Public()
+	@Get(':id')
+	@ApiOperation({ summary: 'Get origin product region by ID' })
+	@ApiParam({ name: 'id', description: 'Region ID' })
+	@ApiResponse({
+		status: 200,
+		description: 'The region has been found.',
+		type: OriginProductRegionResponse,
+	})
+	@ApiResponse({ status: 404, description: 'Region not found.' })
+	async getById(@Param('id') id: string): Promise<OriginProductRegionResponse> {
+		const region = await this.getRegionByIdUseCase.execute(id);
+		return this.toResponse(region);
+	}
 
-	// @Delete(':id')
-	// @HttpCode(HttpStatus.NO_CONTENT)
-	// @ApiOperation({ summary: 'Delete origin product region' })
-	// @ApiParam({ name: 'id', description: 'Region ID' })
-	// @ApiResponse({ status: 204, description: 'The region has been deleted.' })
-	// @ApiResponse({ status: 404, description: 'Region not found.' })
-	// async delete(@Param('id') id: string): Promise<void> {
-	// 	await this.deleteRegionUseCase.execute(id);
-	// }
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Put(':id')
+	@ApiOperation({ summary: 'Update origin product region' })
+	@ApiParam({ name: 'id', description: 'Region ID' })
+	@ApiResponse({
+		status: 200,
+		description: 'The region has been successfully updated.',
+		type: OriginProductRegionResponse,
+	})
+	@ApiResponse({ status: 404, description: 'Region not found.' })
+	@ApiResponse({
+		status: 400,
+		description: 'Bad Request - Region name already exists.',
+	})
+	async update(
+		@Param('id') id: string,
+		@Body() dto: UpdateOriginProductRegionDto,
+	): Promise<OriginProductRegionResponse> {
+		const region = await this.updateRegionUseCase.execute(id, dto);
+		return this.toResponse(region);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Delete(':id')
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@ApiOperation({ summary: 'Delete origin product region' })
+	@ApiParam({ name: 'id', description: 'Region ID' })
+	@ApiResponse({ status: 204, description: 'The region has been deleted.' })
+	@ApiResponse({ status: 404, description: 'Region not found.' })
+	async delete(@Param('id') id: string): Promise<void> {
+		await this.deleteRegionUseCase.execute(id);
+	}
 
 	private toResponse(region: OriginProductRegion): OriginProductRegionResponse {
 		return {
