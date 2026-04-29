@@ -21,6 +21,7 @@ import {
 	AgePricingInfoResponse,
 } from '../../../app/models/experiences/ExperienceDetailResponse';
 import { ExperiencePrices } from '../../../domain/entities/experiences/ExperiencePrices';
+import { ExperienceDurationUnit } from '../../../domain/enums/ExperienceDurationUnit';
 
 interface OwnerInfo {
 	title: string;
@@ -229,12 +230,26 @@ export class ExperienceDetailMapper {
 		photos: MediaItemFullDetail[],
 		ownerInfo: OwnerInfo,
 	): HeroDetailResponse {
+		const durationUnit =
+			experience.basicInfo.durationUnit ?? ExperienceDurationUnit.DAYS;
 		return {
 			title: experience.basicInfo.title,
 			shortDescription: experience.detailInfo.shortDescription,
 			largeDescription: experience.detailInfo.largeDescription,
-			days: experience.basicInfo.days,
-			nights: experience.basicInfo.nights,
+			days:
+				durationUnit === ExperienceDurationUnit.DAYS
+					? experience.basicInfo.days
+					: undefined,
+			nights:
+				durationUnit === ExperienceDurationUnit.DAYS
+					? experience.basicInfo.nights
+					: undefined,
+			hours:
+				durationUnit === ExperienceDurationUnit.HOURS
+					? experience.basicInfo.hours
+					: undefined,
+			durationUnit,
+			ubication: experience.basicInfo.ubication,
 			price,
 			landscapeImgUrl,
 			photos,
@@ -248,18 +263,33 @@ export class ExperienceDetailMapper {
 	static toInformation(
 		experience: Experience,
 		ages: { min: number; max: number },
+		itinerary: ItineraryItemResponse[],
 	): InformationResponse {
+		const firstDay = [...itinerary].sort((a, b) => a.numberDay - b.numberDay)[0];
+		const startTime = firstDay?.schedule?.[0]?.time;
+		const durationUnit =
+			experience.basicInfo.durationUnit ?? ExperienceDurationUnit.DAYS;
+
 		return {
 			minAge: ages.min,
 			maxAge: ages.max,
-			duration: experience.basicInfo.days,
+			duration:
+				durationUnit === ExperienceDurationUnit.HOURS
+					? experience.basicInfo.hours ?? 0
+					: experience.basicInfo.days,
+			durationUnit,
 			languages: experience.basicInfo.languages,
+			startTime,
+			pickupIncluded: experience.basicInfo.includesPickup,
+			accommodationIncluded: experience.basicInfo.includesAccommodation,
+			returnIncluded: experience.basicInfo.includesReturn,
 		};
 	}
 
 	static toQuestionSection(experience: Experience): QuestionSectionResponse {
 		return {
-			includes: experience.detailInfo.includes.join(', '),
+			includes: experience.detailInfo.includes,
+			notIncludes: experience.detailInfo.notIncludes,
 			shouldCarry: experience.detailInfo.shouldCarry,
 			pickupDetail: experience.detailInfo.pickupDetail,
 			returnDetail: experience.detailInfo.returnDetail,
@@ -294,7 +324,11 @@ export class ExperienceDetailMapper {
 				params.photos,
 				params.ownerInfo,
 			),
-			information: this.toInformation(params.experience, params.ages),
+			information: this.toInformation(
+				params.experience,
+				params.ages,
+				params.itinerary,
+			),
 			availability: params.availability,
 			agePricingInfo: params.agePricingInfo,
 			questionSection: this.toQuestionSection(params.experience),

@@ -5,6 +5,7 @@ import { OwnerType } from 'src/andean/domain/enums/OwnerType';
 import { ExperienceLanguage } from 'src/andean/domain/enums/ExperienceLanguage';
 import { WeekDay } from 'src/andean/domain/enums/WeekDay';
 import { AgeGroupCode } from 'src/andean/domain/enums/AgeGroupCode';
+import { ExperienceDurationUnit } from 'src/andean/domain/enums/ExperienceDurationUnit';
 
 // ─── MediaItem Detail (full info) ───────────────────────────────────────
 
@@ -76,17 +77,36 @@ export class HeroDetailResponse {
 	})
 	largeDescription!: string;
 
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'Número de días de la experiencia',
 		example: 3,
 	})
-	days!: number;
+	days?: number;
 
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'Número de noches de la experiencia',
 		example: 2,
 	})
-	nights!: number;
+	nights?: number;
+
+	@ApiPropertyOptional({
+		description: 'Duración en horas de la experiencia (si aplica)',
+		example: 6,
+	})
+	hours?: number;
+
+	@ApiProperty({
+		description: 'Unidad de duración de la experiencia',
+		enum: ExperienceDurationUnit,
+		example: ExperienceDurationUnit.DAYS,
+	})
+	durationUnit!: ExperienceDurationUnit;
+
+	@ApiProperty({
+		description: 'Ubicación de la experiencia',
+		example: 'Cusco, Perú',
+	})
+	ubication!: string;
 
 	@ApiProperty({
 		description: 'Precio del grupo ADULTS (o el único disponible)',
@@ -153,10 +173,17 @@ export class InformationResponse {
 	maxAge!: number;
 
 	@ApiProperty({
-		description: 'Duración de la experiencia en días',
+		description: 'Duración de la experiencia según durationUnit',
 		example: 3,
 	})
 	duration!: number;
+
+	@ApiProperty({
+		description: 'Unidad en la que se expresa la duración',
+		enum: ExperienceDurationUnit,
+		example: ExperienceDurationUnit.DAYS,
+	})
+	durationUnit!: ExperienceDurationUnit;
 
 	@ApiProperty({
 		description: 'Idiomas disponibles para la experiencia',
@@ -165,6 +192,30 @@ export class InformationResponse {
 		example: [ExperienceLanguage.ESPAÑOL, ExperienceLanguage.ENGLISH],
 	})
 	languages!: ExperienceLanguage[];
+
+	@ApiPropertyOptional({
+		description: 'Primera hora del cronograma del primer día',
+		example: '08:00',
+	})
+	startTime?: string;
+
+	@ApiProperty({
+		description: 'Indica si la experiencia incluye recojo',
+		example: true,
+	})
+	pickupIncluded!: boolean;
+
+	@ApiProperty({
+		description: 'Indica si la experiencia incluye alojamiento',
+		example: true,
+	})
+	accommodationIncluded!: boolean;
+
+	@ApiProperty({
+		description: 'Indica si la experiencia incluye retorno',
+		example: true,
+	})
+	returnIncluded!: boolean;
 }
 
 // ─── Availability ───────────────────────────────────────────────────────────
@@ -251,10 +302,18 @@ export class AgePricingInfoResponse {
 
 export class QuestionSectionResponse {
 	@ApiProperty({
-		description: 'Lo que incluye la experiencia (lista separada por comas)',
-		example: 'Transporte desde Cusco, Almuerzo tradicional, Guía bilingüe',
+		description: 'Lo que incluye la experiencia',
+		type: [String],
+		example: ['Transporte desde Cusco', 'Almuerzo tradicional', 'Guía bilingüe'],
 	})
-	includes!: string;
+	includes!: string[];
+
+	@ApiProperty({
+		description: 'Lo que no incluye la experiencia',
+		type: [String],
+		example: ['Seguro de viaje', 'Propinas'],
+	})
+	notIncludes!: string[];
 
 	@ApiPropertyOptional({
 		description: 'Lista de cosas que el participante debe llevar',
@@ -268,23 +327,23 @@ export class QuestionSectionResponse {
 	})
 	shouldCarry?: string[];
 
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'Detalle del punto de recogida',
 		example: 'Hotel en Cusco a las 6:00 AM',
 	})
-	pickupDetail!: string;
+	pickupDetail?: string;
 
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'Detalle del retorno',
 		example: 'Retorno al hotel a las 6:00 PM del último día',
 	})
-	returnDetail!: string;
+	returnDetail?: string;
 
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'Detalle del alojamiento',
 		example: 'Hospedaje en casa comunal con servicios básicos',
 	})
-	accommodationDetail!: string;
+	accommodationDetail?: string;
 
 	@ApiProperty({
 		description: 'Detalle de accesibilidad y nivel de dificultad',
