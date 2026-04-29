@@ -12,6 +12,7 @@ import { ExperienceAvailabilityController } from '../src/andean/infra/controller
 import { UpdatePriceByAgeGroupUseCase } from '../src/andean/app/use_cases/experiences/prices/UpdatePriceByAgeGroupUseCase';
 import { UpdateExcludedDatesUseCase } from '../src/andean/app/use_cases/experiences/availability/UpdateExcludedDatesUseCase';
 import { UpdateAvailableDatesUseCase } from '../src/andean/app/use_cases/experiences/availability/UpdateAvailableDatesUseCase';
+import { GetSharedCapacityByDateRangeUseCase } from '../src/andean/app/use_cases/experiences/availability/GetSharedCapacityByDateRangeUseCase';
 
 import { ExperiencePrices } from '../src/andean/domain/entities/experiences/ExperiencePrices';
 import { ExperienceAvailability } from '../src/andean/domain/entities/experiences/ExperienceAvailability';
@@ -77,6 +78,12 @@ describe('ExperiencePricesController & ExperienceAvailabilityController (e2e)', 
 						handle: jest
 							.fn()
 							.mockResolvedValue(mockAvailabilityAfterAvailablePatch),
+					},
+				},
+				{
+					provide: GetSharedCapacityByDateRangeUseCase,
+					useValue: {
+						handle: jest.fn().mockResolvedValue({ days: [] }),
 					},
 				},
 			],
@@ -475,6 +482,12 @@ describe('ExperiencePricesController & ExperienceAvailabilityController (e2e)', 
 							handle: jest
 								.fn()
 								.mockResolvedValue(mockAvailabilityAfterAvailablePatch),
+						},
+					},
+					{
+						provide: GetSharedCapacityByDateRangeUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue({ days: [] }),
 						},
 					},
 				],

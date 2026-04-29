@@ -124,6 +124,7 @@ export class GetByIdExperienceUseCase {
 			ages,
 			landscapeImgUrl,
 			photos,
+			mediaUrlById,
 			ownerInfo,
 			availability,
 			agePricingInfo,

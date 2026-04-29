@@ -19,6 +19,7 @@ import {
 	QuestionSectionResponse,
 	ExperienceAvailabilityResponse,
 	AgePricingInfoResponse,
+	ItinerarySectionResponse,
 } from '../../../app/models/experiences/ExperienceDetailResponse';
 import { ExperiencePrices } from '../../../domain/entities/experiences/ExperiencePrices';
 import { ExperienceDurationUnit } from '../../../domain/enums/ExperienceDurationUnit';
@@ -301,6 +302,23 @@ export class ExperienceDetailMapper {
 		};
 	}
 
+	static toItinerarySection(
+		experience: Experience,
+		itineraryDays: ItineraryItemResponse[],
+		mediaUrlById: Map<string, string>,
+	): ItinerarySectionResponse {
+		return {
+			ubicationImg: experience.mediaInfo.ubicationImg
+				? mediaUrlById.get(experience.mediaInfo.ubicationImg) || ''
+				: undefined,
+			summary: itineraryDays.map((day) => ({
+				numberDay: day.numberDay,
+				nameDay: day.nameDay,
+			})),
+			days: itineraryDays,
+		};
+	}
+
 	// ── Main response builder ─────────────────────────────────────────
 
 	static toDetailResponse(params: {
@@ -309,6 +327,7 @@ export class ExperienceDetailMapper {
 		ages: { min: number; max: number };
 		landscapeImgUrl: string;
 		photos: MediaItemFullDetail[];
+		mediaUrlById: Map<string, string>;
 		ownerInfo: OwnerInfo;
 		availability: ExperienceAvailabilityResponse;
 		agePricingInfo: AgePricingInfoResponse;
@@ -332,7 +351,11 @@ export class ExperienceDetailMapper {
 			availability: params.availability,
 			agePricingInfo: params.agePricingInfo,
 			questionSection: this.toQuestionSection(params.experience),
-			itinerary: params.itinerary,
+			itinerary: this.toItinerarySection(
+				params.experience,
+				params.itinerary,
+				params.mediaUrlById,
+			),
 			moreExperiences: params.moreExperiences,
 			review: params.review,
 		};

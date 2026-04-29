@@ -421,6 +421,40 @@ export class ItineraryItemResponse {
 	schedule!: ItineraryScheduleResponse[];
 }
 
+export class ItinerarySummaryItemResponse {
+	@ApiProperty({
+		description: 'Número del día en el itinerario',
+		example: 1,
+	})
+	numberDay!: number;
+
+	@ApiProperty({
+		description: 'Nombre/título del día',
+		example: 'Día de llegada - Cusco a Ollantaytambo',
+	})
+	nameDay!: string;
+}
+
+export class ItinerarySectionResponse {
+	@ApiPropertyOptional({
+		description: 'URL resuelta de la imagen de ubicación de la experiencia',
+		example: 'https://storage.example.com/experiences/ubication-map.jpg',
+	})
+	ubicationImg?: string;
+
+	@ApiProperty({
+		description: 'Resumen corto del itinerario por día',
+		type: [ItinerarySummaryItemResponse],
+	})
+	summary!: ItinerarySummaryItemResponse[];
+
+	@ApiProperty({
+		description: 'Itinerario completo de la experiencia por día',
+		type: [ItineraryItemResponse],
+	})
+	days!: ItineraryItemResponse[];
+}
+
 // ─── Review ────────────────────────────────────────────────────────────────
 
 export class ReviewRatingResponse {
@@ -583,10 +617,10 @@ export class ExperienceDetailResponse {
 	questionSection!: QuestionSectionResponse;
 
 	@ApiProperty({
-		description: 'Itinerario completo de la experiencia por día',
-		type: [ItineraryItemResponse],
+		description: 'Itinerario agrupado con imagen de ubicación, resumen y días',
+		type: ItinerarySectionResponse,
 	})
-	itinerary!: ItineraryItemResponse[];
+	itinerary!: ItinerarySectionResponse;
 
 	@ApiProperty({
 		description: '3 experiencias más recientes (excluyendo la actual)',
