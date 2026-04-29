@@ -251,10 +251,14 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 			return [];
 
 		const now = new Date();
-		now.setHours(0, 0, 0, 0);
+		now.setUTCHours(0, 0, 0, 0);
 
 		return [...(availability.specificAvailableStartDates ?? [])]
-			.map((date) => new Date(date))
+			.map((date) => {
+				const normalized = new Date(date);
+				normalized.setUTCHours(0, 0, 0, 0);
+				return normalized;
+			})
 			.filter((date) => date >= now)
 			.sort((a, b) => a.getTime() - b.getTime());
 	}
