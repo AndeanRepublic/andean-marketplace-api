@@ -29,16 +29,22 @@ export class GetAllBoxesForManagementUseCase {
 
 		const data = boxes.map((box) => {
 			const metrics = computeBoxListMetrics(box, dependencies.variantMap);
+			const thumbnailImage = this.boxResolutionService.resolveImage(
+				box.thumbnailImageId,
+				dependencies.mediaMap,
+			);
 			return {
 				id: box.id,
 				name: box.name,
 				slogan: box.slogan,
 				price: box.price,
+				status: box.status,
 				itemCount: {
 					textiles: metrics.textileCount,
 					superfoods: metrics.superfoodCount,
 				},
 				fulfillableQuantity: metrics.fulfillableQuantity,
+				thumbnailImage,
 			};
 		});
 
