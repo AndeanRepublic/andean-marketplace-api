@@ -29,8 +29,11 @@ export class GetFutureUnavailableDatesUseCase {
 		);
 		if (!availability) return [];
 
-		const daysExperience = experience.basicInfo?.days;
-		if (!daysExperience) {
+		const daysExperience =
+			experience.basicInfo?.durationUnit === 'HOURS'
+				? 1
+				: experience.basicInfo?.days;
+		if (!daysExperience || daysExperience < 1) {
 			throw new BadRequestException('Experience days are not available');
 		}
 
