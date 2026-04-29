@@ -27,7 +27,7 @@ export class GetFutureUnavailableDatesUseCase {
 		const availability = await this.availabilityRepository.getById(
 			experience.availabilityId,
 		);
-		if (!availability || !availability.excludedDates?.length) return [];
+		if (!availability) return [];
 
 		const daysExperience = experience.basicInfo?.days;
 		if (!daysExperience) {
@@ -35,7 +35,7 @@ export class GetFutureUnavailableDatesUseCase {
 		}
 
 		const now = new Date();
-		now.setHours(0, 0, 0, 0);
+		now.setUTCHours(0, 0, 0, 0);
 
 		const nonAvailableDates: Date[] = [];
 
@@ -82,12 +82,14 @@ export class GetFutureUnavailableDatesUseCase {
 		fromDate: Date,
 	): Date[] {
 		const date = new Date(blockedDate);
+		date.setUTCHours(0, 0, 0, 0);
 		if (date < fromDate) return [];
 
 		const result: Date[] = [];
 		for (let offset = 0; offset < durationDays; offset++) {
 			const startDate = new Date(date);
-			startDate.setDate(startDate.getDate() - offset);
+			startDate.setUTCDate(startDate.getUTCDate() - offset);
+			startDate.setUTCHours(0, 0, 0, 0);
 			if (startDate >= fromDate) {
 				result.push(startDate);
 			}
@@ -101,12 +103,14 @@ export class GetFutureUnavailableDatesUseCase {
 		fromDate: Date,
 	): Date[] {
 		const date = new Date(blockedDate);
+		date.setUTCHours(0, 0, 0, 0);
 		if (date < fromDate) return [];
 
 		const result: Date[] = [];
 		for (let offset = 0; offset < experienceDays; offset++) {
 			const startDate = new Date(date);
-			startDate.setDate(startDate.getDate() + offset);
+			startDate.setUTCDate(startDate.getUTCDate() + offset);
+			startDate.setUTCHours(0, 0, 0, 0);
 			if (startDate >= fromDate) {
 				result.push(startDate);
 			}

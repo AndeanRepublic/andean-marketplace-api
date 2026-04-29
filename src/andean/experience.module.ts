@@ -32,6 +32,7 @@ import { UpdateExperienceItineraryUseCase } from './app/use_cases/experiences/it
 import { UpdatePriceByAgeGroupUseCase } from './app/use_cases/experiences/prices/UpdatePriceByAgeGroupUseCase';
 import { UpdateExcludedDatesUseCase } from './app/use_cases/experiences/availability/UpdateExcludedDatesUseCase';
 import { UpdateAvailableDatesUseCase } from './app/use_cases/experiences/availability/UpdateAvailableDatesUseCase';
+import { GetSharedCapacityByDateRangeUseCase } from './app/use_cases/experiences/availability/GetSharedCapacityByDateRangeUseCase';
 
 // Main Use Cases
 import { CreateExperienceUseCase } from './app/use_cases/experiences/CreateExperienceUseCase';
@@ -122,6 +123,7 @@ import { GetExperienceForEditUseCase } from './app/use_cases/experiences/GetExpe
 		UpdatePriceByAgeGroupUseCase,
 		UpdateExcludedDatesUseCase,
 		UpdateAvailableDatesUseCase,
+		GetSharedCapacityByDateRangeUseCase,
 
 		// Main Use Cases
 		CreateExperienceUseCase,
