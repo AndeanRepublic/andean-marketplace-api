@@ -5,6 +5,7 @@ import { ExperienceMediaInfoSchema } from './experienceMediaInfo.schema';
 import { ExperienceDetailInfoSchema } from './experienceDetailInfo.schema';
 import { ExperienceLanguage } from 'src/andean/domain/enums/ExperienceLanguage';
 import { OwnerType } from 'src/andean/domain/enums/OwnerType';
+import { ExperienceDurationUnit } from 'src/andean/domain/enums/ExperienceDurationUnit';
 
 export const ExperienceSchema = new Schema({
 	status: {
@@ -29,11 +30,16 @@ export interface ExperienceDocument extends Document {
 		ubication: string;
 		days: number;
 		nights: number;
+		durationUnit: ExperienceDurationUnit;
+		hours?: number;
 		minNumberGroup: number;
 		maxNumberGroup: number;
 		languages: ExperienceLanguage[];
 		ownerType: OwnerType;
 		ownerId: string;
+		includesPickup: boolean;
+		includesAccommodation: boolean;
+		includesReturn: boolean;
 		category?: string;
 	};
 	mediaInfo: {
@@ -47,9 +53,9 @@ export interface ExperienceDocument extends Document {
 		largeDescription: string;
 		includes: string[];
 		notIncludes: string[];
-		pickupDetail: string;
-		returnDetail: string;
-		accommodationDetail: string;
+		pickupDetail?: string;
+		returnDetail?: string;
+		accommodationDetail?: string;
 		accessibilityDetail: string;
 		cancellationPolicy: string;
 		shouldCarry?: string[];
