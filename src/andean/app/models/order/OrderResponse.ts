@@ -97,6 +97,18 @@ export class OrderItemResponse {
 
 	@ApiProperty({ description: 'Precio total', example: 95.0 })
 	totalPrice!: number;
+
+	@ApiPropertyOptional({
+		description: 'URL de la imagen del producto',
+		example: 'https://storage.example.com/products/poncho-123.jpg',
+	})
+	imageUrl?: string;
+
+	@ApiPropertyOptional({
+		description: 'Nombre del vendedor o comunidad propietaria del producto',
+		example: 'Artesanías Andinas Cusco',
+	})
+	ownerName?: string;
 }
 
 export class OrderPricingResponse {
