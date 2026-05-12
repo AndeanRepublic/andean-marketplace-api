@@ -18,4 +18,5 @@ export abstract class AccountRepository {
 		accountId: string,
 		hashedPassword: string,
 	): Promise<void>;
+	abstract updateAccountName(accountId: string, name: string): Promise<void>;
 }
