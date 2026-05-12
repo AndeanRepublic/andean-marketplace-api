@@ -41,7 +41,7 @@ import { SendOrderConfirmationUseCase } from './app/use_cases/email/SendOrderCon
 import { OrderItemEnricher } from './infra/services/order/OrderItemEnricher';
 import { MediaItemModule } from './mediaItem.module';
 import { OwnerNameResolver } from './infra/services/OwnerNameResolver';
-import { ShopModule } from './shop.module';
+import { ShopsModule } from './shop.module';
 import { CommunityModule } from './community.module';
 
 @Module({
@@ -59,7 +59,7 @@ import { CommunityModule } from './community.module';
 		SuperfoodModule,
 		BoxModule,
 		MediaItemModule,
-		ShopModule,
+		ShopsModule,
 		CommunityModule,
 	],
 	controllers: [OrderController],
