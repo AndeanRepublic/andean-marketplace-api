@@ -2,12 +2,14 @@ import { Inject, Injectable, NotFoundException, BadRequestException } from '@nes
 import { OrderRepository } from '../../datastore/order/Order.repo';
 import { Order } from '../../../domain/entities/order/Order';
 import { isValidObjectId } from 'mongoose';
+import { OrderItemEnricher } from '../../../infra/services/order/OrderItemEnricher';
 
 @Injectable()
 export class GetOrderByIdUseCase {
 	constructor(
 		@Inject(OrderRepository)
 		private readonly orderRepository: OrderRepository,
+		private readonly orderItemEnricher: OrderItemEnricher,
 	) { }
 
 	async handle(orderId: string): Promise<Order> {
@@ -21,6 +23,7 @@ export class GetOrderByIdUseCase {
 			throw new NotFoundException('Order not found');
 		}
 
-		return order;
+		const enrichedOrders = await this.orderItemEnricher.enrichOrders([order]);
+		return enrichedOrders[0];
 	}
 }

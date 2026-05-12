@@ -20,6 +20,9 @@ export interface OrderItem {
 	unitPrice: number;
 	discount: number;
 	totalPrice: number;
+	// Enriquecido on-the-fly (no guardado en MongoDB)
+	imageUrl?: string;
+	ownerName?: string;
 }
 
 /**
