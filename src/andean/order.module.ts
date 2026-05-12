@@ -38,6 +38,11 @@ import { SesEmailRepoImpl } from './infra/datastore/email.repo.impl';
 import { ResendClientService } from './infra/services/email/ResendClientService';
 import { ResendEmailRepoImpl } from './infra/datastore/email.resend.impl';
 import { SendOrderConfirmationUseCase } from './app/use_cases/email/SendOrderConfirmationUseCase';
+import { OrderItemEnricher } from './infra/services/order/OrderItemEnricher';
+import { MediaItemModule } from './mediaItem.module';
+import { OwnerNameResolver } from './infra/services/OwnerNameResolver';
+import { ShopsModule } from './shop.module';
+import { CommunityModule } from './community.module';
 
 @Module({
 	imports: [
@@ -53,6 +58,9 @@ import { SendOrderConfirmationUseCase } from './app/use_cases/email/SendOrderCon
 		TextileProductModule,
 		SuperfoodModule,
 		BoxModule,
+		MediaItemModule,
+		ShopsModule,
+		CommunityModule,
 	],
 	controllers: [OrderController],
 	providers: [
@@ -90,6 +98,9 @@ import { SendOrderConfirmationUseCase } from './app/use_cases/email/SendOrderCon
 		SesClientService,
 		ResendClientService,
 		SendOrderConfirmationUseCase,
+		// Order Enrichment
+		OrderItemEnricher,
+		OwnerNameResolver,
 		{
 			provide: EmailRepository,
 			useFactory: (
