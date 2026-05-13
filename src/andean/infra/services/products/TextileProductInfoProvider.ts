@@ -39,4 +39,41 @@ export class TextileProductInfoProvider extends ProductInfoProvider {
 			isDiscountActive: product.isDiscountActive,
 		};
 	}
+
+	async getProductInfoByIds(
+		productIds: string[],
+	): Promise<Map<string, ProductInfo>> {
+		if (productIds.length === 0) {
+			return new Map();
+		}
+
+		// Batch fetch productos
+		const products = await this.textileProductRepository.getByIds(productIds);
+
+		// Extraer mediaIds únicos para batch resolver
+		const mediaIds = products
+			.map((p) => p.baseInfo.mediaIds[0])
+			.filter((id): id is string => Boolean(id));
+
+		const mediaUrlMap = await this.mediaUrlResolver.resolveUrls(mediaIds);
+
+		// Mapear productos a ProductInfo
+		const result = new Map<string, ProductInfo>();
+		for (const product of products) {
+			const primaryMediaId = product.baseInfo.mediaIds[0];
+			const thumbnailImgUrl = primaryMediaId
+				? mediaUrlMap.get(primaryMediaId) || ''
+				: '';
+
+			result.set(product.id, {
+				title: product.baseInfo.title,
+				thumbnailImgUrl,
+				ownerType: product.baseInfo.ownerType,
+				ownerId: product.baseInfo.ownerId,
+				isDiscountActive: product.isDiscountActive,
+			});
+		}
+
+		return result;
+	}
 }

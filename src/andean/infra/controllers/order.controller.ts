@@ -55,7 +55,7 @@ export class OrderController {
 		private readonly getAllOrdersUseCase: GetAllOrdersUseCase,
 	) {}
 
-	@Public()
+	// @Public()
 	// @Post('')
 	// @ApiOperation({
 	// 	summary: 'Crear orden',
@@ -103,7 +103,8 @@ export class OrderController {
 	@Get('/')
 	@ApiOperation({
 		summary: 'Obtener todas las órdenes',
-		description: 'Recupera todas las órdenes del sistema. Solo administradores.',
+		description:
+			'Recupera todas las órdenes del sistema. Solo administradores.',
 	})
 	@ApiResponse({
 		status: 200,

@@ -55,4 +55,37 @@ export class ProductInfoProviderRegistry {
 
 		return productInfo;
 	}
+
+	/**
+	 * Obtiene información de múltiples productos agrupados por tipo en batch.
+	 * Procesa cada tipo en paralelo para máxima performance.
+	 * @param productsByType - Map de ProductType -> array de productIds
+	 * @returns Map de productId -> ProductInfo (excluye productos no encontrados)
+	 */
+	async getProductInfoBatch(
+		productsByType: Map<ProductType, string[]>,
+	): Promise<Map<string, ProductInfo>> {
+		const allResults = new Map<string, ProductInfo>();
+
+		// Procesar cada tipo de producto en paralelo
+		const promises = Array.from(productsByType.entries()).map(
+			async ([productType, productIds]) => {
+				const provider = this.providers.find((p) => p.supports(productType));
+
+				if (!provider) {
+					// Tipo no soportado, productos no se enriquecen (quedan sin ProductInfo)
+					return;
+				}
+
+				const results = await provider.getProductInfoByIds(productIds);
+				results.forEach((productInfo, productId) => {
+					allResults.set(productId, productInfo);
+				});
+			},
+		);
+
+		await Promise.all(promises);
+
+		return allResults;
+	}
 }

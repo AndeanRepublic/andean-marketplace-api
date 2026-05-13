@@ -40,4 +40,40 @@ export class BoxProductInfoProvider extends ProductInfoProvider {
 			isDiscountActive: false,
 		};
 	}
+
+	async getProductInfoByIds(
+		productIds: string[],
+	): Promise<Map<string, ProductInfo>> {
+		if (productIds.length === 0) {
+			return new Map();
+		}
+
+		// Batch fetch boxes
+		const boxes = await this.boxRepository.getByIdsInOrder(productIds);
+
+		// Extraer thumbnailImageIds únicos para batch resolver
+		const mediaIds = boxes
+			.map((b) => b.thumbnailImageId)
+			.filter((id): id is string => Boolean(id));
+
+		const mediaUrlMap = await this.mediaUrlResolver.resolveUrls(mediaIds);
+
+		// Mapear boxes a ProductInfo
+		const result = new Map<string, ProductInfo>();
+		for (const box of boxes) {
+			const thumbnailImgUrl = box.thumbnailImageId
+				? mediaUrlMap.get(box.thumbnailImageId) || ''
+				: '';
+
+			result.set(box.id, {
+				title: box.name,
+				thumbnailImgUrl,
+				ownerType: '',
+				ownerId: '',
+				isDiscountActive: false,
+			});
+		}
+
+		return result;
+	}
 }
