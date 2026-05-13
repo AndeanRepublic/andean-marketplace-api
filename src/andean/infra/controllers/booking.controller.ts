@@ -14,15 +14,18 @@ import { JwtAuthGuard } from '../core/jwtAuth.guard';
 import { RolesGuard } from '../core/roles.guard';
 import { Roles } from '../core/roles.decorator';
 import { AccountRole } from '../../domain/enums/AccountRole';
+import { BookingStatus } from '../../domain/enums/BookingStatus';
 import {
 	ApiTags,
 	ApiOperation,
 	ApiResponse,
 	ApiParam,
 	ApiBody,
+	ApiBearerAuth,
 	ApiQuery,
 } from '@nestjs/swagger';
 import { Public } from '../core/public.decorator';
+import { CurrentUser } from '../core/current-user.decorator';
 import { CreateBookingUseCase } from '../../app/use_cases/bookings/CreateBookingUseCase';
 import { CreatePayPalBookingOrderUseCase } from '../../app/use_cases/bookings/CreatePayPalBookingOrderUseCase';
 import { CapturePayPalBookingUseCase } from '../../app/use_cases/bookings/CapturePayPalBookingUseCase';
@@ -30,6 +33,7 @@ import { GetBookingByIdUseCase } from '../../app/use_cases/bookings/GetBookingBy
 import { GetBookingsByCustomerUseCase } from '../../app/use_cases/bookings/GetBookingsByCustomerUseCase';
 import { GetBookingsByEmailUseCase } from '../../app/use_cases/bookings/GetBookingsByEmailUseCase';
 import { UpdateBookingStatusUseCase } from '../../app/use_cases/bookings/UpdateBookingStatusUseCase';
+import { ListBookingsForManagementUseCase } from '../../app/use_cases/bookings/ListBookingsForManagementUseCase';
 import { CreateBookingDto } from './dto/booking/CreateBookingDto';
 import { UpdateBookingDto } from './dto/booking/UpdateBookingDto';
 import { Booking } from '../../domain/entities/booking/Booking';
@@ -38,6 +42,7 @@ import { BookingErrorResponse } from '../../app/models/booking/BookingErrorRespo
 import { CreatePayPalBookingOrderDto } from './dto/booking/CreatePayPalBookingOrderDto';
 import { CapturePayPalBookingDto } from './dto/booking/CapturePayPalBookingDto';
 import { CapturePayPalBookingResponse } from '../../app/use_cases/bookings/CapturePayPalBookingUseCase';
+import { ListBookingsManagementQueryDto } from './dto/booking/ListBookingsManagementQueryDto';
 
 @ApiTags('bookings')
 @Controller('bookings')
@@ -50,6 +55,7 @@ export class BookingController {
 		private readonly getBookingsByCustomerUseCase: GetBookingsByCustomerUseCase,
 		private readonly getBookingsByEmailUseCase: GetBookingsByEmailUseCase,
 		private readonly updateBookingStatusUseCase: UpdateBookingStatusUseCase,
+		private readonly listBookingsForManagementUseCase: ListBookingsForManagementUseCase,
 	) {}
 
 	@Public()
@@ -134,6 +140,41 @@ export class BookingController {
 		@Body() body: CapturePayPalBookingDto,
 	): Promise<CapturePayPalBookingResponse> {
 		return this.capturePayPalBookingUseCase.handle(body);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@ApiBearerAuth('JWT-auth')
+	@Get('management')
+	@ApiOperation({
+		summary: 'Listar bookings (gestión)',
+		description:
+			'ADMIN: todos los bookings. SELLER: solo reservas de experiencias cuyo dueño coincide con sus tiendas o comunidades vinculadas. Filtro opcional por estado(es) vía query `status` (repetible).',
+	})
+	@ApiQuery({
+		name: 'status',
+		required: false,
+		isArray: true,
+		enum: BookingStatus,
+		description:
+			'Filtrar por uno o más estados (ej. ?status=PENDING&status=CONFIRMED). Si se omite, se incluyen todos los estados.',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista de bookings',
+		type: [BookingResponse],
+	})
+	@ApiResponse({ status: 401, description: 'No autenticado' })
+	@ApiResponse({ status: 403, description: 'Sin permiso o vendedor sin perfil' })
+	async listForManagement(
+		@CurrentUser() user: { userId: string; roles: AccountRole[] },
+		@Query() query: ListBookingsManagementQueryDto,
+	): Promise<Booking[]> {
+		return this.listBookingsForManagementUseCase.handle(
+			user.userId,
+			user.roles,
+			query.status,
+		);
 	}
 
 	@Public()

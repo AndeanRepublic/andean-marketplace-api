@@ -16,6 +16,7 @@ import { GetBookingByIdUseCase } from '../src/andean/app/use_cases/bookings/GetB
 import { GetBookingsByCustomerUseCase } from '../src/andean/app/use_cases/bookings/GetBookingsByCustomerUseCase';
 import { GetBookingsByEmailUseCase } from '../src/andean/app/use_cases/bookings/GetBookingsByEmailUseCase';
 import { UpdateBookingStatusUseCase } from '../src/andean/app/use_cases/bookings/UpdateBookingStatusUseCase';
+import { ListBookingsForManagementUseCase } from '../src/andean/app/use_cases/bookings/ListBookingsForManagementUseCase';
 import { BookingStatus } from '../src/andean/domain/enums/BookingStatus';
 
 describe('BookingController (e2e) — Pattern C authorization', () => {
@@ -76,6 +77,10 @@ describe('BookingController (e2e) — Pattern C authorization', () => {
 				{
 					provide: UpdateBookingStatusUseCase,
 					useValue: { handle: jest.fn().mockResolvedValue(mockBooking) },
+				},
+				{
+					provide: ListBookingsForManagementUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue([mockBooking]) },
 				},
 			],
 		})
@@ -145,6 +150,92 @@ describe('BookingController (e2e) — Pattern C authorization', () => {
 			await request(app.getHttpServer())
 				.put(`/bookings/${bookingId}/status`)
 				.send(mockUpdateStatusDto)
+				.expect(HttpStatus.UNAUTHORIZED);
+
+			await app.close();
+		});
+	});
+
+	describe('GET /bookings/management', () => {
+		it('should return 200 and list for ADMIN', async () => {
+			const app = await buildApp(mockAuthUsers.admin, true);
+			const uc = app.get(ListBookingsForManagementUseCase);
+			jest.spyOn(uc, 'handle').mockResolvedValueOnce([mockBooking] as any);
+
+			await request(app.getHttpServer())
+				.get('/bookings/management')
+				.expect(HttpStatus.OK);
+
+			expect(uc.handle).toHaveBeenCalledWith(
+				mockAuthUsers.admin.userId,
+				mockAuthUsers.admin.roles,
+				undefined,
+			);
+
+			await app.close();
+		});
+
+		it('should pass status filter to use case when query params are valid', async () => {
+			const app = await buildApp(mockAuthUsers.admin, true);
+			const uc = app.get(ListBookingsForManagementUseCase);
+			jest.spyOn(uc, 'handle').mockResolvedValueOnce([mockBooking] as any);
+
+			await request(app.getHttpServer())
+				.get('/bookings/management')
+				.query({
+					status: [BookingStatus.PENDING, BookingStatus.CONFIRMED],
+				})
+				.expect(HttpStatus.OK);
+
+			expect(uc.handle).toHaveBeenCalledWith(
+				mockAuthUsers.admin.userId,
+				mockAuthUsers.admin.roles,
+				[BookingStatus.PENDING, BookingStatus.CONFIRMED],
+			);
+
+			await app.close();
+		});
+
+		it('should return 400 for invalid status value', async () => {
+			const app = await buildApp(mockAuthUsers.admin, true);
+
+			await request(app.getHttpServer())
+				.get('/bookings/management')
+				.query({ status: 'NOT_A_REAL_STATUS' })
+				.expect(HttpStatus.BAD_REQUEST);
+
+			await app.close();
+		});
+
+		it('should return 200 for SELLER when roles guard allows', async () => {
+			const app = await buildApp(mockAuthUsers.seller, true);
+			const uc = app.get(ListBookingsForManagementUseCase);
+			jest.spyOn(uc, 'handle').mockResolvedValueOnce([]);
+
+			await request(app.getHttpServer())
+				.get('/bookings/management')
+				.expect(HttpStatus.OK);
+
+			expect(uc.handle).toHaveBeenCalled();
+
+			await app.close();
+		});
+
+		it('should return 403 when USER calls management list', async () => {
+			const app = await buildApp(mockAuthUsers.customer, false);
+
+			await request(app.getHttpServer())
+				.get('/bookings/management')
+				.expect(HttpStatus.FORBIDDEN);
+
+			await app.close();
+		});
+
+		it('should return 401 when no token is provided', async () => {
+			const app = await buildApp(null, true);
+
+			await request(app.getHttpServer())
+				.get('/bookings/management')
 				.expect(HttpStatus.UNAUTHORIZED);
 
 			await app.close();
