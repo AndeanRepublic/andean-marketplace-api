@@ -15,6 +15,7 @@ import { ExperienceAvailabilityDocument } from '../../persistence/experiences/ex
 import { ExperienceAvailabilityRepository } from 'src/andean/app/datastore/experiences/ExperienceAvailability.repo';
 import { WeekDay } from 'src/andean/domain/enums/WeekDay';
 import { ExperienceStatus } from 'src/andean/domain/enums/ExperienceStatus';
+import { OwnerType } from 'src/andean/domain/enums/OwnerType';
 
 @Injectable()
 export class ExperienceRepositoryImpl extends ExperienceRepository {
@@ -138,16 +139,16 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 				? [{ $match: { adultsPrice: { $lte: filters.maxPrice } } }]
 				: []),
 
-			// 5. Lookup MediaItem for landscapeImg (mediaInfo ya está embebido)
+			// 5. Lookup MediaItem for thumbnailImg (mediaInfo ya está embebido)
 			{
 				$addFields: {
-					landscapeImgOid: { $toObjectId: '$mediaInfo.landscapeImg' },
+					thumbnailImgOid: { $toObjectId: '$mediaInfo.thumbnailImg' },
 				},
 			},
 			{
 				$lookup: {
 					from: 'mediaitems',
-					localField: 'landscapeImgOid',
+					localField: 'thumbnailImgOid',
 					foreignField: '_id',
 					as: 'mainImageData',
 				},
@@ -272,5 +273,33 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 			.findByIdAndUpdate(objectId, { $set: { status, updatedAt: new Date() } }, { new: true })
 			.exec();
 		return updated ? ExperienceMapper.fromDocument(updated) : null;
+	}
+
+	async findIdsByShopOrCommunityOwners(
+		shopIds: string[],
+		communityIds: string[],
+	): Promise<string[]> {
+		const or: Record<string, unknown>[] = [];
+		if (shopIds.length) {
+			or.push({
+				'basicInfo.ownerType': OwnerType.SHOP,
+				'basicInfo.ownerId': { $in: shopIds },
+			});
+		}
+		if (communityIds.length) {
+			or.push({
+				'basicInfo.ownerType': OwnerType.COMMUNITY,
+				'basicInfo.ownerId': { $in: communityIds },
+			});
+		}
+		if (!or.length) {
+			return [];
+		}
+		const docs = await this.model
+			.find({ $or: or })
+			.select({ _id: 1 })
+			.lean()
+			.exec();
+		return docs.map((d) => d._id.toString());
 	}
 }
