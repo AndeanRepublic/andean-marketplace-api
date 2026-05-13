@@ -13,4 +13,7 @@ export abstract class CommunityRepository {
 	abstract delete(id: string): Promise<boolean>;
 	abstract getByIds(ids: string[]): Promise<Community[]>;
 	abstract updateStatus(id: string, status: AdminEntityStatus): Promise<Community | null>;
+	abstract findIdsByProviderInfoIdIn(
+		providerInfoIds: string[],
+	): Promise<string[]>;
 }
