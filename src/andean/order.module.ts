@@ -133,6 +133,6 @@ import { SellerOrderFilterStrategy } from './infra/services/order/SellerOrderFil
 			inject: [ConfigService, ResendClientService, SesClientService],
 		},
 	],
-	exports: [OrderRepository],
+	exports: [OrderRepository, EmailRepository],
 })
 export class OrdersModule {}

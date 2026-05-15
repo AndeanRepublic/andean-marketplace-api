@@ -16,6 +16,7 @@ import { UsersModule } from './users.module';
 import { ShopsModule } from './shop.module';
 import { CommunityModule } from './community.module';
 import { ExperienceModule } from './experience.module';
+import { OrdersModule } from './order.module';
 import { GetFutureUnavailableDatesUseCase } from './app/use_cases/experiences/GetFutureUnavailableDatesUseCase';
 import { PayPalClientService } from './infra/services/paypal/PayPalClientService';
 import { CreatePayPalOrderService } from './infra/services/paypal/CreatePayPalOrderService';
@@ -32,6 +33,7 @@ import { BookingRepositoryImpl } from './infra/datastore/booking/booking.repo.im
 		UsersModule,
 		ShopsModule,
 		CommunityModule,
+		OrdersModule,
 		forwardRef(() => ExperienceModule),
 	],
 	controllers: [BookingController],
