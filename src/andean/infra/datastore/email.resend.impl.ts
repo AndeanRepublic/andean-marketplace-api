@@ -20,10 +20,16 @@ export class ResendEmailRepoImpl extends EmailRepository {
 	async sendOrderConfirmation(
 		payload: SendOrderConfirmationPayload,
 	): Promise<void> {
-		const { to, data } = payload;
+		const { to, cc, data } = payload;
 
 		const senderEmail = this.resendClientService.getSenderEmail();
 		const senderName = this.resendClientService.getSenderName();
+
+		// Agregar CC solo en producción
+		const ccEmails =
+			process.env.NODE_ENV !== 'development'
+				? ['hola@andeanrepublic.com']
+				: undefined;
 
 		try {
 			const { data: resendData, error } = await this.resendClientService
@@ -31,6 +37,7 @@ export class ResendEmailRepoImpl extends EmailRepository {
 				.emails.send({
 					from: `${senderName} <${senderEmail}>`,
 					to: to,
+					cc: ccEmails,
 					subject: `Order Confirmation #${data.orderNumber}`,
 					react: React.createElement(OrderConfirmationTemplate, { data }),
 				});
