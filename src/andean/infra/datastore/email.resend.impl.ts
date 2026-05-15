@@ -4,10 +4,12 @@ import {
 	EmailRepository,
 	SendOrderConfirmationPayload,
 	SendPasswordResetPayload,
+	SendBookingConfirmationPayload,
 } from '../../app/datastore/Email.repo';
 import { ResendClientService } from '../services/email/ResendClientService';
 import { OrderConfirmationTemplate } from '../services/email/templates/OrderConfirmationTemplate';
 import { PasswordResetCodeTemplate } from '../services/email/templates/PasswordResetCodeTemplate';
+import { BookingConfirmationTemplate } from '../services/email/templates/BookingConfirmationTemplate';
 
 @Injectable()
 export class ResendEmailRepoImpl extends EmailRepository {
@@ -17,6 +19,16 @@ export class ResendEmailRepoImpl extends EmailRepository {
 		super();
 	}
 
+	/**
+	 * Returns admin CC emails for production environments.
+	 * @returns Array of admin emails if in production, undefined otherwise
+	 */
+	private getAdminCcEmails(): string[] | undefined {
+		return process.env.NODE_ENV !== 'development'
+			? ['hola@andeanrepublic.com']
+			: undefined;
+	}
+
 	async sendOrderConfirmation(
 		payload: SendOrderConfirmationPayload,
 	): Promise<void> {
@@ -24,12 +36,7 @@ export class ResendEmailRepoImpl extends EmailRepository {
 
 		const senderEmail = this.resendClientService.getSenderEmail();
 		const senderName = this.resendClientService.getSenderName();
-
-		// Agregar CC solo en producción
-		const ccEmails =
-			process.env.NODE_ENV !== 'development'
-				? ['hola@andeanrepublic.com']
-				: undefined;
+		const ccEmails = this.getAdminCcEmails();
 
 		try {
 			const { data: resendData, error } = await this.resendClientService
@@ -89,6 +96,44 @@ export class ResendEmailRepoImpl extends EmailRepository {
 		} catch (error) {
 			this.logger.error(
 				`Error sending password reset to ${to}: ${error.message}`,
+			);
+			throw error;
+		}
+	}
+
+	async sendBookingConfirmation(
+		payload: SendBookingConfirmationPayload,
+	): Promise<void> {
+		const { to, cc, data } = payload;
+
+		const senderEmail = this.resendClientService.getSenderEmail();
+		const senderName = this.resendClientService.getSenderName();
+		const ccEmails = this.getAdminCcEmails();
+
+		try {
+			const { data: resendData, error } = await this.resendClientService
+				.getClient()
+				.emails.send({
+					from: `${senderName} <${senderEmail}>`,
+					to: to,
+					cc: ccEmails,
+					subject: `Booking Confirmation #${data.bookingNumber}`,
+					react: React.createElement(BookingConfirmationTemplate, { data }),
+				});
+
+			if (error) {
+				this.logger.error(
+					`[provider=resend] Failed to send booking confirmation email to ${to}: ${error.message}`,
+				);
+				throw new Error(`Resend error: ${error.message}`);
+			}
+
+			this.logger.log(
+				`[provider=resend] Booking confirmation email sent to ${to} for booking #${data.bookingNumber}`,
+			);
+		} catch (error) {
+			this.logger.error(
+				`Error sending booking confirmation to ${to}: ${error.message}`,
 			);
 			throw error;
 		}
