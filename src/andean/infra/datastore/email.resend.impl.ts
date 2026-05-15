@@ -19,6 +19,16 @@ export class ResendEmailRepoImpl extends EmailRepository {
 		super();
 	}
 
+	/**
+	 * Returns admin CC emails for production environments.
+	 * @returns Array of admin emails if in production, undefined otherwise
+	 */
+	private getAdminCcEmails(): string[] | undefined {
+		return process.env.NODE_ENV !== 'development'
+			? ['hola@andeanrepublic.com']
+			: undefined;
+	}
+
 	async sendOrderConfirmation(
 		payload: SendOrderConfirmationPayload,
 	): Promise<void> {
@@ -26,12 +36,7 @@ export class ResendEmailRepoImpl extends EmailRepository {
 
 		const senderEmail = this.resendClientService.getSenderEmail();
 		const senderName = this.resendClientService.getSenderName();
-
-		// Agregar CC solo en producción
-		const ccEmails =
-			process.env.NODE_ENV !== 'development'
-				? ['hola@andeanrepublic.com']
-				: undefined;
+		const ccEmails = this.getAdminCcEmails();
 
 		try {
 			const { data: resendData, error } = await this.resendClientService
@@ -103,12 +108,7 @@ export class ResendEmailRepoImpl extends EmailRepository {
 
 		const senderEmail = this.resendClientService.getSenderEmail();
 		const senderName = this.resendClientService.getSenderName();
-
-		// Agregar CC solo en producción
-		const ccEmails =
-			process.env.NODE_ENV !== 'development'
-				? ['hola@andeanrepublic.com']
-				: undefined;
+		const ccEmails = this.getAdminCcEmails();
 
 		try {
 			const { data: resendData, error } = await this.resendClientService

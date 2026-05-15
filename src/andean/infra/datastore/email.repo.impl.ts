@@ -21,6 +21,16 @@ export class SesEmailRepoImpl extends EmailRepository {
 		super();
 	}
 
+	/**
+	 * Returns admin CC emails for production environments.
+	 * @returns Array of admin emails if in production, empty array otherwise
+	 */
+	private getAdminCcEmails(): string[] {
+		return process.env.NODE_ENV !== 'development'
+			? ['hola@andeanrepublic.com']
+			: [];
+	}
+
 	async sendOrderConfirmation(
 		payload: SendOrderConfirmationPayload,
 	): Promise<void> {
@@ -32,12 +42,7 @@ export class SesEmailRepoImpl extends EmailRepository {
 
 		const senderEmail = this.sesClientService.getSenderEmail();
 		const senderName = this.sesClientService.getSenderName();
-
-		// Agregar CC solo en producción
-		const ccAddresses =
-			process.env.NODE_ENV !== 'development'
-				? ['hola@andeanrepublic.com']
-				: [];
+		const ccAddresses = this.getAdminCcEmails();
 
 		const command = new SendEmailCommand({
 			Destination: {
@@ -111,12 +116,7 @@ export class SesEmailRepoImpl extends EmailRepository {
 
 		const senderEmail = this.sesClientService.getSenderEmail();
 		const senderName = this.sesClientService.getSenderName();
-
-		// Agregar CC solo en producción
-		const ccAddresses =
-			process.env.NODE_ENV !== 'development'
-				? ['hola@andeanrepublic.com']
-				: [];
+		const ccAddresses = this.getAdminCcEmails();
 
 		const command = new SendEmailCommand({
 			Destination: {
