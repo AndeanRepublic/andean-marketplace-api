@@ -168,4 +168,27 @@ export class OrderRepositoryImpl extends OrderRepository {
 
 		return this.createOrder(order);
 	}
+
+	async getPaginatedOrders(
+		filter: Record<string, any>,
+		page: number,
+		perPage: number,
+	): Promise<{ orders: Order[]; total: number }> {
+		const skip = (page - 1) * perPage;
+
+		// Ejecutar query y count en paralelo
+		const [docs, total] = await Promise.all([
+			this.orderModel
+				.find(filter)
+				.sort({ createdAt: -1 })
+				.skip(skip)
+				.limit(perPage)
+				.exec(),
+			this.orderModel.countDocuments(filter).exec(),
+		]);
+
+		const orders = docs.map((doc) => OrderMapper.fromDocument(doc));
+
+		return { orders, total };
+	}
 }
