@@ -18,6 +18,7 @@ export interface OrderConfirmationEmailData {
 
 export interface SendOrderConfirmationPayload {
 	to: string;
+	cc?: string[];
 	data: OrderConfirmationEmailData;
 }
 

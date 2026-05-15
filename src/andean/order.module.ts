@@ -43,6 +43,8 @@ import { MediaItemModule } from './mediaItem.module';
 import { OwnerNameResolver } from './infra/services/OwnerNameResolver';
 import { ShopsModule } from './shop.module';
 import { CommunityModule } from './community.module';
+import { AdminOrderFilterStrategy } from './infra/services/order/AdminOrderFilterStrategy';
+import { SellerOrderFilterStrategy } from './infra/services/order/SellerOrderFilterStrategy';
 
 @Module({
 	imports: [
@@ -101,6 +103,9 @@ import { CommunityModule } from './community.module';
 		// Order Enrichment
 		OrderItemEnricher,
 		OwnerNameResolver,
+		// Order Filter Strategies
+		AdminOrderFilterStrategy,
+		SellerOrderFilterStrategy,
 		{
 			provide: EmailRepository,
 			useFactory: (

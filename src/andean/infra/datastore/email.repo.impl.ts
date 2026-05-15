@@ -22,7 +22,7 @@ export class SesEmailRepoImpl extends EmailRepository {
 	async sendOrderConfirmation(
 		payload: SendOrderConfirmationPayload,
 	): Promise<void> {
-		const { to, data } = payload;
+		const { to, cc, data } = payload;
 
 		const html = await render(
 			React.createElement(OrderConfirmationTemplate, { data }),
@@ -31,9 +31,16 @@ export class SesEmailRepoImpl extends EmailRepository {
 		const senderEmail = this.sesClientService.getSenderEmail();
 		const senderName = this.sesClientService.getSenderName();
 
+		// Agregar CC solo en producción
+		const ccAddresses =
+			process.env.NODE_ENV !== 'development'
+				? ['hola@andeanrepublic.com']
+				: [];
+
 		const command = new SendEmailCommand({
 			Destination: {
 				ToAddresses: [to],
+				CcAddresses: ccAddresses.length > 0 ? ccAddresses : undefined,
 			},
 			Source: `${senderName} <${senderEmail}>`,
 			Message: {
