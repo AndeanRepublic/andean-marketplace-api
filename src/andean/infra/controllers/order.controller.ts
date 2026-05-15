@@ -125,6 +125,34 @@ export class OrderController {
 	@ApiResponse({
 		status: 200,
 		description: 'Lista de órdenes paginada obtenida exitosamente',
+		schema: {
+			type: 'object',
+			properties: {
+				data: {
+					type: 'array',
+					items: { $ref: '#/components/schemas/OrderResponse' },
+				},
+				pagination: {
+					type: 'object',
+					properties: {
+						total: { type: 'number', example: 50 },
+						page: { type: 'number', example: 1 },
+						per_page: { type: 'number', example: 10 },
+						total_pages: { type: 'number', example: 5 },
+					},
+				},
+			},
+		},
+	})
+	@ApiResponse({
+		status: 401,
+		description: 'No autenticado - Token faltante o inválido',
+		type: OrderErrorResponse,
+	})
+	@ApiResponse({
+		status: 403,
+		description: 'No autorizado - Rol insuficiente (requiere ADMIN o SELLER)',
+		type: OrderErrorResponse,
 	})
 	async getAll(
 		@Query('page') page?: number,
