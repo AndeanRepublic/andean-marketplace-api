@@ -5,9 +5,11 @@ import { ResendEmailRepoImpl } from './email.resend.impl';
 import { ResendClientService } from '../services/email/ResendClientService';
 import { OrderConfirmationTemplate } from '../services/email/templates/OrderConfirmationTemplate';
 import { PasswordResetCodeTemplate } from '../services/email/templates/PasswordResetCodeTemplate';
+import { BookingConfirmationTemplate } from '../services/email/templates/BookingConfirmationTemplate';
 import {
 	SendOrderConfirmationPayload,
 	SendPasswordResetPayload,
+	SendBookingConfirmationPayload,
 } from '../../app/datastore/Email.repo';
 
 describe('ResendEmailRepoImpl', () => {
@@ -218,6 +220,108 @@ describe('ResendEmailRepoImpl', () => {
 
 			expect(logSpy).toHaveBeenCalledWith(
 				expect.stringContaining('[provider=resend]'),
+			);
+		});
+	});
+
+	describe('sendBookingConfirmation', () => {
+		const payload: SendBookingConfirmationPayload = {
+			to: 'customer@example.com',
+			data: {
+				bookingNumber: 'BK-20260514-001',
+				bookingDate: new Date('2026-05-14'),
+				customerName: 'John Doe',
+				experienceName: 'Machu Picchu Adventure Trek',
+				experienceDate: new Date('2026-06-15'),
+				days: 4,
+				nights: 3,
+				ageGroups: [
+					{
+						label: 'Adult (18-64 years)',
+						quantity: 2,
+						unitPrice: 450,
+						total: 900,
+					},
+					{
+						label: 'Child (5-17 years)',
+						quantity: 1,
+						unitPrice: 300,
+						total: 300,
+					},
+				],
+				totalGuests: 3,
+				pricing: {
+					subtotal: 1200,
+					total: 1200,
+				},
+			},
+		};
+
+		it('should send booking confirmation with correct data', async () => {
+			mockSend.mockResolvedValue({ data: { id: 'email-789' }, error: null });
+
+			await emailRepo.sendBookingConfirmation(payload);
+
+			expect(mockSend).toHaveBeenCalledTimes(1);
+			const callArgs = mockSend.mock.calls[0][0];
+			expect(callArgs.to).toBe('customer@example.com');
+			expect(callArgs.subject).toBe(
+				`Booking Confirmation #${payload.data.bookingNumber}`,
+			);
+			expect(callArgs.from).toBe('Andean Marketplace <sender@example.com>');
+		});
+
+		it('should use react property with BookingConfirmationTemplate', async () => {
+			mockSend.mockResolvedValue({ data: { id: 'email-789' }, error: null });
+
+			await emailRepo.sendBookingConfirmation(payload);
+
+			const callArgs = mockSend.mock.calls[0][0];
+			expect(callArgs).toHaveProperty('react');
+			expect(callArgs).not.toHaveProperty('html');
+			const reactElement = callArgs.react;
+			expect(reactElement.type).toBe(BookingConfirmationTemplate);
+			expect(reactElement.props).toEqual({ data: payload.data });
+		});
+
+		it('should include CC to admin email only when NODE_ENV !== development', async () => {
+			const originalEnv = process.env.NODE_ENV;
+			mockSend.mockResolvedValue({ data: { id: 'email-789' }, error: null });
+
+			// Test production
+			process.env.NODE_ENV = 'production';
+			await emailRepo.sendBookingConfirmation(payload);
+			let callArgs = mockSend.mock.calls[0][0];
+			expect(callArgs.cc).toEqual(['hola@andeanrepublic.com']);
+
+			mockSend.mockClear();
+
+			// Test development
+			process.env.NODE_ENV = 'development';
+			await emailRepo.sendBookingConfirmation(payload);
+			callArgs = mockSend.mock.calls[0][0];
+			expect(callArgs.cc).toBeUndefined();
+
+			// Restore
+			process.env.NODE_ENV = originalEnv;
+		});
+
+		it('should throw error when resend returns error response', async () => {
+			mockSend.mockResolvedValue({
+				data: null,
+				error: { message: 'Email service unavailable' },
+			});
+
+			await expect(emailRepo.sendBookingConfirmation(payload)).rejects.toThrow(
+				'Resend error: Email service unavailable',
+			);
+		});
+
+		it('should re-throw when resend client throws', async () => {
+			mockSend.mockRejectedValue(new Error('Network timeout'));
+
+			await expect(emailRepo.sendBookingConfirmation(payload)).rejects.toThrow(
+				'Network timeout',
 			);
 		});
 	});

@@ -31,9 +31,39 @@ export interface SendPasswordResetPayload {
 	data: PasswordResetEmailData;
 }
 
+export interface BookingConfirmationEmailData {
+	bookingNumber: string;
+	bookingDate: Date;
+	customerName: string;
+	experienceName: string;
+	experienceDate: Date;
+	days: number;
+	nights: number;
+	ageGroups: Array<{
+		label: string;
+		quantity: number;
+		unitPrice: number;
+		total: number;
+	}>;
+	totalGuests: number;
+	pricing: {
+		subtotal: number;
+		total: number;
+	};
+}
+
+export interface SendBookingConfirmationPayload {
+	to: string;
+	cc?: string[];
+	data: BookingConfirmationEmailData;
+}
+
 export abstract class EmailRepository {
 	abstract sendOrderConfirmation(
 		payload: SendOrderConfirmationPayload,
 	): Promise<void>;
 	abstract sendPasswordReset(payload: SendPasswordResetPayload): Promise<void>;
+	abstract sendBookingConfirmation(
+		payload: SendBookingConfirmationPayload,
+	): Promise<void>;
 }
