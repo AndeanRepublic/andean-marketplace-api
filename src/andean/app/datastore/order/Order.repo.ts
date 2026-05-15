@@ -18,5 +18,10 @@ export abstract class OrderRepository {
 		payment: PaymentInfo,
 		currency: string,
 	): Promise<Order>;
+	abstract getPaginatedOrders(
+		filter: Record<string, any>,
+		page: number,
+		perPage: number,
+	): Promise<{ orders: Order[]; total: number }>;
 }
 
