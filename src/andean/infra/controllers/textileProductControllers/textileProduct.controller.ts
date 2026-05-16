@@ -27,6 +27,7 @@ import {
 	ApiQuery,
 } from '@nestjs/swagger';
 import { Public } from '../../core/public.decorator';
+import { OptionalAuth } from '../../core/optionalAuth.decorator';
 import { CreateTextileProductUseCase } from 'src/andean/app/use_cases/textileProducts/CreateTextileProductUseCase';
 import { TextileProduct } from 'src/andean/domain/entities/textileProducts/TextileProduct';
 import { CreateTextileProductDto } from '../dto/textileProducts/CreateTextileProductDto';
@@ -283,7 +284,7 @@ export class TextileProductController {
 	// 	return this.getByIdTextileProductUseCase.handle(id);
 	// }
 
-	@Public()
+	@OptionalAuth()
 	@Get('/:id/details')
 	@ApiOperation({
 		summary: 'Obtener producto textil por ID',
@@ -306,8 +307,9 @@ export class TextileProductController {
 	})
 	async getTextileProductDetail(
 		@Param('id') id: string,
+		@CurrentUser() user?: { userId: string; roles: AccountRole[] },
 	): Promise<TextileProductDetailResponse> {
-		return this.getByIdTextileProductDetailUseCase.handle(id);
+		return this.getByIdTextileProductDetailUseCase.handle(id, user?.userId);
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
