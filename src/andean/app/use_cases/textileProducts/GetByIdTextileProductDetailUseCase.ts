@@ -51,7 +51,10 @@ export class GetByIdTextileProductDetailUseCase {
 		private readonly ownerInfoResolver: OwnerInfoResolver,
 	) {}
 
-	async handle(id: string): Promise<TextileProductDetailResponse> {
+	async handle(
+		id: string,
+		userId?: string,
+	): Promise<TextileProductDetailResponse> {
 		// -- Obtener el producto principal
 		const product =
 			await this.textileProductRepository.getTextileProductById(id);
@@ -88,15 +91,30 @@ export class GetByIdTextileProductDetailUseCase {
 		const ratingStats = this.calculateRatingStats(reviews);
 
 		// -- Mapear comments de reviews
-		const comments = reviews.map((review, index) => ({
-			idReview: review.id,
-			nameUser: accounts[index]?.name || 'Usuario Anónimo',
-			content: review.content,
-			numberStars: review.numberStars,
-			date: review.createdAt,
-			likes: review.numberLikes,
-			dislikes: review.numberDislikes,
-		}));
+		const comments = reviews.map((review, index) => {
+			// Determinar userVote basado en userId
+			let userVote: 'like' | 'dislike' | null | undefined = undefined;
+			if (userId) {
+				if (review.likedBy?.includes(userId)) {
+					userVote = 'like';
+				} else if (review.dislikedBy?.includes(userId)) {
+					userVote = 'dislike';
+				} else {
+					userVote = null;
+				}
+			}
+
+			return {
+				idReview: review.id,
+				nameUser: accounts[index]?.name || 'Usuario Anónimo',
+				content: review.content,
+				numberStars: review.numberStars,
+				date: review.createdAt,
+				likes: review.numberLikes,
+				dislikes: review.numberDislikes,
+				...(userVote !== undefined && { userVote }),
+			};
+		});
 
 		// -- Obtener variants del producto
 		const variants = await this.variantRepository.getByProductId(product.id);
