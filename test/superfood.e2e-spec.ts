@@ -604,7 +604,7 @@ describe('SuperfoodController (e2e)', () => {
 			await request(app.getHttpServer())
 				.get(`/superfoods/${productId}`)
 				.expect(HttpStatus.OK);
-			expect(spy).toHaveBeenCalledWith(productId);
+			expect(spy).toHaveBeenCalledWith(productId, undefined);
 		});
 	});
 
