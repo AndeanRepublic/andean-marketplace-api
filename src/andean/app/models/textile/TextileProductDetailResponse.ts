@@ -153,6 +153,12 @@ export class ReviewCommentResponse {
 
 	@ApiProperty({ description: 'Cantidad de dislikes' })
 	dislikes!: number;
+
+	@ApiPropertyOptional({
+		description: 'Voto del usuario autenticado en la reseña',
+		enum: ['like', 'dislike', null],
+	})
+	userVote?: 'like' | 'dislike' | null;
 }
 
 export class ReviewsResponse {

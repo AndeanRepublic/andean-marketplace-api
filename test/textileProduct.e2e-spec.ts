@@ -910,7 +910,7 @@ describe('TextileProductController (e2e)', () => {
 				.get(`/textile-products/${productId}/details`)
 				.expect(HttpStatus.OK);
 
-			expect(spy).toHaveBeenCalledWith(productId);
+			expect(spy).toHaveBeenCalledWith(productId, undefined);
 		});
 
 		it('should include variantInfo with color as object', () => {
