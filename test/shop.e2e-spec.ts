@@ -7,7 +7,7 @@ import {
 	NotFoundException,
 } from '@nestjs/common';
 import request from 'supertest';
-import { ShopController } from '../src/andean/infra/controllers/shop.controller';
+import { ShopController } from '../src/andean/infra/controllers/shop/shop.controller';
 import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';
 import { RolesGuard } from '../src/andean/infra/core/roles.guard';
 import {
@@ -15,14 +15,14 @@ import {
 	createDenyAllGuard,
 	mockAuthUsers,
 } from './helpers/auth-test.helper';
-import { GetShopByIdUseCase } from '../src/andean/app/use_cases/shops/GetShopByIdUseCase';
-import { GetShopsByCategoryUseCase } from '../src/andean/app/use_cases/shops/GetShopsByCategoryUseCase';
-import { GetShopsBySellerIdUseCase } from '../src/andean/app/use_cases/shops/GetShopsBySellerIdUseCase';
-import { CreateShopUseCase } from '../src/andean/app/use_cases/shops/CreateShopUseCase';
-import { DeleteShopUseCase } from '../src/andean/app/use_cases/shops/DeleteShopUseCase';
-import { UpdateShopUseCase } from '../src/andean/app/use_cases/shops/UpdateShopUseCase';
-import { ListAllShopsUseCase } from '../src/andean/app/use_cases/shops/ListAllShopsUseCase';
-import { UpdateShopStatusUseCase } from '../src/andean/app/use_cases/shops/UpdateShopStatusUseCase';
+import { GetShopByIdUseCase } from '../src/andean/app/use_cases/shop/GetShopByIdUseCase';
+import { GetShopsByCategoryUseCase } from '../src/andean/app/use_cases/shop/GetShopsByCategoryUseCase';
+import { GetShopsBySellerIdUseCase } from '../src/andean/app/use_cases/shop/GetShopsBySellerIdUseCase';
+import { CreateShopUseCase } from '../src/andean/app/use_cases/shop/CreateShopUseCase';
+import { DeleteShopUseCase } from '../src/andean/app/use_cases/shop/DeleteShopUseCase';
+import { UpdateShopUseCase } from '../src/andean/app/use_cases/shop/UpdateShopUseCase';
+import { ListAllShopsUseCase } from '../src/andean/app/use_cases/shop/ListAllShopsUseCase';
+import { UpdateShopStatusUseCase } from '../src/andean/app/use_cases/shop/UpdateShopStatusUseCase';
 import { MediaUrlResolver } from '../src/andean/infra/services/media/MediaUrlResolver';
 
 describe('ShopController (e2e) — ownership', () => {
