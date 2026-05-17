@@ -17,6 +17,7 @@ import { ProductSortBy } from 'src/andean/domain/enums/ProductSortBy';
 import { VariantMapper } from '../../services/VariantMapper';
 import { TextileProductAttributesAssembler } from '../../services/textileProducts/TextileProductAttributesAssembler';
 import { TextileProductStatus } from '../../../domain/enums/TextileProductStatus';
+import { applyPublishedStatusFilter } from '../../utils/catalogVisibility';
 
 @Injectable()
 export class TextileProductRepositoryImpl extends TextileProductRepository {
@@ -91,6 +92,12 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 				baseQuery.$or = priceConditions;
 			}
 		}
+
+		applyPublishedStatusFilter(
+			baseQuery,
+			filters?.includeAllStatuses,
+			TextileProductStatus.PUBLISHED,
+		);
 
 		return baseQuery;
 	}

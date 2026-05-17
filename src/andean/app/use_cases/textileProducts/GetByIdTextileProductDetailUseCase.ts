@@ -21,6 +21,7 @@ import { TextileProductAttributesAssembler } from '../../../infra/services/texti
 import { MediaUrlResolver } from '../../../infra/services/media/MediaUrlResolver';
 import { TraceabilityProcessName } from '../../../domain/enums/TraceabilityProcessName';
 import { TextileProduct } from 'src/andean/domain/entities/textileProducts/TextileProduct';
+import { TextileProductStatus } from '../../../domain/enums/TextileProductStatus';
 import { OwnerInfoResolver } from '../../../infra/services/owner/OwnerInfoResolver';
 
 @Injectable()
@@ -56,6 +57,9 @@ export class GetByIdTextileProductDetailUseCase {
 		const product =
 			await this.textileProductRepository.getTextileProductById(id);
 		if (!product) {
+			throw new NotFoundException('Textile product not found');
+		}
+		if (product.status !== TextileProductStatus.PUBLISHED) {
 			throw new NotFoundException('Textile product not found');
 		}
 
@@ -263,8 +267,9 @@ export class GetByIdTextileProductDetailUseCase {
 		}[]
 	> {
 		const SIMILAR_LIMIT = 4;
-		const allProducts =
-			await this.textileProductRepository.getAllTextileProducts();
+		const allProducts = (
+			await this.textileProductRepository.getAllTextileProducts()
+		).filter((p) => p.status === TextileProductStatus.PUBLISHED);
 
 		const selectedIds = new Set<string>();
 		const limitedProducts: TextileProduct[] = [];

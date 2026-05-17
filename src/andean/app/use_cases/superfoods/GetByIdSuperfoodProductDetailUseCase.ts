@@ -27,6 +27,7 @@ import { MediaUrlResolver } from '../../../infra/services/media/MediaUrlResolver
 import { SuperfoodProductListColorResolver } from '../../../infra/services/superfood/SuperfoodProductListColorResolver';
 import { SuperfoodProductListMediaResolver } from '../../../infra/services/superfood/SuperfoodProductListMediaResolver';
 import { instanceToPlain } from 'class-transformer';
+import { SuperfoodProductStatus } from '../../../domain/enums/SuperfoodProductStatus';
 
 @Injectable()
 export class GetByIdSuperfoodProductDetailUseCase {
@@ -62,6 +63,9 @@ export class GetByIdSuperfoodProductDetailUseCase {
 		const product =
 			await this.superfoodProductRepository.getSuperfoodProductById(productId);
 		if (!product) {
+			throw new NotFoundException(`Producto con ID ${productId} no encontrado`);
+		}
+		if (product.status !== SuperfoodProductStatus.PUBLISHED) {
 			throw new NotFoundException(`Producto con ID ${productId} no encontrado`);
 		}
 

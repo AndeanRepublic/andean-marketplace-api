@@ -13,6 +13,8 @@ export interface SuperfoodProductFilters {
 	sortBy?: ProductSortBy;
 	/** Si es true, incluye productos con totalStock <= 0 (p. ej. dashboard admin). */
 	includeZeroStock?: boolean;
+	/** Si es true, incluye HIDDEN (dashboard admin). Por defecto solo PUBLISHED. */
+	includeAllStatuses?: boolean;
 }
 
 export interface BoxCatalogSuperfoodItem {
