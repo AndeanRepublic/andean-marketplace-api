@@ -102,7 +102,7 @@ describe('GetByIdTextileProductDetailUseCase — public catalog', () => {
 		status: TextileProductStatus.HIDDEN,
 		baseInfo: { mediaIds: [] },
 		priceInventary: { totalStock: 1, basePrice: 10 },
-	} as TextileProduct;
+	} as unknown as TextileProduct;
 
 	const makeUseCase = () =>
 		new GetByIdTextileProductDetailUseCase(
@@ -137,7 +137,7 @@ describe('GetBoxDetailUseCase — public catalog', () => {
 			status: AdminEntityStatus.HIDDEN,
 			products: [],
 			sealIds: [],
-		} as Box;
+		} as unknown as Box;
 
 		const useCase = new GetBoxDetailUseCase(
 			{ getById: jest.fn().mockResolvedValue(hiddenBox) } as never,
