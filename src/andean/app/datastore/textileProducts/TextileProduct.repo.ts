@@ -62,6 +62,11 @@ export abstract class TextileProductRepository {
 		id: string,
 		delta: number,
 	): Promise<TextileProduct | null>;
+	/** Reemplaza totalStock (p. ej. tras sincronizar variantes). */
+	abstract setTotalStock(
+		id: string,
+		totalStock: number,
+	): Promise<TextileProduct | null>;
 	abstract updateStatus(
 		id: string,
 		status: TextileProductStatus,
