@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { BookingRepository } from '../../datastore/booking/Booking.repo';
 import { SellerProfileRepository } from '../../datastore/Seller.repo';
-import { ShopRepository } from '../../datastore/Shop.repo';
+import { ShopRepository } from '../../datastore/shop/Shop.repo';
 import { CommunityRepository } from '../../datastore/community/community.repo';
 import { ExperienceRepository } from '../../datastore/experiences/Experience.repo';
 import { AccountRole } from '../../../domain/enums/AccountRole';

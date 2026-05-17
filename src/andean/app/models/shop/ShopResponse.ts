@@ -42,4 +42,10 @@ export class ShopResponse {
 		example: 'https://cdn.example.com/shops/artisan.jpg',
 	})
 	artisanPhotoUrl?: string;
+
+	@ApiPropertyOptional({
+		description: 'IDs de seals asociados a la tienda',
+		type: [String],
+	})
+	seals?: string[];
 }

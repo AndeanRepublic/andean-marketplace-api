@@ -62,6 +62,12 @@ export class VariantInfoResponse {
 
 	@ApiProperty({ description: 'Stock disponible de la variante', example: 25 })
 	stock!: number;
+
+	@ApiPropertyOptional({
+		description: 'Código SKU de la variante',
+		example: 'PONCHO-AND-001-RED-M',
+	})
+	sku?: string;
 }
 
 // ── Traceability Step ──────────────────────────────────────────────────────
