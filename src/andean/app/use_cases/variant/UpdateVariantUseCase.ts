@@ -7,6 +7,7 @@ import { VariantMapper } from '../../../infra/services/VariantMapper';
 import { ProductType } from '../../../domain/enums/ProductType';
 import { AccountRole } from 'src/andean/domain/enums/AccountRole';
 import { SellerResourceAccessService } from 'src/andean/infra/services/seller/SellerResourceAccessService';
+import { TextileProductStockFromVariantsSync } from '../../../infra/services/textileProducts/TextileProductStockFromVariantsSync';
 
 @Injectable()
 export class UpdateVariantUseCase {
@@ -16,6 +17,7 @@ export class UpdateVariantUseCase {
 		@Inject(TextileProductRepository)
 		private readonly textileProductRepository: TextileProductRepository,
 		private readonly sellerResourceAccess: SellerResourceAccessService,
+		private readonly textileProductStockFromVariantsSync: TextileProductStockFromVariantsSync,
 	) {}
 
 	async execute(
@@ -57,17 +59,12 @@ export class UpdateVariantUseCase {
 			throw new NotFoundException(`Failed to update Variant`);
 		}
 
-		// Sincronizar el stock general del producto textil si el stock de la variante cambió
 		if (
 			existing.productType === ProductType.TEXTILE &&
 			dto.stock !== undefined &&
 			dto.stock !== existing.stock
 		) {
-			const delta = dto.stock - existing.stock;
-			await this.textileProductRepository.adjustTotalStock(
-				existing.productId,
-				delta,
-			);
+			await this.textileProductStockFromVariantsSync.apply(existing.productId);
 		}
 
 		return updated;

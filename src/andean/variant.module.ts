@@ -22,6 +22,7 @@ import { UpdateVariantUseCase } from './app/use_cases/variant/UpdateVariantUseCa
 import { DeleteVariantUseCase } from './app/use_cases/variant/DeleteVariantUseCase';
 import { DeleteVariantsByProductIdUseCase } from './app/use_cases/variant/DeleteVariantsByProductIdUseCase';
 import { SyncVariantsUseCase } from './app/use_cases/variant/SyncVariantsUseCase';
+import { TextileProductStockFromVariantsSync } from './infra/services/textileProducts/TextileProductStockFromVariantsSync';
 // Controller
 import { VariantController } from './infra/controllers/variantControllers/variant.controller';
 
@@ -51,6 +52,7 @@ import { VariantController } from './infra/controllers/variantControllers/varian
 		DeleteVariantUseCase,
 		DeleteVariantsByProductIdUseCase,
 		SyncVariantsUseCase,
+		TextileProductStockFromVariantsSync,
 	],
 	exports: [
 		VariantRepository,
