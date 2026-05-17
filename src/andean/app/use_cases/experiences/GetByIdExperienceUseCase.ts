@@ -18,6 +18,7 @@ import { Review } from '../../../domain/entities/Review';
 import { ProductType } from '../../../domain/enums/ProductType';
 import { OwnerType } from '../../../domain/enums/OwnerType';
 import { ExperienceAvailabilityMode } from '../../../domain/enums/ExperienceAvailabilityMode';
+import { ExperienceStatus } from '../../../domain/enums/ExperienceStatus';
 
 import {
 	ExperienceAvailabilityResponse,
@@ -64,6 +65,9 @@ export class GetByIdExperienceUseCase {
 		// -- Fetch experience principal
 		const experience = await this.experienceRepo.getById(id);
 		if (!experience) {
+			throw new NotFoundException(`Experience with id ${id} not found`);
+		}
+		if (experience.status !== ExperienceStatus.PUBLISHED) {
 			throw new NotFoundException(`Experience with id ${id} not found`);
 		}
 

@@ -12,6 +12,9 @@ export class GetAllExperiencesForManagementUseCase {
 	async handle(
 		filters?: ExperienceFilters,
 	): Promise<PaginatedExperiencesResponse> {
-		return this.getAllExperiencesUseCase.handle(filters);
+		return this.getAllExperiencesUseCase.handle({
+			...filters,
+			includeAllStatuses: true,
+		});
 	}
 }

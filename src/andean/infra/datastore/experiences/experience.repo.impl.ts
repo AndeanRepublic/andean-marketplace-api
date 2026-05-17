@@ -68,6 +68,9 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 		const perPage = filters.perPage || 20;
 
 		const pipeline: any[] = [
+			...(filters.includeAllStatuses !== true
+				? [{ $match: { status: ExperienceStatus.PUBLISHED } }]
+				: []),
 			// 1. basicInfo ya está embebido — apply category / ownerId filters directamente
 			...(filters.category
 				? [{ $match: { 'basicInfo.category': filters.category } }]

@@ -16,6 +16,8 @@ export interface ProductFilters {
 	sortBy?: ProductSortBy;
 	/** Si es true, incluye productos con totalStock <= 0 (p. ej. panel de carga). */
 	includeZeroStock?: boolean;
+	/** Si es true, incluye HIDDEN (dashboard admin). Por defecto solo PUBLISHED. */
+	includeAllStatuses?: boolean;
 }
 
 export interface BoxCatalogTextileItem {

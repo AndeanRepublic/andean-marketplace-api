@@ -21,6 +21,7 @@ export class GetAllTextileProductsForManagementUseCase {
 			page,
 			perPage,
 			includeZeroStock: true,
+			includeAllStatuses: true,
 			sortBy: ProductSortBy.LATEST,
 		};
 

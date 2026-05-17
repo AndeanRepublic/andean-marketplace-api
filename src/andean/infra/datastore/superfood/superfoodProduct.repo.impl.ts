@@ -13,6 +13,7 @@ import { ProductSortBy } from '../../../domain/enums/ProductSortBy';
 import { SuperfoodProductListAggregateRow } from '../../../app/models/superfoods/SuperfoodProductListItem';
 import { BoxCatalogSuperfoodItem } from '../../../app/datastore/superfoods/SuperfoodProduct.repo';
 import { SuperfoodProductStatus } from '../../../domain/enums/SuperfoodProductStatus';
+import { applyPublishedStatusFilter } from '../../utils/catalogVisibility';
 
 @Injectable()
 export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
@@ -137,6 +138,12 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 		if (!filters.includeZeroStock) {
 			query['priceInventory.totalStock'] = { $gt: 0 };
 		}
+
+		applyPublishedStatusFilter(
+			query,
+			filters.includeAllStatuses,
+			SuperfoodProductStatus.PUBLISHED,
+		);
 
 		return query;
 	}

@@ -23,6 +23,7 @@ export class GetAllSuperfoodProductsForManagementUseCase {
 				page,
 				perPage,
 				includeZeroStock: true,
+				includeAllStatuses: true,
 			});
 
 		if (products.length === 0) {

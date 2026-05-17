@@ -54,6 +54,7 @@ export class BoxRepoImpl extends BoxRepository {
 		const limit = Math.max(1, perPage);
 
 		const pipeline: PipelineStage[] = [
+			{ $match: { status: AdminEntityStatus.PUBLISHED } },
 			{
 				$addFields: {
 					__linesWithVariant: {
