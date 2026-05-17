@@ -256,6 +256,7 @@ export class GetByIdTextileProductDetailUseCase {
 				material: string;
 				price: number;
 				stock: number;
+				sku?: string;
 			}[];
 			principalImgUrl: string;
 			price: number;
