@@ -7,12 +7,14 @@ import {
 	PaginatedExperiencesResponse,
 	ExperienceListItem,
 } from '../../models/experiences/ExperienceListItemResponse';
+import { MediaUrlResolver } from 'src/andean/infra/services/media/MediaUrlResolver';
 
 @Injectable()
 export class GetAllExperiencesUseCase {
 	constructor(
 		@Inject(ExperienceRepository)
 		private readonly experienceRepository: ExperienceRepository,
+		private readonly mediaUrlResolver: MediaUrlResolver,
 	) {}
 
 	async handle(
@@ -35,7 +37,7 @@ export class GetAllExperiencesUseCase {
 			status: raw.status,
 			mainImage: {
 				name: raw.mainImageName,
-				url: raw.mainImageUrl,
+				url: this.mediaUrlResolver.resolveKey(raw.mainImageUrl),
 			},
 		}));
 

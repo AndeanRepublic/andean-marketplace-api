@@ -21,6 +21,7 @@ export interface TextileVariantInfo {
 	material: string;
 	price: number;
 	stock: number;
+	sku?: string;
 }
 
 export interface TextileProductAttributes {
@@ -240,6 +241,7 @@ export class TextileProductAttributesAssembler {
 				material: materialResolved.label,
 				price: variant.price,
 				stock: variant.stock,
+				...(variant.sku && { sku: variant.sku }),
 			};
 		});
 	}

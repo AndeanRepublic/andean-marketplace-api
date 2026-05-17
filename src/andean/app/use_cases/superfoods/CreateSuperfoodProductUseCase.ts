@@ -5,7 +5,7 @@ import {
 	BadRequestException,
 } from '@nestjs/common';
 import { SuperfoodProductRepository } from '../../datastore/superfoods/SuperfoodProduct.repo';
-import { ShopRepository } from '../../datastore/Shop.repo';
+import { ShopRepository } from '../../datastore/shop/Shop.repo';
 import { SuperfoodCategoryRepository } from '../../datastore/superfoods/SuperfoodCategory.repo';
 import { CommunityRepository } from '../../datastore/community/community.repo';
 import { CreateSuperfoodDto } from '../../../infra/controllers/dto/superfoods/CreateSuperfoodDto';

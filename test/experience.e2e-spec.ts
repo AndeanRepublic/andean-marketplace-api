@@ -228,7 +228,7 @@ describe('ExperienceController (e2e)', () => {
 		it('should return 400 when basicInfo.days is less than 1', () => {
 			const invalidDto = {
 				...createDto,
-				basicInfo: { ...createDto.basicInfo, days: 0 },
+				basicInfo: { ...createDto.basicInfo, days: -1 },
 			};
 
 			return request(app.getHttpServer())
@@ -607,8 +607,7 @@ describe('ExperienceController (e2e)', () => {
 			expect(questionSection).toHaveProperty('accommodationDetail');
 			expect(questionSection).toHaveProperty('accessibilityDetail');
 			expect(questionSection).toHaveProperty('cancellationPolicy');
-			expect(typeof questionSection.includes).toBe('string');
-			expect(questionSection.includes).toContain(',');
+			expect(Array.isArray(questionSection.includes)).toBe(true);
 		});
 
 		it('should return itinerary with resolved photos', async () => {
@@ -621,10 +620,13 @@ describe('ExperienceController (e2e)', () => {
 				.expect(HttpStatus.OK);
 
 			const { itinerary } = response.body;
-			expect(Array.isArray(itinerary)).toBe(true);
-			expect(itinerary.length).toBeGreaterThan(0);
+			expect(itinerary).toHaveProperty('ubicationImg');
+			expect(itinerary).toHaveProperty('summary');
+			expect(itinerary).toHaveProperty('days');
+			expect(Array.isArray(itinerary.days)).toBe(true);
+			expect(itinerary.days.length).toBeGreaterThan(0);
 
-			const firstDay = itinerary[0];
+			const firstDay = itinerary.days[0];
 			expect(firstDay).toHaveProperty('numberDay');
 			expect(firstDay).toHaveProperty('nameDay');
 			expect(firstDay).toHaveProperty('descriptionDay');
@@ -771,11 +773,15 @@ describe('ExperienceController (e2e)', () => {
 					ubication: 'Cusco, Perú',
 					days: 2,
 					nights: 1,
+					durationUnit: 'DAYS',
 					minNumberGroup: 2,
 					maxNumberGroup: 10,
 					languages: ['ESPAÑOL'],
 					ownerType: 'COMMUNITY',
 					ownerId: 'community-001',
+					includesPickup: true,
+					includesAccommodation: true,
+					includesReturn: true,
 				},
 			};
 

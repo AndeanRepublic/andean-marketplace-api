@@ -40,4 +40,8 @@ export abstract class ExperienceRepository {
 		id: string,
 		status: ExperienceStatus,
 	): Promise<Experience | null>;
+	abstract findIdsByShopOrCommunityOwners(
+		shopIds: string[],
+		communityIds: string[],
+	): Promise<string[]>;
 }

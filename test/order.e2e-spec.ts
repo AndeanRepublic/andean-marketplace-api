@@ -744,4 +744,273 @@ describe('OrderController (e2e)', () => {
 				});
 		});
 	});
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// GET /orders  —  Get all orders with pagination and role-based filtering
+	// ═══════════════════════════════════════════════════════════════════════════
+	describe('GET /orders (pagination and role-based filtering)', () => {
+		// Mock orders for pagination tests
+		const generateMockOrders = (count: number): Order[] => {
+			return Array.from({ length: count }, (_, i) => ({
+				...mockOrder,
+				id: `order-${i + 1}`,
+				customerId: `customer-${i + 1}`,
+				createdAt: new Date(Date.now() - i * 1000 * 60),
+			})) as Order[];
+		};
+
+		describe('ADMIN role - sees all orders', () => {
+
+			it('should return paginated orders with default pagination', () => {
+				const mockPaginatedResponse = {
+					data: generateMockOrders(10),
+					pagination: {
+						total: 25,
+						page: 1,
+						per_page: 10,
+						total_pages: 3,
+					},
+				};
+				jest
+					.spyOn(getAllOrdersUseCase, 'handle')
+					.mockResolvedValueOnce(mockPaginatedResponse as any);
+
+				return request(app.getHttpServer())
+					.get('/orders')
+					.expect(HttpStatus.OK)
+					.expect((res) => {
+						expect(res.body).toHaveProperty('data');
+						expect(res.body).toHaveProperty('pagination');
+						expect(res.body.data).toHaveLength(10);
+						expect(res.body.pagination.total).toBe(25);
+						expect(res.body.pagination.page).toBe(1);
+						expect(res.body.pagination.per_page).toBe(10);
+						expect(res.body.pagination.total_pages).toBe(3);
+					});
+			});
+
+			it('should respect custom page and per_page query params', () => {
+				const mockPaginatedResponse = {
+					data: generateMockOrders(5),
+					pagination: {
+						total: 25,
+						page: 2,
+						per_page: 5,
+						total_pages: 5,
+					},
+				};
+				jest
+					.spyOn(getAllOrdersUseCase, 'handle')
+					.mockResolvedValueOnce(mockPaginatedResponse as any);
+
+				return request(app.getHttpServer())
+					.get('/orders?page=2&per_page=5')
+					.expect(HttpStatus.OK)
+					.expect((res) => {
+						expect(res.body.data).toHaveLength(5);
+						expect(res.body.pagination.page).toBe(2);
+						expect(res.body.pagination.per_page).toBe(5);
+					});
+			});
+
+			it('should return empty data array when page is out of bounds', () => {
+				const mockPaginatedResponse = {
+					data: [],
+					pagination: {
+						total: 25,
+						page: 10,
+						per_page: 10,
+						total_pages: 3,
+					},
+				};
+				jest
+					.spyOn(getAllOrdersUseCase, 'handle')
+					.mockResolvedValueOnce(mockPaginatedResponse as any);
+
+				return request(app.getHttpServer())
+					.get('/orders?page=10&per_page=10')
+					.expect(HttpStatus.OK)
+					.expect((res) => {
+						expect(res.body.data).toEqual([]);
+						expect(res.body.pagination.total).toBe(25);
+						expect(res.body.pagination.total_pages).toBe(3);
+					});
+			});
+
+			it('should call use case with correct pagination params and admin user', async () => {
+				const mockPaginatedResponse = {
+					data: [],
+					pagination: {
+						total: 0,
+						page: 1,
+						per_page: 10,
+						total_pages: 0,
+					},
+				};
+				jest
+					.spyOn(getAllOrdersUseCase, 'handle')
+					.mockResolvedValueOnce(mockPaginatedResponse as any);
+
+				await request(app.getHttpServer())
+					.get('/orders?page=3&per_page=15')
+					.expect(HttpStatus.OK);
+
+				expect(getAllOrdersUseCase.handle).toHaveBeenCalledWith(
+					3,
+					15,
+					expect.objectContaining({
+						userId: mockAuthUsers.admin.userId,
+						roles: mockAuthUsers.admin.roles,
+					}),
+				);
+			});
+		});
+
+		describe('SELLER role - sees only their orders', () => {
+
+			it('should return only orders containing seller products', () => {
+				const sellerOrders = generateMockOrders(3);
+				const mockPaginatedResponse = {
+					data: sellerOrders,
+					pagination: {
+						total: 3,
+						page: 1,
+						per_page: 10,
+						total_pages: 1,
+					},
+				};
+				jest
+					.spyOn(getAllOrdersUseCase, 'handle')
+					.mockResolvedValueOnce(mockPaginatedResponse as any);
+
+				return request(app.getHttpServer())
+					.get('/orders')
+					.expect(HttpStatus.OK)
+					.expect((res) => {
+						expect(res.body.data).toHaveLength(3);
+						expect(res.body.pagination.total).toBe(3);
+					});
+			});
+
+			it('should return empty data when seller has no products in any order', () => {
+				const mockPaginatedResponse = {
+					data: [],
+					pagination: {
+						total: 0,
+						page: 1,
+						per_page: 10,
+						total_pages: 0,
+					},
+				};
+				jest
+					.spyOn(getAllOrdersUseCase, 'handle')
+					.mockResolvedValueOnce(mockPaginatedResponse as any);
+
+				return request(app.getHttpServer())
+					.get('/orders')
+					.expect(HttpStatus.OK)
+					.expect((res) => {
+						expect(res.body.data).toEqual([]);
+						expect(res.body.pagination.total).toBe(0);
+					});
+			});
+
+			it('should call use case with user context', async () => {
+				const mockPaginatedResponse = {
+					data: [],
+					pagination: {
+						total: 0,
+						page: 1,
+						per_page: 10,
+						total_pages: 0,
+					},
+				};
+				jest
+					.spyOn(getAllOrdersUseCase, 'handle')
+					.mockResolvedValueOnce(mockPaginatedResponse as any);
+
+				await request(app.getHttpServer())
+					.get('/orders')
+					.expect(HttpStatus.OK);
+
+				// Verify use case is called with pagination params and user object
+				expect(getAllOrdersUseCase.handle).toHaveBeenCalledWith(
+					1,
+					10,
+					expect.objectContaining({
+						userId: expect.any(String),
+						roles: expect.any(Array),
+					}),
+				);
+			});
+		});
+
+		describe('Validation and edge cases', () => {
+			it('should use default page=1 when page param is missing', () => {
+				const mockPaginatedResponse = {
+					data: generateMockOrders(10),
+					pagination: {
+						total: 25,
+						page: 1,
+						per_page: 10,
+						total_pages: 3,
+					},
+				};
+				jest
+					.spyOn(getAllOrdersUseCase, 'handle')
+					.mockResolvedValueOnce(mockPaginatedResponse as any);
+
+				return request(app.getHttpServer())
+					.get('/orders?per_page=10')
+					.expect(HttpStatus.OK)
+					.expect((res) => {
+						expect(res.body.pagination.page).toBe(1);
+					});
+			});
+
+			it('should use default per_page=10 when per_page param is missing', () => {
+				const mockPaginatedResponse = {
+					data: generateMockOrders(10),
+					pagination: {
+						total: 25,
+						page: 2,
+						per_page: 10,
+						total_pages: 3,
+					},
+				};
+				jest
+					.spyOn(getAllOrdersUseCase, 'handle')
+					.mockResolvedValueOnce(mockPaginatedResponse as any);
+
+				return request(app.getHttpServer())
+					.get('/orders?page=2')
+					.expect(HttpStatus.OK)
+					.expect((res) => {
+						expect(res.body.pagination.per_page).toBe(10);
+					});
+			});
+
+			it('should calculate total_pages correctly', () => {
+				const mockPaginatedResponse = {
+					data: generateMockOrders(7),
+					pagination: {
+						total: 27,
+						page: 1,
+						per_page: 7,
+						total_pages: 4, // Math.ceil(27 / 7) = 4
+					},
+				};
+				jest
+					.spyOn(getAllOrdersUseCase, 'handle')
+					.mockResolvedValueOnce(mockPaginatedResponse as any);
+
+				return request(app.getHttpServer())
+					.get('/orders?per_page=7')
+					.expect(HttpStatus.OK)
+					.expect((res) => {
+						expect(res.body.pagination.total_pages).toBe(4);
+					});
+			});
+		});
+	});
 });

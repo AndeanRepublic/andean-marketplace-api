@@ -11,6 +11,14 @@ import { CoinType } from '../../../domain/enums/CoinType';
 
 export class UpdateCustomerProfileDto {
 	@ApiPropertyOptional({
+		description: 'Nombre completo del cliente',
+		example: 'Juan Pérez',
+	})
+	@IsString()
+	@IsOptional()
+	name?: string;
+
+	@ApiPropertyOptional({
 		description: 'Número de teléfono del cliente',
 		example: '+51987654321',
 	})

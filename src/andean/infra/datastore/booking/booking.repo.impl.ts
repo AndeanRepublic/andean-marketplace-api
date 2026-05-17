@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { BookingRepository } from '../../../app/datastore/booking/Booking.repo';
+import {
+	BookingManagementListFilters,
+	BookingRepository,
+} from '../../../app/datastore/booking/Booking.repo';
 import { InjectModel } from '@nestjs/mongoose';
 import { BookingDocument } from '../../persistence/booking/booking.schema';
 import { Booking } from '../../../domain/entities/booking/Booking';
@@ -135,5 +138,28 @@ export class BookingRepositoryImpl extends BookingRepository {
 			.select({ guestsInfo: 1, _id: 0 })
 			.exec();
 		return docs.reduce((acc, doc) => acc + doc.guestsInfo.totalGuests, 0);
+	}
+
+	async listForManagement(
+		filters: BookingManagementListFilters,
+	): Promise<Booking[]> {
+		if (
+			filters.experienceIds !== undefined &&
+			filters.experienceIds.length === 0
+		) {
+			return [];
+		}
+		const query: Record<string, unknown> = {};
+		if (filters.experienceIds && filters.experienceIds.length > 0) {
+			query['experience.experienceId'] = { $in: filters.experienceIds };
+		}
+		if (filters.statuses && filters.statuses.length > 0) {
+			query.status = { $in: filters.statuses };
+		}
+		const docs = await this.bookingModel
+			.find(query)
+			.sort({ createdAt: -1 })
+			.exec();
+		return docs.map((doc) => BookingMapper.fromDocument(doc));
 	}
 }

@@ -4,7 +4,7 @@ import {
 	Injectable,
 	NotFoundException,
 } from '@nestjs/common';
-import { ShopRepository } from '../../datastore/Shop.repo';
+import { ShopRepository } from '../../datastore/shop/Shop.repo';
 import { SellerProfileRepository } from '../../datastore/Seller.repo';
 import { AccountRole } from '../../../domain/enums/AccountRole';
 

@@ -18,6 +18,10 @@
 			"ubication": "Cusco, Perú",
 			"days": 3,
 			"nights": 2,
+			"durationUnit": "DAYS",
+			"includesPickup": true,
+			"includesAccommodation": true,
+			"includesReturn": true,
 			"minNumberGroup": 2,
 			"maxNumberGroup": 15,
 			"languages": ["ESPAÑOL", "ENGLISH"],
@@ -185,6 +189,10 @@
 			"ubication": "Cusco - Valle Sagrado, Perú",
 			"days": 4,
 			"nights": 3,
+			"durationUnit": "DAYS",
+			"includesPickup": true,
+			"includesAccommodation": true,
+			"includesReturn": true,
 			"minNumberGroup": 4,
 			"maxNumberGroup": 12,
 			"languages": ["ESPAÑOL", "ENGLISH", "QUECHUA"],
@@ -386,6 +394,8 @@
 			"largeDescription": "Recorre senderos milenarios a través de comunidades quechuas...",
 			"days": 3,
 			"nights": 2,
+			"durationUnit": "DAYS",
+			"ubication": "Cusco, Perú",
 			"price": 120,
 			"landscapeImgUrl": "https://storage.example.com/experiences/landscape-valle-sagrado.jpg",
 			"photos": [
@@ -407,10 +417,16 @@
 			"minAge": 5,
 			"maxAge": 65,
 			"duration": 3,
+			"durationUnit": "DAYS",
 			"languages": ["ESPAÑOL", "ENGLISH"]
 		},
 		"questionSection": {
-			"includes": "Transporte desde Cusco, Almuerzo tradicional, Guía bilingüe",
+			"includes": [
+				"Transporte desde Cusco",
+				"Almuerzo tradicional",
+				"Guía bilingüe"
+			],
+			"notIncludes": ["Seguro de viaje", "Propinas"],
 			"shouldCarry": ["Protector solar", "Agua"],
 			"pickupDetail": "Hotel en Cusco a las 6:00 AM",
 			"returnDetail": "Retorno al hotel a las 6:00 PM del último día",
@@ -423,33 +439,42 @@
 			"cancellationPolicy": "Cancelación gratuita hasta 48 horas antes del inicio",
 			"contactNumber": "+51 984 123 456"
 		},
-		"itinerary": [
-			{
-				"numberDay": 1,
-				"nameDay": "Día de llegada - Cusco a Ollantaytambo",
-				"descriptionDay": "Viaje desde Cusco hasta Ollantaytambo.",
-				"photos": [
-					{
-						"id": "media-itin-001",
-						"type": "IMG",
-						"name": "itinerary-day1.jpg",
-						"url": "https://storage.example.com/experiences/itinerary-day1.jpg",
-						"role": "NONE",
-						"key": "experiences/itinerary-day1.jpg"
-					}
-				],
-				"schedule": [
-					{
-						"time": "06:00",
-						"activity": "Recogida del hotel"
-					},
-					{
-						"time": "08:00",
-						"activity": "Visita al mercado de Pisac"
-					}
-				]
-			}
-		],
+		"itinerary": {
+			"ubicationImg": "https://storage.example.com/experiences/ubication-map.jpg",
+			"summary": [
+				{
+					"numberDay": 1,
+					"nameDay": "Día de llegada - Cusco a Ollantaytambo"
+				}
+			],
+			"days": [
+				{
+					"numberDay": 1,
+					"nameDay": "Día de llegada - Cusco a Ollantaytambo",
+					"descriptionDay": "Viaje desde Cusco hasta Ollantaytambo.",
+					"photos": [
+						{
+							"id": "media-itin-001",
+							"type": "IMG",
+							"name": "itinerary-day1.jpg",
+							"url": "https://storage.example.com/experiences/itinerary-day1.jpg",
+							"role": "NONE",
+							"key": "experiences/itinerary-day1.jpg"
+						}
+					],
+					"schedule": [
+						{
+							"time": "06:00",
+							"activity": "Recogida del hotel"
+						},
+						{
+							"time": "08:00",
+							"activity": "Visita al mercado de Pisac"
+						}
+					]
+				}
+			]
+		},
 		"moreExperiences": [
 			{
 				"id": "exp-uuid-002",
