@@ -1,12 +1,12 @@
 import { Model } from 'mongoose';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { ShopRepository } from '../../app/datastore/Shop.repo';
+import { ShopRepository } from '../../../app/datastore/shop/Shop.repo';
 import { InjectModel } from '@nestjs/mongoose';
-import { ShopDocument } from '../persistence/shop.schema';
-import { Shop } from '../../domain/entities/Shop';
-import { ShopMapper } from '../services/ShopMapper';
-import { ShopCategory } from '../../domain/enums/ShopCategory';
-import { AdminEntityStatus } from '../../domain/enums/AdminEntityStatus';
+import { ShopDocument } from '../../persistence/shop/shop.schema';
+import { Shop } from '../../../domain/entities/shop/Shop';
+import { ShopMapper } from '../../services/shop/ShopMapper';
+import { ShopCategory } from '../../../domain/enums/ShopCategory';
+import { AdminEntityStatus } from '../../../domain/enums/AdminEntityStatus';
 
 @Injectable()
 export class ShopRepoImpl extends ShopRepository {

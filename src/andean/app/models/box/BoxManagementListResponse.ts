@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BoxItemCountResponse } from './BoxListResponse';
+import { BoxImageResponse } from './BoxImageResponse';
+import { AdminEntityStatus } from '../../../domain/enums/AdminEntityStatus';
 
 export class BoxManagementListItemResponse {
 	@ApiProperty({ description: 'ID del box', example: '6973d8ffddef7b59c2d4dcfb' })
@@ -14,11 +16,20 @@ export class BoxManagementListItemResponse {
 	@ApiProperty({ description: 'Precio final del box', example: 149.99 })
 	price!: number;
 
+	@ApiProperty({ description: 'Estado del box', enum: AdminEntityStatus })
+	status!: AdminEntityStatus;
+
 	@ApiProperty({
 		description: 'Conteo de productos por tipo',
 		type: BoxItemCountResponse,
 	})
 	itemCount!: BoxItemCountResponse;
+
+	@ApiProperty({
+		description: 'Imagen miniatura del box',
+		type: BoxImageResponse,
+	})
+	thumbnailImage!: BoxImageResponse;
 
 	@ApiProperty({
 		description:

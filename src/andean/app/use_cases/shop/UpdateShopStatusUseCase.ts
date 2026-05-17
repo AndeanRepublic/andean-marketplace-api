@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ShopRepository } from '../../datastore/Shop.repo';
+import { ShopRepository } from '../../datastore/shop/Shop.repo';
 import { AdminEntityStatus } from '../../../domain/enums/AdminEntityStatus';
 
 @Injectable()

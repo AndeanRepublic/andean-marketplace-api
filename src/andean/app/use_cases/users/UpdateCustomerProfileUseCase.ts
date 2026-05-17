@@ -9,6 +9,7 @@ import { MediaItemRepository } from '../../datastore/MediaItem.repo';
 import { UpdateCustomerProfileDto } from '../../../infra/controllers/dto/UpdateCustomerProfileDto';
 import { CustomerProfileMapper } from '../../../infra/services/CustomerProfileMapper';
 import { AccountRole } from '../../../domain/enums/AccountRole';
+import { AccountRepository } from '../../datastore/Account.repo';
 
 @Injectable()
 export class UpdateCustomerProfileUseCase {
@@ -16,6 +17,7 @@ export class UpdateCustomerProfileUseCase {
 		private readonly userRepository: CustomerProfileRepository,
 		@Inject(MediaItemRepository)
 		private readonly mediaItemRepository: MediaItemRepository,
+		private readonly accountRepository: AccountRepository,
 	) {}
 
 	async handle(
@@ -47,6 +49,14 @@ export class UpdateCustomerProfileUseCase {
 					`MediaItem with id ${updateDto.profilePictureMediaId} not found`,
 				);
 			}
+		}
+
+		// Si viene name, actualizar la entidad Account
+		if (updateDto.name) {
+			await this.accountRepository.updateAccountName(
+				paramUserId,
+				updateDto.name,
+			);
 		}
 
 		const toUpdate = CustomerProfileMapper.fromUpdateDto(

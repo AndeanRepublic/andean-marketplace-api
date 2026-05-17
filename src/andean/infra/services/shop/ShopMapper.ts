@@ -1,9 +1,9 @@
-import { ShopDocument } from '../persistence/shop.schema';
-import { Shop } from '../../domain/entities/Shop';
-import { CreateShopDto } from '../controllers/dto/CreateShopDto';
+import { ShopDocument } from '../../persistence/shop/shop.schema';
+import { Shop } from '../../../domain/entities/shop/Shop';
+import { CreateShopDto } from '../../controllers/dto/shop/CreateShopDto';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { Types } from 'mongoose';
-import { AdminEntityStatus } from '../../domain/enums/AdminEntityStatus';
+import { AdminEntityStatus } from '../../../domain/enums/AdminEntityStatus';
 
 export class ShopMapper {
 	static fromDocument(doc: ShopDocument): Shop {

@@ -62,6 +62,12 @@ export class VariantInfoResponse {
 
 	@ApiProperty({ description: 'Stock disponible de la variante', example: 25 })
 	stock!: number;
+
+	@ApiPropertyOptional({
+		description: 'Código SKU de la variante',
+		example: 'PONCHO-AND-001-RED-M',
+	})
+	sku?: string;
 }
 
 // ── Traceability Step ──────────────────────────────────────────────────────
@@ -153,6 +159,12 @@ export class ReviewCommentResponse {
 
 	@ApiProperty({ description: 'Cantidad de dislikes' })
 	dislikes!: number;
+
+	@ApiPropertyOptional({
+		description: 'Voto del usuario autenticado en la reseña',
+		enum: ['like', 'dislike', null],
+	})
+	userVote?: 'like' | 'dislike' | null;
 }
 
 export class ReviewsResponse {

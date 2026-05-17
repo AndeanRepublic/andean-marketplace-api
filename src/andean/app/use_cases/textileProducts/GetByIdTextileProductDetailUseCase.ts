@@ -12,7 +12,7 @@ import { CustomerProfileRepository } from '../../datastore/Customer.repo';
 import { CommunityRepository } from '../../datastore/community/community.repo';
 import { SealRepository } from '../../datastore/community/Seal.repo';
 import { TextileCategoryRepository } from '../../datastore/textileProducts/TextileCategory.repo';
-import { ShopRepository } from '../../datastore/Shop.repo';
+import { ShopRepository } from '../../datastore/shop/Shop.repo';
 import { VariantRepository } from '../../datastore/Variant.repo';
 import { AccountRepository } from '../../datastore/Account.repo';
 import { Review } from 'src/andean/domain/entities/Review';
@@ -52,7 +52,10 @@ export class GetByIdTextileProductDetailUseCase {
 		private readonly ownerInfoResolver: OwnerInfoResolver,
 	) {}
 
-	async handle(id: string): Promise<TextileProductDetailResponse> {
+	async handle(
+		id: string,
+		userId?: string,
+	): Promise<TextileProductDetailResponse> {
 		// -- Obtener el producto principal
 		const product =
 			await this.textileProductRepository.getTextileProductById(id);
@@ -92,15 +95,30 @@ export class GetByIdTextileProductDetailUseCase {
 		const ratingStats = this.calculateRatingStats(reviews);
 
 		// -- Mapear comments de reviews
-		const comments = reviews.map((review, index) => ({
-			idReview: review.id,
-			nameUser: accounts[index]?.name || 'Usuario Anónimo',
-			content: review.content,
-			numberStars: review.numberStars,
-			date: review.createdAt,
-			likes: review.numberLikes,
-			dislikes: review.numberDislikes,
-		}));
+		const comments = reviews.map((review, index) => {
+			// Determinar userVote basado en userId
+			let userVote: 'like' | 'dislike' | null | undefined = undefined;
+			if (userId) {
+				if (review.likedBy?.includes(userId)) {
+					userVote = 'like';
+				} else if (review.dislikedBy?.includes(userId)) {
+					userVote = 'dislike';
+				} else {
+					userVote = null;
+				}
+			}
+
+			return {
+				idReview: review.id,
+				nameUser: accounts[index]?.name || 'Usuario Anónimo',
+				content: review.content,
+				numberStars: review.numberStars,
+				date: review.createdAt,
+				likes: review.numberLikes,
+				dislikes: review.numberDislikes,
+				...(userVote !== undefined && { userVote }),
+			};
+		});
 
 		// -- Obtener variants del producto
 		const variants = await this.variantRepository.getByProductId(product.id);
@@ -260,6 +278,7 @@ export class GetByIdTextileProductDetailUseCase {
 				material: string;
 				price: number;
 				stock: number;
+				sku?: string;
 			}[];
 			principalImgUrl: string;
 			price: number;

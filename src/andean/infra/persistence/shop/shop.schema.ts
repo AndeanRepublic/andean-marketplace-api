@@ -1,6 +1,6 @@
 import { Document, Schema } from 'mongoose';
-import { ShopCategory } from '../../domain/enums/ShopCategory';
-import { AdminEntityStatus } from '../../domain/enums/AdminEntityStatus';
+import { ShopCategory } from '../../../domain/enums/ShopCategory';
+import { AdminEntityStatus } from '../../../domain/enums/AdminEntityStatus';
 
 export const ShopSchema = new Schema({
 	sellerId: String,
@@ -18,6 +18,7 @@ export const ShopSchema = new Schema({
 	],
 	providerInfoId: { type: String, required: false },
 	artisanPhotoMediaId: { type: String, required: false },
+	seals: { type: [String], default: [] },
 });
 
 export interface ShopDocument extends Document<string> {
@@ -27,4 +28,5 @@ export interface ShopDocument extends Document<string> {
 	categories: ShopCategory[];
 	providerInfoId?: string;
 	artisanPhotoMediaId?: string;
+	seals?: string[];
 }
