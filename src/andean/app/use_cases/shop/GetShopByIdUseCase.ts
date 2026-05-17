@@ -1,7 +1,7 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { ShopRepository } from '../../datastore/Shop.repo';
+import { ShopRepository } from '../../datastore/shop/Shop.repo';
 import { ProviderInfoRepository } from '../../datastore/ProviderInfo.repo';
-import { Shop } from '../../../domain/entities/Shop';
+import { Shop } from '../../../domain/entities/shop/Shop';
 import { ProviderInfo } from '../../../domain/entities/ProviderInfo';
 
 export type ShopWithProviderInfo = Shop & { providerInfo?: ProviderInfo };

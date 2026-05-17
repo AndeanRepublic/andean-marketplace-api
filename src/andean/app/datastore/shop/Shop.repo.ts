@@ -1,6 +1,6 @@
-import { Shop } from '../../domain/entities/Shop';
-import { ShopCategory } from '../../domain/enums/ShopCategory';
-import { AdminEntityStatus } from '../../domain/enums/AdminEntityStatus';
+import { Shop } from '../../../domain/entities/shop/Shop';
+import { ShopCategory } from '../../../domain/enums/ShopCategory';
+import { AdminEntityStatus } from '../../../domain/enums/AdminEntityStatus';
 
 export abstract class ShopRepository {
 	abstract getAll(): Promise<Shop[]>;

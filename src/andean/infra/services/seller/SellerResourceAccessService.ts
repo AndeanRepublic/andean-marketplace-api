@@ -4,7 +4,7 @@ import {
 	Injectable,
 } from '@nestjs/common';
 import { SellerProfileRepository } from '../../../app/datastore/Seller.repo';
-import { ShopRepository } from '../../../app/datastore/Shop.repo';
+import { ShopRepository } from '../../../app/datastore/shop/Shop.repo';
 import { CommunityRepository } from '../../../app/datastore/community/community.repo';
 import { OwnerType } from '../../../domain/enums/OwnerType';
 import { AccountRole } from '../../../domain/enums/AccountRole';

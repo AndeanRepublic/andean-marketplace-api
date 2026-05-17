@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { ShopRepository } from '../../app/datastore/Shop.repo';
+import { ShopRepository } from '../../app/datastore/shop/Shop.repo';
 import { CommunityRepository } from '../../app/datastore/community/community.repo';
 
 /**
