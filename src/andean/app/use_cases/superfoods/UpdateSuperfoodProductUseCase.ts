@@ -11,7 +11,7 @@ import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodP
 import { SuperfoodProductMapper } from '../../../infra/services/superfood/SuperfoodProductMapper';
 import { SuperfoodCategoryRepository } from '../../datastore/superfoods/SuperfoodCategory.repo';
 import { CommunityRepository } from '../../datastore/community/community.repo';
-import { ShopRepository } from '../../datastore/Shop.repo';
+import { ShopRepository } from '../../datastore/shop/Shop.repo';
 import { instanceToPlain } from 'class-transformer';
 import { CreateSuperfoodDto } from '../../../infra/controllers/dto/superfoods/CreateSuperfoodDto';
 import { CreateDetailSourceProductUseCase } from '../detailSourceProduct/CreateDetailSourceProductUseCase';

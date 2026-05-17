@@ -1,6 +1,6 @@
 import { Inject, Injectable, Optional } from '@nestjs/common';
 import { OwnerType } from 'src/andean/domain/enums/OwnerType';
-import { ShopRepository } from 'src/andean/app/datastore/Shop.repo';
+import { ShopRepository } from 'src/andean/app/datastore/shop/Shop.repo';
 import { CommunityRepository } from 'src/andean/app/datastore/community/community.repo';
 import { SealRepository } from 'src/andean/app/datastore/community/Seal.repo';
 import { ProviderInfoRepository } from 'src/andean/app/datastore/ProviderInfo.repo';
@@ -77,13 +77,30 @@ export class OwnerInfoResolver {
 			originPlace = providerInfo?.originPlace ?? '';
 		}
 
+		const seals = shop.seals
+			? await Promise.all(
+					shop.seals.map((sealId) => this.sealRepository.getById(sealId)),
+				)
+			: [];
+		const validSeals = seals.filter(
+			(seal): seal is NonNullable<typeof seal> => seal !== null,
+		);
+		const sealLogoUrls = await this.mediaUrlResolver.resolveUrls(
+			validSeals.map((seal) => seal.logoMediaId).filter(Boolean),
+		);
+
 		return {
 			ownerType: OwnerType.SHOP,
 			shop: {
 				ownerImage,
 				shopName: shop.name,
 				originPlace,
-				seals: [],
+				seals: validSeals.map((seal) => ({
+					title: seal.name,
+					description: seal.description,
+					logoMediaId: seal.logoMediaId,
+					logoUrl: sealLogoUrls.get(seal.logoMediaId) ?? '',
+				})),
 			},
 		};
 	}

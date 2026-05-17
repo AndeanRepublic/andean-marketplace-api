@@ -12,7 +12,7 @@ import { CustomerProfileRepository } from '../../datastore/Customer.repo';
 import { CommunityRepository } from '../../datastore/community/community.repo';
 import { SealRepository } from '../../datastore/community/Seal.repo';
 import { TextileCategoryRepository } from '../../datastore/textileProducts/TextileCategory.repo';
-import { ShopRepository } from '../../datastore/Shop.repo';
+import { ShopRepository } from '../../datastore/shop/Shop.repo';
 import { VariantRepository } from '../../datastore/Variant.repo';
 import { AccountRepository } from '../../datastore/Account.repo';
 import { Review } from 'src/andean/domain/entities/Review';

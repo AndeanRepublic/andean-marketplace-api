@@ -1,4 +1,4 @@
-import { ShopCategory } from '../../../domain/enums/ShopCategory';
+import { ShopCategory } from '../../../../domain/enums/ShopCategory';
 import {
 	IsNotEmpty,
 	IsString,
@@ -11,7 +11,7 @@ import {
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { CreateProviderInfoDto } from './providerInfo/CreateProviderInfoDto';
+import { CreateProviderInfoDto } from '../providerInfo/CreateProviderInfoDto';
 
 export class CreateShopDto {
 	@ApiPropertyOptional({
@@ -59,4 +59,14 @@ export class CreateShopDto {
 	@ValidateNested()
 	@Type(() => CreateProviderInfoDto)
 	providerInfo?: CreateProviderInfoDto;
+
+	@ApiPropertyOptional({
+		description: 'Array de IDs de seals asociados a la tienda',
+		example: ['67890abcdef1234567890123', '67890abcdef1234567890124'],
+		type: [String],
+	})
+	@IsArray()
+	@IsString({ each: true })
+	@IsOptional()
+	seals?: string[];
 }

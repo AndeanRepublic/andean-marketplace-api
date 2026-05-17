@@ -10,10 +10,10 @@ import {
 	HttpStatus,
 	UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../core/jwtAuth.guard';
-import { RolesGuard } from '../core/roles.guard';
-import { Roles } from '../core/roles.decorator';
-import { AccountRole } from '../../domain/enums/AccountRole';
+import { JwtAuthGuard } from '../../core/jwtAuth.guard';
+import { RolesGuard } from '../../core/roles.guard';
+import { Roles } from '../../core/roles.decorator';
+import { AccountRole } from '../../../domain/enums/AccountRole';
 import {
 	ApiTags,
 	ApiOperation,
@@ -21,24 +21,24 @@ import {
 	ApiParam,
 	ApiBody,
 } from '@nestjs/swagger';
-import { Public } from '../core/public.decorator';
-import { GetShopByIdUseCase } from '../../app/use_cases/shops/GetShopByIdUseCase';
-import { GetShopsByCategoryUseCase } from '../../app/use_cases/shops/GetShopsByCategoryUseCase';
-import { GetShopsBySellerIdUseCase } from '../../app/use_cases/shops/GetShopsBySellerIdUseCase';
-import { DeleteShopUseCase } from '../../app/use_cases/shops/DeleteShopUseCase';
-import { CreateShopUseCase } from '../../app/use_cases/shops/CreateShopUseCase';
-import { ListAllShopsUseCase } from '../../app/use_cases/shops/ListAllShopsUseCase';
-import { Shop } from '../../domain/entities/Shop';
-import { CreateShopDto } from './dto/CreateShopDto';
-import { UpdateShopDto } from './dto/UpdateShopDto';
-import { UpdateShopUseCase } from '../../app/use_cases/shops/UpdateShopUseCase';
-import { ShopResponse } from '../../app/models/shop/ShopResponse';
-import { CurrentUser } from '../core/current-user.decorator';
-import { MediaUrlResolver } from '../services/media/MediaUrlResolver';
-import type { ShopWithProviderInfo } from '../../app/use_cases/shops/GetShopByIdUseCase';
-import { ProviderInfo } from '../../domain/entities/ProviderInfo';
-import { UpdateShopStatusUseCase } from '../../app/use_cases/shops/UpdateShopStatusUseCase';
-import { UpdateEntityStatusDto } from './dto/UpdateEntityStatusDto';
+import { Public } from '../../core/public.decorator';
+import { GetShopByIdUseCase } from '../../../app/use_cases/shop/GetShopByIdUseCase';
+import { GetShopsByCategoryUseCase } from '../../../app/use_cases/shop/GetShopsByCategoryUseCase';
+import { GetShopsBySellerIdUseCase } from '../../../app/use_cases/shop/GetShopsBySellerIdUseCase';
+import { DeleteShopUseCase } from '../../../app/use_cases/shop/DeleteShopUseCase';
+import { CreateShopUseCase } from '../../../app/use_cases/shop/CreateShopUseCase';
+import { ListAllShopsUseCase } from '../../../app/use_cases/shop/ListAllShopsUseCase';
+import { Shop } from '../../../domain/entities/shop/Shop';
+import { CreateShopDto } from '../dto/shop/CreateShopDto';
+import { UpdateShopDto } from '../dto/shop/UpdateShopDto';
+import { UpdateShopUseCase } from '../../../app/use_cases/shop/UpdateShopUseCase';
+import { ShopResponse } from '../../../app/models/shop/ShopResponse';
+import { CurrentUser } from '../../core/current-user.decorator';
+import { MediaUrlResolver } from '../../services/media/MediaUrlResolver';
+import type { ShopWithProviderInfo } from '../../../app/use_cases/shop/GetShopByIdUseCase';
+import { ProviderInfo } from '../../../domain/entities/ProviderInfo';
+import { UpdateShopStatusUseCase } from '../../../app/use_cases/shop/UpdateShopStatusUseCase';
+import { UpdateEntityStatusDto } from '../dto/UpdateEntityStatusDto';
 
 @ApiTags('shops')
 @Controller('shops')
@@ -230,6 +230,7 @@ export class ShopController {
 			artisanPhotoUrl: await this.mediaUrlResolver.resolveUrl(
 				shop.artisanPhotoMediaId,
 			),
+			seals: shop.seals ?? [],
 			providerInfo:
 				'providerInfo' in shop && shop.providerInfo
 					? this.providerInfoToPlain(shop.providerInfo)
