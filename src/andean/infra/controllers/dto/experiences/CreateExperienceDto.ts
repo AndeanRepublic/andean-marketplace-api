@@ -20,29 +20,54 @@ import { OwnerType } from 'src/andean/domain/enums/OwnerType';
 import { AgeGroupCode } from 'src/andean/domain/enums/AgeGroupCode';
 import { WeekDay } from 'src/andean/domain/enums/WeekDay';
 import { ExperienceAvailabilityMode } from 'src/andean/domain/enums/ExperienceAvailabilityMode';
+import { ExperienceDurationUnit } from 'src/andean/domain/enums/ExperienceDurationUnit';
 
 // ─── BasicInfo DTO ───
 
 export class ExperienceBasicInfoDto {
-	@ApiProperty({ description: 'Título de la experiencia', example: 'Trekking al Valle Sagrado' })
+	@ApiProperty({
+		description: 'Título de la experiencia',
+		example: 'Trekking al Valle Sagrado',
+	})
 	@IsString()
 	@IsNotEmpty()
 	title!: string;
 
-	@ApiProperty({ description: 'Ubicación de la experiencia', example: 'Cusco, Perú' })
+	@ApiProperty({
+		description: 'Ubicación de la experiencia',
+		example: 'Cusco, Perú',
+	})
 	@IsString()
 	@IsNotEmpty()
 	ubication!: string;
 
 	@ApiProperty({ description: 'Número de días', example: 3 })
 	@IsInt()
-	@Min(1)
+	@Min(0)
 	days!: number;
 
 	@ApiProperty({ description: 'Número de noches', example: 2 })
 	@IsInt()
 	@Min(0)
 	nights!: number;
+
+	@ApiProperty({
+		description: 'Unidad de duración de la experiencia',
+		enum: ExperienceDurationUnit,
+		example: ExperienceDurationUnit.DAYS,
+	})
+	@IsEnum(ExperienceDurationUnit)
+	durationUnit!: ExperienceDurationUnit;
+
+	@ApiPropertyOptional({
+		description:
+			'Duración en horas cuando durationUnit=HOURS (en DAYS puede omitirse)',
+		example: 6,
+	})
+	@IsInt()
+	@Min(1)
+	@IsOptional()
+	hours?: number;
 
 	@ApiProperty({ description: 'Número mínimo del grupo', example: 2 })
 	@IsInt()
@@ -72,12 +97,39 @@ export class ExperienceBasicInfoDto {
 	@IsEnum(OwnerType)
 	ownerType!: OwnerType;
 
-	@ApiProperty({ description: 'ID del propietario (comunidad)', example: '507f1f77bcf86cd799439011' })
+	@ApiProperty({
+		description: 'ID del propietario (comunidad)',
+		example: '507f1f77bcf86cd799439011',
+	})
 	@IsString()
 	@IsNotEmpty()
 	ownerId!: string;
 
-	@ApiPropertyOptional({ description: 'Categoría de la experiencia', example: 'trekking' })
+	@ApiProperty({
+		description: 'Indica si incluye recojo',
+		example: true,
+	})
+	@IsBoolean()
+	includesPickup!: boolean;
+
+	@ApiProperty({
+		description: 'Indica si incluye alojamiento',
+		example: true,
+	})
+	@IsBoolean()
+	includesAccommodation!: boolean;
+
+	@ApiProperty({
+		description: 'Indica si incluye retorno',
+		example: true,
+	})
+	@IsBoolean()
+	includesReturn!: boolean;
+
+	@ApiPropertyOptional({
+		description: 'Categoría de la experiencia',
+		example: 'trekking',
+	})
 	@IsString()
 	@IsOptional()
 	category?: string;
@@ -86,12 +138,18 @@ export class ExperienceBasicInfoDto {
 // ─── MediaInfo DTO ───
 
 export class ExperienceMediaInfoDto {
-	@ApiProperty({ description: 'ID del MediaItem para imagen landscape', example: '507f1f77bcf86cd799439013' })
+	@ApiProperty({
+		description: 'ID del MediaItem para imagen landscape',
+		example: '507f1f77bcf86cd799439013',
+	})
 	@IsString()
 	@IsNotEmpty()
 	landscapeImg!: string;
 
-	@ApiProperty({ description: 'ID del MediaItem para thumbnail', example: '507f1f77bcf86cd799439014' })
+	@ApiProperty({
+		description: 'ID del MediaItem para thumbnail',
+		example: '507f1f77bcf86cd799439014',
+	})
 	@IsString()
 	@IsNotEmpty()
 	thumbnailImg!: string;
@@ -128,7 +186,10 @@ export class ExperienceMediaInfoDto {
 // ─── DetailInfo DTO ───
 
 export class ExperienceDetailInfoDto {
-	@ApiProperty({ description: 'Descripción corta', example: 'Una experiencia única en los Andes' })
+	@ApiProperty({
+		description: 'Descripción corta',
+		example: 'Una experiencia única en los Andes',
+	})
 	@IsString()
 	@IsNotEmpty()
 	shortDescription!: string;
@@ -138,42 +199,69 @@ export class ExperienceDetailInfoDto {
 	@IsNotEmpty()
 	largeDescription!: string;
 
-	@ApiProperty({ description: 'Qué incluye', type: [String], example: ['Transporte', 'Almuerzo'] })
+	@ApiProperty({
+		description: 'Qué incluye',
+		type: [String],
+		example: ['Transporte', 'Almuerzo'],
+	})
 	@IsArray()
 	@IsString({ each: true })
 	includes!: string[];
 
-	@ApiProperty({ description: 'Qué no incluye', type: [String], example: ['Seguro de viaje'] })
+	@ApiProperty({
+		description: 'Qué no incluye',
+		type: [String],
+		example: ['Seguro de viaje'],
+	})
 	@IsArray()
 	@IsString({ each: true })
 	notIncludes!: string[];
 
-	@ApiProperty({ description: 'Detalle de recogida', example: 'Hotel en Cusco a las 6:00 AM' })
+	@ApiPropertyOptional({
+		description: 'Detalle de recogida',
+		example: 'Hotel en Cusco a las 6:00 AM',
+	})
 	@IsString()
-	@IsNotEmpty()
-	pickupDetail!: string;
+	@IsOptional()
+	pickupDetail?: string;
 
-	@ApiProperty({ description: 'Detalle de retorno', example: 'Retorno al hotel a las 6:00 PM' })
+	@ApiPropertyOptional({
+		description: 'Detalle de retorno',
+		example: 'Retorno al hotel a las 6:00 PM',
+	})
 	@IsString()
-	@IsNotEmpty()
-	returnDetail!: string;
+	@IsOptional()
+	returnDetail?: string;
 
-	@ApiProperty({ description: 'Detalle de alojamiento', example: 'Hospedaje en casa comunal' })
+	@ApiPropertyOptional({
+		description: 'Detalle de alojamiento',
+		example: 'Hospedaje en casa comunal',
+	})
 	@IsString()
-	@IsNotEmpty()
-	accommodationDetail!: string;
+	@IsOptional()
+	accommodationDetail?: string;
 
-	@ApiProperty({ description: 'Detalle de accesibilidad', example: 'Apto para personas con movilidad reducida' })
+	@ApiProperty({
+		description: 'Detalle de accesibilidad',
+		example: 'Apto para personas con movilidad reducida',
+	})
 	@IsString()
 	@IsNotEmpty()
 	accessibilityDetail!: string;
 
-	@ApiProperty({ description: 'Política de cancelación', example: 'Cancelación gratuita hasta 48h antes' })
+	@ApiProperty({
+		description: 'Política de cancelación',
+		example: 'Cancelación gratuita hasta 48h antes',
+	})
 	@IsString()
 	@IsNotEmpty()
 	cancellationPolicy!: string;
 
-	@ApiPropertyOptional({ description: 'Qué debería llevar', type: [String], example: ['Protector solar', 'Agua'] })
+	@ApiPropertyOptional({
+		description: 'Qué debería llevar',
+		type: [String],
+		example: ['Protector solar', 'Agua'],
+	})
 	@IsArray()
 	@IsString({ each: true })
 	@IsOptional()
@@ -185,7 +273,10 @@ export class ExperienceDetailInfoDto {
 	@IsOptional()
 	aditionalInformation?: string[];
 
-	@ApiPropertyOptional({ description: 'Número de contacto', example: '+51 984 123 456' })
+	@ApiPropertyOptional({
+		description: 'Número de contacto',
+		example: '+51 984 123 456',
+	})
 	@IsString()
 	@IsOptional()
 	contactNumber?: string;
@@ -194,7 +285,11 @@ export class ExperienceDetailInfoDto {
 // ─── Prices DTO ───
 
 export class AgeGroupDto {
-	@ApiProperty({ description: 'Código del grupo de edad', enum: AgeGroupCode, example: AgeGroupCode.ADULTS })
+	@ApiProperty({
+		description: 'Código del grupo de edad',
+		enum: AgeGroupCode,
+		example: AgeGroupCode.ADULTS,
+	})
 	@IsEnum(AgeGroupCode)
 	code!: AgeGroupCode;
 
@@ -229,7 +324,10 @@ export class ExperiencePricesDto {
 	@IsNotEmpty()
 	currency!: string;
 
-	@ApiProperty({ description: 'Grupos de edad con precios', type: [AgeGroupDto] })
+	@ApiProperty({
+		description: 'Grupos de edad con precios',
+		type: [AgeGroupDto],
+	})
 	@IsArray()
 	@ValidateNested({ each: true })
 	@Type(() => AgeGroupDto)
@@ -287,7 +385,10 @@ export class ItineraryScheduleDto {
 	@IsNotEmpty()
 	time!: string;
 
-	@ApiProperty({ description: 'Descripción de la actividad', example: 'Desayuno tradicional' })
+	@ApiProperty({
+		description: 'Descripción de la actividad',
+		example: 'Desayuno tradicional',
+	})
 	@IsString()
 	@IsNotEmpty()
 	activity!: string;
@@ -319,7 +420,10 @@ export class ExperienceItineraryDto {
 	@IsOptional()
 	photos?: string[];
 
-	@ApiProperty({ description: 'Cronograma del día', type: [ItineraryScheduleDto] })
+	@ApiProperty({
+		description: 'Cronograma del día',
+		type: [ItineraryScheduleDto],
+	})
 	@IsArray()
 	@ValidateNested({ each: true })
 	@Type(() => ItineraryScheduleDto)
@@ -337,17 +441,26 @@ export class CreateExperienceDto {
 	@IsEnum(ExperienceStatus)
 	status!: ExperienceStatus;
 
-	@ApiProperty({ description: 'Información básica', type: ExperienceBasicInfoDto })
+	@ApiProperty({
+		description: 'Información básica',
+		type: ExperienceBasicInfoDto,
+	})
 	@ValidateNested()
 	@Type(() => ExperienceBasicInfoDto)
 	basicInfo!: ExperienceBasicInfoDto;
 
-	@ApiProperty({ description: 'Información multimedia', type: ExperienceMediaInfoDto })
+	@ApiProperty({
+		description: 'Información multimedia',
+		type: ExperienceMediaInfoDto,
+	})
 	@ValidateNested()
 	@Type(() => ExperienceMediaInfoDto)
 	mediaInfo!: ExperienceMediaInfoDto;
 
-	@ApiProperty({ description: 'Información de detalle', type: ExperienceDetailInfoDto })
+	@ApiProperty({
+		description: 'Información de detalle',
+		type: ExperienceDetailInfoDto,
+	})
 	@ValidateNested()
 	@Type(() => ExperienceDetailInfoDto)
 	detailInfo!: ExperienceDetailInfoDto;
@@ -357,12 +470,18 @@ export class CreateExperienceDto {
 	@Type(() => ExperiencePricesDto)
 	prices!: ExperiencePricesDto;
 
-	@ApiProperty({ description: 'Disponibilidad', type: ExperienceAvailabilityDto })
+	@ApiProperty({
+		description: 'Disponibilidad',
+		type: ExperienceAvailabilityDto,
+	})
 	@ValidateNested()
 	@Type(() => ExperienceAvailabilityDto)
 	availability!: ExperienceAvailabilityDto;
 
-	@ApiProperty({ description: 'Itinerario por días', type: [ExperienceItineraryDto] })
+	@ApiProperty({
+		description: 'Itinerario por días',
+		type: [ExperienceItineraryDto],
+	})
 	@IsArray()
 	@ValidateNested({ each: true })
 	@Type(() => ExperienceItineraryDto)

@@ -8,6 +8,7 @@ import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { IS_PUBLIC_KEY } from './public.decorator';
+import { IS_OPTIONAL_AUTH_KEY } from './optionalAuth.decorator';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -27,11 +28,23 @@ export class JwtAuthGuard implements CanActivate {
 			return true;
 		}
 
+		// Check if the route is marked as optional auth
+		const isOptionalAuth = this.reflector.getAllAndOverride<boolean>(
+			IS_OPTIONAL_AUTH_KEY,
+			[context.getHandler(), context.getClass()],
+		);
+
 		const request = context.switchToHttp().getRequest();
 		const token = this.extractTokenFromHeader(request);
+
 		if (!token) {
+			if (isOptionalAuth) {
+				// 💡 Allow access to optional auth routes without token
+				return true;
+			}
 			throw new UnauthorizedException('Token not found');
 		}
+
 		try {
 			// 💡 Here the JWT secret key that's used for verifying the payload
 			// is the key that was passed in the JwtModule
@@ -43,6 +56,10 @@ export class JwtAuthGuard implements CanActivate {
 				roles: payload.roles,
 			};
 		} catch {
+			if (isOptionalAuth) {
+				// 💡 Allow access to optional auth routes with invalid token
+				return true;
+			}
 			throw new UnauthorizedException('Invalid token');
 		}
 		return true;

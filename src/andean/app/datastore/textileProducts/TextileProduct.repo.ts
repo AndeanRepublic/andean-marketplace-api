@@ -16,6 +16,8 @@ export interface ProductFilters {
 	sortBy?: ProductSortBy;
 	/** Si es true, incluye productos con totalStock <= 0 (p. ej. panel de carga). */
 	includeZeroStock?: boolean;
+	/** Si es true, incluye HIDDEN (dashboard admin). Por defecto solo PUBLISHED. */
+	includeAllStatuses?: boolean;
 }
 
 export interface BoxCatalogTextileItem {
@@ -59,6 +61,11 @@ export abstract class TextileProductRepository {
 	abstract adjustTotalStock(
 		id: string,
 		delta: number,
+	): Promise<TextileProduct | null>;
+	/** Reemplaza totalStock (p. ej. tras sincronizar variantes). */
+	abstract setTotalStock(
+		id: string,
+		totalStock: number,
 	): Promise<TextileProduct | null>;
 	abstract updateStatus(
 		id: string,

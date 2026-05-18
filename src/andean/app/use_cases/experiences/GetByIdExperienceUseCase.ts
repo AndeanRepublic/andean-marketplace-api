@@ -10,7 +10,7 @@ import { ReviewRepository } from '../../datastore/Review.repo';
 import { CustomerProfileRepository } from '../../datastore/Customer.repo';
 import { AccountRepository } from '../../datastore/Account.repo';
 import { CommunityRepository } from '../../datastore/community/community.repo';
-import { ShopRepository } from '../../datastore/Shop.repo';
+import { ShopRepository } from '../../datastore/shop/Shop.repo';
 import { BookingRepository } from '../../datastore/booking/Booking.repo';
 
 import { MediaItem } from '../../../domain/entities/MediaItem';
@@ -18,6 +18,7 @@ import { Review } from '../../../domain/entities/Review';
 import { ProductType } from '../../../domain/enums/ProductType';
 import { OwnerType } from '../../../domain/enums/OwnerType';
 import { ExperienceAvailabilityMode } from '../../../domain/enums/ExperienceAvailabilityMode';
+import { ExperienceStatus } from '../../../domain/enums/ExperienceStatus';
 
 import {
 	ExperienceAvailabilityResponse,
@@ -66,9 +67,13 @@ export class GetByIdExperienceUseCase {
 		if (!experience) {
 			throw new NotFoundException(`Experience with id ${id} not found`);
 		}
+		if (experience.status !== ExperienceStatus.PUBLISHED) {
+			throw new NotFoundException(`Experience with id ${id} not found`);
+		}
 
 		// -- Fetch sub-tablas y reviews en paralelo
-		const [prices, , itineraries, reviews, moreExperiences] = await Promise.all(
+		const [prices, , itineraries, reviews, moreExperiences] =
+			await Promise.all(
 			[
 				this.pricesRepo.getById(experience.pricesId),
 				this.availabilityRepo.getById(experience.availabilityId),
@@ -97,9 +102,7 @@ export class GetByIdExperienceUseCase {
 		]);
 
 		// -- Construir disponibilidad
-		const availability = await this.buildAvailability(
-			experience.availabilityId,
-		);
+		const availability = await this.buildAvailability(id);
 
 		// -- Construir respuesta usando el mapper
 		const price = ExperienceDetailMapper.resolvePrice(prices?.ageGroups);
@@ -125,6 +128,7 @@ export class GetByIdExperienceUseCase {
 			ages,
 			landscapeImgUrl,
 			photos,
+			mediaUrlById,
 			ownerInfo,
 			availability,
 			agePricingInfo,
@@ -210,15 +214,14 @@ export class GetByIdExperienceUseCase {
 	}
 
 	private async buildAvailability(
-		availabilityId: string,
+		experienceId: string,
 	): Promise<ExperienceAvailabilityResponse> {
-		const availability = await this.availabilityRepo.getById(availabilityId);
 		const availableStartDates =
-			await this.experienceRepo.getFutureAvailableDates(availabilityId);
+			await this.experienceRepo.getFutureAvailableDates(experienceId);
 		const weeklyStartDays =
-			await this.experienceRepo.getWeeklyStartDays(availabilityId);
+			await this.experienceRepo.getWeeklyStartDays(experienceId);
 		const excludedDates =
-			await this.getFutureUnavailableDatesUseCase.handle(availabilityId);
+			await this.getFutureUnavailableDatesUseCase.handle(experienceId);
 
 		return {
 			weeklyStartDays,

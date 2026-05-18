@@ -4,6 +4,7 @@ import { ExperiencePricesRepository } from '../../datastore/experiences/Experien
 import { ExperienceAvailabilityRepository } from '../../datastore/experiences/ExperienceAvailability.repo';
 import { ExperienceItineraryRepository } from '../../datastore/experiences/ExperienceItinerary.repo';
 import { AccountRole } from 'src/andean/domain/enums/AccountRole';
+import { ExperienceDurationUnit } from 'src/andean/domain/enums/ExperienceDurationUnit';
 import { SellerResourceAccessService } from 'src/andean/infra/services/seller/SellerResourceAccessService';
 import { MediaUrlResolver } from 'src/andean/infra/services/media/MediaUrlResolver';
 
@@ -76,6 +77,18 @@ export class GetExperienceForEditUseCase {
 		const sortedItineraries = [...itineraries].sort(
 			(a, b) => a.numberDay - b.numberDay,
 		);
+		const includesSet = new Set(experience.detailInfo.includes ?? []);
+		const includesPickup =
+			experience.basicInfo.includesPickup ??
+			includesSet.has('Recojo en la ubicación del turista');
+		const includesReturn =
+			experience.basicInfo.includesReturn ??
+			includesSet.has('Retorno a la ubicación del turista');
+		const includesAccommodation =
+			experience.basicInfo.includesAccommodation ??
+			includesSet.has('Alojamiento');
+		const durationUnit =
+			experience.basicInfo.durationUnit ?? ExperienceDurationUnit.DAYS;
 
 		return {
 			id: experience.id,
@@ -85,11 +98,16 @@ export class GetExperienceForEditUseCase {
 				ubication: experience.basicInfo.ubication,
 				days: experience.basicInfo.days,
 				nights: experience.basicInfo.nights,
+				durationUnit,
+				hours: experience.basicInfo.hours,
 				minNumberGroup: experience.basicInfo.minNumberGroup,
 				maxNumberGroup: experience.basicInfo.maxNumberGroup,
 				languages: experience.basicInfo.languages,
 				ownerType: experience.basicInfo.ownerType,
 				ownerId: experience.basicInfo.ownerId,
+				includesPickup,
+				includesReturn,
+				includesAccommodation,
 				category: experience.basicInfo.category,
 			},
 			mediaInfo: {

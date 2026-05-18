@@ -13,6 +13,7 @@ import {
 import { JwtAuthGuard } from '../core/jwtAuth.guard';
 import { RolesGuard } from '../core/roles.guard';
 import { Roles } from '../core/roles.decorator';
+import { CurrentUser } from '../core/current-user.decorator';
 import { AccountRole } from '../../domain/enums/AccountRole';
 import {
 	ApiTags,
@@ -35,6 +36,7 @@ import { Order } from '../../domain/entities/order/Order';
 import { UpdateOrderDto } from './dto/order/UpdateOrderDto';
 import { OrderResponse } from '../../app/models/order/OrderResponse';
 import { OrderErrorResponse } from '../../app/models/order/OrderErrorResponse';
+import { PaginatedOrdersResponse } from '../../app/models/order/PaginatedOrdersResponse';
 import { CreatePayPalOrderUseCase } from '../../app/use_cases/payments/CreatePayPalOrderUseCase';
 import { CapturePayPalOrderUseCase } from '../../app/use_cases/payments/CapturePayPalOrderUseCase';
 import { CreatePayPalOrderDto } from './dto/payment/CreatePayPalOrderDto';
@@ -55,7 +57,7 @@ export class OrderController {
 		private readonly getAllOrdersUseCase: GetAllOrdersUseCase,
 	) {}
 
-	@Public()
+	// @Public()
 	// @Post('')
 	// @ApiOperation({
 	// 	summary: 'Crear orden',
@@ -99,19 +101,72 @@ export class OrderController {
 	// 	return this.createOrderFromCartUseCase.handle(customerId, body);
 	// }
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN, AccountRole.SELLER)
 	@Get('/')
 	@ApiOperation({
-		summary: 'Obtener todas las órdenes',
-		description: 'Recupera todas las órdenes del sistema. Solo administradores.',
+		summary: 'Obtener todas las órdenes (paginado)',
+		description:
+			'Recupera órdenes del sistema con paginación. ADMIN ve todas, SELLER solo las que contienen sus productos.',
+	})
+	@ApiQuery({
+		name: 'page',
+		required: false,
+		type: Number,
+		description: 'Página actual (default: 1)',
+		example: 1,
+	})
+	@ApiQuery({
+		name: 'per_page',
+		required: false,
+		type: Number,
+		description: 'Resultados por página (default: 10)',
+		example: 10,
 	})
 	@ApiResponse({
 		status: 200,
-		description: 'Lista de órdenes obtenida exitosamente',
-		type: [OrderResponse],
+		description: 'Lista de órdenes paginada obtenida exitosamente',
+		schema: {
+			type: 'object',
+			properties: {
+				data: {
+					type: 'array',
+					items: { $ref: '#/components/schemas/OrderResponse' },
+				},
+				pagination: {
+					type: 'object',
+					properties: {
+						total: { type: 'number', example: 50 },
+						page: { type: 'number', example: 1 },
+						per_page: { type: 'number', example: 10 },
+						total_pages: { type: 'number', example: 5 },
+					},
+				},
+			},
+		},
 	})
-	async getAll(): Promise<Order[]> {
-		return this.getAllOrdersUseCase.handle();
+	@ApiResponse({
+		status: 401,
+		description: 'No autenticado - Token faltante o inválido',
+		type: OrderErrorResponse,
+	})
+	@ApiResponse({
+		status: 403,
+		description: 'No autorizado - Rol insuficiente (requiere ADMIN o SELLER)',
+		type: OrderErrorResponse,
+	})
+	async getAll(
+		@Query('page') page?: number,
+		@Query('per_page') perPage?: number,
+		@CurrentUser() user?: any,
+	): Promise<PaginatedOrdersResponse> {
+		const normalizedPage = page && page > 0 ? page : 1;
+		const normalizedPerPage = perPage && perPage > 0 ? perPage : 10;
+
+		return this.getAllOrdersUseCase.handle(
+			normalizedPage,
+			normalizedPerPage,
+			user,
+		);
 	}
 
 	@Public()

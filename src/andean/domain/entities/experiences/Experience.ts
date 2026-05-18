@@ -15,5 +15,5 @@ export class Experience {
 		public itineraryIds: string[],
 		public createdAt: Date,
 		public updatedAt: Date,
-	) { }
+	) {}
 }

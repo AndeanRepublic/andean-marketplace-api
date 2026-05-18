@@ -9,6 +9,7 @@ import { TextileProductRepository } from '../../datastore/textileProducts/Textil
 import { ProductType } from '../../../domain/enums/ProductType';
 import { AccountRole } from 'src/andean/domain/enums/AccountRole';
 import { SellerResourceAccessService } from 'src/andean/infra/services/seller/SellerResourceAccessService';
+import { TextileProductStockFromVariantsSync } from '../../../infra/services/textileProducts/TextileProductStockFromVariantsSync';
 
 @Injectable()
 export class DeleteVariantUseCase {
@@ -18,6 +19,7 @@ export class DeleteVariantUseCase {
 		@Inject(TextileProductRepository)
 		private readonly textileProductRepository: TextileProductRepository,
 		private readonly sellerResourceAccess: SellerResourceAccessService,
+		private readonly textileProductStockFromVariantsSync: TextileProductStockFromVariantsSync,
 	) {}
 
 	async execute(
@@ -52,6 +54,10 @@ export class DeleteVariantUseCase {
 
 		if (!deleted) {
 			throw new NotFoundException('Failed to delete Variant');
+		}
+
+		if (existing.productType === ProductType.TEXTILE) {
+			await this.textileProductStockFromVariantsSync.apply(existing.productId);
 		}
 	}
 }

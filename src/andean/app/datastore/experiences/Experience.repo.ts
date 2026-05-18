@@ -9,6 +9,8 @@ export interface ExperienceFilters {
 	ownerId?: string;
 	minPrice?: number;
 	maxPrice?: number;
+	/** Si es true, incluye HIDDEN (dashboard admin). Por defecto solo PUBLISHED. */
+	includeAllStatuses?: boolean;
 }
 
 export interface ExperienceListRawItem {
@@ -38,4 +40,8 @@ export abstract class ExperienceRepository {
 		id: string,
 		status: ExperienceStatus,
 	): Promise<Experience | null>;
+	abstract findIdsByShopOrCommunityOwners(
+		shopIds: string[],
+		communityIds: string[],
+	): Promise<string[]>;
 }

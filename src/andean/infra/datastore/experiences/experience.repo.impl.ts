@@ -15,6 +15,7 @@ import { ExperienceAvailabilityDocument } from '../../persistence/experiences/ex
 import { ExperienceAvailabilityRepository } from 'src/andean/app/datastore/experiences/ExperienceAvailability.repo';
 import { WeekDay } from 'src/andean/domain/enums/WeekDay';
 import { ExperienceStatus } from 'src/andean/domain/enums/ExperienceStatus';
+import { OwnerType } from 'src/andean/domain/enums/OwnerType';
 
 @Injectable()
 export class ExperienceRepositoryImpl extends ExperienceRepository {
@@ -68,6 +69,9 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 		const perPage = filters.perPage || 20;
 
 		const pipeline: any[] = [
+			...(filters.includeAllStatuses !== true
+				? [{ $match: { status: ExperienceStatus.PUBLISHED } }]
+				: []),
 			// 1. basicInfo ya está embebido — apply category / ownerId filters directamente
 			...(filters.category
 				? [{ $match: { 'basicInfo.category': filters.category } }]
@@ -138,16 +142,16 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 				? [{ $match: { adultsPrice: { $lte: filters.maxPrice } } }]
 				: []),
 
-			// 5. Lookup MediaItem for landscapeImg (mediaInfo ya está embebido)
+			// 5. Lookup MediaItem for thumbnailImg (mediaInfo ya está embebido)
 			{
 				$addFields: {
-					landscapeImgOid: { $toObjectId: '$mediaInfo.landscapeImg' },
+					thumbnailImgOid: { $toObjectId: '$mediaInfo.thumbnailImg' },
 				},
 			},
 			{
 				$lookup: {
 					from: 'mediaitems',
-					localField: 'landscapeImgOid',
+					localField: 'thumbnailImgOid',
 					foreignField: '_id',
 					as: 'mainImageData',
 				},
@@ -251,10 +255,14 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 			return [];
 
 		const now = new Date();
-		now.setHours(0, 0, 0, 0);
+		now.setUTCHours(0, 0, 0, 0);
 
 		return [...(availability.specificAvailableStartDates ?? [])]
-			.map((date) => new Date(date))
+			.map((date) => {
+				const normalized = new Date(date);
+				normalized.setUTCHours(0, 0, 0, 0);
+				return normalized;
+			})
 			.filter((date) => date >= now)
 			.sort((a, b) => a.getTime() - b.getTime());
 	}
@@ -268,5 +276,33 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 			.findByIdAndUpdate(objectId, { $set: { status, updatedAt: new Date() } }, { new: true })
 			.exec();
 		return updated ? ExperienceMapper.fromDocument(updated) : null;
+	}
+
+	async findIdsByShopOrCommunityOwners(
+		shopIds: string[],
+		communityIds: string[],
+	): Promise<string[]> {
+		const or: Record<string, unknown>[] = [];
+		if (shopIds.length) {
+			or.push({
+				'basicInfo.ownerType': OwnerType.SHOP,
+				'basicInfo.ownerId': { $in: shopIds },
+			});
+		}
+		if (communityIds.length) {
+			or.push({
+				'basicInfo.ownerType': OwnerType.COMMUNITY,
+				'basicInfo.ownerId': { $in: communityIds },
+			});
+		}
+		if (!or.length) {
+			return [];
+		}
+		const docs = await this.model
+			.find({ $or: or })
+			.select({ _id: 1 })
+			.lean()
+			.exec();
+		return docs.map((d) => d._id.toString());
 	}
 }

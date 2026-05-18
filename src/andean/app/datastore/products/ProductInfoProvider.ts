@@ -19,4 +19,14 @@ export abstract class ProductInfoProvider {
 	 * @returns ProductInfo si el producto existe, null si no existe.
 	 */
 	abstract getProductInfo(productId: string): Promise<ProductInfo | null>;
+
+	/**
+	 * Obtiene la información de múltiples productos en batch.
+	 * Previene N+1 queries al buscar varios productos del mismo tipo.
+	 * @param productIds - Array de IDs de productos a buscar
+	 * @returns Map de productId -> ProductInfo (excluye productos no encontrados)
+	 */
+	abstract getProductInfoByIds(
+		productIds: string[],
+	): Promise<Map<string, ProductInfo>>;
 }

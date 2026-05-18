@@ -27,6 +27,7 @@ import {
 	ApiQuery,
 } from '@nestjs/swagger';
 import { Public } from '../../core/public.decorator';
+import { OptionalAuth } from '../../core/optionalAuth.decorator';
 import { CreateSuperfoodDto } from '../dto/superfoods/CreateSuperfoodDto';
 import { UpdateSuperfoodDto } from '../dto/superfoods/UpdateSuperfoodDto';
 import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
@@ -238,7 +239,7 @@ export class SuperfoodController {
 		return this.getSuperfoodProductByIdUseCase.handle(productId);
 	}
 
-	@Public()
+	@OptionalAuth()
 	@Get('/:productId')
 	@ApiOperation({
 		summary: 'Obtener detalle de producto superfood por ID (vista pública)',
@@ -261,8 +262,12 @@ export class SuperfoodController {
 	})
 	async getSuperfoodById(
 		@Param('productId') productId: string,
+		@CurrentUser() user?: { userId: string; roles: AccountRole[] },
 	): Promise<SuperfoodProductDetailResponse> {
-		return this.getByIdSuperfoodProductDetailUseCase.handle(productId);
+		return this.getByIdSuperfoodProductDetailUseCase.handle(
+			productId,
+			user?.userId,
+		);
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)

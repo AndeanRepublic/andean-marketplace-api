@@ -10,14 +10,14 @@ import { GetBookingByIdUseCase } from './app/use_cases/bookings/GetBookingByIdUs
 import { GetBookingsByCustomerUseCase } from './app/use_cases/bookings/GetBookingsByCustomerUseCase';
 import { GetBookingsByEmailUseCase } from './app/use_cases/bookings/GetBookingsByEmailUseCase';
 import { UpdateBookingStatusUseCase } from './app/use_cases/bookings/UpdateBookingStatusUseCase';
+import { ListBookingsForManagementUseCase } from './app/use_cases/bookings/ListBookingsForManagementUseCase';
 
 import { UsersModule } from './users.module';
+import { ShopsModule } from './shop.module';
+import { CommunityModule } from './community.module';
 import { ExperienceModule } from './experience.module';
+import { OrdersModule } from './order.module';
 import { GetFutureUnavailableDatesUseCase } from './app/use_cases/experiences/GetFutureUnavailableDatesUseCase';
-import { ExperienceRepository } from './app/datastore/experiences/Experience.repo';
-import { ExperienceRepositoryImpl } from './infra/datastore/experiences/experience.repo.impl';
-import { ExperiencePricesRepository } from './app/datastore/experiences/ExperiencePrices.repo';
-import { ExperiencePricesRepositoryImpl } from './infra/datastore/experiences/experiencePrices.repo.impl';
 import { PayPalClientService } from './infra/services/paypal/PayPalClientService';
 import { CreatePayPalOrderService } from './infra/services/paypal/CreatePayPalOrderService';
 import { CapturePayPalOrderService } from './infra/services/paypal/CapturePayPalOrderService';
@@ -31,6 +31,9 @@ import { BookingRepositoryImpl } from './infra/datastore/booking/booking.repo.im
 			{ name: 'ExperiencePrices', schema: ExperiencePricesSchema },
 		]),
 		UsersModule,
+		ShopsModule,
+		CommunityModule,
+		OrdersModule,
 		forwardRef(() => ExperienceModule),
 	],
 	controllers: [BookingController],
@@ -42,6 +45,7 @@ import { BookingRepositoryImpl } from './infra/datastore/booking/booking.repo.im
 		GetBookingsByCustomerUseCase,
 		GetBookingsByEmailUseCase,
 		UpdateBookingStatusUseCase,
+		ListBookingsForManagementUseCase,
 		GetFutureUnavailableDatesUseCase,
 		PayPalClientService,
 		CreatePayPalOrderService,

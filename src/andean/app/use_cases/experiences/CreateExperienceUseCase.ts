@@ -1,4 +1,9 @@
-import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import {
+	Injectable,
+	Inject,
+	NotFoundException,
+	BadRequestException,
+} from '@nestjs/common';
 import { ExperienceRepository } from '../../datastore/experiences/Experience.repo';
 import { Experience } from 'src/andean/domain/entities/experiences/Experience';
 import { ExperienceMapper } from 'src/andean/infra/services/experiences/ExperienceMapper';
@@ -11,6 +16,7 @@ import { CreateExperienceAvailabilityUseCase } from './availability/CreateExperi
 import { CreateExperienceItineraryUseCase } from './itinerary/CreateExperienceItineraryUseCase';
 import { OwnerStrategyResolver } from 'src/andean/infra/services/experiences/OwnerStrategyResolver';
 import { MediaItemRepository } from '../../datastore/MediaItem.repo';
+import { ExperienceDurationUnit } from 'src/andean/domain/enums/ExperienceDurationUnit';
 
 @Injectable()
 export class CreateExperienceUseCase {
@@ -26,6 +32,8 @@ export class CreateExperienceUseCase {
 	) { }
 
 	async handle(dto: CreateExperienceDto): Promise<Experience> {
+		this.validateDurationFields(dto.basicInfo);
+
 		// 1. Validar owner (basicInfo)
 		const ownerStrategy = this.ownerStrategyResolver.resolve(dto.basicInfo.ownerType);
 		await ownerStrategy.validate(dto.basicInfo.ownerId);
@@ -77,6 +85,38 @@ export class CreateExperienceUseCase {
 			if (!foundIds.has(id)) {
 				throw new NotFoundException(`MediaItem with id ${id} not found`);
 			}
+		}
+	}
+
+	private validateDurationFields(basicInfo: CreateExperienceDto['basicInfo']): void {
+		if (basicInfo.durationUnit === ExperienceDurationUnit.HOURS) {
+			if (basicInfo.days !== 0 || basicInfo.nights !== 0) {
+				throw new BadRequestException(
+					'When durationUnit is HOURS, days and nights must be 0',
+				);
+			}
+			if (!basicInfo.hours || basicInfo.hours < 1) {
+				throw new BadRequestException(
+					'When durationUnit is HOURS, hours must be greater than 0',
+				);
+			}
+			return;
+		}
+
+		if (basicInfo.days < 1) {
+			throw new BadRequestException(
+				'When durationUnit is DAYS, days must be at least 1',
+			);
+		}
+		if (basicInfo.nights < 0) {
+			throw new BadRequestException(
+				'When durationUnit is DAYS, nights must be 0 or greater',
+			);
+		}
+		if (basicInfo.nights > basicInfo.days - 1) {
+			throw new BadRequestException(
+				'When durationUnit is DAYS, nights cannot be greater than days - 1',
+			);
 		}
 	}
 }

@@ -6,10 +6,12 @@ import {
 	EmailRepository,
 	SendOrderConfirmationPayload,
 	SendPasswordResetPayload,
+	SendBookingConfirmationPayload,
 } from '../../app/datastore/Email.repo';
 import { SesClientService } from '../services/email/SesClientService';
 import { OrderConfirmationTemplate } from '../services/email/templates/OrderConfirmationTemplate';
 import { PasswordResetCodeTemplate } from '../services/email/templates/PasswordResetCodeTemplate';
+import { BookingConfirmationTemplate } from '../services/email/templates/BookingConfirmationTemplate';
 
 @Injectable()
 export class SesEmailRepoImpl extends EmailRepository {
@@ -19,10 +21,20 @@ export class SesEmailRepoImpl extends EmailRepository {
 		super();
 	}
 
+	/**
+	 * Returns admin CC emails for production environments.
+	 * @returns Array of admin emails if in production, empty array otherwise
+	 */
+	private getAdminCcEmails(): string[] {
+		return process.env.NODE_ENV !== 'development'
+			? ['hola@andeanrepublic.com']
+			: [];
+	}
+
 	async sendOrderConfirmation(
 		payload: SendOrderConfirmationPayload,
 	): Promise<void> {
-		const { to, data } = payload;
+		const { to, cc, data } = payload;
 
 		const html = await render(
 			React.createElement(OrderConfirmationTemplate, { data }),
@@ -30,10 +42,12 @@ export class SesEmailRepoImpl extends EmailRepository {
 
 		const senderEmail = this.sesClientService.getSenderEmail();
 		const senderName = this.sesClientService.getSenderName();
+		const ccAddresses = this.getAdminCcEmails();
 
 		const command = new SendEmailCommand({
 			Destination: {
 				ToAddresses: [to],
+				CcAddresses: ccAddresses.length > 0 ? ccAddresses : undefined,
 			},
 			Source: `${senderName} <${senderEmail}>`,
 			Message: {
@@ -89,5 +103,45 @@ export class SesEmailRepoImpl extends EmailRepository {
 		await this.sesClientService.getClient().send(command);
 
 		this.logger.log(`[provider=ses] Password reset email sent to ${to}`);
+	}
+
+	async sendBookingConfirmation(
+		payload: SendBookingConfirmationPayload,
+	): Promise<void> {
+		const { to, cc, data } = payload;
+
+		const html = await render(
+			React.createElement(BookingConfirmationTemplate, { data }),
+		);
+
+		const senderEmail = this.sesClientService.getSenderEmail();
+		const senderName = this.sesClientService.getSenderName();
+		const ccAddresses = this.getAdminCcEmails();
+
+		const command = new SendEmailCommand({
+			Destination: {
+				ToAddresses: [to],
+				CcAddresses: ccAddresses.length > 0 ? ccAddresses : undefined,
+			},
+			Source: `${senderName} <${senderEmail}>`,
+			Message: {
+				Subject: {
+					Data: `Booking Confirmation #${data.bookingNumber}`,
+					Charset: 'UTF-8',
+				},
+				Body: {
+					Html: {
+						Data: html,
+						Charset: 'UTF-8',
+					},
+				},
+			},
+		});
+
+		await this.sesClientService.getClient().send(command);
+
+		this.logger.log(
+			`[provider=ses] Booking confirmation email sent to ${to} for booking #${data.bookingNumber}`,
+		);
 	}
 }

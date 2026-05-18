@@ -48,4 +48,8 @@ export class AccountReviewRepositoryImpl extends AccountRepository {
 	): Promise<void> {
 		throw new Error('updatePassword not supported in review-only mode');
 	}
+
+	async updateAccountName(_accountId: string, _name: string): Promise<void> {
+		throw new Error('updateAccountName not supported in review-only mode');
+	}
 }

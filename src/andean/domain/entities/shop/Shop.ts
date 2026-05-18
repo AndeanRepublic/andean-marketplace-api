@@ -1,5 +1,5 @@
-import { ShopCategory } from '../enums/ShopCategory';
-import { AdminEntityStatus } from '../enums/AdminEntityStatus';
+import { ShopCategory } from '../../enums/ShopCategory';
+import { AdminEntityStatus } from '../../enums/AdminEntityStatus';
 
 export class Shop {
 	constructor(
@@ -10,5 +10,6 @@ export class Shop {
 		public categories: ShopCategory[],
 		public providerInfoId?: string,
 		public artisanPhotoMediaId?: string,
+		public seals?: string[],
 	) {}
 }

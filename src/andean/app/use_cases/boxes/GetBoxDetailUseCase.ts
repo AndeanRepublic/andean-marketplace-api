@@ -19,6 +19,7 @@ import { Box, BoxProduct } from '../../../domain/entities/box/Box';
 import { BoxSeal } from '../../../domain/entities/box/BoxSeal';
 import { Variant } from '../../../domain/entities/Variant';
 import { MediaItem } from '../../../domain/entities/MediaItem';
+import { AdminEntityStatus } from '../../../domain/enums/AdminEntityStatus';
 
 @Injectable()
 export class GetBoxDetailUseCase {
@@ -55,7 +56,9 @@ export class GetBoxDetailUseCase {
 
 	private async requireBox(boxId: string): Promise<Box> {
 		const box = await this.boxRepository.getById(boxId);
-		if (!box) throw new NotFoundException('Box not found');
+		if (!box || box.status !== AdminEntityStatus.PUBLISHED) {
+			throw new NotFoundException('Box not found');
+		}
 		return box;
 	}
 

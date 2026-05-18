@@ -83,4 +83,18 @@ export class CommunityRepositoryImpl extends CommunityRepositoryBase {
 			.exec();
 		return updated ? CommunityMapper.fromDocument(updated) : null;
 	}
+
+	async findIdsByProviderInfoIdIn(
+		providerInfoIds: string[],
+	): Promise<string[]> {
+		if (!providerInfoIds.length) {
+			return [];
+		}
+		const docs = await this.communityModel
+			.find({ providerInfoId: { $in: providerInfoIds } })
+			.select({ _id: 1 })
+			.lean()
+			.exec();
+		return docs.map((d) => d._id.toString());
+	}
 }

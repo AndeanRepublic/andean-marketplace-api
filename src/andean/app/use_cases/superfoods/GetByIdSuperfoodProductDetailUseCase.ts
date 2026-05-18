@@ -5,7 +5,7 @@ import { SuperfoodNutritionalFeatureRepository } from '../../datastore/superfood
 import { ReviewRepository } from '../../datastore/Review.repo';
 import { CustomerProfileRepository } from '../../datastore/Customer.repo';
 import { AccountRepository } from '../../datastore/Account.repo';
-import { ShopRepository } from '../../datastore/Shop.repo';
+import { ShopRepository } from '../../datastore/shop/Shop.repo';
 import { CommunityRepository } from '../../datastore/community/community.repo';
 import { MediaItemRepository } from '../../datastore/MediaItem.repo';
 import { DetailSourceProductRepository } from '../../datastore/DetailSourceProduct.repo';
@@ -27,6 +27,7 @@ import { MediaUrlResolver } from '../../../infra/services/media/MediaUrlResolver
 import { SuperfoodProductListColorResolver } from '../../../infra/services/superfood/SuperfoodProductListColorResolver';
 import { SuperfoodProductListMediaResolver } from '../../../infra/services/superfood/SuperfoodProductListMediaResolver';
 import { instanceToPlain } from 'class-transformer';
+import { SuperfoodProductStatus } from '../../../domain/enums/SuperfoodProductStatus';
 
 @Injectable()
 export class GetByIdSuperfoodProductDetailUseCase {
@@ -57,11 +58,17 @@ export class GetByIdSuperfoodProductDetailUseCase {
 		private readonly superfoodProductListMediaResolver: SuperfoodProductListMediaResolver,
 	) {}
 
-	async handle(productId: string): Promise<SuperfoodProductDetailResponse> {
+	async handle(
+		productId: string,
+		userId?: string,
+	): Promise<SuperfoodProductDetailResponse> {
 		// 1. Obtener producto principal
 		const product =
 			await this.superfoodProductRepository.getSuperfoodProductById(productId);
 		if (!product) {
+			throw new NotFoundException(`Producto con ID ${productId} no encontrado`);
+		}
+		if (product.status !== SuperfoodProductStatus.PUBLISHED) {
 			throw new NotFoundException(`Producto con ID ${productId} no encontrado`);
 		}
 
@@ -97,7 +104,7 @@ export class GetByIdSuperfoodProductDetailUseCase {
 				String(product.baseInfo.ownerType),
 				product.baseInfo.ownerId,
 			),
-			this.buildReviews(reviews),
+			this.buildReviews(reviews, userId),
 			this.superfoodProductListColorResolver.resolveById(product.colorId),
 		]);
 
@@ -244,22 +251,40 @@ export class GetByIdSuperfoodProductDetailUseCase {
 		};
 	}
 
-	private async buildReviews(reviews: Review[]): Promise<ReviewsResponse> {
+	private async buildReviews(
+		reviews: Review[],
+		userId?: string,
+	): Promise<ReviewsResponse> {
 		// Obtener accounts directamente
 		const accounts = await Promise.all(
 			reviews.map((r) => this.accountRepository.getAccountById(r.accountId)),
 		);
 
 		const ratingStats = this.calculateRatingStats(reviews);
-		const comments = reviews.map((review, i) => ({
-			idReview: review.id,
-			nameUser: accounts[i]?.name || 'Usuario Anónimo',
-			content: review.content,
-			numberStars: review.numberStars,
-			date: review.createdAt,
-			likes: review.numberLikes,
-			dislikes: review.numberDislikes,
-		}));
+		const comments = reviews.map((review, i) => {
+			// Determinar userVote basado en userId
+			let userVote: 'like' | 'dislike' | null | undefined = undefined;
+			if (userId) {
+				if (review.likedBy?.includes(userId)) {
+					userVote = 'like';
+				} else if (review.dislikedBy?.includes(userId)) {
+					userVote = 'dislike';
+				} else {
+					userVote = null;
+				}
+			}
+
+			return {
+				idReview: review.id,
+				nameUser: accounts[i]?.name || 'Usuario Anónimo',
+				content: review.content,
+				numberStars: review.numberStars,
+				date: review.createdAt,
+				likes: review.numberLikes,
+				dislikes: review.numberDislikes,
+				...(userVote !== undefined && { userVote }),
+			};
+		});
 
 		return { rating: ratingStats, comments };
 	}
