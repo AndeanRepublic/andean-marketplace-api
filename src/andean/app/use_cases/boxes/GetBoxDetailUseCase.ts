@@ -148,7 +148,7 @@ export class GetBoxDetailUseCase {
 				narrativeImage,
 				deps,
 			);
-			return row ? { row, linePrice: effectiveLinePrice } : null;
+			return row ? { row, linePrice: catalogPrice } : null;
 		}
 
 		const row = await this.buildTextileRow(
@@ -159,7 +159,7 @@ export class GetBoxDetailUseCase {
 			narrativeImage,
 			deps,
 		);
-		return { row, linePrice: effectiveLinePrice };
+		return { row, linePrice: catalogPrice };
 	}
 
 	private resolveNarrativeImage(
