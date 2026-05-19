@@ -61,11 +61,7 @@ export class GetAllBoxesUseCase {
 					const variant = dependencies.variantMap.get(product.variantId);
 					if (!variant) continue;
 					const catalog = this.boxResolutionService.getVariantPrice(variant);
-					const price = this.boxResolutionService.resolveLinePrice(
-						product,
-						catalog,
-					);
-					discartedPrice += price;
+					discartedPrice += catalog;
 				}
 
 				const products = await this.buildListProducts(
