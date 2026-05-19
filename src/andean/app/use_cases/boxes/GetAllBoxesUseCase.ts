@@ -65,7 +65,7 @@ export class GetAllBoxesUseCase {
 						product,
 						catalog,
 					);
-					discartedPrice += price;
+					discartedPrice += catalog;
 				}
 
 				const products = await this.buildListProducts(
@@ -147,14 +147,19 @@ export class GetAllBoxesUseCase {
 				rows.push({
 					name: superfood.baseInfo.title,
 					ownerType,
-					owner: await this.resolveOwnerName(ownerType, ownerId, ownerNameCache),
-					type: ProductType.SUPERFOOD,
-					thumbnailImage: this.boxResolutionService.resolveListProductThumbnailUrl(
-						variant,
-						textileMap,
-						superfoodMap,
-						mediaMap,
+					owner: await this.resolveOwnerName(
+						ownerType,
+						ownerId,
+						ownerNameCache,
 					),
+					type: ProductType.SUPERFOOD,
+					thumbnailImage:
+						this.boxResolutionService.resolveListProductThumbnailUrl(
+							variant,
+							textileMap,
+							superfoodMap,
+							mediaMap,
+						),
 				});
 				continue;
 			}
@@ -168,14 +173,19 @@ export class GetAllBoxesUseCase {
 				rows.push({
 					name: textile.baseInfo.title,
 					ownerType,
-					owner: await this.resolveOwnerName(ownerType, ownerId, ownerNameCache),
-					type: ProductType.TEXTILE,
-					thumbnailImage: this.boxResolutionService.resolveListProductThumbnailUrl(
-						variant,
-						textileMap,
-						superfoodMap,
-						mediaMap,
+					owner: await this.resolveOwnerName(
+						ownerType,
+						ownerId,
+						ownerNameCache,
 					),
+					type: ProductType.TEXTILE,
+					thumbnailImage:
+						this.boxResolutionService.resolveListProductThumbnailUrl(
+							variant,
+							textileMap,
+							superfoodMap,
+							mediaMap,
+						),
 				});
 			}
 		}
