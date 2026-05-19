@@ -67,6 +67,7 @@ export class GetAllBoxesUseCase {
 					);
 					discartedPrice += catalog;
 				}
+				discartedPrice = Math.round(discartedPrice);
 
 				const products = await this.buildListProducts(
 					box,
