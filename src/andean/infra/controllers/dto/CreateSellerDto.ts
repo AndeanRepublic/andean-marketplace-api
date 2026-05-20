@@ -3,13 +3,13 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PersonType } from '../../../domain/enums/PersonType';
 
 export class CreateSellerDto {
-	@ApiPropertyOptional({
-		description: 'ID del usuario existente (si ya tiene cuenta como cliente)',
+	@ApiProperty({
+		description: 'ID de la cuenta existente (Account._id)',
 		example: '123e4567-e89b-12d3-a456-426614174000',
 	})
 	@IsString()
-	@IsOptional()
-	userId?: string;
+	@IsNotEmpty()
+	userId!: string;
 
 	@ApiProperty({
 		description: 'Tipo de persona (natural o jurídica)',
@@ -18,7 +18,7 @@ export class CreateSellerDto {
 	})
 	@IsEnum(PersonType)
 	@IsNotEmpty()
-	typePerson: PersonType;
+	typePerson!: PersonType;
 
 	@ApiProperty({
 		description: 'Número de documento (DNI/Pasaporte)',
@@ -26,7 +26,7 @@ export class CreateSellerDto {
 	})
 	@IsString()
 	@IsNotEmpty()
-	numberDocument: string;
+	numberDocument!: string;
 
 	@ApiPropertyOptional({
 		description: 'RUC (solo para personas jurídicas)',
@@ -42,7 +42,7 @@ export class CreateSellerDto {
 	})
 	@IsString()
 	@IsNotEmpty()
-	name: string;
+	name!: string;
 
 	@ApiProperty({
 		description: 'Dirección física',
@@ -50,27 +50,10 @@ export class CreateSellerDto {
 	})
 	@IsString()
 	@IsNotEmpty()
-	address: string;
+	address!: string;
 
 	@ApiProperty({ description: 'Número de teléfono', example: '+51987654321' })
 	@IsString()
 	@IsNotEmpty()
-	phoneNumber: string;
-
-	@ApiPropertyOptional({
-		description: 'Correo electrónico (requerido si no se proporciona userId)',
-		example: 'maria@textiles.com',
-	})
-	@IsString()
-	@IsOptional()
-	email?: string;
-
-	@ApiPropertyOptional({
-		description:
-			'Contraseña para la cuenta (requerido si no se proporciona userId)',
-		example: 'SecurePass123!',
-	})
-	@IsString()
-	@IsOptional()
-	password?: string;
+	phoneNumber!: string;
 }

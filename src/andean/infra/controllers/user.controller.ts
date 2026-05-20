@@ -185,7 +185,7 @@ export class UserController {
 	@ApiOperation({
 		summary: 'Crear un nuevo vendedor',
 		description:
-			'Registra un nuevo vendedor en el marketplace. Puede proporcionar userId para agregar rol de vendedor a usuario existente, o email/password para crear nueva cuenta.',
+			'Registra el perfil de vendedor y asigna el rol SELLER a una cuenta existente (userId = Account._id).',
 	})
 	@ApiResponse({
 		status: 201,
@@ -194,12 +194,11 @@ export class UserController {
 	})
 	@ApiResponse({
 		status: 400,
-		description:
-			'Datos de entrada inválidos o faltan email/password sin userId',
+		description: 'Datos de entrada inválidos',
 	})
 	@ApiResponse({
 		status: 409,
-		description: 'Usuario no encontrado (cuando se proporciona userId)',
+		description: 'Usuario no encontrado',
 	})
 	async createSeller(@Body() body: CreateSellerDto): Promise<SellerProfile> {
 		return this.createSellerUseCase.handle(body);
