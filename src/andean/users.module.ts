@@ -11,9 +11,6 @@ import { CreateSellerUseCase } from './app/use_cases/users/CreateSellerUseCase';
 import { SellerProfileSchema } from './infra/persistence/sellerProfileSchema';
 import { SellerProfileRepository } from './app/datastore/Seller.repo';
 import { SellerProfileRepositoryImpl } from './infra/datastore/seller.repo.impl';
-import { AccountSchema } from './infra/persistence/account.schema';
-import { AccountRepository } from './app/datastore/Account.repo';
-import { AccountRepoImpl } from './infra/datastore/account.repo.impl';
 import { HashService } from './infra/services/HashService';
 import { UpdateCustomerProfileUseCase } from './app/use_cases/users/UpdateCustomerProfileUseCase';
 import { UpdateSellerProfileUseCase } from './app/use_cases/users/UpdateSellerProfileUseCase';
@@ -31,10 +28,6 @@ import { MediaItemModule } from './mediaItem.module';
 			{
 				name: 'SellerProfile',
 				schema: SellerProfileSchema,
-			},
-			{
-				name: 'Account',
-				schema: AccountSchema,
 			},
 		]),
 		MediaItemModule,
@@ -58,15 +51,10 @@ import { MediaItemModule } from './mediaItem.module';
 			provide: SellerProfileRepository,
 			useClass: SellerProfileRepositoryImpl,
 		},
-		{
-			provide: AccountRepository,
-			useClass: AccountRepoImpl,
-		},
 	],
 	exports: [
 		CustomerProfileRepository,
 		SellerProfileRepository,
-		AccountRepository,
 		MongooseModule,
 	],
 })

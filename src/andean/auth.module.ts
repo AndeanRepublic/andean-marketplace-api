@@ -7,6 +7,7 @@ import { AssignAdminUseCase } from './app/use_cases/auth/AssignAdminUseCase';
 import { ForgotPasswordUseCase } from './app/use_cases/auth/ForgotPasswordUseCase';
 import { ResetPasswordUseCase } from './app/use_cases/auth/ResetPasswordUseCase';
 import { VerifyResetCodeUseCase } from './app/use_cases/auth/VerifyResetCodeUseCase';
+import { ChangePasswordUseCase } from './app/use_cases/auth/ChangePasswordUseCase';
 import { UsersModule } from './users.module';
 import { MediaItemModule } from './mediaItem.module';
 import { HashService } from './infra/services/HashService';
@@ -58,6 +59,7 @@ import { ResendEmailRepoImpl } from './infra/datastore/email.resend.impl';
 		ForgotPasswordUseCase,
 		ResetPasswordUseCase,
 		VerifyResetCodeUseCase,
+		ChangePasswordUseCase,
 		HashService,
 		SesClientService,
 		ResendClientService,

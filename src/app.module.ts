@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { SharedModule } from './andean/shared.module';
 import { UsersModule } from './andean/users.module';
 import { AuthModule } from './andean/auth.module';
 import { ShopsModule } from './andean/shop.module';
@@ -36,6 +37,7 @@ import { HealthModule } from './health/health.module';
 				uri: configService.get<string>('MONGO_URI'),
 			}),
 		}),
+		SharedModule,
 		UsersModule,
 		AuthModule,
 		ShopsModule,
