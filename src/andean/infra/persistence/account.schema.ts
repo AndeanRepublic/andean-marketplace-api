@@ -19,6 +19,7 @@ export const AccountSchema = new Schema({
 		enum: Object.values(AccountStatus),
 		required: true,
 	},
+	passwordVersion: { type: Number, default: 1 },
 });
 
 export interface AccountDocument extends Document {
@@ -27,4 +28,5 @@ export interface AccountDocument extends Document {
 	password: string;
 	type: AccountRole[];
 	status: AccountStatus;
+	passwordVersion: number;
 }

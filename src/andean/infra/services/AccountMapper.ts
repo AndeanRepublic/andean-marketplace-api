@@ -10,6 +10,7 @@ export class AccountMapper {
 			doc.password,
 			doc.status,
 			doc.type,
+			doc.passwordVersion ?? 1,
 		);
 	}
 }
