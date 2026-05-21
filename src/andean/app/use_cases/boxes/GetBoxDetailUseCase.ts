@@ -39,6 +39,7 @@ export class GetBoxDetailUseCase {
 
 		const { containedProducts, discartedPrice } =
 			await this.buildContainedProducts(box.products, dependencies);
+		const discartedPriceRounded = Math.round(discartedPrice);
 
 		return {
 			id: box.id,
@@ -46,9 +47,12 @@ export class GetBoxDetailUseCase {
 			detail: this.buildDescriptionDetail(box, dependencies.mediaMap),
 			containedProducts,
 			priceDetail: {
-				discartedPrice,
+				discartedPrice: discartedPriceRounded,
 				totalPrice: box.price,
-				discountPorcentage: this.resolveDiscountPercentage(box, discartedPrice),
+				discountPorcentage: this.resolveDiscountPercentage(
+					box,
+					discartedPriceRounded,
+				),
 			},
 			boxSeals: this.mapBoxSeals(seals, dependencies.mediaMap),
 		};
