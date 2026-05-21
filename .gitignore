@@ -65,14 +65,10 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 openspec/
 test/coverage/
 
-# Temp scripts and data
-scripts/fetch-superfood-ids.sh
-scripts/fetch-superfood-ids.ts
-scripts/fix-product-images.js
-scripts/seed-results.json
-scripts/seed-superfood-products.sh
-scripts/superfood-ids-result.json
-scripts/update-product-images.sh
+# Scripts directory (may contain sensitive data or one-off migrations)
+scripts/
+
+# Temp data files
 img_supefood_data.json
 superfood_products_seed.json
 
