@@ -63,7 +63,7 @@ export class TextileProductController {
 	) {}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -92,7 +92,7 @@ export class TextileProductController {
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@Put('/:id')
 	@ApiOperation({
 		summary: 'Actualizar producto textil',
@@ -344,7 +344,7 @@ export class TextileProductController {
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@Patch('/:id/status')
 	async updateTextileProductStatus(
 		@Param('id') id: string,
@@ -360,7 +360,7 @@ export class TextileProductController {
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@Delete('/:id')
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@ApiOperation({

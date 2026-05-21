@@ -56,17 +56,17 @@ export class GetAllBoxesUseCase {
 				const metrics = computeBoxListMetrics(box, dependencies.variantMap);
 				const fulfillableQuantity = metrics.fulfillableQuantity;
 
-				for (const product of box.products) {
-					if (!product.variantId) continue;
-					const variant = dependencies.variantMap.get(product.variantId);
-					if (!variant) continue;
-					const catalog = this.boxResolutionService.getVariantPrice(variant);
-					const price = this.boxResolutionService.resolveLinePrice(
-						product,
-						catalog,
-					);
-					discartedPrice += catalog;
-				}
+			for (const product of box.products) {
+				if (!product.variantId) continue;
+				const variant = dependencies.variantMap.get(product.variantId);
+				if (!variant) continue;
+				const catalog = this.boxResolutionService.getVariantPrice(variant);
+				const price = this.boxResolutionService.resolveLinePrice(
+					product,
+					catalog,
+				);
+				discartedPrice += catalog;
+			}
 				discartedPrice = Math.round(discartedPrice);
 
 				const products = await this.buildListProducts(

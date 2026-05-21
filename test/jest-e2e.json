@@ -1,5 +1,5 @@
 {
-	"moduleFileExtensions": ["js", "json", "ts"],
+	"moduleFileExtensions": ["js", "json", "ts", "tsx"],
 	"rootDir": ".",
 	"testEnvironment": "node",
 	"testRegex": ".e2e-spec.ts$",
@@ -27,6 +27,7 @@
 	},
 	"moduleNameMapper": {
 		"^src/(.*)$": "<rootDir>/../src/$1",
-		"^@/(.*)$": "<rootDir>/../src/andean/$1"
+		"^@/(.*)$": "<rootDir>/../src/andean/$1",
+		"^.*/services/email/templates/.*\\.tsx$": "<rootDir>/mocks/react-email-template.mock.js"
 	}
 }
