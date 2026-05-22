@@ -19,6 +19,10 @@ import { UpdateCustomerProfileUseCase } from './app/use_cases/users/UpdateCustom
 import { UpdateSellerProfileUseCase } from './app/use_cases/users/UpdateSellerProfileUseCase';
 import { GetCustomerProfileUseCase } from './app/use_cases/users/GetCustomerProfileUseCase';
 import { GetSellerProfileUseCase } from './app/use_cases/users/GetSellerProfileUseCase';
+import { CreateAdminSellerUseCase } from './app/use_cases/users/CreateAdminSellerUseCase';
+import { LookupAccountByEmailUseCase } from './app/use_cases/users/LookupAccountByEmailUseCase';
+import { CreateAdminSellerByEmailUseCase } from './app/use_cases/users/CreateAdminSellerByEmailUseCase';
+import { CreateAdminSellerWithAccountUseCase } from './app/use_cases/users/CreateAdminSellerWithAccountUseCase';
 import { MediaItemModule } from './mediaItem.module';
 
 @Module({
@@ -49,6 +53,10 @@ import { MediaItemModule } from './mediaItem.module';
 		UpdateSellerProfileUseCase,
 		GetCustomerProfileUseCase,
 		GetSellerProfileUseCase,
+		CreateAdminSellerUseCase,
+		LookupAccountByEmailUseCase,
+		CreateAdminSellerByEmailUseCase,
+		CreateAdminSellerWithAccountUseCase,
 		HashService,
 		{
 			provide: CustomerProfileRepository,
@@ -67,6 +75,11 @@ import { MediaItemModule } from './mediaItem.module';
 		CustomerProfileRepository,
 		SellerProfileRepository,
 		AccountRepository,
+		CreateSellerUseCase,
+		CreateAdminSellerUseCase,
+		LookupAccountByEmailUseCase,
+		CreateAdminSellerByEmailUseCase,
+		CreateAdminSellerWithAccountUseCase,
 		MongooseModule,
 	],
 })

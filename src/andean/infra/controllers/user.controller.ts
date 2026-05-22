@@ -19,10 +19,7 @@ import { CreateCustomerUseCase } from '../../app/use_cases/users/CreateCustomerU
 import { GetAllCustomerUseCase } from '../../app/use_cases/users/GetAllCustomerUseCase';
 import { CreateCustomerDto } from './dto/CreateCustomerDto';
 import { CustomerProfile } from '../../domain/entities/CustomerProfile';
-import { CreateSellerDto } from './dto/CreateSellerDto';
-import { SellerProfile } from '../../domain/entities/SellerProfile';
 import { GetAllSellersUseCase } from '../../app/use_cases/users/GetAllSellersUseCase';
-import { CreateSellerUseCase } from '../../app/use_cases/users/CreateSellerUseCase';
 import { GetCustomerProfileUseCase } from '../../app/use_cases/users/GetCustomerProfileUseCase';
 import { GetSellerProfileUseCase } from '../../app/use_cases/users/GetSellerProfileUseCase';
 import { UpdateCustomerProfileUseCase } from '../../app/use_cases/users/UpdateCustomerProfileUseCase';
@@ -30,7 +27,6 @@ import { UpdateCustomerProfileDto } from './dto/UpdateCustomerProfileDto';
 import { UpdateSellerProfileDto } from './dto/UpdateSellerProfileDto';
 import { UpdateSellerProfileUseCase } from '../../app/use_cases/users/UpdateSellerProfileUseCase';
 import { CustomerProfileResponse } from '../../app/models/users/CustomerProfileResponse';
-import { SellerProfileResponse } from '../../app/models/users/SellerProfileResponse';
 import { JwtAuthGuard } from '../core/jwtAuth.guard';
 import { CurrentUser } from '../core/current-user.decorator';
 import { AccountRole } from '../../domain/enums/AccountRole';
@@ -48,7 +44,6 @@ export class UserController {
 		private readonly getAllCustomerUseCase: GetAllCustomerUseCase,
 		private readonly createCustomerUseCase: CreateCustomerUseCase,
 		private readonly getAllSellersUseCase: GetAllSellersUseCase,
-		private readonly createSellerUseCase: CreateSellerUseCase,
 		private readonly getCustomerProfileUseCase: GetCustomerProfileUseCase,
 		private readonly getSellerProfileUseCase: GetSellerProfileUseCase,
 		private readonly updateCustomerProfileUseCase: UpdateCustomerProfileUseCase,
@@ -180,27 +175,4 @@ export class UserController {
 	// 	return this.getAllSellersUseCase.handle();
 	// }
 
-	@Public()
-	@Post(path_sellers)
-	@ApiOperation({
-		summary: 'Crear un nuevo vendedor',
-		description:
-			'Registra el perfil de vendedor y asigna el rol SELLER a una cuenta existente (userId = Account._id).',
-	})
-	@ApiResponse({
-		status: 201,
-		description: 'Vendedor creado exitosamente',
-		type: SellerProfileResponse,
-	})
-	@ApiResponse({
-		status: 400,
-		description: 'Datos de entrada inválidos',
-	})
-	@ApiResponse({
-		status: 409,
-		description: 'Usuario no encontrado',
-	})
-	async createSeller(@Body() body: CreateSellerDto): Promise<SellerProfile> {
-		return this.createSellerUseCase.handle(body);
-	}
 }
