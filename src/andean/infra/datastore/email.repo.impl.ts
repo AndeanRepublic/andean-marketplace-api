@@ -7,11 +7,14 @@ import {
 	SendOrderConfirmationPayload,
 	SendPasswordResetPayload,
 	SendBookingConfirmationPayload,
+	SendSellerApplicationDecisionPayload,
 } from '../../app/datastore/Email.repo';
 import { SesClientService } from '../services/email/SesClientService';
 import { OrderConfirmationTemplate } from '../services/email/templates/OrderConfirmationTemplate';
 import { PasswordResetCodeTemplate } from '../services/email/templates/PasswordResetCodeTemplate';
 import { BookingConfirmationTemplate } from '../services/email/templates/BookingConfirmationTemplate';
+import { SellerApplicationDecisionTemplate } from '../services/email/templates/SellerApplicationDecisionTemplate';
+import { assertEmailSenderConfigured } from '../services/email/assertEmailSenderConfigured';
 
 @Injectable()
 export class SesEmailRepoImpl extends EmailRepository {
@@ -35,12 +38,13 @@ export class SesEmailRepoImpl extends EmailRepository {
 		payload: SendOrderConfirmationPayload,
 	): Promise<void> {
 		const { to, cc, data } = payload;
+		const senderEmail = this.sesClientService.getSenderEmail();
+		assertEmailSenderConfigured(senderEmail, 'ses');
 
 		const html = await render(
 			React.createElement(OrderConfirmationTemplate, { data }),
 		);
 
-		const senderEmail = this.sesClientService.getSenderEmail();
 		const senderName = this.sesClientService.getSenderName();
 		const ccAddresses = this.getAdminCcEmails();
 
@@ -142,6 +146,39 @@ export class SesEmailRepoImpl extends EmailRepository {
 
 		this.logger.log(
 			`[provider=ses] Booking confirmation email sent to ${to} for booking #${data.bookingNumber}`,
+		);
+	}
+
+	async sendSellerApplicationDecision(
+		payload: SendSellerApplicationDecisionPayload,
+	): Promise<void> {
+		const { to, data } = payload;
+		const senderEmail = this.sesClientService.getSenderEmail();
+		assertEmailSenderConfigured(senderEmail, 'ses');
+
+		const html = await render(
+			React.createElement(SellerApplicationDecisionTemplate, { data }),
+		);
+
+		const senderName = this.sesClientService.getSenderName();
+		const subject =
+			data.decision === 'APPROVED'
+				? 'Tu solicitud de vendedor fue aprobada — Andean Republic'
+				: 'Actualización de tu solicitud de vendedor — Andean Republic';
+
+		const command = new SendEmailCommand({
+			Destination: { ToAddresses: [to] },
+			Source: `${senderName} <${senderEmail}>`,
+			Message: {
+				Subject: { Data: subject, Charset: 'UTF-8' },
+				Body: { Html: { Data: html, Charset: 'UTF-8' } },
+			},
+		});
+
+		await this.sesClientService.getClient().send(command);
+
+		this.logger.log(
+			`[provider=ses] Seller application ${data.decision} email sent to ${to}`,
 		);
 	}
 }

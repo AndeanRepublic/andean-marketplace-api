@@ -58,6 +58,18 @@ export interface SendBookingConfirmationPayload {
 	data: BookingConfirmationEmailData;
 }
 
+export interface SellerApplicationDecisionEmailData {
+	decision: 'APPROVED' | 'REJECTED';
+	customerName: string;
+	shopName: string;
+	rejectionReason?: string;
+}
+
+export interface SendSellerApplicationDecisionPayload {
+	to: string;
+	data: SellerApplicationDecisionEmailData;
+}
+
 export abstract class EmailRepository {
 	abstract sendOrderConfirmation(
 		payload: SendOrderConfirmationPayload,
@@ -65,5 +77,8 @@ export abstract class EmailRepository {
 	abstract sendPasswordReset(payload: SendPasswordResetPayload): Promise<void>;
 	abstract sendBookingConfirmation(
 		payload: SendBookingConfirmationPayload,
+	): Promise<void>;
+	abstract sendSellerApplicationDecision(
+		payload: SendSellerApplicationDecisionPayload,
 	): Promise<void>;
 }
