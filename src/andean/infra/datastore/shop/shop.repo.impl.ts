@@ -6,7 +6,7 @@ import { ShopDocument } from '../../persistence/shop/shop.schema';
 import { Shop } from '../../../domain/entities/shop/Shop';
 import { ShopMapper } from '../../services/shop/ShopMapper';
 import { ShopCategory } from '../../../domain/enums/ShopCategory';
-import { AdminEntityStatus } from '../../../domain/enums/AdminEntityStatus';
+import { ShopStatus } from '../../../domain/enums/ShopStatus';
 
 @Injectable()
 export class ShopRepoImpl extends ShopRepository {
@@ -69,7 +69,21 @@ export class ShopRepoImpl extends ShopRepository {
 		return ShopMapper.fromDocument(doc);
 	}
 
-	async updateStatus(id: string, status: AdminEntityStatus): Promise<Shop> {
+	async clearShopSeller(id: string): Promise<Shop> {
+		const doc = await this.shopModel
+			.findOneAndUpdate(
+				{ $or: [{ _id: id }, { id }] },
+				{ $unset: { sellerId: 1 } },
+				{ new: true },
+			)
+			.exec();
+		if (!doc) {
+			throw new NotFoundException('Shop not found');
+		}
+		return ShopMapper.fromDocument(doc);
+	}
+
+	async updateStatus(id: string, status: ShopStatus): Promise<Shop> {
 		const doc = await this.shopModel
 			.findOneAndUpdate(
 				{ $or: [{ _id: id }, { id }] },

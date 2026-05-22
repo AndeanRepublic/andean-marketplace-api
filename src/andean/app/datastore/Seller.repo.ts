@@ -1,4 +1,5 @@
 import { SellerProfile } from '../../domain/entities/SellerProfile';
+import { SellerStatus } from '../../domain/enums/SellerStatus';
 
 export abstract class SellerProfileRepository {
 	abstract getAllSellers(): Promise<SellerProfile[]>;
@@ -12,5 +13,13 @@ export abstract class SellerProfileRepository {
 		userId: string,
 		profile: SellerProfile,
 	): Promise<void>;
-	// deleteSellerById(id: string): Promise<void>;
+	abstract updateStatusByUserId(
+		userId: string,
+		status: SellerStatus,
+	): Promise<SellerProfile>;
+	abstract updateReviewByUserId(
+		userId: string,
+		status: SellerStatus,
+		rejectionReason?: string,
+	): Promise<SellerProfile>;
 }

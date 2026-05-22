@@ -1,14 +1,14 @@
 import { Document, Schema } from 'mongoose';
 import { ShopCategory } from '../../../domain/enums/ShopCategory';
-import { AdminEntityStatus } from '../../../domain/enums/AdminEntityStatus';
+import { ShopStatus } from '../../../domain/enums/ShopStatus';
 
 export const ShopSchema = new Schema({
 	sellerId: String,
 	name: String,
 	status: {
 		type: String,
-		enum: Object.values(AdminEntityStatus),
-		default: AdminEntityStatus.HIDDEN,
+		enum: Object.values(ShopStatus),
+		default: ShopStatus.PENDING,
 	},
 	categories: [
 		{
@@ -24,7 +24,7 @@ export const ShopSchema = new Schema({
 export interface ShopDocument extends Document<string> {
 	sellerId?: string;
 	name: string;
-	status: AdminEntityStatus;
+	status: ShopStatus;
 	categories: ShopCategory[];
 	providerInfoId?: string;
 	artisanPhotoMediaId?: string;
