@@ -5,12 +5,14 @@ import * as React from 'react';
 import {
 	EmailRepository,
 	SendOrderConfirmationPayload,
+	SendOrderDeliveredPayload,
 	SendPasswordResetPayload,
 	SendBookingConfirmationPayload,
 	SendSellerApplicationDecisionPayload,
 } from '../../app/datastore/Email.repo';
 import { SesClientService } from '../services/email/SesClientService';
 import { OrderConfirmationTemplate } from '../services/email/templates/OrderConfirmationTemplate';
+import { OrderDeliveredTemplate } from '../services/email/templates/OrderDeliveredTemplate';
 import { PasswordResetCodeTemplate } from '../services/email/templates/PasswordResetCodeTemplate';
 import { BookingConfirmationTemplate } from '../services/email/templates/BookingConfirmationTemplate';
 import { SellerApplicationDecisionTemplate } from '../services/email/templates/SellerApplicationDecisionTemplate';
@@ -107,6 +109,47 @@ export class SesEmailRepoImpl extends EmailRepository {
 		await this.sesClientService.getClient().send(command);
 
 		this.logger.log(`[provider=ses] Password reset email sent to ${to}`);
+	}
+
+	async sendOrderDelivered(
+		payload: SendOrderDeliveredPayload,
+	): Promise<void> {
+		const { to, data } = payload;
+
+		const html = await render(
+			React.createElement(OrderDeliveredTemplate, { data }),
+		);
+
+		const senderEmail = this.sesClientService.getSenderEmail();
+		assertEmailSenderConfigured(senderEmail, 'ses');
+		const senderName = this.sesClientService.getSenderName();
+		const ccAddresses = this.getAdminCcEmails();
+
+		const command = new SendEmailCommand({
+			Destination: {
+				ToAddresses: [to],
+				CcAddresses: ccAddresses.length > 0 ? ccAddresses : undefined,
+			},
+			Source: `${senderName} <${senderEmail}>`,
+			Message: {
+				Subject: {
+					Data: `Order Delivered #${data.orderNumber}`,
+					Charset: 'UTF-8',
+				},
+				Body: {
+					Html: {
+						Data: html,
+						Charset: 'UTF-8',
+					},
+				},
+			},
+		});
+
+		await this.sesClientService.getClient().send(command);
+
+		this.logger.log(
+			`[provider=ses] Order delivered email sent to ${to} for order #${data.orderNumber}`,
+		);
 	}
 
 	async sendBookingConfirmation(

@@ -22,6 +22,23 @@ export interface SendOrderConfirmationPayload {
 	data: OrderConfirmationEmailData;
 }
 
+export interface OrderDeliveredEmailData {
+	orderNumber: string;
+	customerName: string;
+	deliveredAt: Date;
+	shippingAddress: string;
+	items: Array<{
+		name: string;
+		quantity: number;
+	}>;
+}
+
+export interface SendOrderDeliveredPayload {
+	to: string;
+	cc?: string[];
+	data: OrderDeliveredEmailData;
+}
+
 export interface PasswordResetEmailData {
 	code: string;
 }
@@ -74,6 +91,7 @@ export abstract class EmailRepository {
 	abstract sendOrderConfirmation(
 		payload: SendOrderConfirmationPayload,
 	): Promise<void>;
+	abstract sendOrderDelivered(payload: SendOrderDeliveredPayload): Promise<void>;
 	abstract sendPasswordReset(payload: SendPasswordResetPayload): Promise<void>;
 	abstract sendBookingConfirmation(
 		payload: SendBookingConfirmationPayload,

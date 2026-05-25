@@ -33,6 +33,7 @@ import { StockReducerRegistry } from './infra/services/stock/StockReducerRegistr
 import { IStockReducerRegistry } from './infra/services/stock/IStockReducerRegistry';
 import { EmailModule } from './email.module';
 import { SendOrderConfirmationUseCase } from './app/use_cases/email/SendOrderConfirmationUseCase';
+import { SendOrderDeliveredUseCase } from './app/use_cases/email/SendOrderDeliveredUseCase';
 import { OrderItemEnricher } from './infra/services/order/OrderItemEnricher';
 import { MediaItemModule } from './mediaItem.module';
 import { OwnerNameResolver } from './infra/services/OwnerNameResolver';
@@ -93,6 +94,7 @@ import { SellerOrderFilterStrategy } from './infra/services/order/SellerOrderFil
 		},
 		ReduceStockFromOrderUseCase,
 		SendOrderConfirmationUseCase,
+		SendOrderDeliveredUseCase,
 		// Order Enrichment
 		OrderItemEnricher,
 		OwnerNameResolver,
