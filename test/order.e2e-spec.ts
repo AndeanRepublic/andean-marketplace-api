@@ -7,13 +7,19 @@ import { FixtureLoader } from './helpers/fixture-loader';
 import { OrderController } from '../src/andean/infra/controllers/order.controller';
 import { JwtAuthGuard } from '../src/andean/infra/core/jwtAuth.guard';
 import { RolesGuard } from '../src/andean/infra/core/roles.guard';
-import { createAllowAllGuard, mockAuthUsers } from './helpers/auth-test.helper';
+import {
+	createAllowAllGuard,
+	createDenyAllGuard,
+	mockAuthUsers,
+	MockAuthGuard,
+} from './helpers/auth-test.helper';
 
 // ─── Use Cases ──────────────────────────────────────────────────────────────
 import { CreateOrderUseCase } from '../src/andean/app/use_cases/orders/CreateOrderUseCase';
 import { CreateOrderFromCartUseCase } from '../src/andean/app/use_cases/orders/CreateOrderFromCartUseCase';
 import { GetOrderByIdUseCase } from '../src/andean/app/use_cases/orders/GetOrderByIdUseCase';
 import { GetAllOrdersUseCase } from '../src/andean/app/use_cases/orders/GetAllOrdersUseCase';
+import { GetMyOrdersUseCase } from '../src/andean/app/use_cases/orders/GetMyOrdersUseCase';
 import { GetOrdersByCustomerUseCase } from '../src/andean/app/use_cases/orders/GetOrdersByCustomerUseCase';
 import { UpdateOrderStatusUseCase } from '../src/andean/app/use_cases/orders/UpdateOrderStatusUseCase';
 import { CreatePayPalOrderUseCase } from '../src/andean/app/use_cases/payments/CreatePayPalOrderUseCase';
@@ -98,6 +104,15 @@ describe('OrderController (e2e)', () => {
 				{
 					provide: GetAllOrdersUseCase,
 					useValue: { handle: jest.fn().mockResolvedValue([]) },
+				},
+				{
+					provide: GetMyOrdersUseCase,
+					useValue: {
+						handle: jest.fn().mockResolvedValue({
+							data: [],
+							pagination: { total: 0, page: 1, per_page: 10, total_pages: 0 },
+						}),
+					},
 				},
 			],
 		})
@@ -760,7 +775,6 @@ describe('OrderController (e2e)', () => {
 		};
 
 		describe('ADMIN role - sees all orders', () => {
-
 			it('should return paginated orders with default pagination', () => {
 				const mockPaginatedResponse = {
 					data: generateMockOrders(10),
@@ -867,7 +881,6 @@ describe('OrderController (e2e)', () => {
 		});
 
 		describe('SELLER role - sees only their orders', () => {
-
 			it('should return only orders containing seller products', () => {
 				const sellerOrders = generateMockOrders(3);
 				const mockPaginatedResponse = {
@@ -929,9 +942,7 @@ describe('OrderController (e2e)', () => {
 					.spyOn(getAllOrdersUseCase, 'handle')
 					.mockResolvedValueOnce(mockPaginatedResponse as any);
 
-				await request(app.getHttpServer())
-					.get('/orders')
-					.expect(HttpStatus.OK);
+				await request(app.getHttpServer()).get('/orders').expect(HttpStatus.OK);
 
 				// Verify use case is called with pagination params and user object
 				expect(getAllOrdersUseCase.handle).toHaveBeenCalledWith(
@@ -1011,6 +1022,224 @@ describe('OrderController (e2e)', () => {
 						expect(res.body.pagination.total_pages).toBe(4);
 					});
 			});
+		});
+	});
+
+	// ─────────────────────────────────────────────────────────────────────────────
+	// GET /orders/my-purchases
+	// ─────────────────────────────────────────────────────────────────────────────
+
+	describe('GET /orders/my-purchases', () => {
+		const mockPaginatedUserOrders = {
+			data: [mockOrder],
+			pagination: {
+				total: 1,
+				page: 1,
+				per_page: 10,
+				total_pages: 1,
+			},
+		};
+
+		beforeEach(() => {
+			jest.clearAllMocks();
+		});
+
+		it('should return 200 OK for authenticated USER with their orders', async () => {
+			const userAuthGuard = new MockAuthGuard(mockAuthUsers.customer);
+
+			const testModule = await Test.createTestingModule({
+				controllers: [OrderController],
+				providers: [
+					{
+						provide: CreateOrderUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: CreateOrderFromCartUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: GetOrderByIdUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: GetOrdersByCustomerUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: UpdateOrderStatusUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: CreatePayPalOrderUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: CapturePayPalOrderUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: GetAllOrdersUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: GetMyOrdersUseCase,
+						useValue: {
+							handle: jest.fn().mockResolvedValue(mockPaginatedUserOrders),
+						},
+					},
+				],
+			})
+				.overrideGuard(JwtAuthGuard)
+				.useValue(userAuthGuard)
+				.overrideGuard(RolesGuard)
+				.useValue({ canActivate: () => true })
+				.compile();
+
+			const testApp = testModule.createNestApplication();
+			testApp.useGlobalPipes(
+				new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+			);
+			await testApp.init();
+
+			const getAllUseCaseInstance = testModule.get(GetMyOrdersUseCase);
+
+			const response = await request(testApp.getHttpServer())
+				.get('/orders/my-purchases')
+				.expect(HttpStatus.OK);
+
+			expect(response.body.data).toHaveLength(1);
+			expect(response.body.data[0].id).toBe(mockOrder.id);
+			expect(response.body.pagination.total).toBe(1);
+			expect(getAllUseCaseInstance.handle).toHaveBeenCalledWith(
+				1,
+				10,
+				mockAuthUsers.customer,
+			);
+
+			await testApp.close();
+		});
+
+		it('should return 401 Unauthorized for unauthenticated requests', async () => {
+			const denyAuthGuard = createDenyAllGuard();
+
+			const testModule = await Test.createTestingModule({
+				controllers: [OrderController],
+				providers: [
+					{
+						provide: CreateOrderUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: CreateOrderFromCartUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: GetOrderByIdUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: GetOrdersByCustomerUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: UpdateOrderStatusUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: CreatePayPalOrderUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: CapturePayPalOrderUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: GetAllOrdersUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: GetMyOrdersUseCase,
+						useValue: { handle: jest.fn() },
+					},
+				],
+			})
+				.overrideGuard(JwtAuthGuard)
+				.useValue(denyAuthGuard)
+				.compile();
+
+			const testApp = testModule.createNestApplication();
+			testApp.useGlobalPipes(
+				new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+			);
+			await testApp.init();
+
+			await request(testApp.getHttpServer())
+				.get('/orders/my-purchases')
+				.expect(HttpStatus.UNAUTHORIZED);
+
+			await testApp.close();
+		});
+
+		it('should return 403 Forbidden for ADMIN role', async () => {
+			const adminAuthGuard = new MockAuthGuard(mockAuthUsers.admin);
+
+			const testModule = await Test.createTestingModule({
+				controllers: [OrderController],
+				providers: [
+					{
+						provide: CreateOrderUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: CreateOrderFromCartUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: GetOrderByIdUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: GetOrdersByCustomerUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: UpdateOrderStatusUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: CreatePayPalOrderUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: CapturePayPalOrderUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: GetAllOrdersUseCase,
+						useValue: { handle: jest.fn() },
+					},
+					{
+						provide: GetMyOrdersUseCase,
+						useValue: { handle: jest.fn() },
+					},
+				],
+			})
+				.overrideGuard(JwtAuthGuard)
+				.useValue(adminAuthGuard)
+				.compile();
+
+			const testApp = testModule.createNestApplication();
+			testApp.useGlobalPipes(
+				new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+			);
+			await testApp.init();
+
+			await request(testApp.getHttpServer())
+				.get('/orders/my-purchases')
+				.expect(HttpStatus.FORBIDDEN);
+
+			await testApp.close();
 		});
 	});
 });

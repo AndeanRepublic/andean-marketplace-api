@@ -7,19 +7,34 @@ import { OrderStatus } from '../../../domain/enums/OrderStatus';
 import { PaymentMethod } from '../../../domain/enums/PaymentMethod';
 import { DeliveryOption } from '../../../domain/enums/DeliveryOption';
 import { ProductType } from '../../../domain/enums/ProductType';
+import { AdminOrderFilterStrategy } from '../../../infra/services/order/AdminOrderFilterStrategy';
+import { SellerOrderFilterStrategy } from '../../../infra/services/order/SellerOrderFilterStrategy';
 
 describe('GetAllOrdersUseCase', () => {
 	let useCase: GetAllOrdersUseCase;
 	let orderRepository: jest.Mocked<OrderRepository>;
 	let orderItemEnricher: jest.Mocked<OrderItemEnricher>;
+	let adminOrderFilterStrategy: AdminOrderFilterStrategy;
+	let sellerOrderFilterStrategy: SellerOrderFilterStrategy;
 
 	beforeEach(async () => {
 		const mockOrderRepository = {
 			getAllOrders: jest.fn(),
+			getPaginatedOrders: jest.fn(),
 		};
 
 		const mockOrderItemEnricher = {
 			enrichOrders: jest.fn(),
+		};
+
+		const mockAdminOrderFilterStrategy = {
+			buildFilter: jest.fn().mockResolvedValue({}),
+		};
+
+		const mockSellerOrderFilterStrategy = {
+			buildFilter: jest
+				.fn()
+				.mockResolvedValue({ 'items.productId': { $in: ['product-1'] } }),
 		};
 
 		const module: TestingModule = await Test.createTestingModule({
@@ -33,12 +48,22 @@ describe('GetAllOrdersUseCase', () => {
 					provide: OrderItemEnricher,
 					useValue: mockOrderItemEnricher,
 				},
+				{
+					provide: AdminOrderFilterStrategy,
+					useValue: mockAdminOrderFilterStrategy,
+				},
+				{
+					provide: SellerOrderFilterStrategy,
+					useValue: mockSellerOrderFilterStrategy,
+				},
 			],
 		}).compile();
 
 		useCase = module.get<GetAllOrdersUseCase>(GetAllOrdersUseCase);
 		orderRepository = module.get(OrderRepository);
 		orderItemEnricher = module.get(OrderItemEnricher);
+		adminOrderFilterStrategy = module.get(AdminOrderFilterStrategy);
+		sellerOrderFilterStrategy = module.get(SellerOrderFilterStrategy);
 	});
 
 	it('should be defined', () => {
@@ -61,17 +86,18 @@ describe('GetAllOrdersUseCase', () => {
 				})),
 			}));
 
-			orderRepository.getAllOrders.mockResolvedValue(mockOrders);
+			orderRepository.getPaginatedOrders.mockResolvedValue({
+				orders: mockOrders,
+				total: 3,
+			});
 			orderItemEnricher.enrichOrders.mockResolvedValue(enrichedOrders);
 
-			const result = await useCase.handle();
+			const result = await useCase.handle(1, 10);
 
-			expect(orderRepository.getAllOrders).toHaveBeenCalledTimes(1);
-			expect(orderItemEnricher.enrichOrders).toHaveBeenCalledWith(
-				mockOrders,
-			);
-			expect(result).toEqual(enrichedOrders);
-			expect(result).toHaveLength(3);
+			expect(orderRepository.getPaginatedOrders).toHaveBeenCalledTimes(1);
+			expect(orderItemEnricher.enrichOrders).toHaveBeenCalledWith(mockOrders);
+			expect(result.data).toEqual(enrichedOrders);
+			expect(result.data).toHaveLength(3);
 		});
 
 		it('should handle batch resolution across multiple orders', async () => {
@@ -83,25 +109,29 @@ describe('GetAllOrdersUseCase', () => {
 				createMockOrder('order-5', 'customer-5'),
 			];
 
-			orderRepository.getAllOrders.mockResolvedValue(mockOrders);
+			orderRepository.getPaginatedOrders.mockResolvedValue({
+				orders: mockOrders,
+				total: 5,
+			});
 			orderItemEnricher.enrichOrders.mockResolvedValue(mockOrders);
 
-			await useCase.handle();
+			await useCase.handle(1, 10);
 
 			// Verify enricher is called once with all orders for batch processing
 			expect(orderItemEnricher.enrichOrders).toHaveBeenCalledTimes(1);
-			expect(orderItemEnricher.enrichOrders).toHaveBeenCalledWith(
-				mockOrders,
-			);
+			expect(orderItemEnricher.enrichOrders).toHaveBeenCalledWith(mockOrders);
 		});
 
 		it('should return empty array when no orders exist', async () => {
-			orderRepository.getAllOrders.mockResolvedValue([]);
+			orderRepository.getPaginatedOrders.mockResolvedValue({
+				orders: [],
+				total: 0,
+			});
 			orderItemEnricher.enrichOrders.mockResolvedValue([]);
 
-			const result = await useCase.handle();
+			const result = await useCase.handle(1, 10);
 
-			expect(result).toEqual([]);
+			expect(result.data).toEqual([]);
 			expect(orderItemEnricher.enrichOrders).toHaveBeenCalledWith([]);
 		});
 
@@ -119,16 +149,19 @@ describe('GetAllOrdersUseCase', () => {
 				})),
 			};
 
-			orderRepository.getAllOrders.mockResolvedValue([mockOrder]);
+			orderRepository.getPaginatedOrders.mockResolvedValue({
+				orders: [mockOrder],
+				total: 1,
+			});
 			orderItemEnricher.enrichOrders.mockResolvedValue([enrichedOrder]);
 
-			const result = await useCase.handle();
+			const result = await useCase.handle(1, 10);
 
-			expect(result[0].items[0].imageUrl).toBe(
+			expect(result.data[0].items[0].imageUrl).toBe(
 				'https://storage.example.com/textile.jpg',
 			);
-			expect(result[0].items[1].imageUrl).toBeUndefined(); // SUPERFOOD
-			expect(result[0].items[2].imageUrl).toBeUndefined(); // BOX
+			expect(result.data[0].items[1].imageUrl).toBeUndefined(); // SUPERFOOD
+			expect(result.data[0].items[2].imageUrl).toBeUndefined(); // BOX
 		});
 	});
 });

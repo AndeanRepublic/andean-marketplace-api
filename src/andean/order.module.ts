@@ -20,6 +20,7 @@ import { SuperfoodModule } from './superfood.module';
 import { BoxModule } from './box.module';
 import { CreateOrderFromCartUseCase } from './app/use_cases/orders/CreateOrderFromCartUseCase';
 import { GetAllOrdersUseCase } from './app/use_cases/orders/GetAllOrdersUseCase';
+import { GetMyOrdersUseCase } from './app/use_cases/orders/GetMyOrdersUseCase';
 import { BoxProductInfoProvider } from './infra/services/products/BoxProductInfoProvider';
 import { PayPalClientService } from './infra/services/paypal/PayPalClientService';
 import { CreatePayPalOrderService } from './infra/services/paypal/CreatePayPalOrderService';
@@ -45,6 +46,7 @@ import { ShopsModule } from './shop.module';
 import { CommunityModule } from './community.module';
 import { AdminOrderFilterStrategy } from './infra/services/order/AdminOrderFilterStrategy';
 import { SellerOrderFilterStrategy } from './infra/services/order/SellerOrderFilterStrategy';
+import { UserOrderFilterStrategy } from './infra/services/order/UserOrderFilterStrategy';
 
 @Module({
 	imports: [
@@ -71,6 +73,7 @@ import { SellerOrderFilterStrategy } from './infra/services/order/SellerOrderFil
 		GetOrderByIdUseCase,
 		GetOrdersByCustomerUseCase,
 		GetAllOrdersUseCase,
+		GetMyOrdersUseCase,
 		UpdateOrderStatusUseCase,
 		{
 			provide: OrderRepository,
@@ -106,6 +109,7 @@ import { SellerOrderFilterStrategy } from './infra/services/order/SellerOrderFil
 		// Order Filter Strategies
 		AdminOrderFilterStrategy,
 		SellerOrderFilterStrategy,
+		UserOrderFilterStrategy,
 		{
 			provide: EmailRepository,
 			useFactory: (

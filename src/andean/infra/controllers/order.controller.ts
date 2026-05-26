@@ -30,6 +30,7 @@ import { GetOrdersByCustomerUseCase } from '../../app/use_cases/orders/GetOrders
 import { UpdateOrderStatusUseCase } from '../../app/use_cases/orders/UpdateOrderStatusUseCase';
 import { CreateOrderFromCartUseCase } from '../../app/use_cases/orders/CreateOrderFromCartUseCase';
 import { GetAllOrdersUseCase } from '../../app/use_cases/orders/GetAllOrdersUseCase';
+import { GetMyOrdersUseCase } from '../../app/use_cases/orders/GetMyOrdersUseCase';
 import { CreateOrderDto } from './dto/order/CreateOrderDto';
 import { CreateOrderFromCartDto } from './dto/order/CreateOrderFromCartDto';
 import { Order } from '../../domain/entities/order/Order';
@@ -55,6 +56,7 @@ export class OrderController {
 		private readonly createPayPalOrderUseCase: CreatePayPalOrderUseCase,
 		private readonly capturePayPalOrderUseCase: CapturePayPalOrderUseCase,
 		private readonly getAllOrdersUseCase: GetAllOrdersUseCase,
+		private readonly getMyOrdersUseCase: GetMyOrdersUseCase,
 	) {}
 
 	// @Public()
@@ -100,6 +102,75 @@ export class OrderController {
 	// ): Promise<Order> {
 	// 	return this.createOrderFromCartUseCase.handle(customerId, body);
 	// }
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.USER)
+	@Get('/my-purchases')
+	@ApiOperation({
+		summary: 'Obtener mis compras (usuario autenticado)',
+		description:
+			'Recupera todas las órdenes del usuario autenticado con paginación.',
+	})
+	@ApiQuery({
+		name: 'page',
+		required: false,
+		type: Number,
+		description: 'Página actual (default: 1)',
+		example: 1,
+	})
+	@ApiQuery({
+		name: 'per_page',
+		required: false,
+		type: Number,
+		description: 'Resultados por página (default: 10)',
+		example: 10,
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista de órdenes del usuario paginada obtenida exitosamente',
+		schema: {
+			type: 'object',
+			properties: {
+				data: {
+					type: 'array',
+					items: { $ref: '#/components/schemas/OrderResponse' },
+				},
+				pagination: {
+					type: 'object',
+					properties: {
+						total: { type: 'number', example: 50 },
+						page: { type: 'number', example: 1 },
+						per_page: { type: 'number', example: 10 },
+						total_pages: { type: 'number', example: 5 },
+					},
+				},
+			},
+		},
+	})
+	@ApiResponse({
+		status: 401,
+		description: 'No autenticado - Token faltante o inválido',
+		type: OrderErrorResponse,
+	})
+	@ApiResponse({
+		status: 403,
+		description: 'No autorizado - Requiere rol USER',
+		type: OrderErrorResponse,
+	})
+	async getMyPurchases(
+		@Query('page') page?: number,
+		@Query('per_page') perPage?: number,
+		@CurrentUser() user?: any,
+	): Promise<PaginatedOrdersResponse> {
+		const normalizedPage = page && page > 0 ? page : 1;
+		const normalizedPerPage = perPage && perPage > 0 ? perPage : 10;
+
+		return this.getMyOrdersUseCase.handle(
+			normalizedPage,
+			normalizedPerPage,
+			user,
+		);
+	}
+
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles(AccountRole.ADMIN, AccountRole.SELLER)
 	@Get('/')

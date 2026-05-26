@@ -58,17 +58,22 @@ export class GetAllOrdersUseCase {
 	 * ADMIN: ve todas las órdenes.
 	 * SELLER: ve solo órdenes con productos de su propiedad.
 	 * Por defecto (sin user): se asume ADMIN (retrocompatibilidad).
+	 *
+	 * Nota: el rol USER tiene su propio use case (GetMyOrdersUseCase).
 	 */
 	private resolveStrategy(user?: any): OrderFilterStrategy {
-		if (!user || user.role === AccountRole.ADMIN) {
+		if (!user) {
 			return this.adminOrderFilterStrategy;
 		}
 
-		if (user.role === AccountRole.SELLER) {
+		// user.roles es un array de AccountRole[]
+		const roles = user.roles || [];
+
+		if (roles.includes(AccountRole.SELLER)) {
 			return this.sellerOrderFilterStrategy;
 		}
 
-		// Fallback: ADMIN por defecto
+		// ADMIN o cualquier otro rol con acceso: ve todas las órdenes
 		return this.adminOrderFilterStrategy;
 	}
 }
