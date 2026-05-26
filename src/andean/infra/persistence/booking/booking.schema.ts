@@ -147,6 +147,9 @@ export const BookingSchema = new Schema({
 	updatedAt: { type: Date, default: Date.now },
 });
 
+// Index for efficient customer booking queries
+BookingSchema.index({ 'customerInfo.customerId': 1 });
+
 export interface BookingDocument extends Document {
 	customerInfo: {
 		customerId?: string;

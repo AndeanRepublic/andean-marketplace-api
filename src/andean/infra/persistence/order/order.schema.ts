@@ -108,6 +108,9 @@ export const OrderSchema = new Schema({
 	updatedAt: { type: Date, default: Date.now },
 });
 
+// Index for efficient customer order queries
+OrderSchema.index({ customerId: 1 });
+
 export interface OrderDocument extends Document {
 	customerId?: string;
 	customerEmail?: string;
