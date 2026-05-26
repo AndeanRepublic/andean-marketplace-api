@@ -11,6 +11,7 @@ import { GetBookingsByCustomerUseCase } from './app/use_cases/bookings/GetBookin
 import { GetBookingsByEmailUseCase } from './app/use_cases/bookings/GetBookingsByEmailUseCase';
 import { UpdateBookingStatusUseCase } from './app/use_cases/bookings/UpdateBookingStatusUseCase';
 import { ListBookingsForManagementUseCase } from './app/use_cases/bookings/ListBookingsForManagementUseCase';
+import { GetMyBookingsUseCase } from './app/use_cases/bookings/GetMyBookingsUseCase';
 
 import { UsersModule } from './users.module';
 import { ShopsModule } from './shop.module';
@@ -46,6 +47,7 @@ import { BookingRepositoryImpl } from './infra/datastore/booking/booking.repo.im
 		GetBookingsByEmailUseCase,
 		UpdateBookingStatusUseCase,
 		ListBookingsForManagementUseCase,
+		GetMyBookingsUseCase,
 		GetFutureUnavailableDatesUseCase,
 		PayPalClientService,
 		CreatePayPalOrderService,

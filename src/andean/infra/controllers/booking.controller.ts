@@ -34,6 +34,7 @@ import { GetBookingsByCustomerUseCase } from '../../app/use_cases/bookings/GetBo
 import { GetBookingsByEmailUseCase } from '../../app/use_cases/bookings/GetBookingsByEmailUseCase';
 import { UpdateBookingStatusUseCase } from '../../app/use_cases/bookings/UpdateBookingStatusUseCase';
 import { ListBookingsForManagementUseCase } from '../../app/use_cases/bookings/ListBookingsForManagementUseCase';
+import { GetMyBookingsUseCase } from '../../app/use_cases/bookings/GetMyBookingsUseCase';
 import { CreateBookingDto } from './dto/booking/CreateBookingDto';
 import { UpdateBookingDto } from './dto/booking/UpdateBookingDto';
 import { Booking } from '../../domain/entities/booking/Booking';
@@ -56,6 +57,7 @@ export class BookingController {
 		private readonly getBookingsByEmailUseCase: GetBookingsByEmailUseCase,
 		private readonly updateBookingStatusUseCase: UpdateBookingStatusUseCase,
 		private readonly listBookingsForManagementUseCase: ListBookingsForManagementUseCase,
+		private readonly getMyBookingsUseCase: GetMyBookingsUseCase,
 	) {}
 
 	@Public()
@@ -140,6 +142,36 @@ export class BookingController {
 		@Body() body: CapturePayPalBookingDto,
 	): Promise<CapturePayPalBookingResponse> {
 		return this.capturePayPalBookingUseCase.handle(body);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.USER)
+	@ApiBearerAuth('JWT-auth')
+	@Get('/my-purchases')
+	@ApiOperation({
+		summary: 'Obtener mis reservas (usuario autenticado)',
+		description:
+			'Recupera todas las reservas del usuario autenticado.',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Lista de reservas del usuario obtenida exitosamente',
+		type: [BookingResponse],
+	})
+	@ApiResponse({
+		status: 401,
+		description: 'No autenticado - Token faltante o inválido',
+		type: BookingErrorResponse,
+	})
+	@ApiResponse({
+		status: 403,
+		description: 'No autorizado - Requiere rol USER',
+		type: BookingErrorResponse,
+	})
+	async getMyPurchases(
+		@CurrentUser() user: { userId: string; roles: AccountRole[] },
+	): Promise<Booking[]> {
+		return this.getMyBookingsUseCase.handle(user.userId);
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)

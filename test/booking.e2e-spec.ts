@@ -17,6 +17,7 @@ import { GetBookingsByCustomerUseCase } from '../src/andean/app/use_cases/bookin
 import { GetBookingsByEmailUseCase } from '../src/andean/app/use_cases/bookings/GetBookingsByEmailUseCase';
 import { UpdateBookingStatusUseCase } from '../src/andean/app/use_cases/bookings/UpdateBookingStatusUseCase';
 import { ListBookingsForManagementUseCase } from '../src/andean/app/use_cases/bookings/ListBookingsForManagementUseCase';
+import { GetMyBookingsUseCase } from '../src/andean/app/use_cases/bookings/GetMyBookingsUseCase';
 import { BookingStatus } from '../src/andean/domain/enums/BookingStatus';
 
 describe('BookingController (e2e) — Pattern C authorization', () => {
@@ -30,6 +31,11 @@ describe('BookingController (e2e) — Pattern C authorization', () => {
 	const mockBooking = {
 		id: bookingId,
 		status: BookingStatus.CONFIRMED,
+	};
+
+	// Use case mocks
+	const mockGetMyBookingsUseCase = {
+		handle: jest.fn().mockResolvedValue([mockBooking]),
 	};
 
 	// ─── Helper to build app with a given auth user and role guard control ───────
@@ -81,6 +87,10 @@ describe('BookingController (e2e) — Pattern C authorization', () => {
 				{
 					provide: ListBookingsForManagementUseCase,
 					useValue: { handle: jest.fn().mockResolvedValue([mockBooking]) },
+				},
+				{
+					provide: GetMyBookingsUseCase,
+					useValue: mockGetMyBookingsUseCase,
 				},
 			],
 		})
@@ -237,6 +247,66 @@ describe('BookingController (e2e) — Pattern C authorization', () => {
 			await request(app.getHttpServer())
 				.get('/bookings/management')
 				.expect(HttpStatus.UNAUTHORIZED);
+
+			await app.close();
+		});
+	});
+
+	// ─────────────────────────────────────────────────────────────────────────────
+	// GET /bookings/my-purchases
+	// ─────────────────────────────────────────────────────────────────────────────
+
+	describe('GET /bookings/my-purchases', () => {
+		const mockUserBookings = [mockBooking];
+
+		beforeEach(() => {
+			jest.clearAllMocks();
+		});
+
+		it('should return 200 OK for authenticated USER with their bookings', async () => {
+			const app = await buildApp(mockAuthUsers.customer, true);
+
+			mockGetMyBookingsUseCase.handle.mockResolvedValueOnce(mockUserBookings);
+
+			const response = await request(app.getHttpServer())
+				.get('/bookings/my-purchases')
+				.expect(HttpStatus.OK);
+
+			expect(response.body).toHaveLength(1);
+			expect(response.body[0].id).toBe(mockBooking.id);
+			expect(mockGetMyBookingsUseCase.handle).toHaveBeenCalledWith(
+				mockAuthUsers.customer.userId,
+			);
+
+			await app.close();
+		});
+
+		it('should return 401 Unauthorized for unauthenticated requests', async () => {
+			const app = await buildApp(null, true);
+
+			await request(app.getHttpServer())
+				.get('/bookings/my-purchases')
+				.expect(HttpStatus.UNAUTHORIZED);
+
+			await app.close();
+		});
+
+		it('should return 403 Forbidden for ADMIN role', async () => {
+			const app = await buildApp(mockAuthUsers.admin, false);
+
+			await request(app.getHttpServer())
+				.get('/bookings/my-purchases')
+				.expect(HttpStatus.FORBIDDEN);
+
+			await app.close();
+		});
+
+		it('should return 403 Forbidden for SELLER role', async () => {
+			const app = await buildApp(mockAuthUsers.seller, false);
+
+			await request(app.getHttpServer())
+				.get('/bookings/my-purchases')
+				.expect(HttpStatus.FORBIDDEN);
 
 			await app.close();
 		});
