@@ -46,7 +46,11 @@ export class LoginUseCase {
 	}
 
 	private async generateToken(account: Account): Promise<SessionToken> {
-		const payload = { sub: account.id, roles: account.roles };
+		const payload = {
+			sub: account.id,
+			roles: account.roles,
+			passwordVersion: account.passwordVersion,
+		};
 		const jwtToken = await this.jwtService.signAsync(payload);
 
 		// Fetch customer profile data (userId is FK to Account._id)
