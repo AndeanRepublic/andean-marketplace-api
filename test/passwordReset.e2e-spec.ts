@@ -14,6 +14,7 @@ import { AssignAdminUseCase } from '../src/andean/app/use_cases/auth/AssignAdmin
 import { ForgotPasswordUseCase } from '../src/andean/app/use_cases/auth/ForgotPasswordUseCase';
 import { VerifyResetCodeUseCase } from '../src/andean/app/use_cases/auth/VerifyResetCodeUseCase';
 import { ResetPasswordUseCase } from '../src/andean/app/use_cases/auth/ResetPasswordUseCase';
+import { ChangePasswordUseCase } from '../src/andean/app/use_cases/auth/ChangePasswordUseCase';
 
 describe('AuthController — Password Reset (e2e)', () => {
 	let app: INestApplication;
@@ -47,6 +48,10 @@ describe('AuthController — Password Reset (e2e)', () => {
 				},
 				{
 					provide: ResetPasswordUseCase,
+					useValue: { execute: jest.fn().mockResolvedValue(undefined) },
+				},
+				{
+					provide: ChangePasswordUseCase,
 					useValue: { execute: jest.fn().mockResolvedValue(undefined) },
 				},
 			],

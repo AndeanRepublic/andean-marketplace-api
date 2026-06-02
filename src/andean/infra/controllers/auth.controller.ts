@@ -13,16 +13,19 @@ import { AssignAdminDto } from './dto/AssignAdminDto';
 import { ForgotPasswordDto } from './dto/ForgotPasswordDto';
 import { ResetPasswordDto } from './dto/ResetPasswordDto';
 import { VerifyResetCodeDto } from './dto/VerifyResetCodeDto';
+import { ChangePasswordDto } from './dto/ChangePasswordDto';
 import { SessionToken } from '../../app/models/users/SessionToken';
 import { LoginUseCase } from '../../app/use_cases/auth/LoginUseCase';
 import { AssignAdminUseCase } from '../../app/use_cases/auth/AssignAdminUseCase';
 import { ForgotPasswordUseCase } from '../../app/use_cases/auth/ForgotPasswordUseCase';
 import { ResetPasswordUseCase } from '../../app/use_cases/auth/ResetPasswordUseCase';
 import { VerifyResetCodeUseCase } from '../../app/use_cases/auth/VerifyResetCodeUseCase';
+import { ChangePasswordUseCase } from '../../app/use_cases/auth/ChangePasswordUseCase';
 import { Public } from '../core/public.decorator';
 import { JwtAuthGuard } from '../core/jwtAuth.guard';
 import { RolesGuard } from '../core/roles.guard';
 import { Roles } from '../core/roles.decorator';
+import { CurrentUser } from '../core/current-user.decorator';
 import { AccountRole } from '../../domain/enums/AccountRole';
 
 @ApiTags('auth')
@@ -34,6 +37,7 @@ export class AuthController {
 		private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
 		private readonly resetPasswordUseCase: ResetPasswordUseCase,
 		private readonly verifyResetCodeUseCase: VerifyResetCodeUseCase,
+		private readonly changePasswordUseCase: ChangePasswordUseCase,
 	) {}
 
 	@Public()
@@ -139,5 +143,35 @@ export class AuthController {
 	): Promise<{ message: string }> {
 		await this.resetPasswordUseCase.execute(dto.resetToken, dto.newPassword);
 		return { message: 'Password has been reset successfully.' };
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@Patch('/change-password')
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		summary: 'Cambiar contraseña',
+		description:
+			'Permite al usuario autenticado cambiar su contraseña. Requiere la contraseña actual y la nueva contraseña. Invalida todas las sesiones existentes.',
+	})
+	@ApiBody({ type: ChangePasswordDto })
+	@ApiResponse({
+		status: 200,
+		description: 'Contraseña cambiada exitosamente',
+	})
+	@ApiResponse({
+		status: 400,
+		description:
+			'Nueva contraseña inválida o igual a la contraseña actual',
+	})
+	@ApiResponse({
+		status: 401,
+		description: 'Contraseña actual incorrecta o usuario no autenticado',
+	})
+	async changePassword(
+		@CurrentUser() user: { userId: string },
+		@Body() dto: ChangePasswordDto,
+	): Promise<{ message: string }> {
+		await this.changePasswordUseCase.execute(user.userId, dto);
+		return { message: 'Password changed successfully. Please login again.' };
 	}
 }
