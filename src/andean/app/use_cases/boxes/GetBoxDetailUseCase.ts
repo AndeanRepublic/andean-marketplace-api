@@ -20,6 +20,10 @@ import { BoxSeal } from '../../../domain/entities/box/BoxSeal';
 import { Variant } from '../../../domain/entities/Variant';
 import { MediaItem } from '../../../domain/entities/MediaItem';
 import { AdminEntityStatus } from '../../../domain/enums/AdminEntityStatus';
+import {
+	TextileProductAttributes,
+	TextileProductAttributesAssembler,
+} from '../../../infra/services/textileProducts/TextileProductAttributesAssembler';
 
 @Injectable()
 export class GetBoxDetailUseCase {
@@ -28,6 +32,7 @@ export class GetBoxDetailUseCase {
 		private readonly boxSealRepository: BoxSealRepository,
 		private readonly boxResolutionService: BoxProductResolutionService,
 		private readonly ownerInfoResolver: OwnerInfoResolver,
+		private readonly textileAttributesAssembler: TextileProductAttributesAssembler,
 	) {}
 
 	async handle(boxId: string): Promise<BoxDetailResponse> {
@@ -37,8 +42,24 @@ export class GetBoxDetailUseCase {
 			this.boxSealRepository.getByIds(box.sealIds),
 		]);
 
+		const textileProducts = [...dependencies.textileMap.values()];
+		const textileVariants = [...dependencies.variantMap.values()].filter(
+			(v) => v.productType === ProductType.TEXTILE,
+		);
+		const textileAttrsByProductId =
+			textileProducts.length > 0
+				? await this.textileAttributesAssembler.buildForProducts(
+						textileProducts,
+						textileVariants,
+					)
+				: new Map<string, TextileProductAttributes>();
+
 		const { containedProducts, discartedPrice } =
-			await this.buildContainedProducts(box.products, dependencies);
+			await this.buildContainedProducts(
+				box.products,
+				dependencies,
+				textileAttrsByProductId,
+			);
 		const discartedPriceRounded = Math.round(discartedPrice);
 
 		return {
@@ -107,6 +128,7 @@ export class GetBoxDetailUseCase {
 	private async buildContainedProducts(
 		lines: BoxProduct[],
 		deps: BoxDependencies,
+		textileAttrsByProductId: Map<string, TextileProductAttributes>,
 	): Promise<{
 		containedProducts: BoxContainedProductResponse[];
 		discartedPrice: number;
@@ -115,7 +137,11 @@ export class GetBoxDetailUseCase {
 		let discartedPrice = 0;
 
 		for (const line of lines) {
-			const resolved = await this.resolveContainedLine(line, deps);
+			const resolved = await this.resolveContainedLine(
+				line,
+				deps,
+				textileAttrsByProductId,
+			);
 			if (!resolved) continue;
 			containedProducts.push(resolved.row);
 			discartedPrice += resolved.linePrice;
@@ -127,6 +153,7 @@ export class GetBoxDetailUseCase {
 	private async resolveContainedLine(
 		line: BoxProduct,
 		deps: BoxDependencies,
+		textileAttrsByProductId: Map<string, TextileProductAttributes>,
 	): Promise<{
 		row: BoxContainedProductResponse;
 		linePrice: number;
@@ -162,6 +189,7 @@ export class GetBoxDetailUseCase {
 			effectiveLinePrice,
 			narrativeImage,
 			deps,
+			textileAttrsByProductId,
 		);
 		return { row, linePrice: catalogPrice };
 	}
@@ -202,7 +230,8 @@ export class GetBoxDetailUseCase {
 		);
 
 		const row: BoxContainedProductResponse = {
-			id: variantId,
+			id: variant.productId,
+			variantId,
 			title: superfood.baseInfo?.title || '',
 			thumbnailImage: this.boxResolutionService.resolveImage(
 				superfood.baseInfo?.productMedia?.mainImgId,
@@ -226,6 +255,7 @@ export class GetBoxDetailUseCase {
 		effectiveLinePrice: number,
 		narrativeImage: BoxImageResponse | undefined,
 		deps: BoxDependencies,
+		textileAttrsByProductId: Map<string, TextileProductAttributes>,
 	): Promise<BoxContainedProductResponse> {
 		const textile = deps.textileMap.get(variant.productId);
 		const ownerId = textile?.baseInfo?.ownerId ?? '';
@@ -236,18 +266,43 @@ export class GetBoxDetailUseCase {
 				)
 			: undefined;
 
+		const variantInfo = textile
+			? textileAttrsByProductId
+					.get(variant.productId)
+					?.variantInfo.find((v) => v.variantId === variant.id)
+			: undefined;
+		const combo = variant.combination ?? {};
+		const colorLabel =
+			variantInfo?.color?.color?.trim() ||
+			String(combo.COLOR ?? combo.color ?? combo.Color ?? '').trim();
+		const colorHex = variantInfo?.color?.hexCode?.trim() || '#000000';
+		const size =
+			variantInfo?.size?.trim() ||
+			String(combo.SIZE ?? combo.size ?? combo.Size ?? '').trim();
+
 		const row: BoxContainedProductResponse = {
-			id: variantId,
+			id: variant.productId,
+			variantId,
 			title: textile?.baseInfo?.title || '',
 			thumbnailImage: this.boxResolutionService.resolveImage(
 				textile?.baseInfo?.mediaIds?.[0],
 				deps.mediaMap,
 			),
-			information: textile?.baseInfo?.description || '',
+			// Campo corto del producto (`information`), no la descripción larga.
+			information: textile?.baseInfo?.information || '',
 			type: ProductType.TEXTILE,
 			discartedPrice: catalogPrice,
 			price: effectiveLinePrice,
 			ownerId,
+			...(colorLabel
+				? {
+						color: {
+							label: colorLabel,
+							hexCode: colorHex || '#000000',
+						},
+					}
+				: {}),
+			...(size ? { size } : {}),
 		};
 		if (ownerInfo) row.ownerInfo = ownerInfo;
 		this.applyNarrativeImageIfPresent(row, narrativeImage);

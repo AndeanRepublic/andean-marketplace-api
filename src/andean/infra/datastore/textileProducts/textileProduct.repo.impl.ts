@@ -262,13 +262,22 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 					as: 'category',
 				},
 			},
-			// Lookup para shop/productor (cuando ownerType es SHOP; nombre viene de la tienda)
+			// Lookup para shop/productor (cuando ownerType es SHOP; ownerId = shopId)
 			{
 				$lookup: {
 					from: 'shops',
-					let: { ownerId: '$baseInfo.ownerId' },
+					let: {
+						ownId: {
+							$convert: {
+								input: '$baseInfo.ownerId',
+								to: 'objectId',
+								onError: null,
+								onNull: null,
+							},
+						},
+					},
 					pipeline: [
-						{ $match: { $expr: { $eq: ['$sellerId', '$$ownerId'] } } },
+						{ $match: { $expr: { $eq: ['$_id', '$$ownId'] } } },
 						{ $limit: 1 },
 					],
 					as: 'shop',
@@ -474,6 +483,7 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 				categoryName: {
 					$ifNull: [{ $arrayElemAt: ['$category.name', 0] }, 'Sin categoría'],
 				},
+				ownerType: '$baseInfo.ownerType',
 				productorName: {
 					$cond: {
 						if: { $gt: [{ $size: '$shop' }, 0] },
@@ -775,6 +785,7 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 					title: product.title,
 					categoryName: product.categoryName,
 					productorName: product.productorName,
+					ownerType: product.ownerType,
 					status: product.status,
 					principalImgUrl: product.principalImgUrl,
 					price: product.price,

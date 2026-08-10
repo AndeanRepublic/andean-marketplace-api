@@ -19,14 +19,14 @@ export class OwnerNameResolver {
 	 * Obtiene el nombre del propietario según su tipo.
 	 * Para SHOP usa el nombre de la tienda; para COMMUNITY el nombre de la comunidad.
 	 * @param ownerType - Tipo de propietario ('SHOP' o 'COMMUNITY')
-	 * @param ownerId - ID del propietario (sellerId para SHOP, communityId para COMMUNITY)
+	 * @param ownerId - ID del propietario (shopId para SHOP, communityId para COMMUNITY)
 	 * @returns Nombre del propietario o un valor por defecto si no se encuentra.
 	 */
 	async resolve(ownerType: string, ownerId: string): Promise<string> {
 		switch (ownerType) {
 			case 'SHOP': {
-				const shops = await this.shopRepository.getAllBySellerId(ownerId);
-				return shops[0]?.name || 'Vendedor desconocido';
+				const shop = await this.shopRepository.getById(ownerId);
+				return shop?.name || 'Vendedor desconocido';
 			}
 			case 'COMMUNITY': {
 				const community = await this.communityRepository.getById(ownerId);
