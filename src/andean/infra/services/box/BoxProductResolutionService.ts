@@ -107,7 +107,8 @@ export class BoxProductResolutionService {
 	}
 
 	/**
-	 * Bulk para detalle: variantes, padres catálogo, media (box, líneas, sellos, productos).
+	 * Bulk para detalle: variantes, padres catálogo, media (box, líneas, productos).
+	 * Logos de sellos: usar `appendMediaToMap` con los `logoMediaId` de los BoxSeal.
 	 */
 	async bulkFetchBoxDependencies(boxes: Box[]): Promise<BoxDependencies> {
 		const variantIds = new Set<string>();
@@ -175,6 +176,28 @@ export class BoxProductResolutionService {
 			textileMap,
 			mediaMap,
 		};
+	}
+
+	/**
+	 * Carga media faltantes en el mapa (p. ej. logos de sellos del box).
+	 */
+	async appendMediaToMap(
+		mediaMap: Map<string, MediaItem>,
+		mediaIds: Array<string | undefined | null>,
+	): Promise<void> {
+		const missing = [
+			...new Set(
+				mediaIds
+					.map((id) => id?.trim() ?? '')
+					.filter((id) => id.length > 0 && !mediaMap.has(id)),
+			),
+		];
+		if (missing.length === 0) return;
+
+		const items = await this.mediaItemRepository.getByIds(missing);
+		for (const item of items) {
+			mediaMap.set(item.id, item);
+		}
 	}
 
 	resolveImage(
