@@ -94,6 +94,18 @@ export class BoxProductResolutionService {
 				if (mediaId) allMediaIds.add(mediaId);
 			}
 		}
+		// Media de la variante (picker de color/opción): hace falta para el thumbnail del listado
+		for (const variant of variants) {
+			if (variant.productType !== ProductType.TEXTILE) continue;
+			const textile = textileMap.get(variant.productId);
+			if (!textile) continue;
+			const variantMediaId =
+				this.textileVariantPickerMediaService.resolveVariantMainMediaId(
+					textile,
+					variant,
+				);
+			if (variantMediaId) allMediaIds.add(variantMediaId);
+		}
 
 		const mediaItems =
 			allMediaIds.size > 0
@@ -242,7 +254,8 @@ export class BoxProductResolutionService {
 						variant,
 					);
 				if (variantMediaId) {
-					return this.resolveImage(variantMediaId, mediaMap).url;
+					const variantUrl = this.resolveImage(variantMediaId, mediaMap).url;
+					if (variantUrl) return variantUrl;
 				}
 			}
 		}

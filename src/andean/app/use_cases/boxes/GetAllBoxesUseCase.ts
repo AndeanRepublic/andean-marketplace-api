@@ -15,6 +15,10 @@ import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodP
 import { TextileProduct } from '../../../domain/entities/textileProducts/TextileProduct';
 import { MediaItem } from '../../../domain/entities/MediaItem';
 import { computeBoxListMetrics } from '../../../infra/services/box/boxListMetrics';
+import {
+	TextileProductAttributes,
+	TextileProductAttributesAssembler,
+} from '../../../infra/services/textileProducts/TextileProductAttributesAssembler';
 
 @Injectable()
 export class GetAllBoxesUseCase {
@@ -22,6 +26,7 @@ export class GetAllBoxesUseCase {
 		private readonly boxRepository: BoxRepository,
 		private readonly boxResolutionService: BoxProductResolutionService,
 		private readonly ownerNameResolver: OwnerNameResolver,
+		private readonly textileAttributesAssembler: TextileProductAttributesAssembler,
 	) {}
 
 	async handle(
@@ -48,6 +53,18 @@ export class GetAllBoxesUseCase {
 		const dependencies =
 			await this.boxResolutionService.bulkFetchBoxDependenciesForList(boxes);
 
+		const textileProducts = [...dependencies.textileMap.values()];
+		const textileVariants = [...dependencies.variantMap.values()].filter(
+			(v) => v.productType === ProductType.TEXTILE,
+		);
+		const textileAttrsByProductId =
+			textileProducts.length > 0
+				? await this.textileAttributesAssembler.buildForProducts(
+						textileProducts,
+						textileVariants,
+					)
+				: new Map<string, TextileProductAttributes>();
+
 		const ownerNameCache = new Map<string, string>();
 		const enrichedBoxes: BoxListItemResponse[] = await Promise.all(
 			boxes.map(async (box) => {
@@ -56,17 +73,13 @@ export class GetAllBoxesUseCase {
 				const metrics = computeBoxListMetrics(box, dependencies.variantMap);
 				const fulfillableQuantity = metrics.fulfillableQuantity;
 
-			for (const product of box.products) {
-				if (!product.variantId) continue;
-				const variant = dependencies.variantMap.get(product.variantId);
-				if (!variant) continue;
-				const catalog = this.boxResolutionService.getVariantPrice(variant);
-				const price = this.boxResolutionService.resolveLinePrice(
-					product,
-					catalog,
-				);
-				discartedPrice += catalog;
-			}
+				for (const product of box.products) {
+					if (!product.variantId) continue;
+					const variant = dependencies.variantMap.get(product.variantId);
+					if (!variant) continue;
+					const catalog = this.boxResolutionService.getVariantPrice(variant);
+					discartedPrice += catalog;
+				}
 				discartedPrice = Math.round(discartedPrice);
 
 				const products = await this.buildListProducts(
@@ -76,6 +89,7 @@ export class GetAllBoxesUseCase {
 					dependencies.textileMap,
 					dependencies.mediaMap,
 					ownerNameCache,
+					textileAttrsByProductId,
 				);
 
 				const boxThumb = this.boxResolutionService.resolveImage(
@@ -131,6 +145,7 @@ export class GetAllBoxesUseCase {
 		textileMap: Map<string, TextileProduct>,
 		mediaMap: Map<string, MediaItem>,
 		ownerNameCache: Map<string, string>,
+		textileAttrsByProductId: Map<string, TextileProductAttributes>,
 	): Promise<BoxListProductResponse[]> {
 		const rows: BoxListProductResponse[] = [];
 
@@ -145,6 +160,7 @@ export class GetAllBoxesUseCase {
 				const ownerId = superfood?.baseInfo?.ownerId ?? '';
 				if (!superfood?.baseInfo?.title || !ownerType) continue;
 
+				const information = superfood.baseInfo.shortDescription?.trim() ?? '';
 				rows.push({
 					name: superfood.baseInfo.title,
 					ownerType,
@@ -161,6 +177,7 @@ export class GetAllBoxesUseCase {
 							superfoodMap,
 							mediaMap,
 						),
+					...(information ? { information } : {}),
 				});
 				continue;
 			}
@@ -170,6 +187,14 @@ export class GetAllBoxesUseCase {
 				const ownerType = textile?.baseInfo?.ownerType;
 				const ownerId = textile?.baseInfo?.ownerId ?? '';
 				if (!textile?.baseInfo?.title || !ownerType) continue;
+
+				const variantInfo = textileAttrsByProductId
+					.get(variant.productId)
+					?.variantInfo.find((v) => v.variantId === variant.id);
+				const colorLabel = variantInfo?.color?.color?.trim() ?? '';
+				const colorHex = variantInfo?.color?.hexCode?.trim() ?? '';
+				const size = variantInfo?.size?.trim() ?? '';
+				const information = textile.baseInfo.information?.trim() ?? '';
 
 				rows.push({
 					name: textile.baseInfo.title,
@@ -187,6 +212,16 @@ export class GetAllBoxesUseCase {
 							superfoodMap,
 							mediaMap,
 						),
+					...(information ? { information } : {}),
+					...(colorLabel
+						? {
+								color: {
+									label: colorLabel,
+									hexCode: colorHex || '#000000',
+								},
+							}
+						: {}),
+					...(size ? { size } : {}),
 				});
 			}
 		}

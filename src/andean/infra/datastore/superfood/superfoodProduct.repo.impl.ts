@@ -208,9 +208,18 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 			{
 				$lookup: {
 					from: 'shops',
-					let: { ownerId: '$baseInfo.ownerId' },
+					let: {
+						ownId: {
+							$convert: {
+								input: '$baseInfo.ownerId',
+								to: 'objectId',
+								onError: null,
+								onNull: null,
+							},
+						},
+					},
 					pipeline: [
-						{ $match: { $expr: { $eq: ['$sellerId', '$$ownerId'] } } },
+						{ $match: { $expr: { $eq: ['$_id', '$$ownId'] } } },
 						{ $limit: 1 },
 					],
 					as: 'shop',

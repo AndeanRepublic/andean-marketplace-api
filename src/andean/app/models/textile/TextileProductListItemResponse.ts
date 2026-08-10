@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { TextileProductStatus } from '../../../domain/enums/TextileProductStatus';
+import { OwnerType } from '../../../domain/enums/OwnerType';
 
 export class TextileProductColorInfo {
 	@ApiProperty({ description: 'Nombre del color', example: 'Rojo Andino' })
@@ -65,6 +66,14 @@ export class TextileProductListItem {
 		example: 'Artesanías Cusco',
 	})
 	productorName!: string;
+
+	@ApiProperty({
+		description:
+			'Tipo de propietario (SHOP o COMMUNITY). En filtros de marketplace, SHOP se agrupa como Local producers.',
+		enum: OwnerType,
+		example: OwnerType.COMMUNITY,
+	})
+	ownerType!: OwnerType;
 
 	@ApiProperty({
 		description: 'Información de variantes disponibles',

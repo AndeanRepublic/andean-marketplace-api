@@ -12,6 +12,14 @@ export class BoxItemCountResponse {
 	superfoods!: number;
 }
 
+export class BoxListProductColorResponse {
+	@ApiProperty({ description: 'Etiqueta del color', example: 'Black' })
+	label!: string;
+
+	@ApiProperty({ description: 'Hex del color', example: '#000000' })
+	hexCode!: string;
+}
+
 export class BoxListProductResponse {
 	@ApiProperty({ description: 'Nombre del producto', example: 'Poncho Andino' })
 	name!: string;
@@ -41,6 +49,28 @@ export class BoxListProductResponse {
 		example: 'https://cdn.example.com/media/abc.jpg',
 	})
 	thumbnailImage!: string;
+
+	@ApiProperty({
+		description:
+			'Texto corto del producto (textil: information; superfood: shortDescription)',
+		example: 'Handmade baby alpaca poncho with condor-inspired collar.',
+		required: false,
+	})
+	information?: string;
+
+	@ApiProperty({
+		description: 'Color de la variante (solo textiles)',
+		type: BoxListProductColorResponse,
+		required: false,
+	})
+	color?: BoxListProductColorResponse;
+
+	@ApiProperty({
+		description: 'Talla de la variante (solo textiles)',
+		example: 'M',
+		required: false,
+	})
+	size?: string;
 }
 
 export class BoxListItemResponse {

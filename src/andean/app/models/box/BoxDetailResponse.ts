@@ -42,12 +42,26 @@ export class BoxDetailDescriptionResponse {
 	images!: BoxImageResponse[];
 }
 
+export class BoxContainedProductColorResponse {
+	@ApiProperty({ description: 'Etiqueta del color', example: 'Black' })
+	label!: string;
+
+	@ApiProperty({ description: 'Hex del color', example: '#000000' })
+	hexCode!: string;
+}
+
 export class BoxContainedProductResponse {
 	@ApiProperty({
-		description: 'ID del producto',
+		description: 'ID del producto de catálogo (textile/superfood), no de la variante',
 		example: '6973d8ffddef7b59c2d4dcfb',
 	})
 	id!: string;
+
+	@ApiPropertyOptional({
+		description: 'ID de la variante incluida en el box',
+		example: '6973d8ffddef7b59c2d4dcfc',
+	})
+	variantId?: string;
 
 	@ApiProperty({
 		description: 'Título del producto',
@@ -62,7 +76,8 @@ export class BoxContainedProductResponse {
 	thumbnailImage!: BoxImageResponse;
 
 	@ApiProperty({
-		description: 'Información adicional del producto',
+		description:
+			'Texto corto del producto (textil: baseInfo.information; superfood: shortDescription)',
 		example: '500g - Orgánico certificado',
 	})
 	information!: string;
@@ -101,6 +116,18 @@ export class BoxContainedProductResponse {
 		description: 'Información del propietario (comunidad o tienda)',
 	})
 	ownerInfo?: OwnerInfoResponse;
+
+	@ApiPropertyOptional({
+		description: 'Color de la variante (solo textiles)',
+		type: BoxContainedProductColorResponse,
+	})
+	color?: BoxContainedProductColorResponse;
+
+	@ApiPropertyOptional({
+		description: 'Talla de la variante (solo textiles)',
+		example: 'M',
+	})
+	size?: string;
 }
 
 export class BoxPriceDetailResponse {
