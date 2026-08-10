@@ -42,6 +42,12 @@ export class GetBoxDetailUseCase {
 			this.boxSealRepository.getByIds(box.sealIds),
 		]);
 
+		// Los logos de sellos no entran en bulkFetchBoxDependencies; hay que cargarlos aparte.
+		await this.boxResolutionService.appendMediaToMap(
+			dependencies.mediaMap,
+			seals.map((seal) => seal.logoMediaId),
+		);
+
 		const textileProducts = [...dependencies.textileMap.values()];
 		const textileVariants = [...dependencies.variantMap.values()].filter(
 			(v) => v.productType === ProductType.TEXTILE,
