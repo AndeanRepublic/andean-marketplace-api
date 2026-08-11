@@ -30,6 +30,7 @@ export interface CreatePayPalOrderRequest {
 }
 const DELIVERY_COSTS: Record<string, number> = {
 	DHL: 15,
+	STORE_PICKUP: 0,
 };
 @Injectable()
 export class CreatePayPalOrderService {
