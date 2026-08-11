@@ -13,7 +13,7 @@ export async function validateTextileProductBaseInfoMedia(
 	];
 	if (ids.length < 2) {
 		throw new BadRequestException(
-			'baseInfo.mediaIds must include at least two distinct media items (thumbnail and Try On image).',
+			'baseInfo.mediaIds must include at least two distinct media items (gallery image and Try On image).',
 		);
 	}
 
@@ -24,11 +24,16 @@ export async function validateTextileProductBaseInfoMedia(
 		);
 	}
 
-	const hasThumbnail = items.some((m) => m.role === MediaItemRole.THUMBNAIL);
 	const hasTryOn = items.some((m) => m.role === MediaItemRole.PRODUCT);
-	if (!hasThumbnail) {
+	const hasGallery = items.some(
+		(m) =>
+			m.role === MediaItemRole.PRINCIPAL ||
+			m.role === MediaItemRole.SECUNDARY ||
+			m.role === MediaItemRole.NONE,
+	);
+	if (!hasGallery) {
 		throw new BadRequestException(
-			'A thumbnail image (MediaItem with role THUMBNAIL) is required in baseInfo.mediaIds.',
+			'At least one gallery image (MediaItem with role PRINCIPAL, SECUNDARY or NONE) is required in baseInfo.mediaIds.',
 		);
 	}
 	if (!hasTryOn) {

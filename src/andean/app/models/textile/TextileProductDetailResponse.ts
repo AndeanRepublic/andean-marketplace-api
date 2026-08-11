@@ -4,6 +4,12 @@ import { OwnerType } from 'src/andean/domain/enums/OwnerType';
 
 // ── Media ────────────────────────────────────────────────────────────────
 export class MediaImageResponse {
+	@ApiPropertyOptional({
+		description: 'ID del MediaItem (orden = baseInfo.mediaIds)',
+		example: '665f1a2b3c4d5e6f7a8b9c0d',
+	})
+	id?: string;
+
 	@ApiProperty({
 		description: 'Nombre del archivo',
 		example: 'textile-principal.jpg',
