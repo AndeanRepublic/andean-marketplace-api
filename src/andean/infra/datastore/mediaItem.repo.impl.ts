@@ -57,8 +57,20 @@ export class MediaItemRepoImpl implements MediaItemRepository {
 
 	async getByIds(ids: string[]): Promise<MediaItem[]> {
 		if (!ids.length) return [];
-		const objectIds = ids.map((id) => MongoIdUtils.stringToObjectId(id));
+		// Mongo `$in` no garantiza orden; devolver en el mismo orden que `ids`.
+		const normalizedIds = ids.map((id) => String(id));
+		const objectIds = normalizedIds.map((id) =>
+			MongoIdUtils.stringToObjectId(id),
+		);
 		const docs = await this.model.find({ _id: { $in: objectIds } }).exec();
-		return docs.map((doc) => MediaItemMapper.fromDocument(doc));
+		const byId = new Map(
+			docs.map((doc) => [
+				doc._id.toString(),
+				MediaItemMapper.fromDocument(doc),
+			]),
+		);
+		return normalizedIds
+			.map((id) => byId.get(id))
+			.filter((item): item is MediaItem => Boolean(item));
 	}
 }

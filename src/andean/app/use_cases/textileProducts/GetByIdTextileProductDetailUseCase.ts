@@ -66,17 +66,21 @@ export class GetByIdTextileProductDetailUseCase {
 			throw new NotFoundException('Textile product not found');
 		}
 
-		// -- Obtener media items del producto
-		const mediaItems = await this.mediaItemRepository.getByIds(
-			product.baseInfo.mediaIds || [],
+		// -- Obtener media items del producto (respetar orden de mediaIds)
+		const mediaIds = (product.baseInfo.mediaIds || []).map((id) =>
+			String(id),
 		);
+		// getByIds ya devuelve en orden de mediaIds
+		const orderedMediaItems =
+			await this.mediaItemRepository.getByIds(mediaIds);
 		const imageUrlById = await this.mediaUrlResolver.resolveUrls(
-			mediaItems.map((mediaItem) => mediaItem.id),
+			orderedMediaItems.map((mediaItem) => mediaItem.id),
 		);
-		const images = mediaItems.map((mediaItem) => ({
+		const images = orderedMediaItems.map((mediaItem) => ({
+			id: mediaItem.id,
 			name: mediaItem.name,
 			role: mediaItem.role,
-			url: imageUrlById.get(mediaItem.id) ?? '',
+			url: imageUrlById.get(String(mediaItem.id)) ?? '',
 		}));
 
 		// -- Obtener reviews del producto
