@@ -38,7 +38,14 @@ import { MediaUrlResolver } from '../../services/media/MediaUrlResolver';
 import type { ShopWithProviderInfo } from '../../../app/use_cases/shop/GetShopByIdUseCase';
 import { ProviderInfo } from '../../../domain/entities/ProviderInfo';
 import { UpdateShopStatusUseCase } from '../../../app/use_cases/shop/UpdateShopStatusUseCase';
-import { UpdateEntityStatusDto } from '../dto/UpdateEntityStatusDto';
+import { UpdateShopStatusDto } from '../dto/shop/UpdateShopStatusDto';
+import { CreateSellerApplicationUseCase } from '../../../app/use_cases/shop/CreateSellerApplicationUseCase';
+import { CreateSellerApplicationDto } from '../dto/shop/CreateSellerApplicationDto';
+import { SellerApplicationResponse } from '../../../app/models/shop/SellerApplicationResponse';
+import { SellerProfileMapper } from '../../services/SellerProfileMapper';
+import { UpdateShopVisibilityUseCase } from '../../../app/use_cases/shop/UpdateShopVisibilityUseCase';
+import { UpdateShopVisibilityDto } from '../dto/shop/UpdateShopVisibilityDto';
+import { ShopStatus } from '../../../domain/enums/ShopStatus';
 
 @ApiTags('shops')
 @Controller('shops')
@@ -53,6 +60,8 @@ export class ShopController {
 		private readonly updateShopUseCase: UpdateShopUseCase,
 		private readonly mediaUrlResolver: MediaUrlResolver,
 		private readonly updateShopStatusUseCase: UpdateShopStatusUseCase,
+		private readonly createSellerApplicationUseCase: CreateSellerApplicationUseCase,
+		private readonly updateShopVisibilityUseCase: UpdateShopVisibilityUseCase,
 	) {}
 
 	@Public()
@@ -116,6 +125,34 @@ export class ShopController {
 		return Promise.all(shops.map((shop) => this.toResponse(shop)));
 	}
 
+	@UseGuards(JwtAuthGuard)
+	@Post('seller-application')
+	@HttpCode(HttpStatus.CREATED)
+	@ApiOperation({
+		summary: 'Solicitar convertirse en vendedor',
+		description:
+			'Usuario autenticado envía perfil de vendedor y tienda. Crea Seller PENDING y Shop PENDING sin asignar rol SELLER.',
+	})
+	@ApiBody({ type: CreateSellerApplicationDto })
+	@ApiResponse({
+		status: 201,
+		description: 'Solicitud registrada',
+		type: SellerApplicationResponse,
+	})
+	async createSellerApplication(
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
+		@Body() dto: CreateSellerApplicationDto,
+	): Promise<SellerApplicationResponse> {
+		const result = await this.createSellerApplicationUseCase.handle(
+			requestingUser.userId,
+			dto,
+		);
+		return {
+			seller: SellerProfileMapper.toResponse(result.seller),
+			shop: await this.toResponse(result.shop),
+		};
+	}
+
 	@Public()
 	@Get(':shopId')
 	@ApiOperation({
@@ -143,7 +180,7 @@ export class ShopController {
 	@ApiOperation({
 		summary: 'Crear una nueva tienda',
 		description:
-			'Registra una nueva tienda en el marketplace asociada a un vendedor',
+			'Admin o vendedor aprobado crea una tienda en estado ACTIVE. sellerId es opcional para admin; el vendedor solo puede crear para su propio perfil. Distinto de POST /shops/seller-application (solicitud PENDING).',
 	})
 	@ApiBody({ type: CreateShopDto })
 	@ApiResponse({
@@ -154,9 +191,14 @@ export class ShopController {
 	@ApiResponse({ status: 400, description: 'Datos de entrada inválidos' })
 	@ApiResponse({ status: 404, description: 'Vendedor no encontrado' })
 	async createShop(
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
 		@Body() createShopDto: CreateShopDto,
 	): Promise<ShopResponse> {
-		const shop = await this.createShopUseCase.handle(createShopDto);
+		const shop = await this.createShopUseCase.handle(createShopDto, {
+			initialStatus: ShopStatus.ACTIVE,
+			requestingUserId: requestingUser.userId,
+			roles: requestingUser.roles,
+		});
 		return this.toResponse(shop);
 	}
 
@@ -183,14 +225,41 @@ export class ShopController {
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@Patch(':shopId/status')
+	@ApiOperation({
+		summary: 'Actualizar estado de tienda (admin)',
+		description:
+			'Solo administradores. Permite PENDING, ACTIVE, REJECTED o DEACTIVATED.',
+	})
 	async updateStatus(
 		@Param('shopId') shopId: string,
-		@Body() dto: UpdateEntityStatusDto,
+		@Body() dto: UpdateShopStatusDto,
 	): Promise<ShopResponse & { providerInfo?: Record<string, unknown> }> {
 		await this.updateShopStatusUseCase.handle(shopId, dto.status);
 		const shop = await this.getShopsByIdUseCase.handle(shopId);
+		return this.toResponse(shop);
+	}
+
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Patch(':shopId/visibility')
+	@ApiOperation({
+		summary: 'Cambiar visibilidad de la tienda',
+		description:
+			'Vendedor aprobado puede alternar entre ACTIVE y DEACTIVATED en su propia tienda.',
+	})
+	async updateVisibility(
+		@Param('shopId') shopId: string,
+		@Body() dto: UpdateShopVisibilityDto,
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
+	): Promise<ShopResponse & { providerInfo?: Record<string, unknown> }> {
+		const shop = await this.updateShopVisibilityUseCase.handle(
+			shopId,
+			dto.status,
+			requestingUser.userId,
+			requestingUser.roles,
+		);
 		return this.toResponse(shop);
 	}
 

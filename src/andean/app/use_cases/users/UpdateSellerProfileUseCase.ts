@@ -34,6 +34,7 @@ export class UpdateSellerProfileUseCase {
 			profileFound.id,
 			paramUserId,
 			updateDto,
+			profileFound.status,
 		);
 		return this.sellerRepository.updateSellerByUserId(paramUserId, toUpdate);
 	}

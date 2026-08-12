@@ -1,5 +1,6 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PersonType } from '../../../domain/enums/PersonType';
+import { SellerStatus } from '../../../domain/enums/SellerStatus';
 
 export class SellerProfileResponse {
 	@ApiProperty({
@@ -50,4 +51,17 @@ export class SellerProfileResponse {
 		example: '+51 984123456',
 	})
 	phoneNumber: string;
+
+	@ApiProperty({
+		description: 'Estado de aprobación del vendedor',
+		enum: SellerStatus,
+		example: SellerStatus.PENDING,
+	})
+	status: SellerStatus;
+
+	@ApiPropertyOptional({
+		description: 'Motivo de rechazo de la solicitud (si aplica)',
+		example: 'Documentación incompleta',
+	})
+	rejectionReason?: string;
 }

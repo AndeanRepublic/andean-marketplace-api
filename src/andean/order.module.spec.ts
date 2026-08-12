@@ -10,6 +10,8 @@ jest.mock('./infra/datastore/email.resend.impl', () => ({
 	ResendEmailRepoImpl: jest.fn().mockImplementation(() => ({
 		sendOrderConfirmation: jest.fn(),
 		sendPasswordReset: jest.fn(),
+		sendBookingConfirmation: jest.fn(),
+		sendSellerApplicationDecision: jest.fn(),
 	})),
 }));
 
@@ -17,6 +19,8 @@ jest.mock('./infra/datastore/email.repo.impl', () => ({
 	SesEmailRepoImpl: jest.fn().mockImplementation(() => ({
 		sendOrderConfirmation: jest.fn(),
 		sendPasswordReset: jest.fn(),
+		sendBookingConfirmation: jest.fn(),
+		sendSellerApplicationDecision: jest.fn(),
 	})),
 }));
 

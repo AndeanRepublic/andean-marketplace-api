@@ -1,4 +1,5 @@
 import { PersonType } from '../enums/PersonType';
+import { SellerStatus } from '../enums/SellerStatus';
 
 export class SellerProfile {
 	constructor(
@@ -10,5 +11,7 @@ export class SellerProfile {
 		public ruc: string,
 		public address: string,
 		public phoneNumber: string,
+		public status: SellerStatus,
+		public rejectionReason?: string,
 	) {}
 }

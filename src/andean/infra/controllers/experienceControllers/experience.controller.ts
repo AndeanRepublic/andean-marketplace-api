@@ -57,7 +57,7 @@ export class ExperienceController {
 	) {}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.ADMIN)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -83,7 +83,7 @@ export class ExperienceController {
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.ADMIN)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Put('/:id')
 	@ApiOperation({
 		summary: 'Actualizar experiencia',
@@ -327,7 +327,7 @@ export class ExperienceController {
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.ADMIN)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Patch('/:id/status')
 	async updateStatus(
 		@Param('id') id: string,
@@ -343,7 +343,7 @@ export class ExperienceController {
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.ADMIN)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Delete('/:id')
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@ApiOperation({

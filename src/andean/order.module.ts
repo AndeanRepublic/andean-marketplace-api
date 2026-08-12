@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigService } from '@nestjs/config';
 import { OrderSchema } from './infra/persistence/order/order.schema';
 import { OrderController } from './infra/controllers/order.controller';
 import { CreateOrderUseCase } from './app/use_cases/orders/CreateOrderUseCase';
@@ -32,12 +31,9 @@ import { SuperfoodStockReducer } from './infra/services/stock/SuperfoodStockRedu
 import { BoxStockReducer } from './infra/services/stock/BoxStockReducer';
 import { StockReducerRegistry } from './infra/services/stock/StockReducerRegistry';
 import { IStockReducerRegistry } from './infra/services/stock/IStockReducerRegistry';
-import { EmailRepository } from './app/datastore/Email.repo';
-import { SesClientService } from './infra/services/email/SesClientService';
-import { SesEmailRepoImpl } from './infra/datastore/email.repo.impl';
-import { ResendClientService } from './infra/services/email/ResendClientService';
-import { ResendEmailRepoImpl } from './infra/datastore/email.resend.impl';
+import { EmailModule } from './email.module';
 import { SendOrderConfirmationUseCase } from './app/use_cases/email/SendOrderConfirmationUseCase';
+import { SendOrderDeliveredUseCase } from './app/use_cases/email/SendOrderDeliveredUseCase';
 import { OrderItemEnricher } from './infra/services/order/OrderItemEnricher';
 import { MediaItemModule } from './mediaItem.module';
 import { OwnerNameResolver } from './infra/services/OwnerNameResolver';
@@ -63,6 +59,7 @@ import { SellerOrderFilterStrategy } from './infra/services/order/SellerOrderFil
 		MediaItemModule,
 		ShopsModule,
 		CommunityModule,
+		EmailModule,
 	],
 	controllers: [OrderController],
 	providers: [
@@ -96,43 +93,15 @@ import { SellerOrderFilterStrategy } from './infra/services/order/SellerOrderFil
 			useExisting: StockReducerRegistry,
 		},
 		ReduceStockFromOrderUseCase,
-		// Email Services
-		SesClientService,
-		ResendClientService,
 		SendOrderConfirmationUseCase,
+		SendOrderDeliveredUseCase,
 		// Order Enrichment
 		OrderItemEnricher,
 		OwnerNameResolver,
 		// Order Filter Strategies
 		AdminOrderFilterStrategy,
 		SellerOrderFilterStrategy,
-		{
-			provide: EmailRepository,
-			useFactory: (
-				configService: ConfigService,
-				resendClient: ResendClientService,
-				sesClient: SesClientService,
-			): EmailRepository => {
-				const provider = configService.get<string>('EMAIL_PROVIDER') || 'ses';
-				if (provider === 'resend') {
-					const apiKey = configService.get<string>('RESEND_API_KEY');
-					if (!apiKey) {
-						throw new Error(
-							'RESEND_API_KEY is required when EMAIL_PROVIDER=resend',
-						);
-					}
-					return new ResendEmailRepoImpl(resendClient);
-				}
-				if (provider !== 'ses') {
-					throw new Error(
-						`Invalid EMAIL_PROVIDER: '${provider}'. Valid values: 'resend' | 'ses'`,
-					);
-				}
-				return new SesEmailRepoImpl(sesClient);
-			},
-			inject: [ConfigService, ResendClientService, SesClientService],
-		},
 	],
-	exports: [OrderRepository, EmailRepository],
+	exports: [OrderRepository, EmailModule],
 })
 export class OrdersModule {}

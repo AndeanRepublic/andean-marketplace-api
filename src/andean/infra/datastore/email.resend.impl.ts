@@ -3,13 +3,18 @@ import React from 'react';
 import {
 	EmailRepository,
 	SendOrderConfirmationPayload,
+	SendOrderDeliveredPayload,
 	SendPasswordResetPayload,
 	SendBookingConfirmationPayload,
+	SendSellerApplicationDecisionPayload,
 } from '../../app/datastore/Email.repo';
 import { ResendClientService } from '../services/email/ResendClientService';
 import { OrderConfirmationTemplate } from '../services/email/templates/OrderConfirmationTemplate';
+import { OrderDeliveredTemplate } from '../services/email/templates/OrderDeliveredTemplate';
 import { PasswordResetCodeTemplate } from '../services/email/templates/PasswordResetCodeTemplate';
 import { BookingConfirmationTemplate } from '../services/email/templates/BookingConfirmationTemplate';
+import { SellerApplicationDecisionTemplate } from '../services/email/templates/SellerApplicationDecisionTemplate';
+import { assertEmailSenderConfigured } from '../services/email/assertEmailSenderConfigured';
 
 @Injectable()
 export class ResendEmailRepoImpl extends EmailRepository {
@@ -101,6 +106,42 @@ export class ResendEmailRepoImpl extends EmailRepository {
 		}
 	}
 
+	async sendOrderDelivered(
+		payload: SendOrderDeliveredPayload,
+	): Promise<void> {
+		const { to, data } = payload;
+
+		const senderEmail = this.resendClientService.getSenderEmail();
+		const senderName = this.resendClientService.getSenderName();
+		const ccEmails = this.getAdminCcEmails();
+
+		try {
+			const { error } = await this.resendClientService.getClient().emails.send({
+				from: `${senderName} <${senderEmail}>`,
+				to,
+				cc: ccEmails,
+				subject: `Order Delivered #${data.orderNumber}`,
+				react: React.createElement(OrderDeliveredTemplate, { data }),
+			});
+
+			if (error) {
+				this.logger.error(
+					`[provider=resend] Failed to send order delivered email to ${to}: ${error.message}`,
+				);
+				throw new Error(`Resend error: ${error.message}`);
+			}
+
+			this.logger.log(
+				`[provider=resend] Order delivered email sent to ${to} for order #${data.orderNumber}`,
+			);
+		} catch (error) {
+			this.logger.error(
+				`Error sending order delivered email to ${to}: ${error.message}`,
+			);
+			throw error;
+		}
+	}
+
 	async sendBookingConfirmation(
 		payload: SendBookingConfirmationPayload,
 	): Promise<void> {
@@ -134,6 +175,44 @@ export class ResendEmailRepoImpl extends EmailRepository {
 		} catch (error) {
 			this.logger.error(
 				`Error sending booking confirmation to ${to}: ${error.message}`,
+			);
+			throw error;
+		}
+	}
+
+	async sendSellerApplicationDecision(
+		payload: SendSellerApplicationDecisionPayload,
+	): Promise<void> {
+		const { to, data } = payload;
+		const senderEmail = this.resendClientService.getSenderEmail();
+		assertEmailSenderConfigured(senderEmail, 'resend');
+		const senderName = this.resendClientService.getSenderName();
+		const subject =
+			data.decision === 'APPROVED'
+				? 'Tu solicitud de vendedor fue aprobada — Andean Republic'
+				: 'Actualización de tu solicitud de vendedor — Andean Republic';
+
+		try {
+			const { error } = await this.resendClientService.getClient().emails.send({
+				from: `${senderName} <${senderEmail}>`,
+				to,
+				subject,
+				react: React.createElement(SellerApplicationDecisionTemplate, { data }),
+			});
+
+			if (error) {
+				this.logger.error(
+					`[provider=resend] Failed to send seller application decision email to ${to}: ${error.message}`,
+				);
+				throw new Error(`Resend error: ${error.message}`);
+			}
+
+			this.logger.log(
+				`[provider=resend] Seller application ${data.decision} email sent to ${to}`,
+			);
+		} catch (error) {
+			this.logger.error(
+				`Error sending seller application decision to ${to}: ${error.message}`,
 			);
 			throw error;
 		}

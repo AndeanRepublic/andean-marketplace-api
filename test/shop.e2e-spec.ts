@@ -23,7 +23,10 @@ import { DeleteShopUseCase } from '../src/andean/app/use_cases/shop/DeleteShopUs
 import { UpdateShopUseCase } from '../src/andean/app/use_cases/shop/UpdateShopUseCase';
 import { ListAllShopsUseCase } from '../src/andean/app/use_cases/shop/ListAllShopsUseCase';
 import { UpdateShopStatusUseCase } from '../src/andean/app/use_cases/shop/UpdateShopStatusUseCase';
+import { CreateSellerApplicationUseCase } from '../src/andean/app/use_cases/shop/CreateSellerApplicationUseCase';
+import { UpdateShopVisibilityUseCase } from '../src/andean/app/use_cases/shop/UpdateShopVisibilityUseCase';
 import { MediaUrlResolver } from '../src/andean/infra/services/media/MediaUrlResolver';
+import { ShopStatus } from '../src/andean/domain/enums/ShopStatus';
 
 describe('ShopController (e2e) — ownership', () => {
 	const mockShopId = 'shop-uuid-001';
@@ -34,6 +37,7 @@ describe('ShopController (e2e) — ownership', () => {
 		name: 'Tienda Andina',
 		description: 'Tienda de productos andinos',
 		categories: ['UNKNOWN'],
+		status: ShopStatus.ACTIVE,
 	};
 
 	// ─── Helper to build app with a given auth user ──────────────────
@@ -73,6 +77,14 @@ describe('ShopController (e2e) — ownership', () => {
 				},
 				{
 					provide: UpdateShopStatusUseCase,
+					useValue: { handle: jest.fn().mockResolvedValue(mockShop) },
+				},
+				{
+					provide: CreateSellerApplicationUseCase,
+					useValue: { handle: jest.fn() },
+				},
+				{
+					provide: UpdateShopVisibilityUseCase,
 					useValue: { handle: jest.fn().mockResolvedValue(mockShop) },
 				},
 				{

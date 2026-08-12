@@ -61,7 +61,7 @@ export class SuperfoodController {
 	) {}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.ADMIN)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -271,7 +271,7 @@ export class SuperfoodController {
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.ADMIN)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Put('/:productId')
 	@ApiOperation({
 		summary: 'Actualizar producto superfood',
@@ -311,7 +311,7 @@ export class SuperfoodController {
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.ADMIN)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Patch('/:productId/status')
 	async updateSuperfoodStatus(
 		@Param('productId') productId: string,
@@ -327,7 +327,7 @@ export class SuperfoodController {
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.ADMIN)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Delete('/:productId')
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@ApiOperation({
