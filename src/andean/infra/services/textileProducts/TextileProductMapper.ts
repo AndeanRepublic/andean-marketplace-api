@@ -148,7 +148,7 @@ export class TextileProductMapper {
 		const plain = {
 			id: new Types.ObjectId().toString(),
 			...textileProductData,
-			status: TextileProductStatus.HIDDEN,
+			status: dto.status,
 			baseInfo,
 			priceInventary,
 			atribute,
