@@ -1,31 +1,32 @@
 import {
-	IsNotEmpty,
-	IsString,
 	IsArray,
 	ValidateNested,
-	IsUrl,
+	IsBoolean,
+	IsOptional,
 } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { TraceabilityEpochDto } from './TraceabilityEpochDto';
 
 export class CreateProductTraceabilityDto {
 	@ApiProperty({
-		description: 'Enlace a la blockchain para verificación',
-		example: 'https://etherscan.io/tx/0x1234567890abcdef',
+		description:
+			'Indica si las variantes están registradas en Identi (códigos como SKU)',
+		example: false,
+		default: false,
 	})
-	@IsString()
-	@IsNotEmpty()
-	@IsUrl()
-	blockchainLink: string;
+	@IsBoolean()
+	blockchainActive: boolean;
 
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'Lista de épocas/etapas del proceso de producción',
 		type: [TraceabilityEpochDto],
 		isArray: true,
+		default: [],
 	})
 	@IsArray()
 	@ValidateNested({ each: true })
 	@Type(() => TraceabilityEpochDto)
-	epochs: TraceabilityEpochDto[];
+	@IsOptional()
+	epochs?: TraceabilityEpochDto[];
 }

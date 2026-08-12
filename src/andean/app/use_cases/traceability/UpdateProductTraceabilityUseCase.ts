@@ -32,7 +32,9 @@ export class UpdateProductTraceabilityUseCase {
 		// Preparar datos de actualización
 		const updateData: Partial<ProductTraceability> = {};
 
-		if (dto.blockchainLink) updateData.blockchainLink = dto.blockchainLink;
+		if (dto.blockchainActive !== undefined) {
+			updateData.blockchainActive = Boolean(dto.blockchainActive);
+		}
 		if (dto.epochs) {
 			updateData.epochs = dto.epochs.map(
 				(epoch) =>

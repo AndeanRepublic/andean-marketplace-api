@@ -159,8 +159,8 @@ const SuperfoodEpochSchema = new Schema(
 
 const SuperfoodProductTraceabilitySchema = new Schema(
 	{
-		blockchainLink: { type: String, required: true },
-		epochs: { type: [SuperfoodEpochSchema], required: true },
+		blockchainActive: { type: Boolean, default: false, required: true },
+		epochs: { type: [SuperfoodEpochSchema], default: [] },
 	},
 	{ _id: false },
 );

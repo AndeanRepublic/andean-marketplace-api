@@ -34,7 +34,7 @@ export class CreateProductTraceabilityUseCase {
 
 		const traceability = new ProductTraceability(
 			crypto.randomUUID(),
-			dto.blockchainLink,
+			Boolean(dto.blockchainActive),
 			epochs,
 		);
 

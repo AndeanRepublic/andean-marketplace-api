@@ -165,7 +165,7 @@ const TextileTraceabilityEpochSchema = new Schema(
 
 const ProductTraceabilitySchema = new Schema(
 	{
-		blockchainLink: { type: String, required: true },
+		blockchainActive: { type: Boolean, default: false, required: true },
 		epochs: { type: [TextileTraceabilityEpochSchema], default: [] },
 	},
 	{ _id: false },
