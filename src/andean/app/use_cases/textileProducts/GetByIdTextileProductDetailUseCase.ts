@@ -133,9 +133,11 @@ export class GetByIdTextileProductDetailUseCase {
 			);
 
 		// -- Agrupar traceability epochs y flag Identi
-		const groupedEpochs = this.groupTraceabilityEpochs(
-			product.productTraceability?.epochs || [],
-		);
+		const epochs = product.productTraceability?.epochs || [];
+		const groupedEpochs = this.groupTraceabilityEpochs(epochs);
+		const hasTraceabilityEpochs =
+			Boolean(product.productTraceability?.hasTraceabilityEpochs) ||
+			epochs.length > 0;
 		const traceabilityInfo: TraceabilityInfoResponse = {
 			origen: groupedEpochs.origen as TraceabilityInfoResponse['origen'],
 			processing:
@@ -147,6 +149,7 @@ export class GetByIdTextileProductDetailUseCase {
 			blockchainActive: Boolean(
 				product.productTraceability?.blockchainActive,
 			),
+			hasTraceabilityEpochs,
 		};
 
 		// -- Obtener productos similares

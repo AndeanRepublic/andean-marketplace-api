@@ -55,6 +55,13 @@ export class ProductTraceabilityResponse {
 	blockchainActive: boolean;
 
 	@ApiProperty({
+		description:
+			'Indica si el producto incluye información de etapas de producción (epochs)',
+		example: false,
+	})
+	hasTraceabilityEpochs: boolean;
+
+	@ApiProperty({
 		description: 'Épocas/etapas del proceso',
 		type: [TraceabilityEpochResponse],
 	})

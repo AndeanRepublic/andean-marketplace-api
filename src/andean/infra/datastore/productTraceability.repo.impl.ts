@@ -21,6 +21,7 @@ export class ProductTraceabilityRepositoryImpl extends ProductTraceabilityReposi
 		const document = {
 			id: traceability.id,
 			blockchainActive: Boolean(traceability.blockchainActive),
+			hasTraceabilityEpochs: Boolean(traceability.hasTraceabilityEpochs),
 			epochs: traceability.epochs.map((epoch) => ({
 				title: epoch.title,
 				country: epoch.country,
@@ -52,6 +53,11 @@ export class ProductTraceabilityRepositoryImpl extends ProductTraceabilityReposi
 
 		if (traceability.blockchainActive !== undefined) {
 			updateData.blockchainActive = Boolean(traceability.blockchainActive);
+		}
+		if (traceability.hasTraceabilityEpochs !== undefined) {
+			updateData.hasTraceabilityEpochs = Boolean(
+				traceability.hasTraceabilityEpochs,
+			);
 		}
 		if (traceability.epochs !== undefined) {
 			updateData.epochs = traceability.epochs.map((epoch) => ({

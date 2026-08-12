@@ -5,5 +5,6 @@ export class ProductTraceability {
 		public id: string,
 		public blockchainActive: boolean,
 		public epochs: TraceabilityEpoch[],
+		public hasTraceabilityEpochs: boolean = false,
 	) {}
 }

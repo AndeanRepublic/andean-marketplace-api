@@ -19,6 +19,16 @@ export class CreateProductTraceabilityDto {
 	blockchainActive: boolean;
 
 	@ApiPropertyOptional({
+		description:
+			'Indica si el producto incluye información de etapas de producción (epochs)',
+		example: false,
+		default: false,
+	})
+	@IsBoolean()
+	@IsOptional()
+	hasTraceabilityEpochs?: boolean;
+
+	@ApiPropertyOptional({
 		description: 'Lista de épocas/etapas del proceso de producción',
 		type: [TraceabilityEpochDto],
 		isArray: true,

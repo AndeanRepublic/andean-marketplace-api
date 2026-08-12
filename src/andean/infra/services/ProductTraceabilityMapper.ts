@@ -18,27 +18,33 @@ export class ProductTraceabilityMapper {
 				),
 		);
 
+		const hasTraceabilityEpochs =
+			Boolean(doc.hasTraceabilityEpochs) || epochs.length > 0;
+
 		return new ProductTraceability(
 			doc.id,
 			Boolean(doc.blockchainActive),
 			epochs,
+			hasTraceabilityEpochs,
 		);
 	}
 
 	static toDocument(
 		dto: CreateProductTraceabilityDto,
 	): Partial<ProductTraceabilityDocument> {
+		const epochs = (dto.epochs ?? []).map((epoch) => ({
+			title: epoch.title,
+			country: epoch.country,
+			city: epoch.city,
+			description: epoch.description,
+			processName: epoch.processName,
+			supplier: epoch.supplier,
+		}));
 		return {
 			id: crypto.randomUUID(),
 			blockchainActive: Boolean(dto.blockchainActive),
-			epochs: (dto.epochs ?? []).map((epoch) => ({
-				title: epoch.title,
-				country: epoch.country,
-				city: epoch.city,
-				description: epoch.description,
-				processName: epoch.processName,
-				supplier: epoch.supplier,
-			})),
+			hasTraceabilityEpochs: Boolean(dto.hasTraceabilityEpochs),
+			epochs,
 		};
 	}
 }

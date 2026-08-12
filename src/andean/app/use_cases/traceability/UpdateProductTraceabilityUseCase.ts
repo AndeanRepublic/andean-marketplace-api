@@ -35,6 +35,9 @@ export class UpdateProductTraceabilityUseCase {
 		if (dto.blockchainActive !== undefined) {
 			updateData.blockchainActive = Boolean(dto.blockchainActive);
 		}
+		if (dto.hasTraceabilityEpochs !== undefined) {
+			updateData.hasTraceabilityEpochs = Boolean(dto.hasTraceabilityEpochs);
+		}
 		if (dto.epochs) {
 			updateData.epochs = dto.epochs.map(
 				(epoch) =>

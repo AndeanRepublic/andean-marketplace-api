@@ -102,6 +102,13 @@ export class TraceabilityInfoResponse {
 	})
 	blockchainActive?: boolean;
 
+	@ApiPropertyOptional({
+		description:
+			'Indica si el producto incluye etapas de producción visibles en la ficha',
+		example: false,
+	})
+	hasTraceabilityEpochs?: boolean;
+
 	@ApiProperty({
 		type: [TraceabilityStep],
 		description: 'Pasos de origen del producto',
