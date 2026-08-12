@@ -41,6 +41,11 @@ export class HeroDetailResponse {
 	@ApiProperty() basePrice!: number;
 	@ApiProperty() totalStock!: number;
 	@ApiProperty() isDiscountActive!: boolean;
+	@ApiPropertyOptional({
+		description: 'SKU del inventario (código Identi cuando blockchainActive)',
+		example: 'SF-QUI-001',
+	})
+	sku?: string;
 }
 
 // ── Benefit ──────────────────────────────────────────────────────────────

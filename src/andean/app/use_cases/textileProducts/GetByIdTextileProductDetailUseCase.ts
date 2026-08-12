@@ -132,7 +132,7 @@ export class GetByIdTextileProductDetailUseCase {
 				variants,
 			);
 
-		// -- Agrupar traceability epochs y agregar blockchainLink
+		// -- Agrupar traceability epochs y flag Identi
 		const groupedEpochs = this.groupTraceabilityEpochs(
 			product.productTraceability?.epochs || [],
 		);
@@ -144,9 +144,9 @@ export class GetByIdTextileProductDetailUseCase {
 				groupedEpochs.development as TraceabilityInfoResponse['development'],
 			merchandising:
 				groupedEpochs.merchandising as TraceabilityInfoResponse['merchandising'],
-			...(product.productTraceability?.blockchainLink && {
-				blockchainLink: product.productTraceability.blockchainLink,
-			}),
+			blockchainActive: Boolean(
+				product.productTraceability?.blockchainActive,
+			),
 		};
 
 		// -- Obtener productos similares

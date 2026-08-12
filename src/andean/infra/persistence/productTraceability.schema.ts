@@ -19,13 +19,13 @@ const TraceabilityEpochSchema = new Schema(
 
 export const ProductTraceabilitySchema = new Schema({
 	id: { type: String, required: true, unique: true },
-	blockchainLink: { type: String, required: true },
+	blockchainActive: { type: Boolean, default: false, required: true },
 	epochs: { type: [TraceabilityEpochSchema], default: [] },
 });
 
 export interface ProductTraceabilityDocument extends Document {
 	id: string;
-	blockchainLink: string;
+	blockchainActive: boolean;
 	epochs: {
 		title: string;
 		country: string;

@@ -20,7 +20,7 @@ export class ProductTraceabilityRepositoryImpl extends ProductTraceabilityReposi
 	): Promise<ProductTraceability> {
 		const document = {
 			id: traceability.id,
-			blockchainLink: traceability.blockchainLink,
+			blockchainActive: Boolean(traceability.blockchainActive),
 			epochs: traceability.epochs.map((epoch) => ({
 				title: epoch.title,
 				country: epoch.country,
@@ -50,8 +50,8 @@ export class ProductTraceabilityRepositoryImpl extends ProductTraceabilityReposi
 	): Promise<ProductTraceability | null> {
 		const updateData: any = {};
 
-		if (traceability.blockchainLink !== undefined) {
-			updateData.blockchainLink = traceability.blockchainLink;
+		if (traceability.blockchainActive !== undefined) {
+			updateData.blockchainActive = Boolean(traceability.blockchainActive);
 		}
 		if (traceability.epochs !== undefined) {
 			updateData.epochs = traceability.epochs.map((epoch) => ({

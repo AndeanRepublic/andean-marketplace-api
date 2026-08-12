@@ -95,8 +95,12 @@ export class TraceabilityStep {
 }
 
 export class TraceabilityInfoResponse {
-	@ApiPropertyOptional({ description: 'Enlace a blockchain para trazabilidad' })
-	blockchainLink?: string;
+	@ApiPropertyOptional({
+		description:
+			'Indica si Verify on Blockchain (Identi) está activo para este producto',
+		example: false,
+	})
+	blockchainActive?: boolean;
 
 	@ApiProperty({
 		type: [TraceabilityStep],

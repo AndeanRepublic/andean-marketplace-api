@@ -29,6 +29,7 @@ describe('GetByIdSuperfoodProductDetailUseCase - userVote mapping', () => {
 			{} as any, // communityRepository
 			{} as any, // mediaItemRepository
 			{} as any, // detailSourceProductRepository
+			{ getByProductId: jest.fn().mockResolvedValue([]) } as any, // variantRepository
 			{} as any, // mediaUrlResolver
 			{} as any, // ownerInfoResolver
 			{} as any, // superfoodProductListColorResolver

@@ -9,6 +9,7 @@ import { ShopRepository } from '../../datastore/shop/Shop.repo';
 import { CommunityRepository } from '../../datastore/community/community.repo';
 import { MediaItemRepository } from '../../datastore/MediaItem.repo';
 import { DetailSourceProductRepository } from '../../datastore/DetailSourceProduct.repo';
+import { VariantRepository } from '../../datastore/Variant.repo';
 import { ProductType } from '../../../domain/enums/ProductType';
 import { collectSuperfoodProductMediaIds } from '../../../domain/superfoods/collectSuperfoodProductMediaIds';
 import { Review } from '../../../domain/entities/Review';
@@ -52,6 +53,8 @@ export class GetByIdSuperfoodProductDetailUseCase {
 		private readonly mediaItemRepository: MediaItemRepository,
 		@Inject(DetailSourceProductRepository)
 		private readonly detailSourceProductRepository: DetailSourceProductRepository,
+		@Inject(VariantRepository)
+		private readonly variantRepository: VariantRepository,
 		private readonly mediaUrlResolver: MediaUrlResolver,
 		private readonly ownerInfoResolver: OwnerInfoResolver,
 		private readonly superfoodProductListColorResolver: SuperfoodProductListColorResolver,
@@ -73,8 +76,14 @@ export class GetByIdSuperfoodProductDetailUseCase {
 		}
 
 		// 2. Lanzar consultas independientes en paralelo para mejor rendimiento
-		const [mediaItems, reviews, nutritionalFeatures, benefits, sourceProduct] =
-			await Promise.all([
+		const [
+			mediaItems,
+			reviews,
+			nutritionalFeatures,
+			benefits,
+			sourceProduct,
+			variants,
+		] = await Promise.all([
 				this.mediaItemRepository.getByIds(
 					collectSuperfoodProductMediaIds(product.baseInfo.productMedia),
 				),
@@ -93,6 +102,7 @@ export class GetByIdSuperfoodProductDetailUseCase {
 							product.detailSourceProductId,
 						)
 					: Promise.resolve(null),
+				this.variantRepository.getByProductId(productId),
 			]);
 
 		// 3. Resolver imágenes por IDs en productMedia
@@ -193,6 +203,14 @@ export class GetByIdSuperfoodProductDetailUseCase {
 				basePrice: product.priceInventory.basePrice,
 				totalStock: product.priceInventory.totalStock,
 				isDiscountActive: product.isDiscountActive,
+				...(() => {
+					const fromVariant = variants
+						.map((v) => v.sku?.trim())
+						.find((s): s is string => Boolean(s));
+					const fromInventory = product.priceInventory.SKU?.trim();
+					const sku = fromVariant || fromInventory;
+					return sku ? { sku } : {};
+				})(),
 			},
 			...(ownerInfo && { ownerInfo }),
 			benefitsInfo,

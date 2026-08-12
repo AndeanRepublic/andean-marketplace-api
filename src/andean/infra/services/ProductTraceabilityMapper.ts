@@ -6,7 +6,7 @@ import * as crypto from 'crypto';
 
 export class ProductTraceabilityMapper {
 	static fromDocument(doc: ProductTraceabilityDocument): ProductTraceability {
-		const epochs = doc.epochs.map(
+		const epochs = (doc.epochs ?? []).map(
 			(epoch) =>
 				new TraceabilityEpoch(
 					epoch.title,
@@ -18,7 +18,11 @@ export class ProductTraceabilityMapper {
 				),
 		);
 
-		return new ProductTraceability(doc.id, doc.blockchainLink, epochs);
+		return new ProductTraceability(
+			doc.id,
+			Boolean(doc.blockchainActive),
+			epochs,
+		);
 	}
 
 	static toDocument(
@@ -26,8 +30,8 @@ export class ProductTraceabilityMapper {
 	): Partial<ProductTraceabilityDocument> {
 		return {
 			id: crypto.randomUUID(),
-			blockchainLink: dto.blockchainLink,
-			epochs: dto.epochs.map((epoch) => ({
+			blockchainActive: Boolean(dto.blockchainActive),
+			epochs: (dto.epochs ?? []).map((epoch) => ({
 				title: epoch.title,
 				country: epoch.country,
 				city: epoch.city,

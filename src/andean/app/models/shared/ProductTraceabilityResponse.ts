@@ -48,10 +48,11 @@ export class ProductTraceabilityResponse {
 	id: string;
 
 	@ApiProperty({
-		description: 'Enlace a blockchain',
-		example: 'https://etherscan.io/tx/0x1234567890abcdef',
+		description:
+			'Indica si las variantes están registradas en Identi (códigos como SKU)',
+		example: false,
 	})
-	blockchainLink: string;
+	blockchainActive: boolean;
 
 	@ApiProperty({
 		description: 'Épocas/etapas del proceso',

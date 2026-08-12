@@ -109,7 +109,7 @@ export class ProductTraceabilityController {
 	// ): ProductTraceabilityResponse {
 	// 	return {
 	// 		id: traceability.id,
-	// 		blockchainLink: traceability.blockchainLink,
+	// 		blockchainActive: traceability.blockchainActive,
 	// 		epochs: traceability.epochs.map((epoch) => ({
 	// 			title: epoch.title,
 	// 			country: epoch.country,
