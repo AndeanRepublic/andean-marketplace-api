@@ -86,6 +86,7 @@ describe('CreateSellerApplicationUseCase', () => {
 			password: 'hash',
 			status: AccountStatus.ENABLED,
 			roles: [AccountRole.USER, AccountRole.SELLER],
+			passwordVersion: 1,
 		});
 
 		await expect(useCase.handle(userId, applicationDto)).rejects.toThrow(
@@ -105,6 +106,7 @@ describe('CreateSellerApplicationUseCase', () => {
 			password: 'hash',
 			status: AccountStatus.ENABLED,
 			roles: [AccountRole.USER],
+			passwordVersion: 1,
 		});
 		sellerRepository.getSellerByUserId.mockResolvedValue({
 			id: sellerProfileId,
@@ -131,6 +133,7 @@ describe('CreateSellerApplicationUseCase', () => {
 			password: 'hash',
 			status: AccountStatus.ENABLED,
 			roles: [AccountRole.USER],
+			passwordVersion: 1,
 		});
 		sellerRepository.getSellerByUserId.mockResolvedValue({
 			id: sellerProfileId,
