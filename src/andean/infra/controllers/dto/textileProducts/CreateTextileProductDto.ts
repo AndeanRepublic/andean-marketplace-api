@@ -24,6 +24,7 @@ import { ShippingMethod } from 'src/andean/domain/enums/ShippingMethod';
 import { ShippingRegion } from 'src/andean/domain/enums/ShippingRegion';
 import { ToolUsed } from 'src/andean/domain/enums/ToolUsed';
 import { TextileOptionName } from 'src/andean/domain/enums/TextileOptionName';
+import { TextileProductStatus } from 'src/andean/domain/enums/TextileProductStatus';
 import { CreateProductTraceabilityDto } from '../traceability/CreateProductTraceabilityDto';
 
 export class PreparationTimeDto {
@@ -510,6 +511,15 @@ export class DetailTraceabilityDto {
 }
 
 export class CreateTextileProductDto {
+	@ApiProperty({
+		description: 'Estado del producto: PUBLISHED u HIDDEN',
+		enum: TextileProductStatus,
+		example: TextileProductStatus.PUBLISHED,
+	})
+	@IsEnum(TextileProductStatus)
+	@IsNotEmpty()
+	status!: TextileProductStatus;
+
 	@ApiProperty({
 		description:
 			'Información básica del producto (título, descripción, media, propietario)',

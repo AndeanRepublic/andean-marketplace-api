@@ -102,6 +102,13 @@ export class TraceabilityInfoResponse {
 	})
 	blockchainActive?: boolean;
 
+	@ApiPropertyOptional({
+		description:
+			'Indica si el producto incluye etapas de producción visibles en la ficha',
+		example: false,
+	})
+	hasTraceabilityEpochs?: boolean;
+
 	@ApiProperty({
 		type: [TraceabilityStep],
 		description: 'Pasos de origen del producto',
@@ -321,6 +328,13 @@ export class TextileProductDetailResponse {
 		example: 89.99,
 	})
 	basePrice!: number;
+
+	@ApiProperty({
+		description:
+			'Indica si el producto participa en el juego de descuento (Play and get a discount)',
+		example: false,
+	})
+	isDiscountActive!: boolean;
 
 	@ApiProperty({ description: 'Información del producto' })
 	information!: string;

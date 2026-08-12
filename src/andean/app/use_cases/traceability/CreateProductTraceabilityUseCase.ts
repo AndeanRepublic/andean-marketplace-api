@@ -36,6 +36,7 @@ export class CreateProductTraceabilityUseCase {
 			crypto.randomUUID(),
 			Boolean(dto.blockchainActive),
 			epochs,
+			Boolean(dto.hasTraceabilityEpochs),
 		);
 
 		// Persistir
