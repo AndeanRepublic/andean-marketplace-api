@@ -329,6 +329,13 @@ export class TextileProductDetailResponse {
 	})
 	basePrice!: number;
 
+	@ApiProperty({
+		description:
+			'Indica si el producto participa en el juego de descuento (Play and get a discount)',
+		example: false,
+	})
+	isDiscountActive!: boolean;
+
 	@ApiProperty({ description: 'Información del producto' })
 	information!: string;
 

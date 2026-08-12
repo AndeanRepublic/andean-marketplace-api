@@ -66,9 +66,10 @@ describe('GetByIdTextileProductDetailUseCase - userVote mapping', () => {
 			(useCase as any).textileProductRepository = {
 				getTextileProductById: jest.fn().mockResolvedValue({
 					id: 'product-1',
+					status: 'PUBLISHED',
 					baseInfo: { mediaIds: [], information: '', description: '' },
 					priceInventary: { totalStock: 100, basePrice: 50 },
-					discountInfo: { isDiscountActive: false },
+					isDiscountActive: false,
 				}),
 				getAllTextileProducts: jest.fn().mockResolvedValue([]),
 			};
@@ -100,9 +101,10 @@ describe('GetByIdTextileProductDetailUseCase - userVote mapping', () => {
 			(useCase as any).textileProductRepository = {
 				getTextileProductById: jest.fn().mockResolvedValue({
 					id: 'product-1',
+					status: 'PUBLISHED',
 					baseInfo: { mediaIds: [], information: '', description: '' },
 					priceInventary: { totalStock: 100, basePrice: 50 },
-					discountInfo: { isDiscountActive: false },
+					isDiscountActive: false,
 				}),
 				getAllTextileProducts: jest.fn().mockResolvedValue([]),
 			};
@@ -134,9 +136,10 @@ describe('GetByIdTextileProductDetailUseCase - userVote mapping', () => {
 			(useCase as any).textileProductRepository = {
 				getTextileProductById: jest.fn().mockResolvedValue({
 					id: 'product-1',
+					status: 'PUBLISHED',
 					baseInfo: { mediaIds: [], information: '', description: '' },
 					priceInventary: { totalStock: 100, basePrice: 50 },
-					discountInfo: { isDiscountActive: false },
+					isDiscountActive: false,
 				}),
 				getAllTextileProducts: jest.fn().mockResolvedValue([]),
 			};
@@ -168,9 +171,10 @@ describe('GetByIdTextileProductDetailUseCase - userVote mapping', () => {
 			(useCase as any).textileProductRepository = {
 				getTextileProductById: jest.fn().mockResolvedValue({
 					id: 'product-1',
+					status: 'PUBLISHED',
 					baseInfo: { mediaIds: [], information: '', description: '' },
 					priceInventary: { totalStock: 100, basePrice: 50 },
-					discountInfo: { isDiscountActive: false },
+					isDiscountActive: false,
 				}),
 				getAllTextileProducts: jest.fn().mockResolvedValue([]),
 			};

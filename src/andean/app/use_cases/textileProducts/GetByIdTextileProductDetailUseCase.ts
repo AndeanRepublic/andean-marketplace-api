@@ -181,6 +181,7 @@ export class GetByIdTextileProductDetailUseCase {
 			variantInfo,
 			generalStock: product.priceInventary.totalStock,
 			basePrice: product.priceInventary.basePrice,
+			isDiscountActive: Boolean(product.isDiscountActive),
 			information: product.baseInfo.information || '',
 			description: product.baseInfo.description,
 			traceabilityInfo,
