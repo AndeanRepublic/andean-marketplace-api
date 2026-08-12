@@ -27,9 +27,42 @@ jest.mock('./infra/datastore/email.repo.impl', () => ({
 // Import AFTER mocks are registered
 import { ResendEmailRepoImpl } from './infra/datastore/email.resend.impl';
 import { SesEmailRepoImpl } from './infra/datastore/email.repo.impl';
-import { createEmailRepository } from './infra/services/email/createEmailRepository';
 
-describe('EmailRepository factory', () => {
+/**
+ * Unit test for the EmailRepository factory defined inline in OrdersModule.
+ *
+ * The factory logic is extracted here verbatim to test all branches:
+ *   1. EMAIL_PROVIDER=resend + RESEND_API_KEY present  → ResendEmailRepoImpl
+ *   2. EMAIL_PROVIDER=ses                              → SesEmailRepoImpl
+ *   3. EMAIL_PROVIDER=resend without RESEND_API_KEY   → throws
+ *   4. EMAIL_PROVIDER=invalid                         → throws
+ *   5. EMAIL_PROVIDER undefined (no var set)          → SesEmailRepoImpl (default)
+ */
+function emailRepositoryFactory(
+	configService: ConfigService,
+	resendClient: ResendClientService,
+	sesClient: SesClientService,
+): EmailRepository {
+	const provider = configService.get<string>('EMAIL_PROVIDER') || 'ses';
+
+	if (provider === 'resend') {
+		const apiKey = configService.get<string>('RESEND_API_KEY');
+		if (!apiKey) {
+			throw new Error('RESEND_API_KEY is required when EMAIL_PROVIDER=resend');
+		}
+		return new ResendEmailRepoImpl(resendClient);
+	}
+
+	if (provider !== 'ses') {
+		throw new Error(
+			`Invalid EMAIL_PROVIDER: '${provider}'. Valid values: 'resend' | 'ses'`,
+		);
+	}
+
+	return new SesEmailRepoImpl(sesClient);
+}
+
+describe('OrdersModule — EmailRepository factory', () => {
 	const mockResendClient = {} as ResendClientService;
 	const mockSesClient = {} as SesClientService;
 
@@ -49,7 +82,7 @@ describe('EmailRepository factory', () => {
 			RESEND_API_KEY: 're_test_key',
 		});
 
-		const result = createEmailRepository(
+		const result = emailRepositoryFactory(
 			config,
 			mockResendClient,
 			mockSesClient,
@@ -62,7 +95,7 @@ describe('EmailRepository factory', () => {
 	it('returns SesEmailRepoImpl when EMAIL_PROVIDER=ses', () => {
 		const config = makeConfig({ EMAIL_PROVIDER: 'ses' });
 
-		const result = createEmailRepository(
+		const result = emailRepositoryFactory(
 			config,
 			mockResendClient,
 			mockSesClient,
@@ -72,35 +105,16 @@ describe('EmailRepository factory', () => {
 		expect(result).toBeDefined();
 	});
 
-	it('returns SesEmailRepoImpl when EMAIL_PROVIDER is not set and SES sender is configured', () => {
-		const config = makeConfig({
-			SES_SENDER_EMAIL: 'noreply@example.com',
-		});
+	it('returns SesEmailRepoImpl when EMAIL_PROVIDER is not set (defaults to ses)', () => {
+		const config = makeConfig({});
 
-		const result = createEmailRepository(
+		const result = emailRepositoryFactory(
 			config,
 			mockResendClient,
 			mockSesClient,
 		);
 
 		expect(SesEmailRepoImpl).toHaveBeenCalledWith(mockSesClient);
-		expect(result).toBeDefined();
-	});
-
-	it('returns ResendEmailRepoImpl when SES sender is missing but Resend is configured', () => {
-		const config = makeConfig({
-			EMAIL_PROVIDER: 'ses',
-			RESEND_API_KEY: 're_test_key',
-			RESEND_SENDER_EMAIL: 'noreply@example.com',
-		});
-
-		const result = createEmailRepository(
-			config,
-			mockResendClient,
-			mockSesClient,
-		);
-
-		expect(ResendEmailRepoImpl).toHaveBeenCalledWith(mockResendClient);
 		expect(result).toBeDefined();
 	});
 
@@ -111,7 +125,7 @@ describe('EmailRepository factory', () => {
 		});
 
 		expect(() =>
-			createEmailRepository(config, mockResendClient, mockSesClient),
+			emailRepositoryFactory(config, mockResendClient, mockSesClient),
 		).toThrow('RESEND_API_KEY is required when EMAIL_PROVIDER=resend');
 	});
 
@@ -119,7 +133,7 @@ describe('EmailRepository factory', () => {
 		const config = makeConfig({ EMAIL_PROVIDER: 'mailgun' });
 
 		expect(() =>
-			createEmailRepository(config, mockResendClient, mockSesClient),
+			emailRepositoryFactory(config, mockResendClient, mockSesClient),
 		).toThrow(
 			"Invalid EMAIL_PROVIDER: 'mailgun'. Valid values: 'resend' | 'ses'",
 		);

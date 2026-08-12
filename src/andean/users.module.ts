@@ -11,10 +11,6 @@ import { CreateSellerUseCase } from './app/use_cases/users/CreateSellerUseCase';
 import { SellerProfileSchema } from './infra/persistence/sellerProfileSchema';
 import { SellerProfileRepository } from './app/datastore/Seller.repo';
 import { SellerProfileRepositoryImpl } from './infra/datastore/seller.repo.impl';
-import { AccountSchema } from './infra/persistence/account.schema';
-import { AccountRepository } from './app/datastore/Account.repo';
-import { AccountRepoImpl } from './infra/datastore/account.repo.impl';
-import { HashService } from './infra/services/HashService';
 import { UpdateCustomerProfileUseCase } from './app/use_cases/users/UpdateCustomerProfileUseCase';
 import { UpdateSellerProfileUseCase } from './app/use_cases/users/UpdateSellerProfileUseCase';
 import { GetCustomerProfileUseCase } from './app/use_cases/users/GetCustomerProfileUseCase';
@@ -25,6 +21,10 @@ import { CreateAdminSellerByEmailUseCase } from './app/use_cases/users/CreateAdm
 import { CreateAdminSellerWithAccountUseCase } from './app/use_cases/users/CreateAdminSellerWithAccountUseCase';
 import { MediaItemModule } from './mediaItem.module';
 
+/**
+ * AccountRepository / HashService come from global SharedModule.
+ * Keep admin-seller application use cases exported for AdminModule.
+ */
 @Module({
 	imports: [
 		MongooseModule.forFeature([
@@ -35,10 +35,6 @@ import { MediaItemModule } from './mediaItem.module';
 			{
 				name: 'SellerProfile',
 				schema: SellerProfileSchema,
-			},
-			{
-				name: 'Account',
-				schema: AccountSchema,
 			},
 		]),
 		MediaItemModule,
@@ -57,7 +53,6 @@ import { MediaItemModule } from './mediaItem.module';
 		LookupAccountByEmailUseCase,
 		CreateAdminSellerByEmailUseCase,
 		CreateAdminSellerWithAccountUseCase,
-		HashService,
 		{
 			provide: CustomerProfileRepository,
 			useClass: CustomerProfileRepositoryImpl,
@@ -66,15 +61,10 @@ import { MediaItemModule } from './mediaItem.module';
 			provide: SellerProfileRepository,
 			useClass: SellerProfileRepositoryImpl,
 		},
-		{
-			provide: AccountRepository,
-			useClass: AccountRepoImpl,
-		},
 	],
 	exports: [
 		CustomerProfileRepository,
 		SellerProfileRepository,
-		AccountRepository,
 		CreateSellerUseCase,
 		CreateAdminSellerUseCase,
 		LookupAccountByEmailUseCase,

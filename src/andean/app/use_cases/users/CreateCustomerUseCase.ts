@@ -32,6 +32,7 @@ export class CreateCustomerUseCase {
 			password: userDto.password,
 			status: AccountStatus.ENABLED,
 			roles: [AccountRole.USER],
+			passwordVersion: 1,
 		};
 		const savedAccount =
 			await this.accountRepository.saveAccount(accountToSave);

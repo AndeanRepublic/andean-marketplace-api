@@ -34,6 +34,7 @@ export class AccountRepoImpl extends AccountRepository {
 			password: hashedPassword,
 			type: account.roles,
 			status: account.status,
+			passwordVersion: 1,
 		});
 		const savedAccount = await created.save();
 		return AccountMapper.fromDocument(savedAccount);
@@ -65,7 +66,10 @@ export class AccountRepoImpl extends AccountRepository {
 		hashedPassword: string,
 	): Promise<void> {
 		await this.accountModel
-			.findByIdAndUpdate(accountId, { password: hashedPassword })
+			.findByIdAndUpdate(accountId, {
+				password: hashedPassword,
+				$inc: { passwordVersion: 1 },
+			})
 			.exec();
 	}
 
