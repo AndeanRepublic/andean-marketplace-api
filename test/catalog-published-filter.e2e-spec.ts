@@ -144,6 +144,7 @@ describe('GetBoxDetailUseCase — public catalog', () => {
 			{ getByIds: jest.fn().mockResolvedValue([]) } as never,
 			{ bulkFetchBoxDependencies: jest.fn() } as never,
 			{ resolveDetailed: jest.fn() } as never,
+			{ buildForProducts: jest.fn() } as never,
 		);
 
 		await expect(useCase.handle('box-1')).rejects.toThrow(NotFoundException);
