@@ -31,11 +31,11 @@ export class SuperfoodProductListColor {
  */
 export type SuperfoodProductListAggregateRow = Omit<
 	SuperfoodProductListItem,
-	'mainImage' | 'sourceProductImage' | 'color'
+	'mainImage' | 'productPackageOutImage' | 'color'
 > & {
 	colorId?: string | null;
 	mainImgId?: string | null;
-	sourceProductImgId?: string | null;
+	productPackageOutImgId?: string | null;
 };
 
 export class SuperfoodProductListItem {
@@ -85,10 +85,10 @@ export class SuperfoodProductListItem {
 	mainImage!: MediaInfo;
 
 	@ApiProperty({
-		description: 'Imagen del origen del producto',
+		description: 'Producto saliendo del paquete (hover de card)',
 		type: MediaInfo,
 	})
-	sourceProductImage!: MediaInfo;
+	productPackageOutImage!: MediaInfo;
 
 	@ApiProperty({
 		description: 'Items nutricionales destacados',

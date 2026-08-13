@@ -6,6 +6,7 @@
 			"title": "Quinua Premium",
 			"productMedia": {
 				"mainImgId": "507f1f77bcf86cd799439012",
+				"productPackageOutImgId": "507f1f77bcf86cd799439016",
 				"plateImgId": "507f1f77bcf86cd799439013",
 				"sourceProductImgId": "507f1f77bcf86cd799439014",
 				"closestSourceProductImgId": "507f1f77bcf86cd799439015",
@@ -71,6 +72,7 @@
 			"title": "Quinua Premium",
 			"productMedia": {
 				"mainImgId": "507f1f77bcf86cd799439012",
+				"productPackageOutImgId": "507f1f77bcf86cd799439016",
 				"plateImgId": "507f1f77bcf86cd799439013",
 				"sourceProductImgId": "507f1f77bcf86cd799439014",
 				"closestSourceProductImgId": "507f1f77bcf86cd799439015",
@@ -141,6 +143,7 @@
 			"title": "Quinua Premium Actualizada",
 			"productMedia": {
 				"mainImgId": "507f1f77bcf86cd799439012",
+				"productPackageOutImgId": "507f1f77bcf86cd799439016",
 				"plateImgId": "507f1f77bcf86cd799439013",
 				"sourceProductImgId": "507f1f77bcf86cd799439014",
 				"closestSourceProductImgId": "507f1f77bcf86cd799439015",
@@ -220,7 +223,7 @@
 			"name": "quinua-main.jpg",
 			"url": "https://example.com/quinua-main.jpg"
 		},
-		"sourceProductImage": {
+		"productPackageOutImage": {
 			"name": "quinua-source.jpg",
 			"url": "https://example.com/quinua-source.jpg"
 		},
@@ -246,7 +249,7 @@
 					"name": "quinua-main.jpg",
 					"url": "https://example.com/quinua-main.jpg"
 				},
-				"sourceProductImage": {
+				"productPackageOutImage": {
 					"name": "quinua-source.jpg",
 					"url": "https://example.com/quinua-source.jpg"
 				},

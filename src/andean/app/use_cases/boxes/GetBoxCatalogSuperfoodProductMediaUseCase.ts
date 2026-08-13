@@ -17,6 +17,7 @@ function collectSuperfoodMediaIds(
 		if (t) out.push(t);
 	};
 	add(media.mainImgId);
+	add(media.productPackageOutImgId);
 	add(media.plateImgId);
 	add(media.sourceProductImgId);
 	add(media.closestSourceProductImgId);

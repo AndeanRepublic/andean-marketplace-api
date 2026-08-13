@@ -10,6 +10,9 @@ export class SuperfoodProductMediaResponse {
 	@ApiProperty({ description: 'Imagen del paquete (principal)' })
 	mainImgId!: string;
 
+	@ApiProperty({ description: 'Producto saliendo del paquete (card)' })
+	productPackageOutImgId!: string;
+
 	@ApiPropertyOptional({ description: 'Imagen del plato' })
 	plateImgId?: string;
 

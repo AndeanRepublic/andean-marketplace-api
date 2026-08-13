@@ -11,6 +11,7 @@ export function collectSuperfoodProductMediaIds(
 		if (t) out.push(t);
 	};
 	push(pm.mainImgId);
+	push(pm.productPackageOutImgId);
 	push(pm.plateImgId);
 	push(pm.sourceProductImgId);
 	push(pm.closestSourceProductImgId);

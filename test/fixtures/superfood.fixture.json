@@ -6,6 +6,7 @@
 			"title": "Quinoa Orgánica Premium",
 			"productMedia": {
 				"mainImgId": "media-id-3",
+				"productPackageOutImgId": "media-id-package-out",
 				"otherImagesId": []
 			},
 			"shortDescription": "Quinoa orgánica andina",

@@ -15,6 +15,14 @@ export class CreateSuperfoodProductMediaDto {
 	@IsNotEmpty()
 	mainImgId!: string;
 
+	@ApiProperty({
+		description: 'ID MediaItem — producto saliendo del paquete (card)',
+		example: '507f1f77bcf86cd799439016',
+	})
+	@IsString()
+	@IsNotEmpty()
+	productPackageOutImgId!: string;
+
 	@ApiPropertyOptional({
 		description: 'ID MediaItem — imagen del plato',
 	})

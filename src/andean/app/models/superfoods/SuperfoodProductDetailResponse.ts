@@ -185,6 +185,6 @@ export class SuperfoodProductListItemCompact {
 	@ApiProperty() totalStock!: number;
 	@ApiProperty({ type: MediaImageResponse }) mainImage!: MediaImageResponse;
 	@ApiProperty({ type: MediaImageResponse })
-	sourceProductImage!: MediaImageResponse;
+	productPackageOutImage!: MediaImageResponse;
 	@ApiProperty({ type: [String] }) nutritionItems!: string[];
 }

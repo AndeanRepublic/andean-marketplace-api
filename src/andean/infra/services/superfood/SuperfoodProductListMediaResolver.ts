@@ -8,7 +8,7 @@ import type {
 } from '../../../app/models/superfoods/SuperfoodProductListItem';
 
 /**
- * Resuelve `mainImage` y `sourceProductImage` del listado de superfoods a partir de
+ * Resuelve `mainImage` y `productPackageOutImage` del listado de superfoods a partir de
  * los IDs en `baseInfo.productMedia`, en batch (similar a {@link SuperfoodProductListColorResolver}).
  * Las URLs usan {@link MediaUrlResolver.resolveKey} (mismo criterio que textiles / listados).
  */
@@ -26,7 +26,7 @@ export class SuperfoodProductListMediaResolver {
 		const ids = [
 			...new Set(
 				rows
-					.flatMap((r) => [r.mainImgId, r.sourceProductImgId])
+					.flatMap((r) => [r.mainImgId, r.productPackageOutImgId])
 					.filter(
 						(id): id is string =>
 							typeof id === 'string' && id.trim().length > 0,
@@ -40,15 +40,15 @@ export class SuperfoodProductListMediaResolver {
 			: [];
 		const byId = new Map(items.map((m) => [m.id, m]));
 
-		return rows.map(({ mainImgId, sourceProductImgId, ...rest }) => {
+		return rows.map(({ mainImgId, productPackageOutImgId, ...rest }) => {
 			const mainKey = mainImgId?.trim();
-			const srcKey = sourceProductImgId?.trim();
+			const outKey = productPackageOutImgId?.trim();
 			const main = mainKey ? byId.get(mainKey) : undefined;
-			const src = srcKey ? byId.get(srcKey) : undefined;
+			const packageOut = outKey ? byId.get(outKey) : undefined;
 			return {
 				...rest,
 				mainImage: this.toMediaInfo(main),
-				sourceProductImage: this.toMediaInfo(src),
+				productPackageOutImage: this.toMediaInfo(packageOut),
 			};
 		});
 	}

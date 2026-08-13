@@ -26,6 +26,7 @@ const SuperfoodOptionsSchema = new Schema({
 const SuperfoodProductMediaSchema = new Schema(
 	{
 		mainImgId: { type: String, required: true },
+		productPackageOutImgId: { type: String, required: true },
 		plateImgId: { type: String, required: false },
 		sourceProductImgId: { type: String, required: false },
 		closestSourceProductImgId: { type: String, required: false },
