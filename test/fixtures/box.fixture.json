@@ -105,7 +105,8 @@
 					"ownerId": "community-001",
 					"ownerType": "COMMUNITY",
 					"productMedia": {
-						"mainImgId": "media-sf-thumb-001"
+						"mainImgId": "media-sf-thumb-001",
+						"productPackageOutImgId": "media-sf-out-001"
 					}
 				},
 				"priceInventory": {
@@ -121,7 +122,8 @@
 					"ownerId": "community-002",
 					"ownerType": "COMMUNITY",
 					"productMedia": {
-						"mainImgId": "media-sf-thumb-002"
+						"mainImgId": "media-sf-thumb-002",
+						"productPackageOutImgId": "media-sf-out-002"
 					}
 				},
 				"priceInventory": {

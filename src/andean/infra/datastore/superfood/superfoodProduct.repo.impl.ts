@@ -272,8 +272,8 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 				mainImgId: {
 					$ifNull: ['$baseInfo.productMedia.mainImgId', ''],
 				},
-				sourceProductImgId: {
-					$ifNull: ['$baseInfo.productMedia.sourceProductImgId', ''],
+				productPackageOutImgId: {
+					$ifNull: ['$baseInfo.productMedia.productPackageOutImgId', ''],
 				},
 				nutritionItems: {
 					$map: {

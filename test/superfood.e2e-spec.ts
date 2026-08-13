@@ -529,14 +529,16 @@ describe('SuperfoodController (e2e)', () => {
 			expect(response.body.products[0]).toHaveProperty('price');
 			expect(response.body.products[0]).toHaveProperty('totalStock');
 			expect(response.body.products[0]).toHaveProperty('mainImage');
-			expect(response.body.products[0]).toHaveProperty('sourceProductImage');
+			expect(response.body.products[0]).toHaveProperty(
+				'productPackageOutImage',
+			);
 			expect(response.body.products[0]).toHaveProperty('nutritionItems');
 			expect(response.body.products[0].mainImage).toHaveProperty('name');
 			expect(response.body.products[0].mainImage).toHaveProperty('url');
-			expect(response.body.products[0].sourceProductImage).toHaveProperty(
+			expect(response.body.products[0].productPackageOutImage).toHaveProperty(
 				'name',
 			);
-			expect(response.body.products[0].sourceProductImage).toHaveProperty(
+			expect(response.body.products[0].productPackageOutImage).toHaveProperty(
 				'url',
 			);
 			expect(Array.isArray(response.body.products[0].nutritionItems)).toBe(

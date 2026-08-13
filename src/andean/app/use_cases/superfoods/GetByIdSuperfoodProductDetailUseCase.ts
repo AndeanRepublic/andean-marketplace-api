@@ -363,7 +363,7 @@ export class GetByIdSuperfoodProductDetailUseCase {
 				price: p.price,
 				totalStock: p.totalStock,
 				mainImage: p.mainImage,
-				sourceProductImage: p.sourceProductImage,
+				productPackageOutImage: p.productPackageOutImage,
 				nutritionItems: p.nutritionItems,
 			}));
 	}
