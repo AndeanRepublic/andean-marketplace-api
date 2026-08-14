@@ -146,6 +146,7 @@ describe('GetBoxDetailUseCase — public catalog', () => {
 			{ resolveDetailed: jest.fn() } as never,
 			{ buildForProducts: jest.fn() } as never,
 			{ getById: jest.fn() } as never,
+			{ getByIds: jest.fn() } as never,
 		);
 
 		await expect(useCase.handle('box-1')).rejects.toThrow(NotFoundException);

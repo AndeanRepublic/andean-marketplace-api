@@ -2,6 +2,7 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { BoxRepository } from '../../datastore/box/Box.repo';
 import { BoxSealRepository } from '../../datastore/box/BoxSeal.repo';
 import { SuperfoodColorRepository } from '../../datastore/superfoods/SuperfoodColor.repo';
+import { SuperfoodSizeOptionAlternativeRepository } from '../../datastore/superfoods/SuperfoodSizeOptionAlternative.repo';
 import {
 	BoxDetailResponse,
 	BoxContainedProductResponse,
@@ -21,6 +22,7 @@ import { BoxSeal } from '../../../domain/entities/box/BoxSeal';
 import { Variant } from '../../../domain/entities/Variant';
 import { MediaItem } from '../../../domain/entities/MediaItem';
 import { AdminEntityStatus } from '../../../domain/enums/AdminEntityStatus';
+import { SuperfoodOptionName } from '../../../domain/enums/SuperfoodOptionName';
 import {
 	TextileProductAttributes,
 	TextileProductAttributesAssembler,
@@ -36,6 +38,8 @@ export class GetBoxDetailUseCase {
 		private readonly textileAttributesAssembler: TextileProductAttributesAssembler,
 		@Inject(SuperfoodColorRepository)
 		private readonly superfoodColorRepository: SuperfoodColorRepository,
+		@Inject(SuperfoodSizeOptionAlternativeRepository)
+		private readonly sizeOptionAlternativeRepository: SuperfoodSizeOptionAlternativeRepository,
 	) {}
 
 	async handle(boxId: string): Promise<BoxDetailResponse> {
@@ -62,12 +66,15 @@ export class GetBoxDetailUseCase {
 						textileVariants,
 					)
 				: new Map<string, TextileProductAttributes>();
+		const superfoodSizeLabelById =
+			await this.resolveSuperfoodSizeLabels(dependencies);
 
 		const { containedProducts, discartedPrice } =
 			await this.buildContainedProducts(
 				box.products,
 				dependencies,
 				textileAttrsByProductId,
+				superfoodSizeLabelById,
 			);
 		const discartedPriceRounded = Math.round(discartedPrice);
 
@@ -138,6 +145,7 @@ export class GetBoxDetailUseCase {
 		lines: BoxProduct[],
 		deps: BoxDependencies,
 		textileAttrsByProductId: Map<string, TextileProductAttributes>,
+		superfoodSizeLabelById: Map<string, string>,
 	): Promise<{
 		containedProducts: BoxContainedProductResponse[];
 		discartedPrice: number;
@@ -150,6 +158,7 @@ export class GetBoxDetailUseCase {
 				line,
 				deps,
 				textileAttrsByProductId,
+				superfoodSizeLabelById,
 			);
 			if (!resolved) continue;
 			containedProducts.push(resolved.row);
@@ -163,6 +172,7 @@ export class GetBoxDetailUseCase {
 		line: BoxProduct,
 		deps: BoxDependencies,
 		textileAttrsByProductId: Map<string, TextileProductAttributes>,
+		superfoodSizeLabelById: Map<string, string>,
 	): Promise<{
 		row: BoxContainedProductResponse;
 		linePrice: number;
@@ -187,6 +197,7 @@ export class GetBoxDetailUseCase {
 				effectiveLinePrice,
 				narrativeImage,
 				deps,
+				superfoodSizeLabelById,
 			);
 			return row ? { row, linePrice: catalogPrice } : null;
 		}
@@ -228,6 +239,7 @@ export class GetBoxDetailUseCase {
 		effectiveLinePrice: number,
 		narrativeImage: BoxImageResponse | undefined,
 		deps: BoxDependencies,
+		sizeLabelById: Map<string, string>,
 	): Promise<BoxContainedProductResponse | null> {
 		const superfood = deps.superfoodMap.get(variant.productId);
 		if (!superfood) return null;
@@ -265,6 +277,9 @@ export class GetBoxDetailUseCase {
 				};
 			}
 		}
+		const sizeId = variant.combination?.SIZE?.trim();
+		const sizeLabel = sizeId ? sizeLabelById.get(sizeId)?.trim() : undefined;
+		if (sizeLabel) row.size = sizeLabel;
 		this.applyNarrativeImageIfPresent(row, narrativeImage);
 		return row;
 	}
@@ -351,5 +366,44 @@ export class GetBoxDetailUseCase {
 		return discartedPrice > 0
 			? Math.round((1 - box.price / discartedPrice) * 100)
 			: 0;
+	}
+
+	private async resolveSuperfoodSizeLabels(
+		deps: BoxDependencies,
+	): Promise<Map<string, string>> {
+		const labelById = new Map<string, string>();
+		for (const product of deps.superfoodMap.values()) {
+			const values =
+				product.options?.find(
+					(option) => option.name === SuperfoodOptionName.SIZE,
+				)?.values ?? [];
+			for (const value of values) {
+				const alternativeId = value.idOptionAlternative?.trim();
+				const label = value.label?.trim();
+				if (alternativeId && label) {
+					labelById.set(alternativeId, label);
+				}
+			}
+		}
+
+		const missingIds = [
+			...new Set(
+				[...deps.variantMap.values()]
+					.filter((variant) => variant.productType === ProductType.SUPERFOOD)
+					.map((variant) => variant.combination?.SIZE?.trim())
+					.filter(
+						(id): id is string => Boolean(id) && !labelById.has(id),
+					),
+			),
+		];
+		if (missingIds.length === 0) return labelById;
+
+		const alternatives =
+			await this.sizeOptionAlternativeRepository.getByIds(missingIds);
+		for (const alternative of alternatives) {
+			const label = alternative.nameLabel?.trim();
+			if (label) labelById.set(alternative.id, label);
+		}
+		return labelById;
 	}
 }
