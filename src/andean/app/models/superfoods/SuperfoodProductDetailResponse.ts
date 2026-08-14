@@ -122,6 +122,23 @@ export class ReviewsResponse {
 	comments!: ReviewCommentResponse[];
 }
 
+export class SuperfoodDetailVariantResponse {
+	@ApiProperty({ description: 'Id de la entidad Variant' })
+	variantId!: string;
+
+	@ApiProperty({ example: '500 g' })
+	label!: string;
+
+	@ApiProperty()
+	price!: number;
+
+	@ApiProperty()
+	stock!: number;
+
+	@ApiPropertyOptional({ example: 'SF-QUI-001-500G' })
+	sku?: string;
+}
+
 // ── Main response ────────────────────────────────────────────────────────
 export class SuperfoodProductDetailResponse {
 	@ApiProperty() id!: string;
@@ -178,6 +195,12 @@ export class SuperfoodProductDetailResponse {
 
 	@ApiPropertyOptional()
 	isDiscountActive?: boolean;
+
+	@ApiProperty({
+		type: [SuperfoodDetailVariantResponse],
+		description: 'Variantes SIZE para el hero y el carrito',
+	})
+	variants!: SuperfoodDetailVariantResponse[];
 }
 
 // ── Compact list item (for moreProducts) ─────────────────────────────────

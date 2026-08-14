@@ -10,16 +10,20 @@ import { CommunityRepository } from '../../datastore/community/community.repo';
 import { MediaItemRepository } from '../../datastore/MediaItem.repo';
 import { DetailSourceProductRepository } from '../../datastore/DetailSourceProduct.repo';
 import { VariantRepository } from '../../datastore/Variant.repo';
+import { SuperfoodSizeOptionAlternativeRepository } from '../../datastore/superfoods/SuperfoodSizeOptionAlternative.repo';
 import { ProductType } from '../../../domain/enums/ProductType';
+import { SuperfoodOptionName } from '../../../domain/enums/SuperfoodOptionName';
 import { collectSuperfoodProductMediaIds } from '../../../domain/superfoods/collectSuperfoodProductMediaIds';
 import { Review } from '../../../domain/entities/Review';
 import { MediaItem } from '../../../domain/entities/MediaItem';
+import { Variant } from '../../../domain/entities/Variant';
 import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
 import {
 	SuperfoodProductDetailResponse,
 	MediaImageResponse,
 	ReviewsResponse,
 	SuperfoodProductListItemCompact,
+	SuperfoodDetailVariantResponse,
 } from '../../models/superfoods/SuperfoodProductDetailResponse';
 import type { ProductTraceabilityResponse } from '../../models/shared/ProductTraceabilityResponse';
 import { SuperfoodProductListItem } from '../../models/superfoods/SuperfoodProductListItem';
@@ -55,6 +59,8 @@ export class GetByIdSuperfoodProductDetailUseCase {
 		private readonly detailSourceProductRepository: DetailSourceProductRepository,
 		@Inject(VariantRepository)
 		private readonly variantRepository: VariantRepository,
+		@Inject(SuperfoodSizeOptionAlternativeRepository)
+		private readonly sizeOptionAlternativeRepository: SuperfoodSizeOptionAlternativeRepository,
 		private readonly mediaUrlResolver: MediaUrlResolver,
 		private readonly ownerInfoResolver: OwnerInfoResolver,
 		private readonly superfoodProductListColorResolver: SuperfoodProductListColorResolver,
@@ -105,8 +111,11 @@ export class GetByIdSuperfoodProductDetailUseCase {
 				this.variantRepository.getByProductId(productId),
 			]);
 
-		// 3. Resolver imágenes por IDs en productMedia
-		const images = await this.resolveProductImages(product, mediaItems);
+		// 3. Resolver imágenes y variantes SIZE del hero en paralelo
+		const [images, heroVariants] = await Promise.all([
+			this.resolveProductImages(product, mediaItems),
+			this.buildHeroVariants(product, variants),
+		]);
 
 		// 4. Resolver owner, reviews y color de catálogo en paralelo
 		const [ownerInfo, reviewsResponse, catalogColor] = await Promise.all([
@@ -208,7 +217,7 @@ export class GetByIdSuperfoodProductDetailUseCase {
 					.filter(Boolean)
 					.slice(0, 3),
 				...(() => {
-					const fromVariant = variants
+					const fromVariant = heroVariants
 						.map((v) => v.sku?.trim())
 						.find((s): s is string => Boolean(s));
 					const fromInventory = product.priceInventory.SKU?.trim();
@@ -231,10 +240,68 @@ export class GetByIdSuperfoodProductDetailUseCase {
 				) as ProductTraceabilityResponse,
 			}),
 			isDiscountActive: product.isDiscountActive,
+			variants: heroVariants,
 		};
 	}
 
 	// ── Private helpers ──────────────────────────────────────────────────
+
+	private async buildHeroVariants(
+		product: SuperfoodProduct,
+		variants: Variant[],
+	): Promise<SuperfoodDetailVariantResponse[]> {
+		const superfoodVariants = variants.filter(
+			(variant) => variant.productType === ProductType.SUPERFOOD,
+		);
+		if (!superfoodVariants.length) return [];
+
+		const sizeValues =
+			product.options?.find((option) => option.name === SuperfoodOptionName.SIZE)
+				?.values ?? [];
+		const labelByAlternativeId = new Map<string, string>();
+		for (const value of sizeValues) {
+			const alternativeId = value.idOptionAlternative?.trim();
+			const label = value.label?.trim();
+			if (alternativeId && label) {
+				labelByAlternativeId.set(alternativeId, label);
+			}
+		}
+
+		const missingIds = Array.from(
+			new Set(
+				superfoodVariants
+					.map((variant) => variant.combination?.SIZE?.trim())
+					.filter(
+						(id): id is string =>
+							Boolean(id) && !labelByAlternativeId.has(id),
+					),
+			),
+		);
+
+		if (missingIds.length) {
+			const alternatives =
+				await this.sizeOptionAlternativeRepository.getByIds(missingIds);
+			for (const alternative of alternatives) {
+				const label = alternative.nameLabel?.trim();
+				if (label) labelByAlternativeId.set(alternative.id, label);
+			}
+		}
+
+		return superfoodVariants.map((variant) => {
+			const sizeId = variant.combination?.SIZE?.trim();
+			const label =
+				(sizeId ? labelByAlternativeId.get(sizeId) : undefined) ||
+				(sizeId ? `Size ${sizeId}` : 'Variant');
+			const sku = variant.sku?.trim();
+			return {
+				variantId: variant.id,
+				label,
+				price: variant.price,
+				stock: variant.stock,
+				...(sku ? { sku } : {}),
+			};
+		});
+	}
 
 	private async resolveProductImages(
 		product: SuperfoodProduct,
