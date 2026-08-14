@@ -41,6 +41,12 @@ export class HeroDetailResponse {
 	@ApiProperty() basePrice!: number;
 	@ApiProperty() totalStock!: number;
 	@ApiProperty() isDiscountActive!: boolean;
+	@ApiProperty({
+		type: [String],
+		description: 'Rasgos generales del producto (máx. 3) para pills del hero',
+		example: ['Handmade', 'Organic', 'Andean community'],
+	})
+	generalFeatures!: string[];
 	@ApiPropertyOptional({
 		description: 'SKU del inventario (código Identi cuando blockchainActive)',
 		example: 'SF-QUI-001',

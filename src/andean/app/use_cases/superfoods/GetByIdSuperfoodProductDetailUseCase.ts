@@ -203,6 +203,10 @@ export class GetByIdSuperfoodProductDetailUseCase {
 				basePrice: product.priceInventory.basePrice,
 				totalStock: product.priceInventory.totalStock,
 				isDiscountActive: product.isDiscountActive,
+				generalFeatures: (product.baseInfo.general_features ?? [])
+					.map((feature) => String(feature).trim())
+					.filter(Boolean)
+					.slice(0, 3),
 				...(() => {
 					const fromVariant = variants
 						.map((v) => v.sku?.trim())
