@@ -18,6 +18,11 @@ export class BoxCatalogSuperfoodItemDto {
 
 	@ApiProperty()
 	totalStock!: number;
+
+	@ApiProperty({
+		description: 'Si el producto tiene etapas de producción activas',
+	})
+	hasTraceabilityEpochs!: boolean;
 }
 
 export class BoxCatalogSuperfoodsResponseDto {
@@ -43,6 +48,11 @@ export class BoxCatalogTextileItemDto {
 
 	@ApiProperty()
 	totalStock!: number;
+
+	@ApiProperty({
+		description: 'Si el producto tiene etapas de producción activas',
+	})
+	hasTraceabilityEpochs!: boolean;
 }
 
 export class BoxCatalogTextilesResponseDto {

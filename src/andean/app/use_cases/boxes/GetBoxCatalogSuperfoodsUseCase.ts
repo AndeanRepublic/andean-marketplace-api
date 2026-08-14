@@ -32,6 +32,7 @@ export class GetBoxCatalogSuperfoodsUseCase {
 			imgUrl: r.imgId ? (urlMap.get(r.imgId.trim()) ?? '') : '',
 			catalogPrice: r.catalogPrice,
 			totalStock: r.totalStock,
+			hasTraceabilityEpochs: Boolean(r.hasTraceabilityEpochs),
 		}));
 
 		return { items };
