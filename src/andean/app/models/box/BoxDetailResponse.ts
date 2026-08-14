@@ -118,7 +118,8 @@ export class BoxContainedProductResponse {
 	ownerInfo?: OwnerInfoResponse;
 
 	@ApiPropertyOptional({
-		description: 'Color de la variante (solo textiles)',
+		description:
+			'Color de la variante (textiles) o color de catálogo del paquete (superfoods)',
 		type: BoxContainedProductColorResponse,
 	})
 	color?: BoxContainedProductColorResponse;

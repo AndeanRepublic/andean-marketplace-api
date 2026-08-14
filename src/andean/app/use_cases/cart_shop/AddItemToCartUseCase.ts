@@ -154,8 +154,8 @@ export class AddItemToCartUseCase {
 		);
 
 		const colorOption = await this.resolveTextileColorOption(variant);
-		const displayCombination =
-			await this.superfoodCartSizeResolver.toDisplayCombination(variant);
+		const { displayCombination, packageColorHex } =
+			await this.superfoodCartSizeResolver.enrich(variant);
 
 		const cart = await this.ensureCart(customerId);
 		const existingCartItems =
@@ -193,6 +193,7 @@ export class AddItemToCartUseCase {
 				ownerName,
 				colorOption,
 				displayCombination,
+				packageColorHex,
 			);
 		}
 
@@ -219,6 +220,7 @@ export class AddItemToCartUseCase {
 			quantity,
 			colorOption,
 			displayCombination,
+			packageColorHex,
 		});
 	}
 

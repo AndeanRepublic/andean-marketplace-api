@@ -192,8 +192,8 @@ export class GetCartByCustomerUseCase {
 			}
 		}
 
-		const displayCombination =
-			await this.superfoodCartSizeResolver.toDisplayCombination(variant);
+		const { displayCombination, packageColorHex } =
+			await this.superfoodCartSizeResolver.enrich(variant);
 
 		return ShoppingCartItemMapper.toResponse(
 			item,
@@ -202,6 +202,7 @@ export class GetCartByCustomerUseCase {
 			ownerName,
 			colorOption,
 			displayCombination,
+			packageColorHex,
 		);
 	}
 }

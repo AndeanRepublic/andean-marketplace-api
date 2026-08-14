@@ -1,6 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { BoxRepository } from '../../datastore/box/Box.repo';
 import { BoxSealRepository } from '../../datastore/box/BoxSeal.repo';
+import { SuperfoodColorRepository } from '../../datastore/superfoods/SuperfoodColor.repo';
 import {
 	BoxDetailResponse,
 	BoxContainedProductResponse,
@@ -33,6 +34,8 @@ export class GetBoxDetailUseCase {
 		private readonly boxResolutionService: BoxProductResolutionService,
 		private readonly ownerInfoResolver: OwnerInfoResolver,
 		private readonly textileAttributesAssembler: TextileProductAttributesAssembler,
+		@Inject(SuperfoodColorRepository)
+		private readonly superfoodColorRepository: SuperfoodColorRepository,
 	) {}
 
 	async handle(boxId: string): Promise<BoxDetailResponse> {
@@ -250,6 +253,18 @@ export class GetBoxDetailUseCase {
 			ownerId,
 		};
 		if (ownerInfo) row.ownerInfo = ownerInfo;
+		const colorId = superfood.colorId?.trim();
+		if (colorId) {
+			const catalogColor =
+				await this.superfoodColorRepository.getById(colorId);
+			const hex = catalogColor?.hexCodeColor?.trim();
+			if (hex) {
+				row.color = {
+					label: catalogColor?.name?.trim() || 'Package',
+					hexCode: hex,
+				};
+			}
+		}
 		this.applyNarrativeImageIfPresent(row, narrativeImage);
 		return row;
 	}

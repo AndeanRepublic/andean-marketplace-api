@@ -9,6 +9,8 @@ import { SuperfoodOptions } from '../../../domain/entities/superfoods/SuperfoodO
 import { SuperfoodOptionsItem } from '../../../domain/entities/superfoods/SuperfoodOptionsItem';
 import { SuperfoodProduct } from '../../../domain/entities/superfoods/SuperfoodProduct';
 import { SizeOptionAlternative } from '../../../domain/entities/superfoods/SizeOptionAlternative';
+import { SuperfoodColorRepository } from '../../../app/datastore/superfoods/SuperfoodColor.repo';
+import { SuperfoodColor } from '../../../domain/entities/superfoods/SuperfoodColor';
 
 const SIZE_ID = '6a7f3b37747108abdddbcd23';
 
@@ -35,6 +37,7 @@ describe('SuperfoodCartSizeResolver', () => {
 	let sizeOptionRepository: jest.Mocked<
 		Pick<SuperfoodSizeOptionAlternativeRepository, 'getByIds'>
 	>;
+	let colorRepository: jest.Mocked<Pick<SuperfoodColorRepository, 'getById'>>;
 
 	beforeEach(async () => {
 		productRepository = {
@@ -42,6 +45,9 @@ describe('SuperfoodCartSizeResolver', () => {
 		};
 		sizeOptionRepository = {
 			getByIds: jest.fn(),
+		};
+		colorRepository = {
+			getById: jest.fn(),
 		};
 
 		const module: TestingModule = await Test.createTestingModule({
@@ -54,6 +60,10 @@ describe('SuperfoodCartSizeResolver', () => {
 				{
 					provide: SuperfoodSizeOptionAlternativeRepository,
 					useValue: sizeOptionRepository,
+				},
+				{
+					provide: SuperfoodColorRepository,
+					useValue: colorRepository,
 				},
 			],
 		}).compile();
@@ -125,5 +135,24 @@ describe('SuperfoodCartSizeResolver', () => {
 		await expect(
 			resolver.toDisplayCombination(superfoodVariant()),
 		).resolves.toEqual({ SIZE: SIZE_ID });
+	});
+
+	it('includes the catalog package color hex', async () => {
+		productRepository.getSuperfoodProductById.mockResolvedValue({
+			colorId: 'color-1',
+			options: [
+				new SuperfoodOptions(SuperfoodOptionName.SIZE, [
+					new SuperfoodOptionsItem('250 g', undefined, SIZE_ID),
+				]),
+			],
+		} as SuperfoodProduct);
+		colorRepository.getById.mockResolvedValue(
+			new SuperfoodColor('color-1', 'Forest', '#0E6851'),
+		);
+
+		await expect(resolver.enrich(superfoodVariant())).resolves.toEqual({
+			displayCombination: { SIZE: '250 g', size: '250 g' },
+			packageColorHex: '#0E6851',
+		});
 	});
 });
