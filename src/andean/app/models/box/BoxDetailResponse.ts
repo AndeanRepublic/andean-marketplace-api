@@ -70,7 +70,8 @@ export class BoxContainedProductResponse {
 	title!: string;
 
 	@ApiProperty({
-		description: 'Imagen miniatura del producto',
+		description:
+			'Imagen de la variante incluida en el box (textiles: media del color/opción; superfoods: pack principal)',
 		type: BoxImageResponse,
 	})
 	thumbnailImage!: BoxImageResponse;

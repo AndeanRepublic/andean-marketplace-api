@@ -254,8 +254,10 @@ export class GetBoxDetailUseCase {
 			id: variant.productId,
 			variantId,
 			title: superfood.baseInfo?.title || '',
-			thumbnailImage: this.boxResolutionService.resolveImage(
-				superfood.baseInfo?.productMedia?.mainImgId,
+			thumbnailImage: this.boxResolutionService.resolveContainedProductThumbnail(
+				variant,
+				deps.textileMap,
+				deps.superfoodMap,
 				deps.mediaMap,
 			),
 			information: superfood.baseInfo?.shortDescription || '',
@@ -320,8 +322,10 @@ export class GetBoxDetailUseCase {
 			id: variant.productId,
 			variantId,
 			title: textile?.baseInfo?.title || '',
-			thumbnailImage: this.boxResolutionService.resolveImage(
-				textile?.baseInfo?.mediaIds?.[0],
+			thumbnailImage: this.boxResolutionService.resolveContainedProductThumbnail(
+				variant,
+				deps.textileMap,
+				deps.superfoodMap,
 				deps.mediaMap,
 			),
 			// Campo corto del producto (`information`), no la descripción larga.

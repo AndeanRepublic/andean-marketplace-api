@@ -94,18 +94,7 @@ export class BoxProductResolutionService {
 				if (mediaId) allMediaIds.add(mediaId);
 			}
 		}
-		// Media de la variante (picker de color/opción): hace falta para el thumbnail del listado
-		for (const variant of variants) {
-			if (variant.productType !== ProductType.TEXTILE) continue;
-			const textile = textileMap.get(variant.productId);
-			if (!textile) continue;
-			const variantMediaId =
-				this.textileVariantPickerMediaService.resolveVariantMainMediaId(
-					textile,
-					variant,
-				);
-			if (variantMediaId) allMediaIds.add(variantMediaId);
-		}
+		this.collectTextileVariantMediaIds(variants, textileMap, allMediaIds);
 
 		const mediaItems =
 			allMediaIds.size > 0
@@ -173,6 +162,7 @@ export class BoxProductResolutionService {
 			if (textile.baseInfo?.mediaIds?.length)
 				allMediaIds.add(textile.baseInfo.mediaIds[0]);
 		}
+		this.collectTextileVariantMediaIds(variants, textileMap, allMediaIds);
 
 		const mediaItems =
 			allMediaIds.size > 0
@@ -236,6 +226,51 @@ export class BoxProductResolutionService {
 			return product.boxPrice;
 		}
 		return catalogPrice;
+	}
+
+	private collectTextileVariantMediaIds(
+		variants: Variant[],
+		textileMap: Map<string, TextileProduct>,
+		allMediaIds: Set<string>,
+	): void {
+		for (const variant of variants) {
+			if (variant.productType !== ProductType.TEXTILE) continue;
+			const textile = textileMap.get(variant.productId);
+			if (!textile) continue;
+			const variantMediaId =
+				this.textileVariantPickerMediaService.resolveVariantMainMediaId(
+					textile,
+					variant,
+				);
+			if (variantMediaId) allMediaIds.add(variantMediaId);
+		}
+	}
+
+	resolveContainedProductThumbnail(
+		variant: Variant,
+		textileMap: Map<string, TextileProduct>,
+		superfoodMap: Map<string, SuperfoodProduct>,
+		mediaMap: Map<string, MediaItem>,
+	): BoxImageResponse {
+		if (variant.productType === ProductType.TEXTILE) {
+			const textile = textileMap.get(variant.productId);
+			const mediaId =
+				(textile
+					? this.textileVariantPickerMediaService.resolveVariantMainMediaId(
+							textile,
+							variant,
+						)
+					: null) || textile?.baseInfo?.mediaIds?.[0]?.trim();
+			return this.resolveImage(mediaId, mediaMap);
+		}
+		if (variant.productType === ProductType.SUPERFOOD) {
+			const superfood = superfoodMap.get(variant.productId);
+			return this.resolveImage(
+				superfood?.baseInfo?.productMedia?.mainImgId,
+				mediaMap,
+			);
+		}
+		return { url: '', name: '' };
 	}
 
 	resolveListProductThumbnailUrl(
