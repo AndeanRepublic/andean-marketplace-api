@@ -66,7 +66,8 @@ export class BoxListProductResponse {
 	color?: BoxListProductColorResponse;
 
 	@ApiProperty({
-		description: 'Talla de la variante (solo textiles)',
+		description:
+			'Talla de la variante (textiles) o tamaño de paquete (superfoods, p. ej. "250 g")',
 		example: 'M',
 		required: false,
 	})

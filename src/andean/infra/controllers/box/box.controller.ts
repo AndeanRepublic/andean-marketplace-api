@@ -53,6 +53,7 @@ import { UpdateEntityStatusDto } from '../dto/UpdateEntityStatusDto';
 import { UpdateBoxUseCase } from '../../../app/use_cases/boxes/UpdateBoxUseCase';
 import { DeleteBoxUseCase } from '../../../app/use_cases/boxes/DeleteBoxUseCase';
 import { GetBoxForAdminEditUseCase } from '../../../app/use_cases/boxes/GetBoxForAdminEditUseCase';
+import { BoxAdminEditResponse } from '../../../app/models/box/BoxAdminEditResponse';
 
 @Controller('boxes')
 export class BoxController {
@@ -265,12 +266,14 @@ export class BoxController {
 	@ApiOperation({
 		summary: 'Obtener box para edición (admin)',
 		description:
-			'Devuelve el agregado persistido (misma forma que creación) para poblar el formulario.',
+			'Devuelve el agregado persistido más las 3 líneas hidratadas (producto, variantes y media) para poblar el formulario sin recorrer el catálogo.',
 	})
 	@ApiParam({ name: 'boxId', description: 'ID del box' })
-	@ApiResponse({ status: 200, type: Box })
+	@ApiResponse({ status: 200, type: BoxAdminEditResponse })
 	@ApiResponse({ status: 404, description: 'Box no encontrado' })
-	async getBoxForAdminEdit(@Param('boxId') boxId: string): Promise<Box> {
+	async getBoxForAdminEdit(
+		@Param('boxId') boxId: string,
+	): Promise<BoxAdminEditResponse> {
 		return this.getBoxForAdminEditUseCase.handle(boxId);
 	}
 

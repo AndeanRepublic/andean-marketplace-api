@@ -25,13 +25,15 @@ export class ShoppingCartItemMapper {
 		productInfo: ProductInfo,
 		ownerName: string,
 		colorOption?: CartColorOptionResponse | null,
+		displayCombination?: Record<string, string>,
+		packageColorHex?: string,
 	): ShoppingCartItemResponse {
 		return {
 			productId: item.productId,
 			variantId: item.variantProductId ?? null,
 			ownerName,
 			title: productInfo.title,
-			combinationVariant: variant?.combination || {},
+			combinationVariant: displayCombination ?? variant?.combination ?? {},
 			colorOption: colorOption ?? undefined,
 			thumbnailImgUrl: productInfo.thumbnailImgUrl,
 			unitPrice: item.unitPrice,
@@ -40,6 +42,7 @@ export class ShoppingCartItemMapper {
 			maxStock: variant?.stock || 0,
 			isDiscountActive: productInfo.isDiscountActive,
 			productType: item.productType,
+			...(packageColorHex ? { packageColorHex } : {}),
 		};
 	}
 
@@ -83,13 +86,15 @@ export class ShoppingCartItemMapper {
 		ownerName: string;
 		quantity: number;
 		colorOption?: CartColorOptionResponse | null;
+		displayCombination?: Record<string, string>;
+		packageColorHex?: string;
 	}): ShoppingCartItemResponse {
 		return {
 			productId: params.variant.productId,
 			variantId: params.variant.id,
 			ownerName: params.ownerName,
 			title: params.productInfo.title,
-			combinationVariant: params.variant.combination,
+			combinationVariant: params.displayCombination ?? params.variant.combination,
 			colorOption: params.colorOption ?? undefined,
 			thumbnailImgUrl: params.productInfo.thumbnailImgUrl,
 			unitPrice: params.variant.price,
@@ -98,6 +103,9 @@ export class ShoppingCartItemMapper {
 			maxStock: params.variant.stock,
 			isDiscountActive: params.productInfo.isDiscountActive,
 			productType: params.variant.productType,
+			...(params.packageColorHex
+				? { packageColorHex: params.packageColorHex }
+				: {}),
 		};
 	}
 }

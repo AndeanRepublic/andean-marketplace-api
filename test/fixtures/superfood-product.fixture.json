@@ -356,6 +356,15 @@
 				"averagePunctuation": 0
 			},
 			"comments": []
-		}
+		},
+		"variants": [
+			{
+				"variantId": "variant-uuid-123",
+				"label": "500 g",
+				"price": 25.5,
+				"stock": 100,
+				"sku": "QUINUA-PREM-001-500G"
+			}
+		]
 	}
 }

@@ -70,7 +70,8 @@ export class BoxContainedProductResponse {
 	title!: string;
 
 	@ApiProperty({
-		description: 'Imagen miniatura del producto',
+		description:
+			'Imagen de la variante incluida en el box (textiles: media del color/opción; superfoods: pack principal)',
 		type: BoxImageResponse,
 	})
 	thumbnailImage!: BoxImageResponse;
@@ -118,13 +119,15 @@ export class BoxContainedProductResponse {
 	ownerInfo?: OwnerInfoResponse;
 
 	@ApiPropertyOptional({
-		description: 'Color de la variante (solo textiles)',
+		description:
+			'Color de la variante (textiles) o color de catálogo del paquete (superfoods)',
 		type: BoxContainedProductColorResponse,
 	})
 	color?: BoxContainedProductColorResponse;
 
 	@ApiPropertyOptional({
-		description: 'Talla de la variante (solo textiles)',
+		description:
+			'Talla de la variante (textiles) o tamaño de paquete (superfoods, p. ej. "250 g")',
 		example: 'M',
 	})
 	size?: string;

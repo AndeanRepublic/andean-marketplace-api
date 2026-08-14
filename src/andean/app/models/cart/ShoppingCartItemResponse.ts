@@ -95,4 +95,11 @@ export class ShoppingCartItemResponse {
 		type: [BoxContentItemResponse],
 	})
 	boxContent?: BoxContentItemResponse[];
+
+	@ApiPropertyOptional({
+		description:
+			'Hex de fondo del paquete (solo SUPERFOOD, color de catálogo del producto)',
+		example: '#0E6851',
+	})
+	packageColorHex?: string;
 }

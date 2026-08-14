@@ -30,6 +30,7 @@ describe('GetByIdSuperfoodProductDetailUseCase - userVote mapping', () => {
 			{} as any, // mediaItemRepository
 			{} as any, // detailSourceProductRepository
 			{ getByProductId: jest.fn().mockResolvedValue([]) } as any, // variantRepository
+			{ getByIds: jest.fn().mockResolvedValue([]) } as any, // sizeOptionAlternativeRepository
 			{} as any, // mediaUrlResolver
 			{} as any, // ownerInfoResolver
 			{} as any, // superfoodProductListColorResolver
@@ -68,9 +69,11 @@ describe('GetByIdSuperfoodProductDetailUseCase - userVote mapping', () => {
 			(useCase as any).superfoodProductRepository = {
 				getSuperfoodProductById: jest.fn().mockResolvedValue({
 					id: 'product-1',
+					status: 'PUBLISHED',
 					baseInfo: { productMedia: {}, nutritional_features: [], benefits: [] },
 					priceInventory: { basePrice: 10, totalStock: 100 },
 					isDiscountActive: false,
+					options: [],
 				}),
 			};
 			(useCase as any).superfoodBenefitRepository = {
@@ -111,9 +114,11 @@ describe('GetByIdSuperfoodProductDetailUseCase - userVote mapping', () => {
 			(useCase as any).superfoodProductRepository = {
 				getSuperfoodProductById: jest.fn().mockResolvedValue({
 					id: 'product-1',
+					status: 'PUBLISHED',
 					baseInfo: { productMedia: {}, nutritional_features: [], benefits: [] },
 					priceInventory: { basePrice: 10, totalStock: 100 },
 					isDiscountActive: false,
+					options: [],
 				}),
 				getAllWithFilters: jest.fn().mockResolvedValue({ products: [] }),
 			};
@@ -152,9 +157,11 @@ describe('GetByIdSuperfoodProductDetailUseCase - userVote mapping', () => {
 			(useCase as any).superfoodProductRepository = {
 				getSuperfoodProductById: jest.fn().mockResolvedValue({
 					id: 'product-1',
+					status: 'PUBLISHED',
 					baseInfo: { productMedia: {}, nutritional_features: [], benefits: [] },
 					priceInventory: { basePrice: 10, totalStock: 100 },
 					isDiscountActive: false,
+					options: [],
 				}),
 				getAllWithFilters: jest.fn().mockResolvedValue({ products: [] }),
 			};
@@ -193,9 +200,11 @@ describe('GetByIdSuperfoodProductDetailUseCase - userVote mapping', () => {
 			(useCase as any).superfoodProductRepository = {
 				getSuperfoodProductById: jest.fn().mockResolvedValue({
 					id: 'product-1',
+					status: 'PUBLISHED',
 					baseInfo: { productMedia: {}, nutritional_features: [], benefits: [] },
 					priceInventory: { basePrice: 10, totalStock: 100 },
 					isDiscountActive: false,
+					options: [],
 				}),
 				getAllWithFilters: jest.fn().mockResolvedValue({ products: [] }),
 			};
@@ -225,6 +234,98 @@ describe('GetByIdSuperfoodProductDetailUseCase - userVote mapping', () => {
 			const result = await useCase.handle('product-1', 'user-456');
 
 			expect(result.reviews.comments[0].userVote).toBe(null);
+		});
+	});
+
+	describe('hero variants mapping', () => {
+		function mockCommonDeps() {
+			(useCase as any).superfoodBenefitRepository = {
+				getByIds: jest.fn().mockResolvedValue([]),
+			};
+			(useCase as any).superfoodNutritionalFeatureRepository = {
+				getByIds: jest.fn().mockResolvedValue([]),
+			};
+			(useCase as any).mediaItemRepository = {
+				getByIds: jest.fn().mockResolvedValue([]),
+			};
+			(useCase as any).mediaUrlResolver = {
+				resolveUrls: jest.fn().mockResolvedValue(new Map()),
+			};
+			(useCase as any).ownerInfoResolver = {
+				resolveDetailed: jest.fn().mockResolvedValue(undefined),
+			};
+			(useCase as any).superfoodProductListColorResolver = {
+				resolveById: jest.fn().mockResolvedValue(undefined),
+				attachCatalogColorFromAggregate: jest.fn().mockResolvedValue([]),
+			};
+			(useCase as any).superfoodProductListMediaResolver = {
+				attachListMediaFromAggregate: jest.fn().mockResolvedValue([]),
+			};
+			(useCase as any).reviewRepository.getByProductIdAndType.mockResolvedValue(
+				[],
+			);
+		}
+
+		it('joins Variant entities with SIZE option labels', async () => {
+			mockCommonDeps();
+			(useCase as any).superfoodProductRepository = {
+				getSuperfoodProductById: jest.fn().mockResolvedValue({
+					id: 'product-1',
+					status: 'PUBLISHED',
+					baseInfo: { productMedia: {}, nutritional_features: [], benefits: [] },
+					priceInventory: { basePrice: 10, totalStock: 100 },
+					isDiscountActive: false,
+					options: [
+						{
+							name: 'SIZE',
+							values: [
+								{ label: '500 g', idOptionAlternative: 'alt-500' },
+								{ label: '1 kg', idOptionAlternative: 'alt-1kg' },
+							],
+						},
+					],
+				}),
+				getAllWithFilters: jest.fn().mockResolvedValue({ products: [] }),
+			};
+			(useCase as any).variantRepository = {
+				getByProductId: jest.fn().mockResolvedValue([
+					{
+						id: 'var-500',
+						productType: ProductType.SUPERFOOD,
+						combination: { SIZE: 'alt-500' },
+						price: 30,
+						stock: 8,
+						sku: 'SKU-500',
+					},
+					{
+						id: 'var-1kg',
+						productType: ProductType.SUPERFOOD,
+						combination: { SIZE: 'alt-1kg' },
+						price: 50,
+						stock: 3,
+						sku: 'SKU-1KG',
+					},
+				]),
+			};
+
+			const result = await useCase.handle('product-1');
+
+			expect(result.variants).toEqual([
+				{
+					variantId: 'var-500',
+					label: '500 g',
+					price: 30,
+					stock: 8,
+					sku: 'SKU-500',
+				},
+				{
+					variantId: 'var-1kg',
+					label: '1 kg',
+					price: 50,
+					stock: 3,
+					sku: 'SKU-1KG',
+				},
+			]);
 		});
 	});
 });

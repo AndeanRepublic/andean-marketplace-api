@@ -7,7 +7,7 @@ import {
 	BoxCatalogMediaResponseDto,
 } from '../../models/box/catalog/BoxCatalogResponses';
 
-function collectSuperfoodMediaIds(
+export function collectSuperfoodMediaIds(
 	media: SuperfoodProductMedia | undefined,
 ): string[] {
 	if (!media) return [];

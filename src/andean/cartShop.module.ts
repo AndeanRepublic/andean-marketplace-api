@@ -30,6 +30,7 @@ import { ProductInfoProviderRegistry } from './infra/services/products/ProductIn
 import { OwnerNameResolver } from './infra/services/OwnerNameResolver';
 import { BoxCartContentResolver } from './infra/services/cart/BoxCartContentResolver';
 import { BoxCartAvailabilityService } from './infra/services/cart/BoxCartAvailabilityService';
+import { SuperfoodCartSizeResolver } from './infra/services/cart/SuperfoodCartSizeResolver';
 import { BoxModule } from './box.module';
 
 @Module({
@@ -81,6 +82,7 @@ import { BoxModule } from './box.module';
 		OwnerNameResolver,
 		BoxCartContentResolver,
 		BoxCartAvailabilityService,
+		SuperfoodCartSizeResolver,
 	],
 	exports: [CartShopRepository, CartShopItemRepository],
 })

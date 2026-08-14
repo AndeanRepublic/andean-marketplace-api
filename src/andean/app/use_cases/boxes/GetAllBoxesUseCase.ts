@@ -1,12 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { BoxRepository } from '../../datastore/box/Box.repo';
+import { SuperfoodSizeOptionAlternativeRepository } from '../../datastore/superfoods/SuperfoodSizeOptionAlternative.repo';
 import {
 	BoxListPaginatedResponse,
 	BoxListItemResponse,
 	BoxListProductResponse,
 } from '../../models/box/BoxListResponse';
 import { ProductType } from '../../../domain/enums/ProductType';
-import { BoxProductResolutionService } from '../../../infra/services/box/BoxProductResolutionService';
+import { SuperfoodOptionName } from '../../../domain/enums/SuperfoodOptionName';
+import {
+	BoxListDependencies,
+	BoxProductResolutionService,
+} from '../../../infra/services/box/BoxProductResolutionService';
 import { Box } from '../../../domain/entities/box/Box';
 import { OwnerNameResolver } from '../../../infra/services/OwnerNameResolver';
 import { Variant } from '../../../domain/entities/Variant';
@@ -27,6 +32,8 @@ export class GetAllBoxesUseCase {
 		private readonly boxResolutionService: BoxProductResolutionService,
 		private readonly ownerNameResolver: OwnerNameResolver,
 		private readonly textileAttributesAssembler: TextileProductAttributesAssembler,
+		@Inject(SuperfoodSizeOptionAlternativeRepository)
+		private readonly sizeOptionAlternativeRepository: SuperfoodSizeOptionAlternativeRepository,
 	) {}
 
 	async handle(
@@ -66,6 +73,8 @@ export class GetAllBoxesUseCase {
 				: new Map<string, TextileProductAttributes>();
 
 		const ownerNameCache = new Map<string, string>();
+		const superfoodSizeLabelById =
+			await this.resolveSuperfoodSizeLabels(dependencies);
 		const enrichedBoxes: BoxListItemResponse[] = await Promise.all(
 			boxes.map(async (box) => {
 				let discartedPrice = 0;
@@ -90,6 +99,7 @@ export class GetAllBoxesUseCase {
 					dependencies.mediaMap,
 					ownerNameCache,
 					textileAttrsByProductId,
+					superfoodSizeLabelById,
 				);
 
 				const boxThumb = this.boxResolutionService.resolveImage(
@@ -146,6 +156,7 @@ export class GetAllBoxesUseCase {
 		mediaMap: Map<string, MediaItem>,
 		ownerNameCache: Map<string, string>,
 		textileAttrsByProductId: Map<string, TextileProductAttributes>,
+		superfoodSizeLabelById: Map<string, string>,
 	): Promise<BoxListProductResponse[]> {
 		const rows: BoxListProductResponse[] = [];
 
@@ -161,6 +172,10 @@ export class GetAllBoxesUseCase {
 				if (!superfood?.baseInfo?.title || !ownerType) continue;
 
 				const information = superfood.baseInfo.shortDescription?.trim() ?? '';
+				const sizeId = variant.combination?.SIZE?.trim();
+				const size = sizeId
+					? superfoodSizeLabelById.get(sizeId)?.trim()
+					: undefined;
 				rows.push({
 					name: superfood.baseInfo.title,
 					ownerType,
@@ -178,6 +193,7 @@ export class GetAllBoxesUseCase {
 							mediaMap,
 						),
 					...(information ? { information } : {}),
+					...(size ? { size } : {}),
 				});
 				continue;
 			}
@@ -241,5 +257,42 @@ export class GetAllBoxesUseCase {
 		const ownerName = await this.ownerNameResolver.resolve(ownerType, ownerId);
 		cache.set(cacheKey, ownerName);
 		return ownerName;
+	}
+
+	private async resolveSuperfoodSizeLabels(
+		deps: BoxListDependencies,
+	): Promise<Map<string, string>> {
+		const labelById = new Map<string, string>();
+		for (const product of deps.superfoodMap.values()) {
+			const values =
+				product.options?.find(
+					(option) => option.name === SuperfoodOptionName.SIZE,
+				)?.values ?? [];
+			for (const value of values) {
+				const alternativeId = value.idOptionAlternative?.trim();
+				const label = value.label?.trim();
+				if (alternativeId && label) {
+					labelById.set(alternativeId, label);
+				}
+			}
+		}
+
+		const missingIds = [
+			...new Set(
+				[...deps.variantMap.values()]
+					.filter((variant) => variant.productType === ProductType.SUPERFOOD)
+					.map((variant) => variant.combination?.SIZE?.trim())
+					.filter((id): id is string => Boolean(id) && !labelById.has(id)),
+			),
+		];
+		if (missingIds.length === 0) return labelById;
+
+		const alternatives =
+			await this.sizeOptionAlternativeRepository.getByIds(missingIds);
+		for (const alternative of alternatives) {
+			const label = alternative.nameLabel?.trim();
+			if (label) labelById.set(alternative.id, label);
+		}
+		return labelById;
 	}
 }
