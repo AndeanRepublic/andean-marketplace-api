@@ -372,6 +372,9 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 					},
 					catalogPrice: '$priceInventory.basePrice',
 					totalStock: '$priceInventory.totalStock',
+					hasTraceabilityEpochs: {
+						$ifNull: ['$productTraceability.hasTraceabilityEpochs', false],
+					},
 				},
 			},
 		];
@@ -423,6 +426,9 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 					},
 					catalogPrice: '$priceInventory.basePrice',
 					totalStock: '$priceInventory.totalStock',
+					hasTraceabilityEpochs: {
+						$ifNull: ['$productTraceability.hasTraceabilityEpochs', false],
+					},
 				},
 			},
 		];

@@ -27,6 +27,7 @@ export interface BoxCatalogTextileItem {
 	imgId: string;
 	catalogPrice: number;
 	totalStock: number;
+	hasTraceabilityEpochs: boolean;
 }
 
 export abstract class TextileProductRepository {

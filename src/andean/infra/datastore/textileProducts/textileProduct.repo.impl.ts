@@ -823,6 +823,9 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 					},
 					catalogPrice: '$priceInventary.basePrice',
 					totalStock: { $ifNull: ['$priceInventary.totalStock', 0] },
+					hasTraceabilityEpochs: {
+						$ifNull: ['$productTraceability.hasTraceabilityEpochs', false],
+					},
 				},
 			},
 		];
@@ -850,6 +853,9 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 					},
 					catalogPrice: '$priceInventary.basePrice',
 					totalStock: { $ifNull: ['$priceInventary.totalStock', 0] },
+					hasTraceabilityEpochs: {
+						$ifNull: ['$productTraceability.hasTraceabilityEpochs', false],
+					},
 				},
 			},
 		];
