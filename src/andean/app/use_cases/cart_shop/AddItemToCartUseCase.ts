@@ -24,6 +24,7 @@ import { CartColorOptionResponse } from '../../models/cart/CartColorOptionRespon
 import { TextileProductRepository } from '../../datastore/textileProducts/TextileProduct.repo';
 import { BoxCartAvailabilityService } from '../../../infra/services/cart/BoxCartAvailabilityService';
 import { BoxCartContentResolver } from '../../../infra/services/cart/BoxCartContentResolver';
+import { SuperfoodCartSizeResolver } from '../../../infra/services/cart/SuperfoodCartSizeResolver';
 import { Variant } from '../../../domain/entities/Variant';
 
 @Injectable()
@@ -44,6 +45,7 @@ export class AddItemToCartUseCase {
 		private readonly textileProductRepository: TextileProductRepository,
 		private readonly boxCartAvailability: BoxCartAvailabilityService,
 		private readonly boxCartContentResolver: BoxCartContentResolver,
+		private readonly superfoodCartSizeResolver: SuperfoodCartSizeResolver,
 	) {}
 
 	async handle(
@@ -152,6 +154,8 @@ export class AddItemToCartUseCase {
 		);
 
 		const colorOption = await this.resolveTextileColorOption(variant);
+		const displayCombination =
+			await this.superfoodCartSizeResolver.toDisplayCombination(variant);
 
 		const cart = await this.ensureCart(customerId);
 		const existingCartItems =
@@ -188,6 +192,7 @@ export class AddItemToCartUseCase {
 				productInfo,
 				ownerName,
 				colorOption,
+				displayCombination,
 			);
 		}
 
@@ -213,6 +218,7 @@ export class AddItemToCartUseCase {
 			ownerName,
 			quantity,
 			colorOption,
+			displayCombination,
 		});
 	}
 

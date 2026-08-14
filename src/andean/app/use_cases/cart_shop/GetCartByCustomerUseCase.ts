@@ -23,6 +23,7 @@ import { BoxCartAvailabilityService } from '../../../infra/services/cart/BoxCart
 import { TextileProductAttributesAssembler } from '../../../infra/services/textileProducts/TextileProductAttributesAssembler';
 import { CartColorOptionResponse } from '../../models/cart/CartColorOptionResponse';
 import { TextileProductRepository } from '../../datastore/textileProducts/TextileProduct.repo';
+import { SuperfoodCartSizeResolver } from '../../../infra/services/cart/SuperfoodCartSizeResolver';
 
 @Injectable()
 export class GetCartByCustomerUseCase {
@@ -42,6 +43,7 @@ export class GetCartByCustomerUseCase {
 		private readonly textileProductAttributesAssembler: TextileProductAttributesAssembler,
 		@Inject(TextileProductRepository)
 		private readonly textileProductRepository: TextileProductRepository,
+		private readonly superfoodCartSizeResolver: SuperfoodCartSizeResolver,
 	) {}
 
 	async handle(
@@ -190,12 +192,16 @@ export class GetCartByCustomerUseCase {
 			}
 		}
 
+		const displayCombination =
+			await this.superfoodCartSizeResolver.toDisplayCombination(variant);
+
 		return ShoppingCartItemMapper.toResponse(
 			item,
 			variant,
 			productInfo,
 			ownerName,
 			colorOption,
+			displayCombination,
 		);
 	}
 }
