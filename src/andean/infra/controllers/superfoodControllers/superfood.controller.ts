@@ -235,7 +235,7 @@ export class SuperfoodController {
 	@ApiResponse({ status: 404, description: 'Producto no encontrado' })
 	async getSuperfoodForEdit(
 		@Param('productId') productId: string,
-	): Promise<SuperfoodProduct> {
+	): Promise<Record<string, unknown>> {
 		return this.getSuperfoodProductByIdUseCase.handle(productId);
 	}
 
