@@ -36,7 +36,12 @@ export class BoxRepoImpl extends BoxRepository {
 	async getAll(page: number, perPage: number): Promise<{ data: Box[]; total: number }> {
 		const skip = (page - 1) * perPage;
 		const [docs, total] = await Promise.all([
-			this.boxModel.find().skip(skip).limit(perPage).exec(),
+			this.boxModel
+				.find()
+				.sort({ _id: -1, createdAt: -1 })
+				.skip(skip)
+				.limit(perPage)
+				.exec(),
 			this.boxModel.countDocuments().exec(),
 		]);
 		const data = docs.map((doc) => BoxMapper.fromDocument(doc));
@@ -135,7 +140,7 @@ export class BoxRepoImpl extends BoxRepository {
 				$facet: {
 					meta: [{ $count: 'total' }],
 					data: [
-						{ $sort: { createdAt: -1 } },
+						{ $sort: { _id: -1, createdAt: -1 } },
 						{ $skip: skip },
 						{ $limit: limit },
 						{
