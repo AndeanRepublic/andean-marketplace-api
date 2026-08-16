@@ -114,8 +114,8 @@ describe('SuperfoodCartSizeResolver', () => {
 
 	it('falls back to the size alternative nameLabel', async () => {
 		productRepository.getSuperfoodProductById.mockResolvedValue({
-			options: [],
-		} as SuperfoodProduct);
+			options: [] as SuperfoodOptions[],
+		} as unknown as SuperfoodProduct);
 		sizeOptionRepository.getByIds.mockResolvedValue([
 			new SizeOptionAlternative(SIZE_ID, '400 g', 400, 'g', 8),
 		]);
