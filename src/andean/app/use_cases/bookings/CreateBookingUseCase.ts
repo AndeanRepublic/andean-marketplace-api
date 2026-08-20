@@ -14,7 +14,9 @@ import { ExperienceAvailabilityMode } from 'src/andean/domain/enums/ExperienceAv
 import { GetFutureUnavailableDatesUseCase } from '../experiences/GetFutureUnavailableDatesUseCase';
 import { ExperienceRepository } from '../../datastore/experiences/Experience.repo';
 import { ExperiencePricesRepository } from '../../datastore/experiences/ExperiencePrices.repo';
+import { ExperienceAvailabilityRepository } from '../../datastore/experiences/ExperienceAvailability.repo';
 import { Experience } from 'src/andean/domain/entities/experiences/Experience';
+import { WeekDay } from 'src/andean/domain/enums/WeekDay';
 
 @Injectable()
 export class CreateBookingUseCase {
@@ -25,6 +27,8 @@ export class CreateBookingUseCase {
 		private readonly experienceRepository: ExperienceRepository,
 		@Inject(ExperiencePricesRepository)
 		private readonly pricesRepository: ExperiencePricesRepository,
+		@Inject(ExperienceAvailabilityRepository)
+		private readonly availabilityRepository: ExperienceAvailabilityRepository,
 		@Inject(GetAvailabilityModeByIdUseCase)
 		private readonly getAvailabilityModeByIdUseCase: GetAvailabilityModeByIdUseCase,
 		@Inject(GetFutureUnavailableDatesUseCase)
@@ -45,6 +49,8 @@ export class CreateBookingUseCase {
 		if (!experience) {
 			throw new NotFoundException('Experience not found');
 		}
+
+		await this.validateAllowedStartDate(experience, dto.experienceDate);
 
 		// Validate availability mode
 		const availabilityMode = await this.getAvailabilityModeByIdUseCase.handle(
@@ -70,6 +76,46 @@ export class CreateBookingUseCase {
 
 		const booking = BookingMapper.fromCreateDto(dto, experience, prices);
 		return this.bookingRepository.createBooking(booking);
+	}
+
+	private async validateAllowedStartDate(
+		experience: Experience,
+		experienceDate: Date | string,
+	): Promise<void> {
+		const availability = await this.availabilityRepository.getById(
+			experience.availabilityId,
+		);
+		if (!availability) return;
+
+		const start = new Date(experienceDate);
+		start.setUTCHours(0, 0, 0, 0);
+		const dateKey = start.toISOString().slice(0, 10);
+
+		const extraKeys = new Set(
+			(availability.specificAvailableStartDates ?? []).map((d) => {
+				const n = new Date(d);
+				n.setUTCHours(0, 0, 0, 0);
+				return n.toISOString().slice(0, 10);
+			}),
+		);
+		if (extraKeys.has(dateKey)) return;
+
+		const weekly = availability.weeklyStartDays ?? [];
+		if (weekly.length === 0) {
+			if (extraKeys.size > 0) {
+				throw new BadRequestException(
+					'The selected date is not an allowed start date for this experience',
+				);
+			}
+			return;
+		}
+
+		const weekday = start.getUTCDay() as WeekDay;
+		if (!weekly.includes(weekday)) {
+			throw new BadRequestException(
+				'This experience cannot start on the selected day of the week',
+			);
+		}
 	}
 
 	private async validateAvailability(
