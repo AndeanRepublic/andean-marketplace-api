@@ -8,12 +8,22 @@ const ItineraryScheduleSchema = new Schema(
 	{ _id: false },
 );
 
+const ItineraryMealsSchema = new Schema(
+	{
+		breakfast: { type: Boolean, default: false },
+		lunch: { type: Boolean, default: false },
+		dinner: { type: Boolean, default: false },
+	},
+	{ _id: false },
+);
+
 export const ExperienceItinerarySchema = new Schema({
 	numberDay: { type: Number, required: true },
 	nameDay: { type: String, required: true },
 	descriptionDay: { type: String, required: true },
 	photos: { type: [String], default: [] },
 	schedule: { type: [ItineraryScheduleSchema], required: true },
+	meals: { type: ItineraryMealsSchema, required: false },
 });
 
 export interface ExperienceItineraryDocument extends Document {
@@ -25,4 +35,9 @@ export interface ExperienceItineraryDocument extends Document {
 		time: string;
 		activity: string;
 	}[];
+	meals?: {
+		breakfast?: boolean;
+		lunch?: boolean;
+		dinner?: boolean;
+	};
 }

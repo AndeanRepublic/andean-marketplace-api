@@ -191,6 +191,11 @@ export class ExperienceDetailMapper {
 				time: s.time,
 				activity: s.activity,
 			})),
+			meals: {
+				breakfast: Boolean(it.meals?.breakfast),
+				lunch: Boolean(it.meals?.lunch),
+				dinner: Boolean(it.meals?.dinner),
+			},
 		}));
 	}
 

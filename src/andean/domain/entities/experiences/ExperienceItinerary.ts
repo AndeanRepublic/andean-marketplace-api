@@ -1,4 +1,5 @@
 import { ItinerarySchedule } from './ItinerarySchedule';
+import { ItineraryMeals } from './ItineraryMeals';
 
 export class ExperienceItinerary {
 	constructor(
@@ -8,5 +9,6 @@ export class ExperienceItinerary {
 		public descriptionDay: string,
 		public photos: string[],
 		public schedule: ItinerarySchedule[],
+		public meals?: ItineraryMeals,
 	) { }
 }
