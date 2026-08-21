@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { AdminEntityStatus } from '../../../domain/enums/AdminEntityStatus';
 
 export class CommunityResponse {
@@ -28,4 +28,13 @@ export class CommunityResponse {
 		example: '2026-01-13T10:00:00.000Z',
 	})
 	updatedAt: Date;
+
+	@ApiPropertyOptional({ description: 'ID del MediaItem del banner' })
+	bannerImageId?: string;
+
+	@ApiPropertyOptional({
+		description: 'URL pública del banner horizontal',
+		example: 'https://cdn.example.com/communities/banner.jpg',
+	})
+	bannerImageUrl?: string;
 }

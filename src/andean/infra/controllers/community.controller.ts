@@ -154,7 +154,7 @@ export class CommunityController {
 	})
 	async list(): Promise<CommunityResponse[]> {
 		const communities = await this.listCommunityUseCase.execute();
-		return communities.map((c) => this.toResponse(c));
+		return Promise.all(communities.map((c) => this.toResponse(c)));
 	}
 
 	@Public()
@@ -265,24 +265,26 @@ export class CommunityController {
 		return this.toSealResponse(seal);
 	}
 
-	private toResponse(community: Community): CommunityResponse {
+	private async toResponse(community: Community): Promise<CommunityResponse> {
 		return {
 			id: community.id,
 			name: community.name,
 			status: community.status,
 			createdAt: community.createdAt,
 			updatedAt: community.updatedAt,
+			bannerImageId: community.bannerImageId,
+			bannerImageUrl: await this.mediaUrlResolver.resolveUrl(
+				community.bannerImageId,
+			),
 		};
 	}
 
 	private async toDetailResponse(
 		data: CommunityWithProviderInfo,
 	): Promise<CommunityDetailResponse> {
-		const base = this.toResponse(data);
+		const base = await this.toResponse(data);
 		return {
 			...base,
-			bannerImageId: data.bannerImageId,
-			bannerImageUrl: await this.mediaUrlResolver.resolveUrl(data.bannerImageId),
 			seals: data.seals ?? [],
 			providerInfo: data.providerInfo
 				? this.providerInfoToPlain(data.providerInfo)

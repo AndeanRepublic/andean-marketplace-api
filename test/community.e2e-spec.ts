@@ -100,7 +100,18 @@ describe('CommunityController (e2e)', () => {
 				},
 				{
 					provide: MediaUrlResolver,
-					useValue: { resolveUrls: jest.fn().mockImplementation((x) => x) },
+					useValue: {
+						resolveUrl: jest
+							.fn()
+							.mockImplementation(async (id?: string) =>
+								id ? `https://cdn.example.com/${id}` : '',
+							),
+						resolveUrls: jest.fn().mockImplementation(async (ids: string[]) =>
+							new Map(
+								(ids ?? []).map((id) => [id, `https://cdn.example.com/${id}`]),
+							),
+						),
+					},
 				},
 				{
 					provide: UpdateCommunityStatusUseCase,
@@ -177,6 +188,36 @@ describe('CommunityController (e2e)', () => {
 		});
 	});
 
+	describe('GET /communities', () => {
+		it('should return communities with banner image urls', () => {
+			jest
+				.spyOn(listCommunityUseCase, 'execute')
+				.mockResolvedValueOnce([mockCommunity]);
+			return request(app.getHttpServer())
+				.get('/communities')
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					expect(res.body).toHaveLength(1);
+					expect(res.body[0]).toMatchObject({
+						id: mockCommunity.id,
+						name: mockCommunity.name,
+						bannerImageId: mockCommunity.bannerImageId,
+						bannerImageUrl: `https://cdn.example.com/${mockCommunity.bannerImageId}`,
+					});
+				});
+		});
+
+		it('should return an empty array when no communities exist', () => {
+			jest.spyOn(listCommunityUseCase, 'execute').mockResolvedValueOnce([]);
+			return request(app.getHttpServer())
+				.get('/communities')
+				.expect(HttpStatus.OK)
+				.expect((res) => {
+					expect(res.body).toEqual([]);
+				});
+		});
+	});
+
 	// SKIPPED: Route commented out in controller (only POST is active)
 	describe.skip('GET /communities/:id', () => {
 		it('should return a community by id', () => {
@@ -201,35 +242,6 @@ describe('CommunityController (e2e)', () => {
 			return request(app.getHttpServer())
 				.get('/communities/non-existent-id')
 				.expect(HttpStatus.INTERNAL_SERVER_ERROR);
-		});
-	});
-
-	// SKIPPED: Route commented out in controller (only POST is active)
-	describe.skip('GET /communities', () => {
-		it('should return an array of communities', () => {
-			jest
-				.spyOn(listCommunityUseCase, 'execute')
-				.mockResolvedValueOnce([mockCommunity]);
-			return request(app.getHttpServer())
-				.get('/communities')
-				.expect(HttpStatus.OK)
-				.expect((res) => {
-					expect(res.body).toHaveLength(1);
-					expect(res.body[0]).toMatchObject({
-						id: mockCommunity.id,
-						name: mockCommunity.name,
-					});
-				});
-		});
-
-		it('should return an empty array when no communities exist', () => {
-			jest.spyOn(listCommunityUseCase, 'execute').mockResolvedValueOnce([]);
-			return request(app.getHttpServer())
-				.get('/communities')
-				.expect(HttpStatus.OK)
-				.expect((res) => {
-					expect(res.body).toEqual([]);
-				});
 		});
 	});
 

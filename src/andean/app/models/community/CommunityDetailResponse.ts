@@ -3,12 +3,6 @@ import { CommunityResponse } from './CommunityResponse';
 
 /** Respuesta completa para edición (banner, sellos, providerInfo). */
 export class CommunityDetailResponse extends CommunityResponse {
-	@ApiPropertyOptional({ description: 'ID del MediaItem del banner' })
-	bannerImageId?: string;
-
-	@ApiPropertyOptional({ description: 'URL pública del banner' })
-	bannerImageUrl?: string;
-
 	@ApiPropertyOptional({ type: [String], description: 'IDs de sellos asociados' })
 	seals?: string[];
 
