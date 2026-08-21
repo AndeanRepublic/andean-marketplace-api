@@ -27,6 +27,7 @@
 			"languages": ["ESPAÑOL", "ENGLISH"],
 			"ownerType": "COMMUNITY",
 			"ownerId": "community-001",
+			"categoryId": "507f1f77bcf86cd799439011",
 			"category": "trekking"
 		},
 		"mediaInfo": {
@@ -198,6 +199,7 @@
 			"languages": ["ESPAÑOL", "ENGLISH", "QUECHUA"],
 			"ownerType": "COMMUNITY",
 			"ownerId": "community-001",
+			"categoryId": "507f1f77bcf86cd799439011",
 			"category": "trekking-premium"
 		},
 		"prices": {

@@ -387,6 +387,17 @@ export class ItineraryScheduleResponse {
 	activity!: string;
 }
 
+export class ItineraryMealsResponse {
+	@ApiProperty({ description: 'Desayuno incluido este día', example: true })
+	breakfast!: boolean;
+
+	@ApiProperty({ description: 'Almuerzo incluido este día', example: true })
+	lunch!: boolean;
+
+	@ApiProperty({ description: 'Cena incluida este día', example: false })
+	dinner!: boolean;
+}
+
 export class ItineraryItemResponse {
 	@ApiProperty({
 		description: 'Número del día en el itinerario',
@@ -419,6 +430,12 @@ export class ItineraryItemResponse {
 		type: [ItineraryScheduleResponse],
 	})
 	schedule!: ItineraryScheduleResponse[];
+
+	@ApiPropertyOptional({
+		description: 'Comidas incluidas este día',
+		type: ItineraryMealsResponse,
+	})
+	meals?: ItineraryMealsResponse;
 }
 
 export class ItinerarySummaryItemResponse {

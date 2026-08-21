@@ -1,0 +1,37 @@
+{
+	"entity": {
+		"id": "507f1f77bcf86cd799439011",
+		"name": "Community Tourism",
+		"status": "ENABLED",
+		"createdAt": "2026-01-01T00:00:00.000Z",
+		"updatedAt": "2026-01-01T00:00:00.000Z"
+	},
+	"createDto": {
+		"name": "Ancestral Tourism",
+		"status": "ENABLED"
+	},
+	"bulkCreateDto": {
+		"experienceCategories": [
+			{
+				"name": "Adventure Tourism",
+				"status": "ENABLED"
+			},
+			{
+				"name": "Ancestral Tourism",
+				"status": "ENABLED"
+			}
+		]
+	},
+	"additionalEntities": [
+		{
+			"id": "507f1f77bcf86cd799439012",
+			"name": "Ancestral Tourism",
+			"status": "ENABLED"
+		},
+		{
+			"id": "507f1f77bcf86cd799439013",
+			"name": "Adventure Tourism",
+			"status": "DISABLED"
+		}
+	]
+}

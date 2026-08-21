@@ -12,6 +12,7 @@ import { PaymentProvider } from '../../../domain/enums/PaymentProvider';
 import { PaymentStatus } from '../../../domain/enums/PaymentStatus';
 import { BookingStatus } from '../../../domain/enums/BookingStatus';
 import { Booking } from '../../../domain/entities/booking/Booking';
+import { AgeGroupCode } from '../../../domain/enums/AgeGroupCode';
 import { EmailRepository } from '../../datastore/Email.repo';
 
 export interface CapturePayPalBookingResponse {
@@ -94,9 +95,13 @@ export class CapturePayPalBookingUseCase {
 
 		// Mapear age groups al formato de email
 		const ageGroups = booking.guestsInfo.ageGroups.map((ageGroup) => {
-			const pricingInfo = booking.experience.experienceSnapshot.ageGroupPricing.find(
-				(pricing) => pricing.code === ageGroup.code,
-			);
+			const snapshotPricing =
+				booking.experience.experienceSnapshot.ageGroupPricing;
+			const pricingInfo =
+				snapshotPricing.find((pricing) => pricing.code === ageGroup.code) ??
+				snapshotPricing.find(
+					(pricing) => pricing.code === AgeGroupCode.GENERAL,
+				);
 
 			const unitPrice = pricingInfo?.price || 0;
 			const total = unitPrice * ageGroup.quantity;

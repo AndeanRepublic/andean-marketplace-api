@@ -74,7 +74,16 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 				: []),
 			// 1. basicInfo ya está embebido — apply category / ownerId filters directamente
 			...(filters.category
-				? [{ $match: { 'basicInfo.category': filters.category } }]
+				? [
+						{
+							$match: {
+								$or: [
+									{ 'basicInfo.categoryId': filters.category },
+									{ 'basicInfo.category': filters.category },
+								],
+							},
+						},
+					]
 				: []),
 			...(filters.ownerId
 				? [{ $match: { 'basicInfo.ownerId': filters.ownerId } }]

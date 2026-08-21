@@ -133,4 +133,8 @@ export class FixtureLoader {
 	static loadExperience() {
 		return this.load('experience.fixture.json');
 	}
+
+	static loadExperienceCategory() {
+		return this.load('experience-category.fixture.json');
+	}
 }

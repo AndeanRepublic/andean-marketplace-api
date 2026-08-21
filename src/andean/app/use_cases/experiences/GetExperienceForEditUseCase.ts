@@ -108,6 +108,7 @@ export class GetExperienceForEditUseCase {
 				includesPickup,
 				includesReturn,
 				includesAccommodation,
+				categoryId: experience.basicInfo.categoryId,
 				category: experience.basicInfo.category,
 			},
 			mediaInfo: {
@@ -158,6 +159,11 @@ export class GetExperienceForEditUseCase {
 					time: s.time,
 					activity: s.activity,
 				})),
+				meals: {
+					breakfast: Boolean(it.meals?.breakfast),
+					lunch: Boolean(it.meals?.lunch),
+					dinner: Boolean(it.meals?.dinner),
+				},
 			})),
 			mediaPreviewUrls: preview,
 		};

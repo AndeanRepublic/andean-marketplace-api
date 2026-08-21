@@ -3,6 +3,19 @@ import { ExperienceItineraryDocument } from '../../persistence/experiences/exper
 import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { Types } from 'mongoose';
 import { ItinerarySchedule } from 'src/andean/domain/entities/experiences/ItinerarySchedule';
+import { ItineraryMeals } from 'src/andean/domain/entities/experiences/ItineraryMeals';
+
+function toMeals(raw?: {
+	breakfast?: boolean;
+	lunch?: boolean;
+	dinner?: boolean;
+}): ItineraryMeals {
+	return plainToInstance(ItineraryMeals, {
+		breakfast: Boolean(raw?.breakfast),
+		lunch: Boolean(raw?.lunch),
+		dinner: Boolean(raw?.dinner),
+	});
+}
 
 export class ExperienceItineraryMapper {
 	static fromDocument(
@@ -23,6 +36,7 @@ export class ExperienceItineraryMapper {
 			descriptionDay: plain.descriptionDay,
 			photos: plain.photos,
 			schedule,
+			meals: toMeals(plain.meals),
 		});
 	}
 
@@ -38,6 +52,7 @@ export class ExperienceItineraryMapper {
 			descriptionDay: dto.descriptionDay,
 			photos: dto.photos || [],
 			schedule,
+			meals: toMeals(dto.meals),
 		};
 		return plainToInstance(ExperienceItinerary, plain);
 	}
@@ -54,6 +69,7 @@ export class ExperienceItineraryMapper {
 			descriptionDay: dto.descriptionDay,
 			photos: dto.photos || [],
 			schedule,
+			meals: toMeals(dto.meals),
 		};
 		return plainToInstance(ExperienceItinerary, plain);
 	}

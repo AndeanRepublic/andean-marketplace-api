@@ -5,6 +5,7 @@ import {
 	BadRequestException,
 } from '@nestjs/common';
 import { ExperienceRepository } from '../../datastore/experiences/Experience.repo';
+import { ExperienceCategoryRepository } from '../../datastore/experiences/ExperienceCategory.repo';
 import { Experience } from 'src/andean/domain/entities/experiences/Experience';
 import { UpdateExperienceDto } from 'src/andean/infra/controllers/dto/experiences/UpdateExperienceDto';
 import { ExperienceBasicInfoMapper } from 'src/andean/infra/services/experiences/ExperienceBasicInfoMapper';
@@ -24,6 +25,8 @@ export class UpdateExperienceUseCase {
 	constructor(
 		@Inject(ExperienceRepository)
 		private readonly experienceRepository: ExperienceRepository,
+		@Inject(ExperienceCategoryRepository)
+		private readonly experienceCategoryRepository: ExperienceCategoryRepository,
 		@Inject(MediaItemRepository)
 		private readonly mediaItemRepository: MediaItemRepository,
 		private readonly ownerStrategyResolver: OwnerStrategyResolver,
@@ -55,6 +58,17 @@ export class UpdateExperienceUseCase {
 
 		// ── Value Objects embebidos ───────────────────────────────────────────
 		if (dto.basicInfo) {
+			if (dto.basicInfo.categoryId) {
+				const categoryFound =
+					await this.experienceCategoryRepository.getCategoryById(
+						dto.basicInfo.categoryId,
+					);
+				if (!categoryFound) {
+					throw new NotFoundException(
+						`ExperienceCategory with ID ${dto.basicInfo.categoryId} not found`,
+					);
+				}
+			}
 			if (dto.basicInfo.ownerType && dto.basicInfo.ownerId) {
 				const strategy = this.ownerStrategyResolver.resolve(
 					dto.basicInfo.ownerType,

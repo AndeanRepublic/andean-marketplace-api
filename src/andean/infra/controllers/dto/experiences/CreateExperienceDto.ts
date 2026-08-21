@@ -126,8 +126,17 @@ export class ExperienceBasicInfoDto {
 	@IsBoolean()
 	includesReturn!: boolean;
 
+	@ApiProperty({
+		description: 'ID de la categoría de experiencia',
+		example: '507f1f77bcf86cd799439011',
+	})
+	@IsString()
+	@IsNotEmpty()
+	categoryId!: string;
+
 	@ApiPropertyOptional({
-		description: 'Categoría de la experiencia',
+		description:
+			'Categoría libre (legado). Preferir categoryId de /experiences/categories',
 		example: 'trekking',
 	})
 	@IsString()
@@ -394,6 +403,32 @@ export class ItineraryScheduleDto {
 	activity!: string;
 }
 
+export class ItineraryMealsDto {
+	@ApiPropertyOptional({
+		description: 'Si este día incluye desayuno',
+		example: true,
+	})
+	@IsBoolean()
+	@IsOptional()
+	breakfast?: boolean;
+
+	@ApiPropertyOptional({
+		description: 'Si este día incluye almuerzo',
+		example: true,
+	})
+	@IsBoolean()
+	@IsOptional()
+	lunch?: boolean;
+
+	@ApiPropertyOptional({
+		description: 'Si este día incluye cena',
+		example: false,
+	})
+	@IsBoolean()
+	@IsOptional()
+	dinner?: boolean;
+}
+
 export class ExperienceItineraryDto {
 	@ApiProperty({ description: 'Número del día', example: 1 })
 	@IsInt()
@@ -428,6 +463,15 @@ export class ExperienceItineraryDto {
 	@ValidateNested({ each: true })
 	@Type(() => ItineraryScheduleDto)
 	schedule!: ItineraryScheduleDto[];
+
+	@ApiPropertyOptional({
+		description: 'Comidas incluidas este día (desayuno, almuerzo, cena)',
+		type: ItineraryMealsDto,
+	})
+	@IsOptional()
+	@ValidateNested()
+	@Type(() => ItineraryMealsDto)
+	meals?: ItineraryMealsDto;
 }
 
 // ─── Main Create DTO ───

@@ -6,6 +6,7 @@ import { ExperiencePricesSchema } from './infra/persistence/experiences/experien
 import { ExperienceAvailabilitySchema } from './infra/persistence/experiences/experienceAvailability.schema';
 import { ExperienceItinerarySchema } from './infra/persistence/experiences/experienceItinerary.schema';
 import { ExperienceSchema } from './infra/persistence/experiences/experience.schema';
+import { ExperienceCategorySchema } from './infra/persistence/experiences/experienceCategory.schema';
 import { ReviewSchema } from './infra/persistence/Review.schema';
 
 // Abstract Repositories
@@ -13,6 +14,7 @@ import { ExperiencePricesRepository } from './app/datastore/experiences/Experien
 import { ExperienceAvailabilityRepository } from './app/datastore/experiences/ExperienceAvailability.repo';
 import { ExperienceItineraryRepository } from './app/datastore/experiences/ExperienceItinerary.repo';
 import { ExperienceRepository } from './app/datastore/experiences/Experience.repo';
+import { ExperienceCategoryRepository } from './app/datastore/experiences/ExperienceCategory.repo';
 import { ReviewRepository } from './app/datastore/Review.repo';
 
 // Repository Implementations
@@ -20,6 +22,7 @@ import { ExperiencePricesRepositoryImpl } from './infra/datastore/experiences/ex
 import { ExperienceAvailabilityRepositoryImpl } from './infra/datastore/experiences/experienceAvailability.repo.impl';
 import { ExperienceItineraryRepositoryImpl } from './infra/datastore/experiences/experienceItinerary.repo.impl';
 import { ExperienceRepositoryImpl } from './infra/datastore/experiences/experience.repo.impl';
+import { ExperienceCategoryRepositoryImpl } from './infra/datastore/experiences/experienceCategory.repo.impl';
 import { ReviewRepositoryImpl } from './infra/datastore/Review.repo.impl';
 
 // Sub-table Use Cases (solo prices, availability e itinerary siguen siendo colecciones separadas)
@@ -50,6 +53,7 @@ import { OwnerStrategyResolver } from './infra/services/experiences/OwnerStrateg
 import { OwnerInfoResolver } from './infra/services/owner/OwnerInfoResolver';
 
 // Controllers
+import { ExperienceCategoryController } from './infra/controllers/experienceControllers/experienceCategory.controller';
 import { ExperienceController } from './infra/controllers/experienceControllers/experience.controller';
 import { ExperiencePricesController } from './infra/controllers/experienceControllers/experience-prices.controller';
 import { ExperienceAvailabilityController } from './infra/controllers/experienceControllers/experience-availability.controller';
@@ -62,6 +66,12 @@ import { ShopsModule } from './shop.module';
 import { BookingModule } from './booking.module';
 import { SellerResourceAccessModule } from './sellerResourceAccess.module';
 import { GetExperienceForEditUseCase } from './app/use_cases/experiences/GetExperienceForEditUseCase';
+import { CreateExperienceCategoryUseCase } from './app/use_cases/experiences/category/CreateExperienceCategoryUseCase';
+import { CreateManyExperienceCategoriesUseCase } from './app/use_cases/experiences/category/CreateManyExperienceCategoriesUseCase';
+import { ListExperienceCategoriesUseCase } from './app/use_cases/experiences/category/ListExperienceCategoriesUseCase';
+import { GetExperienceCategoryByIdUseCase } from './app/use_cases/experiences/category/GetExperienceCategoryByIdUseCase';
+import { UpdateExperienceCategoryUseCase } from './app/use_cases/experiences/category/UpdateExperienceCategoryUseCase';
+import { DeleteExperienceCategoryUseCase } from './app/use_cases/experiences/category/DeleteExperienceCategoryUseCase';
 
 @Module({
 	imports: [
@@ -70,6 +80,7 @@ import { GetExperienceForEditUseCase } from './app/use_cases/experiences/GetExpe
 			{ name: 'ExperienceAvailability', schema: ExperienceAvailabilitySchema },
 			{ name: 'ExperienceItinerary', schema: ExperienceItinerarySchema },
 			{ name: 'Experience', schema: ExperienceSchema },
+			{ name: 'ExperienceCategory', schema: ExperienceCategorySchema },
 			{ name: 'Review', schema: ReviewSchema },
 		]),
 		CommunityModule,
@@ -80,6 +91,7 @@ import { GetExperienceForEditUseCase } from './app/use_cases/experiences/GetExpe
 		SellerResourceAccessModule,
 	],
 	controllers: [
+		ExperienceCategoryController,
 		ExperienceController,
 		ExperiencePricesController,
 		ExperienceAvailabilityController,
@@ -101,6 +113,10 @@ import { GetExperienceForEditUseCase } from './app/use_cases/experiences/GetExpe
 		{
 			provide: ExperienceRepository,
 			useClass: ExperienceRepositoryImpl,
+		},
+		{
+			provide: ExperienceCategoryRepository,
+			useClass: ExperienceCategoryRepositoryImpl,
 		},
 		{
 			provide: ReviewRepository,
@@ -136,6 +152,13 @@ import { GetExperienceForEditUseCase } from './app/use_cases/experiences/GetExpe
 		GetAvailabilityModeByIdUseCase,
 		GetFutureUnavailableDatesUseCase,
 		GetExperienceForEditUseCase,
+
+		CreateExperienceCategoryUseCase,
+		CreateManyExperienceCategoriesUseCase,
+		ListExperienceCategoriesUseCase,
+		GetExperienceCategoryByIdUseCase,
+		UpdateExperienceCategoryUseCase,
+		DeleteExperienceCategoryUseCase,
 	],
 	exports: [
 		ExperiencePricesRepository,
