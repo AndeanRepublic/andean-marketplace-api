@@ -213,10 +213,10 @@ describe('ExperienceController (e2e)', () => {
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 
-		it('should return 400 when basicInfo.title is missing', () => {
+		it('should return 400 when basicInfo.categoryId is missing', () => {
 			const invalidDto = {
 				...createDto,
-				basicInfo: { ...createDto.basicInfo, title: undefined },
+				basicInfo: { ...createDto.basicInfo, categoryId: undefined },
 			};
 
 			return request(app.getHttpServer())
@@ -782,6 +782,7 @@ describe('ExperienceController (e2e)', () => {
 					includesPickup: true,
 					includesAccommodation: true,
 					includesReturn: true,
+					categoryId: '507f1f77bcf86cd799439011',
 				},
 			};
 

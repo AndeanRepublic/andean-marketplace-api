@@ -40,6 +40,7 @@ export interface ExperienceDocument extends Document {
 		includesPickup: boolean;
 		includesAccommodation: boolean;
 		includesReturn: boolean;
+		categoryId?: string;
 		category?: string;
 	};
 	mediaInfo: {

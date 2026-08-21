@@ -108,6 +108,7 @@ export class GetExperienceForEditUseCase {
 				includesPickup,
 				includesReturn,
 				includesAccommodation,
+				categoryId: experience.basicInfo.categoryId,
 				category: experience.basicInfo.category,
 			},
 			mediaInfo: {

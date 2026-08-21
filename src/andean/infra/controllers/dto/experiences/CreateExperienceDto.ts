@@ -126,8 +126,17 @@ export class ExperienceBasicInfoDto {
 	@IsBoolean()
 	includesReturn!: boolean;
 
+	@ApiProperty({
+		description: 'ID de la categoría de experiencia',
+		example: '507f1f77bcf86cd799439011',
+	})
+	@IsString()
+	@IsNotEmpty()
+	categoryId!: string;
+
 	@ApiPropertyOptional({
-		description: 'Categoría de la experiencia',
+		description:
+			'Categoría libre (legado). Preferir categoryId de /experiences/categories',
 		example: 'trekking',
 	})
 	@IsString()

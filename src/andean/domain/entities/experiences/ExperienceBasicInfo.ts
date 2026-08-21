@@ -19,6 +19,7 @@ export class ExperienceBasicInfo {
 		public includesAccommodation: boolean,
 		public includesReturn: boolean,
 		public hours?: number,
+		public categoryId?: string,
 		public category?: string,
 	) {}
 }

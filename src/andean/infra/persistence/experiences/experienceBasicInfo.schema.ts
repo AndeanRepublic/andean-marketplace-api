@@ -33,6 +33,7 @@ export const ExperienceBasicInfoSchema = new Schema(
 		includesPickup: { type: Boolean, required: true, default: false },
 		includesAccommodation: { type: Boolean, required: true, default: false },
 		includesReturn: { type: Boolean, required: true, default: false },
+		categoryId: { type: String, required: false },
 		category: { type: String, required: false },
 	},
 	{ _id: false },

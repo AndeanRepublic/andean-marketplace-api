@@ -5,6 +5,7 @@ import {
 	BadRequestException,
 } from '@nestjs/common';
 import { ExperienceRepository } from '../../datastore/experiences/Experience.repo';
+import { ExperienceCategoryRepository } from '../../datastore/experiences/ExperienceCategory.repo';
 import { Experience } from 'src/andean/domain/entities/experiences/Experience';
 import { ExperienceMapper } from 'src/andean/infra/services/experiences/ExperienceMapper';
 import { ExperienceBasicInfoMapper } from 'src/andean/infra/services/experiences/ExperienceBasicInfoMapper';
@@ -23,6 +24,8 @@ export class CreateExperienceUseCase {
 	constructor(
 		@Inject(ExperienceRepository)
 		private readonly experienceRepository: ExperienceRepository,
+		@Inject(ExperienceCategoryRepository)
+		private readonly experienceCategoryRepository: ExperienceCategoryRepository,
 		@Inject(MediaItemRepository)
 		private readonly mediaItemRepository: MediaItemRepository,
 		private readonly ownerStrategyResolver: OwnerStrategyResolver,
@@ -33,6 +36,16 @@ export class CreateExperienceUseCase {
 
 	async handle(dto: CreateExperienceDto): Promise<Experience> {
 		this.validateDurationFields(dto.basicInfo);
+
+		const categoryFound =
+			await this.experienceCategoryRepository.getCategoryById(
+				dto.basicInfo.categoryId,
+			);
+		if (!categoryFound) {
+			throw new NotFoundException(
+				`ExperienceCategory with ID ${dto.basicInfo.categoryId} not found`,
+			);
+		}
 
 		// 1. Validar owner (basicInfo)
 		const ownerStrategy = this.ownerStrategyResolver.resolve(dto.basicInfo.ownerType);
