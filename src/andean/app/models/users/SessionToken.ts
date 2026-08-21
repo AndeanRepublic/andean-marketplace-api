@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { AccountRole } from '../../../domain/enums/AccountRole';
 import { CoinType } from '../../../domain/enums/CoinType';
 
 export class SessionToken {
@@ -69,6 +70,14 @@ export class SessionToken {
 	})
 	public profilePictureUrl: string;
 
+	@ApiProperty({
+		description: 'Roles de la cuenta',
+		enum: AccountRole,
+		isArray: true,
+		example: [AccountRole.USER],
+	})
+	public roles: AccountRole[];
+
 	constructor(
 		token: string,
 		duration: number,
@@ -81,6 +90,7 @@ export class SessionToken {
 		coin: CoinType,
 		birthDate: string,
 		profilePictureUrl: string,
+		roles: AccountRole[],
 	) {
 		this.token = token;
 		this.duration = duration;
@@ -93,5 +103,6 @@ export class SessionToken {
 		this.coin = coin;
 		this.birthDate = birthDate;
 		this.profilePictureUrl = profilePictureUrl;
+		this.roles = roles;
 	}
 }
