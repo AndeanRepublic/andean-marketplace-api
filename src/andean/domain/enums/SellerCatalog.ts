@@ -1,0 +1,5 @@
+export enum SellerCatalog {
+	SUPERFOODS = 'SUPERFOODS',
+	TEXTILES = 'TEXTILES',
+	EXPERIENCES = 'EXPERIENCES',
+}

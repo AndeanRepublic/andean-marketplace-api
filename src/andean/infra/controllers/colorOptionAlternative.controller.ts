@@ -41,7 +41,7 @@ export class ColorOptionAlternativeController {
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@ApiOperation({
 		summary: 'Crear nueva opción de color',
 		description:
@@ -65,7 +65,7 @@ export class ColorOptionAlternativeController {
 	@Post('/bulk')
 	@HttpCode(HttpStatus.CREATED)
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@ApiOperation({
 		summary: 'Crear múltiples opciones de color',
 		description:
@@ -89,7 +89,7 @@ export class ColorOptionAlternativeController {
 	@Put('/:id')
 	@HttpCode(HttpStatus.OK)
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@ApiOperation({
 		summary: 'Actualizar opción de color',
 		description:
@@ -161,7 +161,7 @@ export class ColorOptionAlternativeController {
 	@Delete('/:id')
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@ApiOperation({
 		summary: 'Eliminar opción de color',
 		description: 'Elimina una opción de color por su ID',

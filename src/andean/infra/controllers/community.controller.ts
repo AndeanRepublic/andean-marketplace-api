@@ -197,7 +197,7 @@ export class CommunityController {
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@Patch(':id/status')
 	@ApiOperation({ summary: 'Update community status' })
 	async updateStatus(
@@ -210,7 +210,7 @@ export class CommunityController {
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@Delete(':id')
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@ApiOperation({ summary: 'Delete community' })
@@ -222,7 +222,7 @@ export class CommunityController {
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@Post(`/${path_seals}/bulk`)
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({
@@ -244,7 +244,7 @@ export class CommunityController {
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@Post(`/${path_seals}`)
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({

@@ -41,7 +41,7 @@ export class SizeOptionAlternativeController {
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@ApiOperation({
 		summary: 'Crear nueva opción de talla',
 		description:
@@ -65,7 +65,7 @@ export class SizeOptionAlternativeController {
 	@Post('/bulk')
 	@HttpCode(HttpStatus.CREATED)
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@ApiOperation({
 		summary: 'Crear múltiples opciones de talla',
 		description:
@@ -89,7 +89,7 @@ export class SizeOptionAlternativeController {
 	@Put('/:id')
 	@HttpCode(HttpStatus.OK)
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@ApiOperation({
 		summary: 'Actualizar opción de talla',
 		description: 'Actualiza los datos de una opción de talla existente',
@@ -160,7 +160,7 @@ export class SizeOptionAlternativeController {
 	@Delete('/:id')
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
+	@Roles(AccountRole.ADMIN)
 	@ApiOperation({
 		summary: 'Eliminar opción de talla',
 		description: 'Elimina una opción de talla por su ID',

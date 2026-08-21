@@ -24,6 +24,7 @@ import { ExperienceModule } from './andean/experience.module';
 import { TryOnModule } from './andean/tryOn.module';
 import { BookingModule } from './andean/booking.module';
 import { HealthModule } from './health/health.module';
+import { SellerResourceAccessModule } from './andean/sellerResourceAccess.module';
 
 @Module({
 	imports: [
@@ -58,6 +59,7 @@ import { HealthModule } from './health/health.module';
 		ExperienceModule,
 		TryOnModule,
 		BookingModule,
+		SellerResourceAccessModule,
 		HealthModule,
 	],
 	controllers: [],

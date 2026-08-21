@@ -5,7 +5,7 @@ import { SuperfoodProductStatus } from '../src/andean/domain/enums/SuperfoodProd
 import { GetAllTextileProductsForManagementUseCase } from '../src/andean/app/use_cases/textileProducts/GetAllTextileProductsForManagementUseCase';
 import { GetAllSuperfoodProductsForManagementUseCase } from '../src/andean/app/use_cases/superfoods/GetAllSuperfoodProductsForManagementUseCase';
 import { GetAllExperiencesForManagementUseCase } from '../src/andean/app/use_cases/experiences/GetAllExperiencesForManagementUseCase';
-import { GetAllExperiencesUseCase } from '../src/andean/app/use_cases/experiences/GetAllExperiencesUseCase';
+import { AccountRole } from '../src/andean/domain/enums/AccountRole';
 import { GetByIdTextileProductDetailUseCase } from '../src/andean/app/use_cases/textileProducts/GetByIdTextileProductDetailUseCase';
 import { GetBoxDetailUseCase } from '../src/andean/app/use_cases/boxes/GetBoxDetailUseCase';
 import { AdminEntityStatus } from '../src/andean/domain/enums/AdminEntityStatus';
@@ -41,12 +41,16 @@ describe('GetAllTextileProductsForManagementUseCase', () => {
 			getFilterCounts,
 		};
 		const mediaUrlResolver = { resolveUrls: jest.fn().mockResolvedValue(new Map()) };
+		const sellerResourceAccess = {
+			resolveManagementOwnerIds: jest.fn().mockResolvedValue(null),
+		};
 		const useCase = new GetAllTextileProductsForManagementUseCase(
 			textileProductRepository as never,
 			mediaUrlResolver as never,
+			sellerResourceAccess as never,
 		);
 
-		await useCase.handle(1, 10);
+		await useCase.handle(1, 10, 'admin-id', [AccountRole.ADMIN]);
 
 		expect(getAllWithFilters).toHaveBeenCalledWith(
 			expect.objectContaining({ includeAllStatuses: true }),
@@ -60,13 +64,17 @@ describe('GetAllSuperfoodProductsForManagementUseCase', () => {
 			.fn()
 			.mockResolvedValue({ products: [], total: 0 });
 		const superfoodProductRepository = { getAllWithFilters };
+		const sellerResourceAccess = {
+			resolveManagementOwnerIds: jest.fn().mockResolvedValue(null),
+		};
 		const useCase = new GetAllSuperfoodProductsForManagementUseCase(
 			superfoodProductRepository as never,
 			{ attachListMediaFromAggregate: jest.fn((p) => p) } as never,
 			{ attachCatalogColorFromAggregate: jest.fn((p) => p) } as never,
+			sellerResourceAccess as never,
 		);
 
-		await useCase.handle(1, 10);
+		await useCase.handle(1, 10, 'admin-id', [AccountRole.ADMIN]);
 
 		expect(getAllWithFilters).toHaveBeenCalledWith(
 			expect.objectContaining({ includeAllStatuses: true }),
@@ -84,9 +92,14 @@ describe('GetAllExperiencesForManagementUseCase', () => {
 		};
 		const useCase = new GetAllExperiencesForManagementUseCase(
 			getAllExperiencesUseCase as never,
+			{
+				resolveManagementOwnerIds: jest.fn().mockResolvedValue(null),
+			} as never,
 		);
 
-		await useCase.handle({ page: 2, perPage: 5 });
+		await useCase.handle({ page: 2, perPage: 5 }, 'admin-id', [
+			AccountRole.ADMIN,
+		]);
 
 		expect(getAllExperiencesUseCase.handle).toHaveBeenCalledWith({
 			page: 2,
