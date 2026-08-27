@@ -85,9 +85,11 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 						},
 					]
 				: []),
-			...(filters.ownerId
-				? [{ $match: { 'basicInfo.ownerId': filters.ownerId } }]
-				: []),
+			...(filters.ownerIds?.length
+				? [{ $match: { 'basicInfo.ownerId': { $in: filters.ownerIds } } }]
+				: filters.ownerId
+					? [{ $match: { 'basicInfo.ownerId': filters.ownerId } }]
+					: []),
 
 			// 2. Lookup Prices (sigue siendo colección separada)
 			{

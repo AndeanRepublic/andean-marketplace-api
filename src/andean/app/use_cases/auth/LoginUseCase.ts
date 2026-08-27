@@ -80,6 +80,7 @@ export class LoginUseCase {
 			customerProfile?.coin ?? CoinType.PEN,
 			customerProfile?.birthDate?.toISOString().split('T')[0] ?? '',
 			profilePictureUrl,
+			account.roles ?? [],
 		);
 	}
 }

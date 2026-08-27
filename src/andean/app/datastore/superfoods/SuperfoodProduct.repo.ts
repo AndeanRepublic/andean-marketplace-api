@@ -10,6 +10,7 @@ export interface SuperfoodProductFilters {
 	perPage?: number;
 	categoryId?: string;
 	ownerId?: string;
+	ownerIds?: string[];
 	sortBy?: ProductSortBy;
 	/** Si es true, incluye productos con totalStock <= 0 (p. ej. dashboard admin). */
 	includeZeroStock?: boolean;

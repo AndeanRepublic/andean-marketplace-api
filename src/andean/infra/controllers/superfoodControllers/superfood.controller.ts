@@ -178,12 +178,12 @@ export class SuperfoodController {
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.ADMIN)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Get('management')
 	@ApiOperation({
-		summary: 'Listar superfoods para dashboard (admin)',
+		summary: 'Listar superfoods para dashboard (admin / vendedor)',
 		description:
-			'Lista paginada incluyendo stock 0 y cualquier estado (PUBLISHED/HIDDEN). Para el catálogo público usar GET /superfoods.',
+			'Lista paginada incluyendo stock 0 y cualquier estado (PUBLISHED/HIDDEN). ADMIN ve todos; SELLER solo los de sus tiendas o comunidades. Para el catálogo público usar GET /superfoods.',
 	})
 	@ApiQuery({
 		name: 'page',
@@ -207,10 +207,13 @@ export class SuperfoodController {
 	async getAllSuperfoodProductsForManagement(
 		@Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
 		@Query('per_page', new DefaultValuePipe(10), ParseIntPipe) perPage: number,
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
 	): Promise<PaginatedProductsResponse<SuperfoodProductListItem>> {
 		return this.getAllSuperfoodProductsForManagementUseCase.handle(
 			page,
 			perPage,
+			requestingUser.userId,
+			requestingUser.roles,
 		);
 	}
 

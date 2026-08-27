@@ -79,7 +79,9 @@ export class TextileProductRepositoryImpl extends TextileProductRepository {
 			baseQuery.categoryId = filters.categoryId;
 		}
 
-		if (filters?.ownerId) {
+		if (filters?.ownerIds?.length) {
+			baseQuery['baseInfo.ownerId'] = { $in: filters.ownerIds };
+		} else if (filters?.ownerId) {
 			baseQuery['baseInfo.ownerId'] = filters.ownerId;
 		}
 

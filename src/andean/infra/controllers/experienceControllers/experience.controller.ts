@@ -118,12 +118,12 @@ export class ExperienceController {
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.ADMIN)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Get('management')
 	@ApiOperation({
-		summary: 'Listar experiencias para dashboard (admin)',
+		summary: 'Listar experiencias para dashboard (admin / vendedor)',
 		description:
-			'Misma lista paginada que el endpoint público (incluye HIDDEN), requiere rol ADMIN. Para el catálogo público usar GET /experiences.',
+			'Misma lista paginada que el endpoint público (incluye HIDDEN). ADMIN ve todas; SELLER solo las de sus tiendas o comunidades. Para el catálogo público usar GET /experiences.',
 	})
 	@ApiQuery({
 		name: 'page',
@@ -173,6 +173,7 @@ export class ExperienceController {
 		type: PaginatedExperiencesResponse,
 	})
 	async getAllForManagement(
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
 		@Query('page', new ParseIntPipe({ optional: true })) page?: number,
 		@Query('per_page', new ParseIntPipe({ optional: true }))
 		perPage?: number,
@@ -193,6 +194,8 @@ export class ExperienceController {
 
 		return this.getAllExperiencesForManagementUseCase.handle(
 			Object.keys(filters).length > 0 ? filters : undefined,
+			requestingUser.userId,
+			requestingUser.roles,
 		);
 	}
 

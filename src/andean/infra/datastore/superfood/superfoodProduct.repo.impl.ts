@@ -130,8 +130,10 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 			query.categoryId = filters.categoryId;
 		}
 
-		// Filtro por ownerId
-		if (filters.ownerId) {
+		// Filtro por ownerId / ownerIds
+		if (filters.ownerIds?.length) {
+			query['baseInfo.ownerId'] = { $in: filters.ownerIds };
+		} else if (filters.ownerId) {
 			query['baseInfo.ownerId'] = filters.ownerId;
 		}
 

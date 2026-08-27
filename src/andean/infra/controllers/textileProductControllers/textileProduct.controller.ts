@@ -241,12 +241,12 @@ export class TextileProductController {
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(AccountRole.ADMIN)
+	@Roles(AccountRole.SELLER, AccountRole.ADMIN)
 	@Get('management')
 	@ApiOperation({
-		summary: 'Listar textiles para dashboard (admin)',
+		summary: 'Listar textiles para dashboard (admin / vendedor)',
 		description:
-			'Lista paginada con stock 0 incluido y cualquier estado. Para el catálogo público usar GET /textile-products.',
+			'Lista paginada con stock 0 incluido y cualquier estado. ADMIN ve todos; SELLER solo los de sus tiendas o comunidades. Para el catálogo público usar GET /textile-products.',
 	})
 	@ApiQuery({
 		name: 'page',
@@ -270,10 +270,13 @@ export class TextileProductController {
 	async getAllTextileProductsForManagement(
 		@Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
 		@Query('per_page', new DefaultValuePipe(10), ParseIntPipe) perPage: number,
+		@CurrentUser() requestingUser: { userId: string; roles: AccountRole[] },
 	): Promise<PaginatedProductsResponse<TextileProductListItem>> {
 		return this.getAllTextileProductsForManagementUseCase.handle(
 			page,
 			perPage,
+			requestingUser.userId,
+			requestingUser.roles,
 		);
 	}
 

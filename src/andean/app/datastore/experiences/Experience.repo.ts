@@ -7,6 +7,7 @@ export interface ExperienceFilters {
 	perPage?: number;
 	category?: string;
 	ownerId?: string;
+	ownerIds?: string[];
 	minPrice?: number;
 	maxPrice?: number;
 	/** Si es true, incluye HIDDEN (dashboard admin). Por defecto solo PUBLISHED. */
