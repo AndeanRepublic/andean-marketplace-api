@@ -51,6 +51,8 @@ export class OwnerInfoResolver {
 			return {
 				ownerType: OwnerType.COMMUNITY,
 				community: {
+					id: community.id,
+					activePage: community.activePage ?? false,
 					bannerImageUrl,
 					name: community.name,
 					seals: validSeals.map((seal) => ({
@@ -92,6 +94,8 @@ export class OwnerInfoResolver {
 		return {
 			ownerType: OwnerType.SHOP,
 			shop: {
+				id: shop.id,
+				activePage: shop.activePage ?? false,
 				ownerImage,
 				shopName: shop.name,
 				originPlace,

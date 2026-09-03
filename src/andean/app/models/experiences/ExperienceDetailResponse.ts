@@ -148,6 +148,12 @@ export class HeroDetailResponse {
 	ownerTitle!: string;
 
 	@ApiProperty({
+		description: 'Indica si la página pública del propietario está activa',
+		example: true,
+	})
+	ownerActivePage!: boolean;
+
+	@ApiProperty({
 		description:
 			'URL de la imagen del propietario (banner de comunidad o logo de tienda)',
 		example: 'https://storage.example.com/communities/banner-quechua.jpg',

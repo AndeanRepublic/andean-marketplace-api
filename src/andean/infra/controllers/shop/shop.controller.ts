@@ -309,30 +309,40 @@ export class ShopController {
 					: undefined,
 			pageInfo:
 				'pageInfo' in shop && shop.pageInfo
-					? this.pageInfoToPlain(shop.pageInfo)
+					? await this.pageInfoToPlain(shop.pageInfo)
 					: undefined,
 			founderInfo:
 				'founderInfo' in shop && shop.founderInfo
-					? this.founderInfoToPlain(shop.founderInfo)
+					? await this.founderInfoToPlain(shop.founderInfo)
 					: undefined,
 		};
 	}
 
-	private pageInfoToPlain(p: ShopPageInfo): Record<string, unknown> {
+	private async pageInfoToPlain(p: ShopPageInfo): Promise<Record<string, unknown>> {
 		return {
 			tagline: p.tagline,
 			shortBio: p.shortBio,
 			historyImageMediaIds: p.historyImageMediaIds,
+			historyImageUrls: await this.resolveMediaUrls(p.historyImageMediaIds),
 			whatWeDoDescription: p.whatWeDoDescription,
 			whatWeDoImageMediaIds: p.whatWeDoImageMediaIds,
+			whatWeDoImageUrls: await this.resolveMediaUrls(p.whatWeDoImageMediaIds),
 		};
 	}
 
-	private founderInfoToPlain(f: FounderInfo): Record<string, unknown> {
+	private async founderInfoToPlain(f: FounderInfo): Promise<Record<string, unknown>> {
 		return {
 			founderName: f.founderName,
 			founderImage: f.founderImage,
+			founderImageUrl: await this.mediaUrlResolver.resolveUrl(f.founderImage),
 		};
+	}
+
+	private async resolveMediaUrls(ids: string[] = []): Promise<string[]> {
+		const map = await this.mediaUrlResolver.resolveUrls(ids.filter(Boolean));
+		return ids
+			.map((id) => map.get(id) ?? '')
+			.filter((url): url is string => Boolean(url));
 	}
 
 	private providerInfoToPlain(p: ProviderInfo): Record<string, unknown> {

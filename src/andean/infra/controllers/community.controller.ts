@@ -298,6 +298,9 @@ export class CommunityController {
 	}
 
 	private async pageInfoToPlain(p: CommunityPageInfo): Promise<Record<string, unknown>> {
+		const infoImageUrls = await this.resolveMediaUrls(p.infoImageMediaIds);
+		const whatWeDoImageUrls = await this.resolveMediaUrls(p.whatWeDoImageMediaIds);
+		const galleryPhotoUrls = await this.resolveMediaUrls(p.galleryPhotoMediaIds);
 		return {
 			tagline: p.tagline,
 			shortBio: p.shortBio,
@@ -305,12 +308,28 @@ export class CommunityController {
 			weaverCount: p.weaverCount,
 			activityYears: p.activityYears,
 			infoImageMediaIds: p.infoImageMediaIds,
+			infoImageUrls,
 			whatWeDoDescription: p.whatWeDoDescription,
 			whatWeDoImageMediaIds: p.whatWeDoImageMediaIds,
+			whatWeDoImageUrls,
 			galleryPhotoMediaIds: p.galleryPhotoMediaIds,
+			galleryPhotoUrls,
 			galleryVideoMediaId: p.galleryVideoMediaId,
+			galleryVideoUrl: await this.mediaUrlResolver.resolveUrl(
+				p.galleryVideoMediaId,
+			),
 			galleryVideoPosterMediaId: p.galleryVideoPosterMediaId,
+			galleryVideoPosterUrl: await this.mediaUrlResolver.resolveUrl(
+				p.galleryVideoPosterMediaId,
+			),
 		};
+	}
+
+	private async resolveMediaUrls(ids: string[] = []): Promise<string[]> {
+		const map = await this.mediaUrlResolver.resolveUrls(ids.filter(Boolean));
+		return ids
+			.map((id) => map.get(id) ?? '')
+			.filter((url): url is string => Boolean(url));
 	}
 
 	private async toSealResponse(seal: Seal): Promise<SealResponse> {
