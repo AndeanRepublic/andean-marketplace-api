@@ -31,4 +31,17 @@ export class SealResponse {
 		required: false,
 	})
 	logoUrl?: string;
+
+	@ApiProperty({
+		description: 'ID del media item de la imagen de vitrina del sello',
+		example: '507f1f77bcf86cd799439033',
+	})
+	showcaseMediaId: string;
+
+	@ApiProperty({
+		description: 'URL pública de la imagen de vitrina del sello',
+		example: 'https://cdn.example.com/seals/showcase.jpg',
+		required: false,
+	})
+	showcaseUrl?: string;
 }

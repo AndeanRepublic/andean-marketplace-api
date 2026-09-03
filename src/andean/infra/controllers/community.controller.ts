@@ -26,7 +26,8 @@ import { Public } from '../core/public.decorator';
 import { CreateCommunityUseCase } from '../../app/use_cases/community/CreateCommunityUseCase';
 import { UpdateCommunityUseCase } from '../../app/use_cases/community/UpdateCommunityUseCase';
 import { GetCommunityByIdUseCase } from '../../app/use_cases/community/GetCommunityByIdUseCase';
-import type { CommunityWithProviderInfo } from '../../app/use_cases/community/GetCommunityByIdUseCase';
+import type { CommunityWithRelations } from '../../app/use_cases/community/GetCommunityByIdUseCase';
+import { CommunityPageInfo } from '../../domain/entities/community/CommunityPageInfo';
 import { ListCommunityUseCase } from '../../app/use_cases/community/ListCommunityUseCase';
 import { DeleteCommunityUseCase } from '../../app/use_cases/community/DeleteCommunityUseCase';
 import { CreateSealUseCase } from '../../app/use_cases/community/CreateSealUseCase';
@@ -276,11 +277,12 @@ export class CommunityController {
 			bannerImageUrl: await this.mediaUrlResolver.resolveUrl(
 				community.bannerImageId,
 			),
+			activePage: community.activePage ?? false,
 		};
 	}
 
 	private async toDetailResponse(
-		data: CommunityWithProviderInfo,
+		data: CommunityWithRelations,
 	): Promise<CommunityDetailResponse> {
 		const base = await this.toResponse(data);
 		return {
@@ -289,6 +291,25 @@ export class CommunityController {
 			providerInfo: data.providerInfo
 				? this.providerInfoToPlain(data.providerInfo)
 				: undefined,
+			pageInfo: data.pageInfo
+				? await this.pageInfoToPlain(data.pageInfo)
+				: undefined,
+		};
+	}
+
+	private async pageInfoToPlain(p: CommunityPageInfo): Promise<Record<string, unknown>> {
+		return {
+			tagline: p.tagline,
+			shortBio: p.shortBio,
+			familyCount: p.familyCount,
+			weaverCount: p.weaverCount,
+			activityYears: p.activityYears,
+			infoImageMediaIds: p.infoImageMediaIds,
+			whatWeDoDescription: p.whatWeDoDescription,
+			whatWeDoImageMediaIds: p.whatWeDoImageMediaIds,
+			galleryPhotoMediaIds: p.galleryPhotoMediaIds,
+			galleryVideoMediaId: p.galleryVideoMediaId,
+			galleryVideoPosterMediaId: p.galleryVideoPosterMediaId,
 		};
 	}
 
@@ -299,14 +320,14 @@ export class CommunityController {
 			description: seal.description,
 			logoMediaId: seal.logoMediaId,
 			logoUrl: await this.mediaUrlResolver.resolveUrl(seal.logoMediaId),
+			showcaseMediaId: seal.showcaseMediaId,
+			showcaseUrl: await this.mediaUrlResolver.resolveUrl(seal.showcaseMediaId),
 		};
 	}
 
 	private providerInfoToPlain(p: ProviderInfo): Record<string, unknown> {
 		return {
 			craftType: p.craftType,
-			tagline: p.tagline,
-			shortBio: p.shortBio,
 			originPlace: p.originPlace,
 			testimonialsOrAwards: p.testimonialsOrAwards,
 			workplacePhotoMediaId: p.workplacePhotoMediaId,

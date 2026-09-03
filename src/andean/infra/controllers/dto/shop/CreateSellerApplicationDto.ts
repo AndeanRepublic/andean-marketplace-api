@@ -44,13 +44,13 @@ export class CreateSellerApplicationDto {
 	categories!: ShopCategory[];
 
 	@ApiPropertyOptional({
-		description: 'ID del MediaItem para la foto del artesano/emprendedor',
+		description: 'ID del MediaItem para la imagen o ícono del emprendimiento',
 		example: '67890abcdef1234567890126',
 	})
 	@IsString()
 	@IsMongoId()
 	@IsOptional()
-	artisanPhotoMediaId?: string;
+	imageOrIconMediaId?: string;
 
 	@ApiPropertyOptional({
 		description: 'Datos de ProviderInfo para crear y asociar a la tienda',

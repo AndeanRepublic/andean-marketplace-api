@@ -11,6 +11,8 @@ export const CommunitySchema = new Schema({
 	},
 	seals: { type: [String], default: [] },
 	providerInfoId: { type: String, required: false },
+	activePage: { type: Boolean, default: false },
+	pageInfoId: { type: String, required: false },
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 });
@@ -21,6 +23,8 @@ export interface CommunityDocument extends Document {
 	status: AdminEntityStatus;
 	seals?: string[];
 	providerInfoId?: string;
+	activePage: boolean;
+	pageInfoId?: string;
 	createdAt: Date;
 	updatedAt: Date;
 }

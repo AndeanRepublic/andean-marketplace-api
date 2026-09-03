@@ -16,9 +16,12 @@ export const ShopSchema = new Schema({
 			enum: Object.values(ShopCategory),
 		},
 	],
+	imageOrIconMediaId: { type: String, required: true },
 	providerInfoId: { type: String, required: false },
-	artisanPhotoMediaId: { type: String, required: false },
 	seals: { type: [String], default: [] },
+	activePage: { type: Boolean, default: false },
+	pageInfoId: { type: String, required: false },
+	founderInfoId: { type: String, required: false },
 });
 
 export interface ShopDocument extends Document<string> {
@@ -26,7 +29,10 @@ export interface ShopDocument extends Document<string> {
 	name: string;
 	status: ShopStatus;
 	categories: ShopCategory[];
+	imageOrIconMediaId: string;
 	providerInfoId?: string;
-	artisanPhotoMediaId?: string;
 	seals?: string[];
+	activePage: boolean;
+	pageInfoId?: string;
+	founderInfoId?: string;
 }

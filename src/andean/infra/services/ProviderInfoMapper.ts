@@ -14,8 +14,6 @@ export class ProviderInfoMapper {
 		return new ProviderInfo(
 			id,
 			dto.craftType,
-			dto.tagline,
-			dto.shortBio,
 			dto.originPlace,
 			dto.testimonialsOrAwards,
 			dto.workplacePhotoMediaId,
@@ -56,8 +54,6 @@ export class ProviderInfoMapper {
 		return new ProviderInfo(
 			MongoIdUtils.objectIdToString((doc as any)._id),
 			doc.craftType,
-			doc.tagline,
-			doc.shortBio,
 			doc.originPlace,
 			doc.testimonialsOrAwards,
 			doc.workplacePhotoMediaId,

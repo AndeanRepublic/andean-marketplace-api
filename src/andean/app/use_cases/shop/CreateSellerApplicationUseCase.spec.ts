@@ -34,6 +34,8 @@ describe('CreateSellerApplicationUseCase', () => {
 		},
 		name: 'Tienda Andina',
 		categories: [ShopCategory.TEXTILES],
+					imageOrIconMediaId: 'test-media-id',
+					activePage: false,
 	};
 
 	beforeEach(async () => {
@@ -153,6 +155,8 @@ describe('CreateSellerApplicationUseCase', () => {
 				name: 'Tienda previa',
 				status: ShopStatus.ACTIVE,
 				categories: [ShopCategory.TEXTILES],
+					imageOrIconMediaId: 'test-media-id',
+					activePage: false,
 			},
 		]);
 

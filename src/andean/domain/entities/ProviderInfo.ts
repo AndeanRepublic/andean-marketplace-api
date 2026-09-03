@@ -5,8 +5,6 @@ export class ProviderInfo {
 	constructor(
 		public id: string,
 		public craftType?: string,
-		public tagline?: string,
-		public shortBio?: string,
 		public originPlace?: string,
 		public testimonialsOrAwards?: string,
 

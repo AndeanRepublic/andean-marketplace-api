@@ -67,7 +67,7 @@ export class OwnerInfoResolver {
 		if (!shop) return undefined;
 
 		const ownerImage = await this.mediaUrlResolver.resolveUrl(
-			shop.artisanPhotoMediaId,
+			shop.imageOrIconMediaId,
 		);
 		let originPlace = '';
 		if (shop.providerInfoId && this.providerInfoRepository) {

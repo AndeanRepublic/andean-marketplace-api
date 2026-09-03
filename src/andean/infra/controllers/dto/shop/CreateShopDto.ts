@@ -7,11 +7,14 @@ import {
 	IsEnum,
 	IsOptional,
 	IsMongoId,
+	IsBoolean,
 	ValidateNested,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { CreateProviderInfoDto } from '../providerInfo/CreateProviderInfoDto';
+import { CreateShopPageInfoDto } from './CreateShopPageInfoDto';
+import { CreateFounderInfoDto } from './CreateFounderInfoDto';
 
 export class CreateShopDto {
 	@ApiPropertyOptional({
@@ -42,14 +45,14 @@ export class CreateShopDto {
 	@IsEnum(ShopCategory, { each: true })
 	categories: ShopCategory[];
 
-	@ApiPropertyOptional({
-		description: 'ID del MediaItem para la foto del artesano/emprendedor',
+	@ApiProperty({
+		description: 'ID del MediaItem para la imagen o ícono del emprendimiento',
 		example: '67890abcdef1234567890126',
 	})
 	@IsString()
+	@IsNotEmpty()
 	@IsMongoId()
-	@IsOptional()
-	artisanPhotoMediaId?: string;
+	imageOrIconMediaId: string;
 
 	@ApiPropertyOptional({
 		description: 'Datos de ProviderInfo para crear y asociar a la tienda',
@@ -69,4 +72,27 @@ export class CreateShopDto {
 	@IsString({ each: true })
 	@IsOptional()
 	seals?: string[];
+
+	@ApiPropertyOptional({ description: 'Indica si la página pública está activa' })
+	@IsOptional()
+	@IsBoolean()
+	activePage?: boolean;
+
+	@ApiPropertyOptional({
+		description: 'Datos de la página pública de la tienda',
+		type: CreateShopPageInfoDto,
+	})
+	@IsOptional()
+	@ValidateNested()
+	@Type(() => CreateShopPageInfoDto)
+	pageInfo?: CreateShopPageInfoDto;
+
+	@ApiPropertyOptional({
+		description: 'Datos del fundador de la tienda',
+		type: CreateFounderInfoDto,
+	})
+	@IsOptional()
+	@ValidateNested()
+	@Type(() => CreateFounderInfoDto)
+	founderInfo?: CreateFounderInfoDto;
 }

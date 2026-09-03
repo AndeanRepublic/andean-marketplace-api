@@ -109,8 +109,9 @@ export class LinkShopToSellerUseCase {
 			name: shop.name,
 			status: shop.status,
 			categories: shop.categories,
-			artisanPhotoMediaId: shop.artisanPhotoMediaId,
+			imageOrIconMediaId: shop.imageOrIconMediaId,
 			seals: shop.seals,
+			activePage: shop.activePage ?? false,
 		};
 	}
 }

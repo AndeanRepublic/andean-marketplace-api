@@ -6,11 +6,13 @@ import {
 	IsArray,
 	IsOptional,
 	IsMongoId,
+	IsBoolean,
 	ValidateNested,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { CreateProviderInfoDto } from '../providerInfo/CreateProviderInfoDto';
+import { CreateCommunityPageInfoDto } from './CreateCommunityPageInfoDto';
 
 export class CreateCommunityDto {
 	@ApiProperty({
@@ -52,4 +54,18 @@ export class CreateCommunityDto {
 	@ValidateNested()
 	@Type(() => CreateProviderInfoDto)
 	providerInfo?: CreateProviderInfoDto;
+
+	@ApiPropertyOptional({ description: 'Indica si la página pública está activa' })
+	@IsOptional()
+	@IsBoolean()
+	activePage?: boolean;
+
+	@ApiPropertyOptional({
+		description: 'Datos de la página pública de la comunidad',
+		type: CreateCommunityPageInfoDto,
+	})
+	@IsOptional()
+	@ValidateNested()
+	@Type(() => CreateCommunityPageInfoDto)
+	pageInfo?: CreateCommunityPageInfoDto;
 }

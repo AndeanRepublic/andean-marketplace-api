@@ -37,4 +37,7 @@ export class CommunityResponse {
 		example: 'https://cdn.example.com/communities/banner.jpg',
 	})
 	bannerImageUrl?: string;
+
+	@ApiProperty({ description: 'Indica si la página pública está activa' })
+	activePage: boolean;
 }

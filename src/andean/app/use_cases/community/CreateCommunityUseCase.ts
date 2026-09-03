@@ -7,10 +7,13 @@ import {
 import { CommunityRepository } from '../../datastore/community/community.repo';
 import { SealRepository } from '../../datastore/community/Seal.repo';
 import { MediaItemRepository } from '../../datastore/MediaItem.repo';
+import { CommunityPageInfoRepository } from '../../datastore/community/CommunityPageInfo.repo';
 import { CreateProviderInfoUseCase } from '../providerInfo/CreateProviderInfoUseCase';
 import { Community } from '../../../domain/entities/community/Community';
+import { CommunityPageInfo } from '../../../domain/entities/community/CommunityPageInfo';
 import { CreateCommunityDto } from '../../../infra/controllers/dto/community/CreateCommunityDto';
 import { CommunityMapper } from '../../../infra/services/community/CommunityMapper';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class CreateCommunityUseCase {
@@ -20,6 +23,8 @@ export class CreateCommunityUseCase {
 		private readonly sealRepository: SealRepository,
 		@Inject(MediaItemRepository)
 		private readonly mediaItemRepository: MediaItemRepository,
+		@Inject(CommunityPageInfoRepository)
+		private readonly communityPageInfoRepository: CommunityPageInfoRepository,
 		private readonly createProviderInfoUseCase: CreateProviderInfoUseCase,
 	) {}
 
@@ -54,7 +59,6 @@ export class CreateCommunityUseCase {
 			}
 		}
 
-		// Crear ProviderInfo si viene embebido y asignar su id
 		let providerInfoId: string | undefined;
 		if (dto.providerInfo) {
 			const created = await this.createProviderInfoUseCase.handle(
@@ -63,9 +67,34 @@ export class CreateCommunityUseCase {
 			providerInfoId = created.id;
 		}
 
-		// Crear entidad de dominio (sin providerInfo, con providerInfoId si aplica)
-		const communityDto = { ...dto, providerInfoId };
+		let pageInfoId: string | undefined;
+		if (dto.pageInfo) {
+			const pageInfoToSave = new CommunityPageInfo(
+				new Types.ObjectId().toString(),
+				dto.pageInfo.tagline,
+				dto.pageInfo.shortBio,
+				dto.pageInfo.familyCount,
+				dto.pageInfo.weaverCount,
+				dto.pageInfo.activityYears,
+				dto.pageInfo.infoImageMediaIds,
+				dto.pageInfo.whatWeDoDescription,
+				dto.pageInfo.whatWeDoImageMediaIds,
+				dto.pageInfo.galleryPhotoMediaIds,
+				dto.pageInfo.galleryVideoMediaId,
+				dto.pageInfo.galleryVideoPosterMediaId,
+			);
+			const created = await this.communityPageInfoRepository.create(pageInfoToSave);
+			pageInfoId = created.id;
+		}
+
+		const communityDto = {
+			...dto,
+			providerInfoId,
+			activePage: dto.activePage ?? false,
+			pageInfoId,
+		};
 		delete (communityDto as any).providerInfo;
+		delete (communityDto as any).pageInfo;
 		const community = CommunityMapper.fromCreateDto(communityDto);
 
 		// Persistir

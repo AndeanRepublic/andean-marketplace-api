@@ -4,5 +4,6 @@ export class Seal {
 		public name: string,
 		public description: string,
 		public logoMediaId: string,
+		public showcaseMediaId: string,
 	) {}
 }

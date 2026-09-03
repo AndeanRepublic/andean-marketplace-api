@@ -61,6 +61,8 @@ describe('Seller application flow (e2e)', () => {
 		},
 		name: 'Tienda Andina',
 		categories: [ShopCategory.UNKNOWN],
+					imageOrIconMediaId: 'test-media-id',
+					activePage: false,
 	};
 
 	async function buildShopApp(
@@ -214,6 +216,8 @@ describe('Seller application flow (e2e)', () => {
 					name: applicationBody.name,
 					status: ShopStatus.PENDING,
 					categories: applicationBody.categories,
+					imageOrIconMediaId: 'test-media-id',
+					activePage: false,
 				},
 			});
 
@@ -256,6 +260,8 @@ describe('Seller application flow (e2e)', () => {
 						name: applicationBody.name,
 						status: ShopStatus.PENDING,
 						categories: applicationBody.categories,
+					imageOrIconMediaId: 'test-media-id',
+					activePage: false,
 						seals: [],
 					},
 				],
@@ -291,6 +297,8 @@ describe('Seller application flow (e2e)', () => {
 						name: applicationBody.name,
 						status: ShopStatus.ACTIVE,
 						categories: applicationBody.categories,
+					imageOrIconMediaId: 'test-media-id',
+					activePage: false,
 					},
 				],
 			});
@@ -337,6 +345,8 @@ describe('Seller application flow (e2e)', () => {
 						name: applicationBody.name,
 						status: ShopStatus.REJECTED,
 						categories: applicationBody.categories,
+					imageOrIconMediaId: 'test-media-id',
+					activePage: false,
 					},
 				],
 			});
@@ -371,6 +381,8 @@ describe('Seller application flow (e2e)', () => {
 				name: 'Tienda',
 				status: ShopStatus.DEACTIVATED,
 				categories: [ShopCategory.UNKNOWN],
+					imageOrIconMediaId: 'test-media-id',
+					activePage: false,
 			});
 
 			await request(app.getHttpServer())
