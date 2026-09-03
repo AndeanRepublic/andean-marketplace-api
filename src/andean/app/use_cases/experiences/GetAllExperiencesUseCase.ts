@@ -30,6 +30,7 @@ export class GetAllExperiencesUseCase {
 		const experiences: ExperienceListItem[] = items.map((raw) => ({
 			id: raw.id,
 			title: raw.title,
+			category: raw.category?.trim() || undefined,
 			ownerName: raw.ownerName,
 			price: raw.adultsPrice,
 			place: raw.ubication,

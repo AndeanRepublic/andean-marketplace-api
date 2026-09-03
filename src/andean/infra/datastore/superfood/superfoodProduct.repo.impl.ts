@@ -244,6 +244,32 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 					as: 'community',
 				},
 			},
+			{
+				$lookup: {
+					from: 'superfoodcategories',
+					let: {
+						cid: {
+							$convert: {
+								input: '$categoryId',
+								to: 'objectId',
+								onError: null,
+								onNull: null,
+							},
+						},
+					},
+					pipeline: [
+						{
+							$match: {
+								$expr: {
+									$and: [{ $ne: ['$$cid', null] }, { $eq: ['$_id', '$$cid'] }],
+								},
+							},
+						},
+						{ $limit: 1 },
+					],
+					as: 'cat',
+				},
+			},
 		];
 	}
 
@@ -255,6 +281,9 @@ export class SuperfoodProductRepoImpl implements SuperfoodProductRepository {
 				id: { $toString: '$_id' },
 				colorId: '$colorId',
 				title: '$baseInfo.title',
+				categoryName: {
+					$ifNull: [{ $arrayElemAt: ['$cat.name', 0] }, ''],
+				},
 				ownerName: {
 					$cond: {
 						if: { $gt: [{ $size: '$shop' }, 0] },
