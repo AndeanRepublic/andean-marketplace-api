@@ -64,7 +64,7 @@ export class TextileCraftTechniqueRepositoryImpl extends TextileCraftTechniqueRe
 		const plain = TextileCraftTechniqueMapper.toPersistence(technique);
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		const updated = await this.textileCraftTechniqueModel
-			.findByIdAndUpdate(objectId, plain, { new: true })
+			.findByIdAndUpdate(objectId, { $set: plain }, { new: true })
 			.exec();
 		return TextileCraftTechniqueMapper.fromDocument(updated!);
 	}

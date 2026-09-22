@@ -60,7 +60,7 @@ export class TextileCategoryRepositoryImpl extends TextileCategoryRepository {
 		const plain = TextileCategoryMapper.toPersistence(category);
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		const updated = await this.textileCategoryModel
-			.findByIdAndUpdate(objectId, plain, { new: true })
+			.findByIdAndUpdate(objectId, { $set: plain }, { new: true })
 			.exec();
 		return TextileCategoryMapper.fromDocument(updated!);
 	}

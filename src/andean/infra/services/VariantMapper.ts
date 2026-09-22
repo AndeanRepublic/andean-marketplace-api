@@ -2,37 +2,38 @@ import { VariantDocument } from '../persistence/variant.schema';
 import { Variant } from '../../domain/entities/Variant';
 import { CreateVariantDto } from '../controllers/dto/variant/CreateVariantDto';
 import { UpdateVariantDto } from '../controllers/dto/variant/UpdateVariantDto';
-import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { Types } from 'mongoose';
 import { MongoIdUtils } from '../utils/MongoIdUtils';
 
 export class VariantMapper {
-	/**
-	 * Convierte un documento de MongoDB a entidad de dominio
-	 * ObjectId (_id) → string (id)
-	 */
 	static fromDocument(doc: VariantDocument): Variant {
 		const plain = doc.toObject();
-		return plainToInstance(Variant, {
-			id: MongoIdUtils.objectIdToString(plain._id as Types.ObjectId),
-			...plain,
-		});
+		return new Variant(
+			MongoIdUtils.objectIdToString(plain._id as Types.ObjectId),
+			plain.productId,
+			plain.productType,
+			plain.combination,
+			plain.price,
+			plain.stock,
+			plain.createdAt,
+			plain.updatedAt,
+			plain.sku,
+		);
 	}
 
 	static fromCreateDto(dto: CreateVariantDto): Variant {
 		const now = new Date();
-		const plain = {
-			id: new Types.ObjectId().toString(),
-			productId: dto.productId,
-			productType: dto.productType,
-			combination: dto.combination,
-			price: dto.price,
-			stock: dto.stock,
-			...(dto.sku !== undefined && dto.sku !== '' && { sku: dto.sku }),
-			createdAt: now,
-			updatedAt: now,
-		};
-		return plainToInstance(Variant, plain);
+		return new Variant(
+			new Types.ObjectId().toString(),
+			dto.productId,
+			dto.productType,
+			dto.combination,
+			dto.price,
+			dto.stock,
+			now,
+			now,
+			dto.sku !== undefined && dto.sku !== '' ? dto.sku : undefined,
+		);
 	}
 
 	static fromUpdateDto(id: string, dto: UpdateVariantDto): Partial<Variant> {
@@ -45,13 +46,26 @@ export class VariantMapper {
 		};
 	}
 
-	/**
-	 * Convierte entidad de dominio a formato de persistencia
-	 * Excluye el 'id' ya que MongoDB usará _id automáticamente
-	 */
-	static toPersistence(variant: Variant) {
-		const plain = instanceToPlain(variant);
-		const { id, ...dataForDB } = plain;
-		return dataForDB;
+	static toPersistence(
+		variant: Variant | Partial<Variant>,
+	): Record<string, unknown> {
+		const data: Record<string, unknown> = {};
+		if (variant.productId !== undefined) data.productId = variant.productId;
+		if (variant.productType !== undefined) {
+			data.productType = variant.productType;
+		}
+		if (variant.combination !== undefined) {
+			data.combination = variant.combination;
+		}
+		if (variant.price !== undefined) data.price = variant.price;
+		if (variant.stock !== undefined) data.stock = variant.stock;
+		if (variant.sku !== undefined) data.sku = variant.sku;
+		if (variant.createdAt !== undefined) data.createdAt = variant.createdAt;
+		if (variant.updatedAt !== undefined) {
+			data.updatedAt = variant.updatedAt;
+		} else {
+			data.updatedAt = new Date();
+		}
+		return data;
 	}
 }

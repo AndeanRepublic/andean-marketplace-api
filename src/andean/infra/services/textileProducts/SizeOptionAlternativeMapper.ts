@@ -1,7 +1,7 @@
 import { SizeOptionAlternative } from 'src/andean/domain/entities/textileProducts/SizeOptionAlternative';
 import { SizeOptionAlternativeDocument } from '../../persistence/textileProducts/SizeOptionAlternative.schema';
-import { plainToInstance, instanceToPlain } from 'class-transformer';
 import { CreateSizeOptionAlternativeDto } from '../../controllers/dto/textileProducts/CreateSizeOptionAlternativeDto';
+import { MongoIdUtils } from '../../utils/MongoIdUtils';
 import { Types } from 'mongoose';
 
 export class SizeOptionAlternativeMapper {
@@ -9,41 +9,31 @@ export class SizeOptionAlternativeMapper {
 		doc: SizeOptionAlternativeDocument,
 	): SizeOptionAlternative {
 		const plain = doc.toObject();
-		return plainToInstance(SizeOptionAlternative, {
-			id: plain._id.toString(),
-			...plain,
-		});
+		return new SizeOptionAlternative(
+			MongoIdUtils.objectIdToString(plain._id),
+			plain.nameLabel,
+		);
 	}
 
 	static fromCreateDto(
 		dto: CreateSizeOptionAlternativeDto,
 	): SizeOptionAlternative {
-		const { ...sizeOptionAlternativeData } = dto;
-		const plain = {
-			id: new Types.ObjectId().toString(),
-			...sizeOptionAlternativeData,
-		};
-		return plainToInstance(SizeOptionAlternative, plain);
+		return new SizeOptionAlternative(
+			new Types.ObjectId().toString(),
+			dto.nameLabel,
+		);
 	}
 
 	static fromUpdateDto(
 		id: string,
 		dto: CreateSizeOptionAlternativeDto,
 	): SizeOptionAlternative {
-		const { ...sizeOptionAlternativeData } = dto;
-		const plain = {
-			id: id,
-			...sizeOptionAlternativeData,
-		};
-		return plainToInstance(SizeOptionAlternative, plain);
+		return new SizeOptionAlternative(id, dto.nameLabel);
 	}
 
-	static toPersistence(sizeOptionAlternative: SizeOptionAlternative) {
-		const plain = instanceToPlain(sizeOptionAlternative);
-		const { id, ...updateData } = plain;
-
-		return {
-			...updateData,
-		};
+	static toPersistence(
+		sizeOptionAlternative: SizeOptionAlternative,
+	): Record<string, unknown> {
+		return { nameLabel: sizeOptionAlternative.nameLabel };
 	}
 }

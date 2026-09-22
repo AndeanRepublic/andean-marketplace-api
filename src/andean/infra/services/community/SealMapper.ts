@@ -1,42 +1,47 @@
 import { Seal } from 'src/andean/domain/entities/community/Seal';
 import { SealDocument } from '../../persistence/community/Seal.schema';
-import { plainToInstance, instanceToPlain } from 'class-transformer';
 import { CreateSealDto } from '../../controllers/dto/community/CreateSealDto';
+import { MongoIdUtils } from '../../utils/MongoIdUtils';
 import { Types } from 'mongoose';
 
 export class SealMapper {
 	static fromDocument(doc: SealDocument): Seal {
 		const plain = doc.toObject();
-		return plainToInstance(Seal, {
-			id: plain._id.toString(),
-			...plain,
-		});
+		return new Seal(
+			MongoIdUtils.objectIdToString(plain._id),
+			plain.name,
+			plain.description,
+			plain.logoMediaId,
+			plain.showcaseMediaId,
+		);
 	}
 
 	static fromCreateDto(dto: CreateSealDto): Seal {
-		const { ...sealData } = dto;
-		const plain = {
-			id: new Types.ObjectId().toString(),
-			...sealData,
-		};
-		return plainToInstance(Seal, plain);
+		return new Seal(
+			new Types.ObjectId().toString(),
+			dto.name,
+			dto.description,
+			dto.logoMediaId,
+			dto.showcaseMediaId,
+		);
 	}
 
 	static fromUpdateDto(id: string, dto: CreateSealDto): Seal {
-		const { ...sealData } = dto;
-		const plain = {
-			id: id,
-			...sealData,
-		};
-		return plainToInstance(Seal, plain);
+		return new Seal(
+			id,
+			dto.name,
+			dto.description,
+			dto.logoMediaId,
+			dto.showcaseMediaId,
+		);
 	}
 
-	static toPersistence(seal: Seal) {
-		const plain = instanceToPlain(seal);
-		const { id, ...updateData } = plain;
-
+	static toPersistence(seal: Seal): Record<string, unknown> {
 		return {
-			...updateData,
+			name: seal.name,
+			description: seal.description,
+			logoMediaId: seal.logoMediaId,
+			showcaseMediaId: seal.showcaseMediaId,
 		};
 	}
 }

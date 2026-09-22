@@ -65,7 +65,7 @@ export class SizeOptionAlternativeRepositoryImpl extends SizeOptionAlternativeRe
 		);
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		const updated = await this.sizeOptionAlternativeModel
-			.findByIdAndUpdate(objectId, plain, { new: true })
+			.findByIdAndUpdate(objectId, { $set: plain }, { new: true })
 			.exec();
 		return SizeOptionAlternativeMapper.fromDocument(updated!);
 	}
