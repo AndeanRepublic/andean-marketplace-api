@@ -22,6 +22,7 @@ export const ShopSchema = new Schema({
 	activePage: { type: Boolean, default: false },
 	pageInfoId: { type: String, required: false },
 	founderInfoId: { type: String, required: false },
+	hasBranding: { type: Boolean, default: true },
 });
 
 export interface ShopDocument extends Document<string> {
@@ -35,4 +36,5 @@ export interface ShopDocument extends Document<string> {
 	activePage: boolean;
 	pageInfoId?: string;
 	founderInfoId?: string;
+	hasBranding: boolean;
 }

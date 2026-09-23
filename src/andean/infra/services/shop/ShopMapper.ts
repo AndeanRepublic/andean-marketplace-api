@@ -20,6 +20,7 @@ export class ShopMapper {
 			plain.activePage ?? false,
 			plain.pageInfoId,
 			plain.founderInfoId,
+			plain.hasBranding ?? true,
 		);
 	}
 
@@ -33,15 +34,16 @@ export class ShopMapper {
 		return new Shop(
 			new Types.ObjectId().toString(),
 			dto.sellerId,
-			dto.name,
+			dto.name ?? '',
 			initialStatus,
 			dto.categories,
-			dto.imageOrIconMediaId,
+			dto.imageOrIconMediaId ?? '',
 			dto.providerInfoId,
 			dto.seals,
 			dto.activePage ?? false,
 			dto.pageInfoId,
 			dto.founderInfoId,
+			dto.hasBranding ?? true,
 		);
 	}
 

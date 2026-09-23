@@ -54,7 +54,7 @@ export class CreateShopUseCase {
 		const isSellerOnly =
 			roles.includes(AccountRole.SELLER) && !isAdmin;
 
-		let dtoForShop = { ...shopDto };
+		let dtoForShop = applyFounderIdentity({ ...shopDto });
 
 		if (isSellerOnly && options?.requestingUserId) {
 			const sellerProfile =
@@ -146,4 +146,14 @@ export class CreateShopUseCase {
 		const shopToSave = ShopMapper.fromCreateDto(shopPayload, initialStatus);
 		return this.shopRepository.saveShop(shopToSave);
 	}
+}
+
+function applyFounderIdentity(dto: CreateShopDto): CreateShopDto {
+	if (dto.hasBranding !== false || !dto.founderInfo) return dto;
+	return {
+		...dto,
+		name: dto.name?.trim() || dto.founderInfo.founderName,
+		imageOrIconMediaId:
+			dto.imageOrIconMediaId || dto.founderInfo.founderImage,
+	};
 }

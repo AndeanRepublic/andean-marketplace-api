@@ -725,6 +725,8 @@ export class AdminController {
 
 			activePage: shop.activePage ?? false,
 
+			hasBranding: shop.hasBranding ?? true,
+
 			seals: shop.seals ?? [],
 
 		};

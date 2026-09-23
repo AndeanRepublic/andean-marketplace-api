@@ -303,6 +303,7 @@ export class ShopController {
 			),
 			seals: shop.seals ?? [],
 			activePage: shop.activePage ?? false,
+			hasBranding: shop.hasBranding ?? true,
 			providerInfo:
 				'providerInfo' in shop && shop.providerInfo
 					? this.providerInfoToPlain(shop.providerInfo)

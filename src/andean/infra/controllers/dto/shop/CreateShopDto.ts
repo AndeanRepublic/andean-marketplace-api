@@ -8,6 +8,7 @@ import {
 	IsOptional,
 	IsMongoId,
 	IsBoolean,
+	ValidateIf,
 	ValidateNested,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -26,13 +27,23 @@ export class CreateShopDto {
 	@IsOptional()
 	sellerId?: string;
 
+	@ApiPropertyOptional({
+		description:
+			'Si es true, la tienda tiene nombre y logo propios. Si es false, se usa la identidad del fundador.',
+		default: true,
+	})
+	@IsOptional()
+	@IsBoolean()
+	hasBranding?: boolean;
+
 	@ApiProperty({
-		description: 'Nombre de la tienda',
+		description: 'Nombre de la tienda (obligatorio si hasBranding es true)',
 		example: 'Artesanías Andinas',
 	})
+	@ValidateIf((o: CreateShopDto) => o.hasBranding !== false)
 	@IsString()
 	@IsNotEmpty()
-	name: string;
+	name?: string;
 
 	@ApiProperty({
 		description: 'Categorías de la tienda',
@@ -46,13 +57,15 @@ export class CreateShopDto {
 	categories: ShopCategory[];
 
 	@ApiProperty({
-		description: 'ID del MediaItem para la imagen o ícono del emprendimiento',
+		description:
+			'ID del MediaItem para la imagen o ícono del emprendimiento (obligatorio si hasBranding es true)',
 		example: '67890abcdef1234567890126',
 	})
+	@ValidateIf((o: CreateShopDto) => o.hasBranding !== false)
 	@IsString()
 	@IsNotEmpty()
 	@IsMongoId()
-	imageOrIconMediaId: string;
+	imageOrIconMediaId?: string;
 
 	@ApiPropertyOptional({
 		description: 'Datos de ProviderInfo para crear y asociar a la tienda',
@@ -73,7 +86,9 @@ export class CreateShopDto {
 	@IsOptional()
 	seals?: string[];
 
-	@ApiPropertyOptional({ description: 'Indica si la página pública está activa' })
+	@ApiPropertyOptional({
+		description: 'Indica si la página pública está activa',
+	})
 	@IsOptional()
 	@IsBoolean()
 	activePage?: boolean;

@@ -51,4 +51,11 @@ export class ShopResponse {
 
 	@ApiProperty({ description: 'Indica si la página pública está activa' })
 	activePage: boolean;
+
+	@ApiProperty({
+		description:
+			'Si es true, la tienda tiene nombre y logo propios. Si es false, se usa la identidad del fundador.',
+		default: true,
+	})
+	hasBranding: boolean;
 }

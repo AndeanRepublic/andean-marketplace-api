@@ -14,5 +14,6 @@ export class Shop {
 		public activePage: boolean = false,
 		public pageInfoId?: string,
 		public founderInfoId?: string,
+		public hasBranding: boolean = true,
 	) {}
 }

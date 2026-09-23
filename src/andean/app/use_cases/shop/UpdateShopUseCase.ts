@@ -35,6 +35,14 @@ export class UpdateShopUseCase {
 			throw new NotFoundException('Shop not found');
 		}
 
+		const hasBranding = dto.hasBranding ?? existing.hasBranding ?? true;
+		if (!hasBranding) {
+			const founderName = dto.founderInfo?.founderName;
+			const founderImage = dto.founderInfo?.founderImage;
+			if (founderName) dto.name = founderName;
+			if (founderImage) dto.imageOrIconMediaId = founderImage;
+		}
+
 		if (dto.seals && dto.seals.length > 0) {
 			for (const sealId of dto.seals) {
 				const sealFound = await this.sealRepository.getById(sealId);

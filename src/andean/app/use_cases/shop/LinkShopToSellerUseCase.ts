@@ -112,6 +112,7 @@ export class LinkShopToSellerUseCase {
 			imageOrIconMediaId: shop.imageOrIconMediaId,
 			seals: shop.seals,
 			activePage: shop.activePage ?? false,
+			hasBranding: shop.hasBranding ?? true,
 		};
 	}
 }
