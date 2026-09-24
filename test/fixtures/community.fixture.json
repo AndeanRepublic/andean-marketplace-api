@@ -8,7 +8,13 @@
 	},
 	"createDto": {
 		"name": "New Community E2E",
-		"bannerImageId": "67890abcdef1234567890123"
+		"bannerImageId": "67890abcdef1234567890123",
+		"seals": [
+			"67890abcdef1234567890123",
+			"67890abcdef1234567890124",
+			"67890abcdef1234567890125",
+			"67890abcdef1234567890126"
+		]
 	},
 	"updateDto": {
 		"name": "Updated Community E2E",

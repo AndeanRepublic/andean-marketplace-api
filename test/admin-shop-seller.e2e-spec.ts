@@ -57,8 +57,14 @@ describe('FORMA 2 — Admin shops, sellers y enlace (e2e)', () => {
 	const createShopBody = {
 		name: 'Tienda Admin',
 		categories: [ShopCategory.UNKNOWN],
-					imageOrIconMediaId: 'test-media-id',
-					activePage: false,
+		imageOrIconMediaId: '507f1f77bcf86cd799439099',
+		activePage: false,
+		seals: [
+			'507f1f77bcf86cd799439021',
+			'507f1f77bcf86cd799439022',
+			'507f1f77bcf86cd799439023',
+			'507f1f77bcf86cd799439024',
+		],
 	};
 
 	const createSellerBody = {
@@ -690,8 +696,8 @@ describe('FORMA 2 — Admin shops, sellers y enlace (e2e)', () => {
 					},
 					name: createShopBody.name,
 					categories: createShopBody.categories,
-					imageOrIconMediaId: 'test-media-id',
-					activePage: false,
+					imageOrIconMediaId: createShopBody.imageOrIconMediaId,
+					seals: createShopBody.seals,
 				})
 				.expect(HttpStatus.CREATED);
 
