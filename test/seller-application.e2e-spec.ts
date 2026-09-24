@@ -61,8 +61,13 @@ describe('Seller application flow (e2e)', () => {
 		},
 		name: 'Tienda Andina',
 		categories: [ShopCategory.UNKNOWN],
-					imageOrIconMediaId: 'test-media-id',
-					activePage: false,
+		imageOrIconMediaId: '507f1f77bcf86cd799439099',
+		seals: [
+			'507f1f77bcf86cd799439021',
+			'507f1f77bcf86cd799439022',
+			'507f1f77bcf86cd799439023',
+			'507f1f77bcf86cd799439024',
+		],
 	};
 
 	async function buildShopApp(
