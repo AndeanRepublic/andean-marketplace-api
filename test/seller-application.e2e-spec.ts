@@ -223,6 +223,7 @@ describe('Seller application flow (e2e)', () => {
 					categories: applicationBody.categories,
 					imageOrIconMediaId: 'test-media-id',
 					activePage: false,
+					hasBranding: true,
 				},
 			});
 
@@ -267,6 +268,7 @@ describe('Seller application flow (e2e)', () => {
 						categories: applicationBody.categories,
 					imageOrIconMediaId: 'test-media-id',
 					activePage: false,
+					hasBranding: true,
 						seals: [],
 					},
 				],
@@ -304,6 +306,7 @@ describe('Seller application flow (e2e)', () => {
 						categories: applicationBody.categories,
 					imageOrIconMediaId: 'test-media-id',
 					activePage: false,
+					hasBranding: true,
 					},
 				],
 			});
@@ -352,6 +355,7 @@ describe('Seller application flow (e2e)', () => {
 						categories: applicationBody.categories,
 					imageOrIconMediaId: 'test-media-id',
 					activePage: false,
+					hasBranding: true,
 					},
 				],
 			});
@@ -388,6 +392,7 @@ describe('Seller application flow (e2e)', () => {
 				categories: [ShopCategory.UNKNOWN],
 					imageOrIconMediaId: 'test-media-id',
 					activePage: false,
+					hasBranding: true,
 			});
 
 			await request(app.getHttpServer())
