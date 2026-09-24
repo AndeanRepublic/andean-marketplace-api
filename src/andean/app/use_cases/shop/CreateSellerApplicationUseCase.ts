@@ -1,4 +1,5 @@
 import {
+	BadRequestException,
 	ConflictException,
 	Inject,
 	Injectable,
@@ -58,12 +59,14 @@ export class CreateSellerApplicationUseCase {
 		};
 		const seller = await this.createSellerUseCase.handle(sellerDto);
 
-		if (dto.seals && dto.seals.length > 0) {
-			for (const sealId of dto.seals) {
-				const sealFound = await this.sealRepository.getById(sealId);
-				if (!sealFound) {
-					throw new NotFoundException(`Seal with id ${sealId} not found`);
-				}
+		if (!dto.seals || dto.seals.length !== 4) {
+			throw new BadRequestException('Debes seleccionar exactamente 4 sellos');
+		}
+
+		for (const sealId of dto.seals) {
+			const sealFound = await this.sealRepository.getById(sealId);
+			if (!sealFound) {
+				throw new NotFoundException(`Seal with id ${sealId} not found`);
 			}
 		}
 

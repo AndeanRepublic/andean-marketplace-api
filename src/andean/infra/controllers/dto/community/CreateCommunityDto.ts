@@ -7,6 +7,8 @@ import {
 	IsOptional,
 	IsMongoId,
 	IsBoolean,
+	ArrayMinSize,
+	ArrayMaxSize,
 	ValidateNested,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -36,15 +38,23 @@ export class CreateCommunityDto {
 	@IsMongoId()
 	bannerImageId!: string;
 
-	@ApiPropertyOptional({
-		description: 'Array de IDs de seals asociados a la comunidad',
-		example: ['67890abcdef1234567890123', '67890abcdef1234567890124'],
+	@ApiProperty({
+		description: 'Array de exactamente 4 IDs de seals asociados a la comunidad',
+		example: [
+			'67890abcdef1234567890123',
+			'67890abcdef1234567890124',
+			'67890abcdef1234567890125',
+			'67890abcdef1234567890126',
+		],
 		type: [String],
+		minItems: 4,
+		maxItems: 4,
 	})
 	@IsArray()
 	@IsString({ each: true })
-	@IsOptional()
-	seals?: string[];
+	@ArrayMinSize(4)
+	@ArrayMaxSize(4)
+	seals!: string[];
 
 	@ApiPropertyOptional({
 		description: 'Datos de ProviderInfo para crear y asociar a la comunidad',

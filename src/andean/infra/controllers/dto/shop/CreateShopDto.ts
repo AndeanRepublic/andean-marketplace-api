@@ -8,6 +8,8 @@ import {
 	IsOptional,
 	IsMongoId,
 	IsBoolean,
+	ArrayMinSize,
+	ArrayMaxSize,
 	ValidateIf,
 	ValidateNested,
 } from 'class-validator';
@@ -76,15 +78,23 @@ export class CreateShopDto {
 	@Type(() => CreateProviderInfoDto)
 	providerInfo?: CreateProviderInfoDto;
 
-	@ApiPropertyOptional({
-		description: 'Array de IDs de seals asociados a la tienda',
-		example: ['67890abcdef1234567890123', '67890abcdef1234567890124'],
+	@ApiProperty({
+		description: 'Array de exactamente 4 IDs de seals asociados a la tienda',
+		example: [
+			'67890abcdef1234567890123',
+			'67890abcdef1234567890124',
+			'67890abcdef1234567890125',
+			'67890abcdef1234567890126',
+		],
 		type: [String],
+		minItems: 4,
+		maxItems: 4,
 	})
 	@IsArray()
 	@IsString({ each: true })
-	@IsOptional()
-	seals?: string[];
+	@ArrayMinSize(4)
+	@ArrayMaxSize(4)
+	seals!: string[];
 
 	@ApiPropertyOptional({
 		description: 'Indica si la página pública está activa',

@@ -6,6 +6,8 @@ import {
 	IsEnum,
 	IsOptional,
 	IsMongoId,
+	ArrayMinSize,
+	ArrayMaxSize,
 	ValidateNested,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -61,12 +63,21 @@ export class CreateSellerApplicationDto {
 	@Type(() => CreateProviderInfoDto)
 	providerInfo?: CreateProviderInfoDto;
 
-	@ApiPropertyOptional({
-		description: 'Array de IDs de seals asociados a la tienda',
+	@ApiProperty({
+		description: 'Array de exactamente 4 IDs de seals asociados a la tienda',
+		example: [
+			'67890abcdef1234567890123',
+			'67890abcdef1234567890124',
+			'67890abcdef1234567890125',
+			'67890abcdef1234567890126',
+		],
 		type: [String],
+		minItems: 4,
+		maxItems: 4,
 	})
 	@IsArray()
 	@IsString({ each: true })
-	@IsOptional()
-	seals?: string[];
+	@ArrayMinSize(4)
+	@ArrayMaxSize(4)
+	seals!: string[];
 }

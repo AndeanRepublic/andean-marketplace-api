@@ -61,8 +61,10 @@ export class UpdateCommunityUseCase {
 			}
 		}
 
-		// Validar que los seals existan si se proporcionan
-		if (dto.seals && dto.seals.length > 0) {
+		if (dto.seals !== undefined) {
+			if (dto.seals.length !== 4) {
+				throw new BadRequestException('Debes seleccionar exactamente 4 sellos');
+			}
 			for (const sealId of dto.seals) {
 				const sealFound = await this.sealRepository.getById(sealId);
 				if (!sealFound) {

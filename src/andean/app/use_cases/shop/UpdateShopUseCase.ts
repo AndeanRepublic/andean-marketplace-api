@@ -1,4 +1,9 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+	BadRequestException,
+	Inject,
+	Injectable,
+	NotFoundException,
+} from '@nestjs/common';
 import { ShopRepository } from '../../datastore/shop/Shop.repo';
 import { ProviderInfoRepository } from '../../datastore/ProviderInfo.repo';
 import { ShopPageInfoRepository } from '../../datastore/shop/ShopPageInfo.repo';
@@ -43,7 +48,10 @@ export class UpdateShopUseCase {
 			if (founderImage) dto.imageOrIconMediaId = founderImage;
 		}
 
-		if (dto.seals && dto.seals.length > 0) {
+		if (dto.seals !== undefined) {
+			if (dto.seals.length !== 4) {
+				throw new BadRequestException('Debes seleccionar exactamente 4 sellos');
+			}
 			for (const sealId of dto.seals) {
 				const sealFound = await this.sealRepository.getById(sealId);
 				if (!sealFound) {
@@ -55,9 +63,14 @@ export class UpdateShopUseCase {
 		let providerInfoId = existing.providerInfoId;
 		if (dto.providerInfo) {
 			if (existing.providerInfoId) {
-				await this.updateProviderInfoUseCase.handle(existing.providerInfoId, dto.providerInfo);
+				await this.updateProviderInfoUseCase.handle(
+					existing.providerInfoId,
+					dto.providerInfo,
+				);
 			} else {
-				const pi = await this.createProviderInfoUseCase.handle(dto.providerInfo);
+				const pi = await this.createProviderInfoUseCase.handle(
+					dto.providerInfo,
+				);
 				providerInfoId = pi.id;
 			}
 		}
@@ -65,7 +78,10 @@ export class UpdateShopUseCase {
 		let pageInfoId = existing.pageInfoId;
 		if (dto.pageInfo) {
 			if (existing.pageInfoId) {
-				await this.shopPageInfoRepository.update(existing.pageInfoId, dto.pageInfo);
+				await this.shopPageInfoRepository.update(
+					existing.pageInfoId,
+					dto.pageInfo,
+				);
 			} else {
 				const pageInfoToSave = new ShopPageInfo(
 					new Types.ObjectId().toString(),
@@ -75,7 +91,8 @@ export class UpdateShopUseCase {
 					dto.pageInfo.whatWeDoDescription,
 					dto.pageInfo.whatWeDoImageMediaIds,
 				);
-				const created = await this.shopPageInfoRepository.create(pageInfoToSave);
+				const created =
+					await this.shopPageInfoRepository.create(pageInfoToSave);
 				pageInfoId = created.id;
 			}
 		}
@@ -83,7 +100,10 @@ export class UpdateShopUseCase {
 		let founderInfoId = existing.founderInfoId;
 		if (dto.founderInfo) {
 			if (existing.founderInfoId) {
-				await this.founderInfoRepository.update(existing.founderInfoId, dto.founderInfo);
+				await this.founderInfoRepository.update(
+					existing.founderInfoId,
+					dto.founderInfo,
+				);
 			} else {
 				const founderToSave = new FounderInfo(
 					new Types.ObjectId().toString(),
@@ -95,8 +115,18 @@ export class UpdateShopUseCase {
 			}
 		}
 
-		const { providerInfo: _pi, pageInfo: _pgInfo, founderInfo: _fi, ...dtoRest } = dto;
-		const updateData: Partial<Shop> = { ...dtoRest, providerInfoId, pageInfoId, founderInfoId };
+		const {
+			providerInfo: _pi,
+			pageInfo: _pgInfo,
+			founderInfo: _fi,
+			...dtoRest
+		} = dto;
+		const updateData: Partial<Shop> = {
+			...dtoRest,
+			providerInfoId,
+			pageInfoId,
+			founderInfoId,
+		};
 
 		return this.shopRepository.updateShop(id, updateData);
 	}

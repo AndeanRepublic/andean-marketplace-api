@@ -1,4 +1,5 @@
 import {
+	BadRequestException,
 	ForbiddenException,
 	Inject,
 	Injectable,
@@ -51,16 +52,14 @@ export class CreateShopUseCase {
 		const initialStatus = options?.initialStatus ?? ShopStatus.PENDING;
 		const roles = options?.roles ?? [];
 		const isAdmin = roles.includes(AccountRole.ADMIN);
-		const isSellerOnly =
-			roles.includes(AccountRole.SELLER) && !isAdmin;
+		const isSellerOnly = roles.includes(AccountRole.SELLER) && !isAdmin;
 
 		let dtoForShop = applyFounderIdentity({ ...shopDto });
 
 		if (isSellerOnly && options?.requestingUserId) {
-			const sellerProfile =
-				await this.sellerRepository.getSellerByUserId(
-					options.requestingUserId,
-				);
+			const sellerProfile = await this.sellerRepository.getSellerByUserId(
+				options.requestingUserId,
+			);
 			if (!sellerProfile) {
 				throw new ForbiddenException('Seller profile not found');
 			}
@@ -91,12 +90,14 @@ export class CreateShopUseCase {
 			);
 		}
 
-		if (shopDto.seals && shopDto.seals.length > 0) {
-			for (const sealId of shopDto.seals) {
-				const sealFound = await this.sealRepository.getById(sealId);
-				if (!sealFound) {
-					throw new NotFoundException(`Seal with id ${sealId} not found`);
-				}
+		if (!shopDto.seals || shopDto.seals.length !== 4) {
+			throw new BadRequestException('Debes seleccionar exactamente 4 sellos');
+		}
+
+		for (const sealId of shopDto.seals) {
+			const sealFound = await this.sealRepository.getById(sealId);
+			if (!sealFound) {
+				throw new NotFoundException(`Seal with id ${sealId} not found`);
 			}
 		}
 
@@ -153,7 +154,6 @@ function applyFounderIdentity(dto: CreateShopDto): CreateShopDto {
 	return {
 		...dto,
 		name: dto.name?.trim() || dto.founderInfo.founderName,
-		imageOrIconMediaId:
-			dto.imageOrIconMediaId || dto.founderInfo.founderImage,
+		imageOrIconMediaId: dto.imageOrIconMediaId || dto.founderInfo.founderImage,
 	};
 }
