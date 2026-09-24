@@ -59,6 +59,7 @@ describe('FORMA 2 — Admin shops, sellers y enlace (e2e)', () => {
 		categories: [ShopCategory.UNKNOWN],
 		imageOrIconMediaId: '507f1f77bcf86cd799439099',
 		activePage: false,
+		hasBranding: true,
 		seals: [
 			'507f1f77bcf86cd799439021',
 			'507f1f77bcf86cd799439022',
@@ -242,6 +243,7 @@ describe('FORMA 2 — Admin shops, sellers y enlace (e2e)', () => {
 					categories: [ShopCategory.UNKNOWN],
 					imageOrIconMediaId: 'test-media-id',
 					activePage: false,
+					hasBranding: true,
 				},
 				{
 					id: shopId,
@@ -251,6 +253,7 @@ describe('FORMA 2 — Admin shops, sellers y enlace (e2e)', () => {
 					categories: [ShopCategory.UNKNOWN],
 					imageOrIconMediaId: 'test-media-id',
 					activePage: false,
+					hasBranding: true,
 				},
 			]);
 
@@ -290,6 +293,7 @@ describe('FORMA 2 — Admin shops, sellers y enlace (e2e)', () => {
 							categories: createShopBody.categories,
 					imageOrIconMediaId: 'test-media-id',
 					activePage: false,
+					hasBranding: true,
 						},
 					],
 				},
@@ -317,6 +321,7 @@ describe('FORMA 2 — Admin shops, sellers y enlace (e2e)', () => {
 				categories: createShopBody.categories,
 					imageOrIconMediaId: 'test-media-id',
 					activePage: false,
+					hasBranding: true,
 			});
 
 			const res = await request(app.getHttpServer())
@@ -350,6 +355,7 @@ describe('FORMA 2 — Admin shops, sellers y enlace (e2e)', () => {
 					categories: createShopBody.categories,
 					imageOrIconMediaId: 'test-media-id',
 					activePage: false,
+					hasBranding: true,
 				},
 			]);
 
@@ -541,6 +547,7 @@ describe('FORMA 2 — Admin shops, sellers y enlace (e2e)', () => {
 				categories: createShopBody.categories,
 					imageOrIconMediaId: 'test-media-id',
 					activePage: false,
+					hasBranding: true,
 			});
 
 			const res = await request(app.getHttpServer())
@@ -566,6 +573,7 @@ describe('FORMA 2 — Admin shops, sellers y enlace (e2e)', () => {
 					categories: createShopBody.categories,
 					imageOrIconMediaId: 'test-media-id',
 					activePage: false,
+					hasBranding: true,
 				},
 				seller: {
 					id: sellerProfileId,
@@ -681,6 +689,7 @@ describe('FORMA 2 — Admin shops, sellers y enlace (e2e)', () => {
 					categories: createShopBody.categories,
 					imageOrIconMediaId: 'test-media-id',
 					activePage: false,
+					hasBranding: true,
 				},
 			});
 

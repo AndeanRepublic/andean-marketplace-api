@@ -34,8 +34,13 @@ describe('CreateSellerApplicationUseCase', () => {
 		},
 		name: 'Tienda Andina',
 		categories: [ShopCategory.TEXTILES],
-					imageOrIconMediaId: 'test-media-id',
-					activePage: false,
+		imageOrIconMediaId: '507f1f77bcf86cd799439099',
+		seals: [
+			'507f1f77bcf86cd799439021',
+			'507f1f77bcf86cd799439022',
+			'507f1f77bcf86cd799439023',
+			'507f1f77bcf86cd799439024',
+		],
 	};
 
 	beforeEach(async () => {
@@ -155,8 +160,9 @@ describe('CreateSellerApplicationUseCase', () => {
 				name: 'Tienda previa',
 				status: ShopStatus.ACTIVE,
 				categories: [ShopCategory.TEXTILES],
-					imageOrIconMediaId: 'test-media-id',
-					activePage: false,
+				imageOrIconMediaId: 'test-media-id',
+				activePage: false,
+				hasBranding: true,
 			},
 		]);
 
