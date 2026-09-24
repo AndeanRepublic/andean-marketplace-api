@@ -7,11 +7,14 @@ import {
 import { CommunityRepository } from '../../datastore/community/community.repo';
 import { SealRepository } from '../../datastore/community/Seal.repo';
 import { MediaItemRepository } from '../../datastore/MediaItem.repo';
+import { CommunityPageInfoRepository } from '../../datastore/community/CommunityPageInfo.repo';
 import { Community } from '../../../domain/entities/community/Community';
+import { CommunityPageInfo } from '../../../domain/entities/community/CommunityPageInfo';
 import { UpdateCommunityDto } from '../../../infra/controllers/dto/community/UpdateCommunityDto';
 import { CommunityMapper } from '../../../infra/services/community/CommunityMapper';
 import { CreateProviderInfoUseCase } from '../providerInfo/CreateProviderInfoUseCase';
 import { UpdateProviderInfoUseCase } from '../providerInfo/UpdateProviderInfoUseCase';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class UpdateCommunityUseCase {
@@ -21,6 +24,8 @@ export class UpdateCommunityUseCase {
 		private readonly sealRepository: SealRepository,
 		@Inject(MediaItemRepository)
 		private readonly mediaItemRepository: MediaItemRepository,
+		@Inject(CommunityPageInfoRepository)
+		private readonly communityPageInfoRepository: CommunityPageInfoRepository,
 		private readonly createProviderInfoUseCase: CreateProviderInfoUseCase,
 		private readonly updateProviderInfoUseCase: UpdateProviderInfoUseCase,
 	) {}
@@ -56,8 +61,10 @@ export class UpdateCommunityUseCase {
 			}
 		}
 
-		// Validar que los seals existan si se proporcionan
-		if (dto.seals && dto.seals.length > 0) {
+		if (dto.seals !== undefined) {
+			if (dto.seals.length !== 4) {
+				throw new BadRequestException('Debes seleccionar exactamente 4 sellos');
+			}
 			for (const sealId of dto.seals) {
 				const sealFound = await this.sealRepository.getById(sealId);
 				if (!sealFound) {
@@ -82,12 +89,37 @@ export class UpdateCommunityUseCase {
 			}
 		}
 
-		// Strip providerInfo from the spread to avoid persisting the DTO object
-		const { providerInfo: _pi, ...dtoRest } = dto;
+		// Upsert CommunityPageInfo if provided
+		let pageInfoId = existing.pageInfoId;
+		if (dto.pageInfo) {
+			if (existing.pageInfoId) {
+				await this.communityPageInfoRepository.update(existing.pageInfoId, dto.pageInfo);
+			} else {
+				const pageInfoToSave = new CommunityPageInfo(
+					new Types.ObjectId().toString(),
+					dto.pageInfo.tagline,
+					dto.pageInfo.shortBio,
+					dto.pageInfo.familyCount,
+					dto.pageInfo.weaverCount,
+					dto.pageInfo.activityYears,
+					dto.pageInfo.infoImageMediaIds,
+					dto.pageInfo.whatWeDoDescription,
+					dto.pageInfo.whatWeDoImageMediaIds,
+					dto.pageInfo.galleryPhotoMediaIds,
+					dto.pageInfo.galleryVideoMediaId,
+					dto.pageInfo.galleryVideoPosterMediaId,
+				);
+				const created = await this.communityPageInfoRepository.create(pageInfoToSave);
+				pageInfoId = created.id;
+			}
+		}
+
+		const { providerInfo: _pi, pageInfo: _pgInfo, ...dtoRest } = dto;
 		const updateData: Partial<Community> = {
 			...existing,
 			...dtoRest,
 			providerInfoId,
+			pageInfoId,
 		};
 
 		// Actualizar

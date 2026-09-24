@@ -19,16 +19,6 @@ export class CreateProviderInfoDto {
 	@ApiPropertyOptional()
 	@IsOptional()
 	@IsString()
-	tagline?: string;
-
-	@ApiPropertyOptional()
-	@IsOptional()
-	@IsString()
-	shortBio?: string;
-
-	@ApiPropertyOptional()
-	@IsOptional()
-	@IsString()
 	originPlace?: string;
 
 	@ApiPropertyOptional()

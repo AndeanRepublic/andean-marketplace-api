@@ -1,7 +1,7 @@
 import { TextileCraftTechnique } from 'src/andean/domain/entities/textileProducts/TextileCraftTechnique';
 import { TextileCraftTechniqueDocument } from '../../persistence/textileProducts/textileCraftTechnique.schema';
-import { plainToInstance, instanceToPlain } from 'class-transformer';
 import { CreateTextileCraftTechniqueDto } from '../../controllers/dto/textileProducts/CreateTextileCraftTechniqueDto';
+import { MongoIdUtils } from '../../utils/MongoIdUtils';
 import { Types } from 'mongoose';
 
 export class TextileCraftTechniqueMapper {
@@ -9,41 +9,31 @@ export class TextileCraftTechniqueMapper {
 		doc: TextileCraftTechniqueDocument,
 	): TextileCraftTechnique {
 		const plain = doc.toObject();
-		return plainToInstance(TextileCraftTechnique, {
-			id: plain._id.toString(),
-			...plain,
-		});
+		return new TextileCraftTechnique(
+			MongoIdUtils.objectIdToString(plain._id),
+			plain.name,
+		);
 	}
 
 	static fromCreateDto(
 		dto: CreateTextileCraftTechniqueDto,
 	): TextileCraftTechnique {
-		const { ...textileCraftTechniqueData } = dto;
-		const plain = {
-			id: new Types.ObjectId().toString(),
-			...textileCraftTechniqueData,
-		};
-		return plainToInstance(TextileCraftTechnique, plain);
+		return new TextileCraftTechnique(
+			new Types.ObjectId().toString(),
+			dto.name,
+		);
 	}
 
 	static fromUpdateDto(
 		id: string,
 		dto: CreateTextileCraftTechniqueDto,
 	): TextileCraftTechnique {
-		const { ...textileCraftTechniqueData } = dto;
-		const plain = {
-			id: id,
-			...textileCraftTechniqueData,
-		};
-		return plainToInstance(TextileCraftTechnique, plain);
+		return new TextileCraftTechnique(id, dto.name);
 	}
 
-	static toPersistence(textileCraftTechnique: TextileCraftTechnique) {
-		const plain = instanceToPlain(textileCraftTechnique);
-		const { id, ...updateData } = plain;
-
-		return {
-			...updateData,
-		};
+	static toPersistence(
+		textileCraftTechnique: TextileCraftTechnique,
+	): Record<string, unknown> {
+		return { name: textileCraftTechnique.name };
 	}
 }

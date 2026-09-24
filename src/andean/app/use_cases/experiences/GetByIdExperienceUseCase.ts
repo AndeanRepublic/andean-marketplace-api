@@ -178,25 +178,27 @@ export class GetByIdExperienceUseCase {
 	private async resolveOwner(
 		ownerId: string,
 		ownerType: OwnerType,
-	): Promise<{ title: string; imgUrl: string }> {
+	): Promise<{ title: string; imgUrl: string; activePage: boolean }> {
 		const resolved = await this.ownerInfoResolver.resolveDetailed(
 			ownerType,
 			ownerId,
 		);
 		if (!resolved) {
-			return { title: '', imgUrl: '' };
+			return { title: '', imgUrl: '', activePage: false };
 		}
 
 		if (resolved.ownerType === OwnerType.COMMUNITY) {
 			return {
 				title: resolved.community?.name || '',
 				imgUrl: resolved.community?.bannerImageUrl || '',
+				activePage: resolved.community?.activePage ?? false,
 			};
 		}
 
 		return {
 			title: resolved.shop?.shopName || '',
 			imgUrl: resolved.shop?.ownerImage || '',
+			activePage: resolved.shop?.activePage ?? false,
 		};
 	}
 

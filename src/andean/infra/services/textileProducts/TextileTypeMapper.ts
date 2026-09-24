@@ -1,42 +1,27 @@
 import { TextileType } from 'src/andean/domain/entities/textileProducts/TextileType';
 import { TextileTypeDocument } from '../../persistence/textileProducts/textileType.schema';
-import { plainToInstance, instanceToPlain } from 'class-transformer';
 import { CreateTextileTypeDto } from '../../controllers/dto/textileProducts/CreateTextileTypeDto';
+import { MongoIdUtils } from '../../utils/MongoIdUtils';
 import { Types } from 'mongoose';
 
 export class TextileTypeMapper {
 	static fromDocument(doc: TextileTypeDocument): TextileType {
 		const plain = doc.toObject();
-		return plainToInstance(TextileType, {
-			id: plain._id.toString(),
-			...plain,
-		});
+		return new TextileType(
+			MongoIdUtils.objectIdToString(plain._id),
+			plain.name,
+		);
 	}
 
 	static fromCreateDto(dto: CreateTextileTypeDto): TextileType {
-		const { ...textileTypeData } = dto;
-		const plain = {
-			id: new Types.ObjectId().toString(),
-			...textileTypeData,
-		};
-		return plainToInstance(TextileType, plain);
+		return new TextileType(new Types.ObjectId().toString(), dto.name);
 	}
 
 	static fromUpdateDto(id: string, dto: CreateTextileTypeDto): TextileType {
-		const { ...textileTypeData } = dto;
-		const plain = {
-			id: id,
-			...textileTypeData,
-		};
-		return plainToInstance(TextileType, plain);
+		return new TextileType(id, dto.name);
 	}
 
-	static toPersistence(textileType: TextileType) {
-		const plain = instanceToPlain(textileType);
-		const { id, ...updateData } = plain;
-
-		return {
-			...updateData,
-		};
+	static toPersistence(textileType: TextileType): Record<string, unknown> {
+		return { name: textileType.name };
 	}
 }

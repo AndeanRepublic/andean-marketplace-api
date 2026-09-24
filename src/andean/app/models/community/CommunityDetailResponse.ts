@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { CommunityResponse } from './CommunityResponse';
 
-/** Respuesta completa para edición (banner, sellos, providerInfo). */
+/** Respuesta completa para edición (banner, sellos, providerInfo, pageInfo). */
 export class CommunityDetailResponse extends CommunityResponse {
 	@ApiPropertyOptional({ type: [String], description: 'IDs de sellos asociados' })
 	seals?: string[];
@@ -11,4 +11,10 @@ export class CommunityDetailResponse extends CommunityResponse {
 		type: Object,
 	})
 	providerInfo?: Record<string, unknown>;
+
+	@ApiPropertyOptional({
+		description: 'Datos de la página pública de la comunidad',
+		type: Object,
+	})
+	pageInfo?: Record<string, unknown>;
 }

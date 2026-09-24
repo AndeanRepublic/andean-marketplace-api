@@ -57,7 +57,7 @@ export class TextilePrincipalUseRepositoryImpl extends TextilePrincipalUseReposi
 		const plain = TextilePrincipalUseMapper.toPersistence(principalUse);
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		const updated = await this.textilePrincipalUseModel
-			.findByIdAndUpdate(objectId, plain, { new: true })
+			.findByIdAndUpdate(objectId, { $set: plain }, { new: true })
 			.exec();
 		return TextilePrincipalUseMapper.fromDocument(updated!);
 	}

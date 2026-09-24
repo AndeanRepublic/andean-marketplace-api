@@ -57,6 +57,12 @@ export class SuperfoodProductListItem {
 	})
 	title!: string;
 
+	@ApiPropertyOptional({
+		description: 'Nombre de la categoría del producto',
+		example: 'Powders',
+	})
+	categoryName?: string;
+
 	@ApiProperty({
 		description: 'Nombre del propietario/vendedor',
 		example: 'Artesanías Cusco',

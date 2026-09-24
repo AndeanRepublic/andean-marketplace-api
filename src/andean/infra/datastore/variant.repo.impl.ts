@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { instanceToPlain } from 'class-transformer';
 import { VariantRepository as VariantRepositoryBase } from '../../app/datastore/Variant.repo';
 import { Variant } from '../../domain/entities/Variant';
 import { VariantDocument } from '../persistence/variant.schema';
@@ -29,7 +28,7 @@ export class VariantRepositoryImpl extends VariantRepositoryBase {
 		);
 		const savedDocs = await this.variantModel.insertMany(documents);
 		return savedDocs.map((doc) =>
-			VariantMapper.fromDocument(doc as VariantDocument),
+			VariantMapper.fromDocument(doc as unknown as VariantDocument),
 		);
 	}
 
@@ -50,13 +49,11 @@ export class VariantRepositoryImpl extends VariantRepositoryBase {
 	}
 
 	async update(id: string, variant: Partial<Variant>): Promise<Variant | null> {
-		const plain = instanceToPlain(variant);
-		const { id: _, ...dataForDB } = plain;
-		dataForDB.updatedAt = new Date();
+		const dataForDB = VariantMapper.toPersistence(variant);
 
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		const updated = await this.variantModel
-			.findByIdAndUpdate(objectId, dataForDB, { new: true })
+			.findByIdAndUpdate(objectId, { $set: dataForDB }, { new: true })
 			.exec();
 		return updated ? VariantMapper.fromDocument(updated) : null;
 	}

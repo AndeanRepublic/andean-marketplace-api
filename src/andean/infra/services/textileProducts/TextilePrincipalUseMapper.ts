@@ -1,45 +1,32 @@
 import { TextilePrincipalUse } from 'src/andean/domain/entities/textileProducts/TextilePrincipalUse';
 import { TextilePrincipalUseDocument } from '../../persistence/textileProducts/textilePrincipalUse.schema';
-import { plainToInstance, instanceToPlain } from 'class-transformer';
 import { CreateTextilePrincipalUseDto } from '../../controllers/dto/textileProducts/CreateTextilePrincipalUseDto';
+import { MongoIdUtils } from '../../utils/MongoIdUtils';
 import { Types } from 'mongoose';
 
 export class TextilePrincipalUseMapper {
 	static fromDocument(doc: TextilePrincipalUseDocument): TextilePrincipalUse {
 		const plain = doc.toObject();
-		return plainToInstance(TextilePrincipalUse, {
-			id: plain._id.toString(),
-			...plain,
-		});
+		return new TextilePrincipalUse(
+			MongoIdUtils.objectIdToString(plain._id),
+			plain.name,
+		);
 	}
 
 	static fromCreateDto(dto: CreateTextilePrincipalUseDto): TextilePrincipalUse {
-		const { ...textilePrincipalUseData } = dto;
-		const plain = {
-			id: new Types.ObjectId().toString(),
-			...textilePrincipalUseData,
-		};
-		return plainToInstance(TextilePrincipalUse, plain);
+		return new TextilePrincipalUse(new Types.ObjectId().toString(), dto.name);
 	}
 
 	static fromUpdateDto(
 		id: string,
 		dto: CreateTextilePrincipalUseDto,
 	): TextilePrincipalUse {
-		const { ...textilePrincipalUseData } = dto;
-		const plain = {
-			id: id,
-			...textilePrincipalUseData,
-		};
-		return plainToInstance(TextilePrincipalUse, plain);
+		return new TextilePrincipalUse(id, dto.name);
 	}
 
-	static toPersistence(textilePrincipalUse: TextilePrincipalUse) {
-		const plain = instanceToPlain(textilePrincipalUse);
-		const { id, ...updateData } = plain;
-
-		return {
-			...updateData,
-		};
+	static toPersistence(
+		textilePrincipalUse: TextilePrincipalUse,
+	): Record<string, unknown> {
+		return { name: textilePrincipalUse.name };
 	}
 }

@@ -4,8 +4,6 @@ import { ConnectionType } from '../../domain/enums/ConnectionType';
 
 export const ProviderInfoSchema = new Schema({
 	craftType: { type: String, required: false },
-	tagline: { type: String, required: false },
-	shortBio: { type: String, required: false },
 	originPlace: { type: String, required: false },
 	testimonialsOrAwards: { type: String, required: false },
 
@@ -57,8 +55,6 @@ export const ProviderInfoSchema = new Schema({
 
 export interface ProviderInfoDocument extends Document {
 	craftType?: string;
-	tagline?: string;
-	shortBio?: string;
 	originPlace?: string;
 	testimonialsOrAwards?: string;
 

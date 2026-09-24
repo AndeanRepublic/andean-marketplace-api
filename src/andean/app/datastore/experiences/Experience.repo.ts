@@ -17,6 +17,7 @@ export interface ExperienceFilters {
 export interface ExperienceListRawItem {
 	id: string;
 	title: string;
+	category?: string;
 	ownerName: string;
 	adultsPrice: number;
 	ubication: string;

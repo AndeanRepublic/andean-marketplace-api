@@ -36,10 +36,10 @@ export class SellerApplicationShopDetail {
 	categories!: ShopCategory[];
 
 	@ApiPropertyOptional()
-	artisanPhotoMediaId?: string;
+	imageOrIconMediaId?: string;
 
 	@ApiPropertyOptional()
-	artisanPhotoUrl?: string;
+	imageOrIconUrl?: string;
 
 	@ApiPropertyOptional({
 		description: 'ID del registro ProviderInfo vinculado a la tienda (Shop.providerInfoId)',

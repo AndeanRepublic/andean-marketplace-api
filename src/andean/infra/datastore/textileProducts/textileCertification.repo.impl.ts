@@ -87,7 +87,7 @@ export class TextileCertificationRepositoryImpl extends TextileCertificationRepo
 		const plain = TextileCertificationMapper.toPersistence(certification);
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		const updated = await this.textileCertificationModel
-			.findByIdAndUpdate(objectId, plain, { new: true })
+			.findByIdAndUpdate(objectId, { $set: plain }, { new: true })
 			.exec();
 		if (!updated) {
 			throw new Error('TextileCertification not found');

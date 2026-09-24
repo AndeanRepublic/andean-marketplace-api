@@ -14,9 +14,13 @@ export class ShopMapper {
 			plain.name,
 			plain.status,
 			plain.categories,
+			plain.imageOrIconMediaId,
 			plain.providerInfoId,
-			plain.artisanPhotoMediaId,
 			plain.seals,
+			plain.activePage ?? false,
+			plain.pageInfoId,
+			plain.founderInfoId,
+			plain.hasBranding ?? true,
 		);
 	}
 
@@ -24,18 +28,22 @@ export class ShopMapper {
 	 * Crea una entidad Shop desde el DTO de creación (asigna id nuevo).
 	 */
 	static fromCreateDto(
-		dto: CreateShopDto & { providerInfoId?: string },
+		dto: CreateShopDto & { providerInfoId?: string; pageInfoId?: string; founderInfoId?: string },
 		initialStatus: ShopStatus = ShopStatus.PENDING,
 	): Shop {
 		return new Shop(
 			new Types.ObjectId().toString(),
 			dto.sellerId,
-			dto.name,
+			dto.name ?? '',
 			initialStatus,
 			dto.categories,
+			dto.imageOrIconMediaId ?? '',
 			dto.providerInfoId,
-			dto.artisanPhotoMediaId,
 			dto.seals,
+			dto.activePage ?? false,
+			dto.pageInfoId,
+			dto.founderInfoId,
+			dto.hasBranding ?? true,
 		);
 	}
 

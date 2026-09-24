@@ -8,8 +8,12 @@ export class Shop {
 		public name: string,
 		public status: ShopStatus,
 		public categories: ShopCategory[],
+		public imageOrIconMediaId: string,
 		public providerInfoId?: string,
-		public artisanPhotoMediaId?: string,
 		public seals?: string[],
+		public activePage: boolean = false,
+		public pageInfoId?: string,
+		public founderInfoId?: string,
+		public hasBranding: boolean = true,
 	) {}
 }

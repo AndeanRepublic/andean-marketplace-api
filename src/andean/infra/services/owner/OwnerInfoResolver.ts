@@ -51,6 +51,8 @@ export class OwnerInfoResolver {
 			return {
 				ownerType: OwnerType.COMMUNITY,
 				community: {
+					id: community.id,
+					activePage: community.activePage ?? false,
 					bannerImageUrl,
 					name: community.name,
 					seals: validSeals.map((seal) => ({
@@ -67,7 +69,7 @@ export class OwnerInfoResolver {
 		if (!shop) return undefined;
 
 		const ownerImage = await this.mediaUrlResolver.resolveUrl(
-			shop.artisanPhotoMediaId,
+			shop.imageOrIconMediaId,
 		);
 		let originPlace = '';
 		if (shop.providerInfoId && this.providerInfoRepository) {
@@ -92,6 +94,8 @@ export class OwnerInfoResolver {
 		return {
 			ownerType: OwnerType.SHOP,
 			shop: {
+				id: shop.id,
+				activePage: shop.activePage ?? false,
 				ownerImage,
 				shopName: shop.name,
 				originPlace,

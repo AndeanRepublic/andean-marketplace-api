@@ -57,6 +57,8 @@ describe('FORMA 2 — Admin shops, sellers y enlace (e2e)', () => {
 	const createShopBody = {
 		name: 'Tienda Admin',
 		categories: [ShopCategory.UNKNOWN],
+					imageOrIconMediaId: 'test-media-id',
+					activePage: false,
 	};
 
 	const createSellerBody = {
@@ -232,6 +234,8 @@ describe('FORMA 2 — Admin shops, sellers y enlace (e2e)', () => {
 					name: 'Orphan',
 					status: ShopStatus.ACTIVE,
 					categories: [ShopCategory.UNKNOWN],
+					imageOrIconMediaId: 'test-media-id',
+					activePage: false,
 				},
 				{
 					id: shopId,
@@ -239,6 +243,8 @@ describe('FORMA 2 — Admin shops, sellers y enlace (e2e)', () => {
 					name: 'Paused',
 					status: ShopStatus.DEACTIVATED,
 					categories: [ShopCategory.UNKNOWN],
+					imageOrIconMediaId: 'test-media-id',
+					activePage: false,
 				},
 			]);
 
@@ -276,6 +282,8 @@ describe('FORMA 2 — Admin shops, sellers y enlace (e2e)', () => {
 							name: createShopBody.name,
 							status: ShopStatus.PENDING,
 							categories: createShopBody.categories,
+					imageOrIconMediaId: 'test-media-id',
+					activePage: false,
 						},
 					],
 				},
@@ -301,6 +309,8 @@ describe('FORMA 2 — Admin shops, sellers y enlace (e2e)', () => {
 				name: createShopBody.name,
 				status: ShopStatus.ACTIVE,
 				categories: createShopBody.categories,
+					imageOrIconMediaId: 'test-media-id',
+					activePage: false,
 			});
 
 			const res = await request(app.getHttpServer())
@@ -332,6 +342,8 @@ describe('FORMA 2 — Admin shops, sellers y enlace (e2e)', () => {
 					name: createShopBody.name,
 					status: ShopStatus.ACTIVE,
 					categories: createShopBody.categories,
+					imageOrIconMediaId: 'test-media-id',
+					activePage: false,
 				},
 			]);
 
@@ -521,6 +533,8 @@ describe('FORMA 2 — Admin shops, sellers y enlace (e2e)', () => {
 				name: createShopBody.name,
 				status: ShopStatus.ACTIVE,
 				categories: createShopBody.categories,
+					imageOrIconMediaId: 'test-media-id',
+					activePage: false,
 			});
 
 			const res = await request(app.getHttpServer())
@@ -544,6 +558,8 @@ describe('FORMA 2 — Admin shops, sellers y enlace (e2e)', () => {
 					name: createShopBody.name,
 					status: ShopStatus.ACTIVE,
 					categories: createShopBody.categories,
+					imageOrIconMediaId: 'test-media-id',
+					activePage: false,
 				},
 				seller: {
 					id: sellerProfileId,
@@ -657,6 +673,8 @@ describe('FORMA 2 — Admin shops, sellers y enlace (e2e)', () => {
 					name: createShopBody.name,
 					status: ShopStatus.PENDING,
 					categories: createShopBody.categories,
+					imageOrIconMediaId: 'test-media-id',
+					activePage: false,
 				},
 			});
 
@@ -672,6 +690,8 @@ describe('FORMA 2 — Admin shops, sellers y enlace (e2e)', () => {
 					},
 					name: createShopBody.name,
 					categories: createShopBody.categories,
+					imageOrIconMediaId: 'test-media-id',
+					activePage: false,
 				})
 				.expect(HttpStatus.CREATED);
 

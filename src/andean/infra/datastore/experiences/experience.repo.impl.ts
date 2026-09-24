@@ -195,6 +195,33 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 				},
 			},
 
+			{
+				$lookup: {
+					from: 'experiencecategories',
+					let: {
+						cid: {
+							$convert: {
+								input: '$basicInfo.categoryId',
+								to: 'objectId',
+								onError: null,
+								onNull: null,
+							},
+						},
+					},
+					pipeline: [
+						{
+							$match: {
+								$expr: {
+									$and: [{ $ne: ['$$cid', null] }, { $eq: ['$_id', '$$cid'] }],
+								},
+							},
+						},
+						{ $limit: 1 },
+					],
+					as: 'categoryData',
+				},
+			},
+
 			// 7. Sort by most recent
 			{ $sort: { createdAt: -1 as const } },
 
@@ -209,6 +236,12 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 							$project: {
 								_id: 1,
 								title: '$basicInfo.title',
+								category: {
+									$ifNull: [
+										{ $arrayElemAt: ['$categoryData.name', 0] },
+										'$basicInfo.category',
+									],
+								},
 								ownerName: {
 									$ifNull: ['$ownerData.name', ''],
 								},
@@ -235,6 +268,7 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 		const items: ExperienceListRawItem[] = result.data.map((doc: any) => ({
 			id: doc._id.toString(),
 			title: doc.title,
+			category: String(doc.category ?? '').trim(),
 			ownerName: doc.ownerName,
 			adultsPrice: doc.adultsPrice,
 			ubication: doc.ubication,

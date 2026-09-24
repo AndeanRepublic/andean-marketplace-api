@@ -15,13 +15,21 @@ export class CreateSealUseCase {
 	) {}
 
 	async handle(dto: CreateSealDto): Promise<Seal> {
-		// Validar que el MediaItem del logo existe
 		const mediaItemFound = await this.mediaItemRepository.getById(
 			dto.logoMediaId,
 		);
 		if (!mediaItemFound) {
 			throw new NotFoundException(
 				`MediaItem with id ${dto.logoMediaId} not found`,
+			);
+		}
+
+		const showcaseFound = await this.mediaItemRepository.getById(
+			dto.showcaseMediaId,
+		);
+		if (!showcaseFound) {
+			throw new NotFoundException(
+				`MediaItem with id ${dto.showcaseMediaId} not found`,
 			);
 		}
 

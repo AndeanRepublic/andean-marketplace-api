@@ -1,7 +1,13 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ShopSchema } from './infra/persistence/shop/shop.schema';
+import { ShopPageInfoSchema } from './infra/persistence/shop/shopPageInfo.schema';
+import { FounderInfoSchema } from './infra/persistence/shop/founderInfo.schema';
 import { ShopController } from './infra/controllers/shop/shop.controller';
+import { ShopPageInfoRepository } from './app/datastore/shop/ShopPageInfo.repo';
+import { ShopPageInfoRepoImpl } from './infra/datastore/shop/shopPageInfo.repo.impl';
+import { FounderInfoRepository } from './app/datastore/shop/FounderInfo.repo';
+import { FounderInfoRepoImpl } from './infra/datastore/shop/founderInfo.repo.impl';
 import { ProviderInfoModule } from './providerInfo.module';
 import { CreateShopUseCase } from './app/use_cases/shop/CreateShopUseCase';
 import { ShopRepository } from './app/datastore/shop/Shop.repo';
@@ -29,7 +35,11 @@ import { MediaItemModule } from './mediaItem.module';
 
 @Module({
 	imports: [
-		MongooseModule.forFeature([{ name: 'Shop', schema: ShopSchema }]),
+		MongooseModule.forFeature([
+			{ name: 'Shop', schema: ShopSchema },
+			{ name: 'ShopPageInfo', schema: ShopPageInfoSchema },
+			{ name: 'FounderInfo', schema: FounderInfoSchema },
+		]),
 		UsersModule,
 		ProviderInfoModule,
 		MediaItemModule,
@@ -60,6 +70,14 @@ import { MediaItemModule } from './mediaItem.module';
 		{
 			provide: SellerProfileRepository,
 			useClass: SellerProfileRepositoryImpl,
+		},
+		{
+			provide: ShopPageInfoRepository,
+			useClass: ShopPageInfoRepoImpl,
+		},
+		{
+			provide: FounderInfoRepository,
+			useClass: FounderInfoRepoImpl,
 		},
 	],
 	exports: [

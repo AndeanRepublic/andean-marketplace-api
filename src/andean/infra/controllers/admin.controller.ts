@@ -715,13 +715,17 @@ export class AdminController {
 
 			categories: shop.categories,
 
-			artisanPhotoMediaId: shop.artisanPhotoMediaId,
+			imageOrIconMediaId: shop.imageOrIconMediaId,
 
-			artisanPhotoUrl: await this.mediaUrlResolver.resolveUrl(
+			imageOrIconUrl: await this.mediaUrlResolver.resolveUrl(
 
-				shop.artisanPhotoMediaId,
+				shop.imageOrIconMediaId,
 
 			),
+
+			activePage: shop.activePage ?? false,
+
+			hasBranding: shop.hasBranding ?? true,
 
 			seals: shop.seals ?? [],
 

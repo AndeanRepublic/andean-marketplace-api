@@ -26,4 +26,13 @@ export class CreateSealDto {
 	@IsNotEmpty()
 	@IsMongoId()
 	logoMediaId!: string;
+
+	@ApiProperty({
+		description: 'ID del media item de la imagen de vitrina del sello',
+		example: '507f1f77bcf86cd799439033',
+	})
+	@IsString()
+	@IsNotEmpty()
+	@IsMongoId()
+	showcaseMediaId!: string;
 }

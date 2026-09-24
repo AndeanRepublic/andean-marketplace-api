@@ -74,7 +74,7 @@ export class ColorOptionAlternativeRepositoryImpl extends ColorOptionAlternative
 		);
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		const updated = await this.colorOptionAlternativeModel
-			.findByIdAndUpdate(objectId, plain, { new: true })
+			.findByIdAndUpdate(objectId, { $set: plain }, { new: true })
 			.exec();
 		return ColorOptionAlternativeMapper.fromDocument(updated!);
 	}

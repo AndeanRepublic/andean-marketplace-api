@@ -35,8 +35,10 @@ import { UpdateShopUseCase } from '../../../app/use_cases/shop/UpdateShopUseCase
 import { ShopResponse } from '../../../app/models/shop/ShopResponse';
 import { CurrentUser } from '../../core/current-user.decorator';
 import { MediaUrlResolver } from '../../services/media/MediaUrlResolver';
-import type { ShopWithProviderInfo } from '../../../app/use_cases/shop/GetShopByIdUseCase';
+import type { ShopWithRelations } from '../../../app/use_cases/shop/GetShopByIdUseCase';
 import { ProviderInfo } from '../../../domain/entities/ProviderInfo';
+import { ShopPageInfo } from '../../../domain/entities/shop/ShopPageInfo';
+import { FounderInfo } from '../../../domain/entities/shop/FounderInfo';
 import { UpdateShopStatusUseCase } from '../../../app/use_cases/shop/UpdateShopStatusUseCase';
 import { UpdateShopStatusDto } from '../dto/shop/UpdateShopStatusDto';
 import { CreateSellerApplicationUseCase } from '../../../app/use_cases/shop/CreateSellerApplicationUseCase';
@@ -287,31 +289,66 @@ export class ShopController {
 	}
 
 	private async toResponse(
-		shop: Shop | ShopWithProviderInfo,
-	): Promise<ShopResponse & { providerInfo?: Record<string, unknown> }> {
+		shop: Shop | ShopWithRelations,
+	): Promise<ShopResponse & { providerInfo?: Record<string, unknown>; pageInfo?: Record<string, unknown>; founderInfo?: Record<string, unknown> }> {
 		return {
 			id: shop.id,
 			sellerId: shop.sellerId,
 			name: shop.name,
 			status: shop.status,
 			categories: shop.categories,
-			artisanPhotoMediaId: shop.artisanPhotoMediaId,
-			artisanPhotoUrl: await this.mediaUrlResolver.resolveUrl(
-				shop.artisanPhotoMediaId,
+			imageOrIconMediaId: shop.imageOrIconMediaId,
+			imageOrIconUrl: await this.mediaUrlResolver.resolveUrl(
+				shop.imageOrIconMediaId,
 			),
 			seals: shop.seals ?? [],
+			activePage: shop.activePage ?? false,
+			hasBranding: shop.hasBranding ?? true,
 			providerInfo:
 				'providerInfo' in shop && shop.providerInfo
 					? this.providerInfoToPlain(shop.providerInfo)
 					: undefined,
+			pageInfo:
+				'pageInfo' in shop && shop.pageInfo
+					? await this.pageInfoToPlain(shop.pageInfo)
+					: undefined,
+			founderInfo:
+				'founderInfo' in shop && shop.founderInfo
+					? await this.founderInfoToPlain(shop.founderInfo)
+					: undefined,
 		};
+	}
+
+	private async pageInfoToPlain(p: ShopPageInfo): Promise<Record<string, unknown>> {
+		return {
+			tagline: p.tagline,
+			shortBio: p.shortBio,
+			historyImageMediaIds: p.historyImageMediaIds,
+			historyImageUrls: await this.resolveMediaUrls(p.historyImageMediaIds),
+			whatWeDoDescription: p.whatWeDoDescription,
+			whatWeDoImageMediaIds: p.whatWeDoImageMediaIds,
+			whatWeDoImageUrls: await this.resolveMediaUrls(p.whatWeDoImageMediaIds),
+		};
+	}
+
+	private async founderInfoToPlain(f: FounderInfo): Promise<Record<string, unknown>> {
+		return {
+			founderName: f.founderName,
+			founderImage: f.founderImage,
+			founderImageUrl: await this.mediaUrlResolver.resolveUrl(f.founderImage),
+		};
+	}
+
+	private async resolveMediaUrls(ids: string[] = []): Promise<string[]> {
+		const map = await this.mediaUrlResolver.resolveUrls(ids.filter(Boolean));
+		return ids
+			.map((id) => map.get(id) ?? '')
+			.filter((url): url is string => Boolean(url));
 	}
 
 	private providerInfoToPlain(p: ProviderInfo): Record<string, unknown> {
 		return {
 			craftType: p.craftType,
-			tagline: p.tagline,
-			shortBio: p.shortBio,
 			originPlace: p.originPlace,
 			testimonialsOrAwards: p.testimonialsOrAwards,
 			workplacePhotoMediaId: p.workplacePhotoMediaId,

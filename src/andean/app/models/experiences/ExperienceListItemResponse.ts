@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ExperienceStatus } from '../../../domain/enums/ExperienceStatus';
 
 export class ExperienceMainImageResponse {
@@ -15,6 +15,12 @@ export class ExperienceListItem {
 
 	@ApiProperty({ description: 'Título de la experiencia' })
 	title!: string;
+
+	@ApiPropertyOptional({
+		description: 'Nombre de la categoría de la experiencia',
+		example: 'Workshops',
+	})
+	category?: string;
 
 	@ApiProperty({ description: 'Nombre del propietario (comunidad)' })
 	ownerName!: string;

@@ -10,5 +10,7 @@ export class Community {
 		public updatedAt: Date,
 		public seals?: string[],
 		public providerInfoId?: string,
+		public activePage: boolean = false,
+		public pageInfoId?: string,
 	) {}
 }

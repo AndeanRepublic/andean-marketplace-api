@@ -63,7 +63,7 @@ export class TextileTypeRepositoryImpl extends TextileTypeRepository {
 		const plain = TextileTypeMapper.toPersistence(type);
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		const updated = await this.textileTypeModel
-			.findByIdAndUpdate(objectId, plain, { new: true })
+			.findByIdAndUpdate(objectId, { $set: plain }, { new: true })
 			.exec();
 		return TextileTypeMapper.fromDocument(updated!);
 	}

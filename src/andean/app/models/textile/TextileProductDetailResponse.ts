@@ -250,6 +250,12 @@ export class SealInfoResponse {
 }
 
 export class CommunityInfoResponse {
+	@ApiProperty({ description: 'ID de la comunidad' })
+	id!: string;
+
+	@ApiProperty({ description: 'Indica si la página pública está activa' })
+	activePage!: boolean;
+
 	@ApiProperty({ description: 'URL de la imagen del banner de la comunidad' })
 	bannerImageUrl!: string;
 
@@ -264,6 +270,12 @@ export class CommunityInfoResponse {
 }
 
 export class ShopInfoResponse {
+	@ApiProperty({ description: 'ID de la tienda' })
+	id!: string;
+
+	@ApiProperty({ description: 'Indica si la página pública está activa' })
+	activePage!: boolean;
+
 	@ApiProperty({ description: 'URL de la imagen del owner (tienda)' })
 	ownerImage!: string;
 

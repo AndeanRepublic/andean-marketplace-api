@@ -100,9 +100,9 @@ export class GetSellerApplicationDetailUseCase {
 			status: shop.status,
 			categories: shop.categories,
 			providerInfoId: shop.providerInfoId,
-			artisanPhotoMediaId: shop.artisanPhotoMediaId,
-			artisanPhotoUrl: await this.mediaUrlResolver.resolveUrl(
-				shop.artisanPhotoMediaId,
+			imageOrIconMediaId: shop.imageOrIconMediaId,
+			imageOrIconUrl: await this.mediaUrlResolver.resolveUrl(
+				shop.imageOrIconMediaId,
 			),
 			seals,
 			providerInfo,
@@ -134,8 +134,6 @@ export class GetSellerApplicationDetailUseCase {
 
 		return {
 			craftType: p.craftType,
-			tagline: p.tagline,
-			shortBio: p.shortBio,
 			originPlace: p.originPlace,
 			testimonialsOrAwards: p.testimonialsOrAwards,
 			workplacePhotoMediaId: p.workplacePhotoMediaId,

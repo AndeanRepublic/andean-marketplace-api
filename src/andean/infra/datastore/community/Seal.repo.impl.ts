@@ -42,6 +42,7 @@ export class SealRepositoryImpl extends SealRepository {
 				name: plain.name,
 				description: plain.description,
 				logoMediaId: plain.logoMediaId,
+				showcaseMediaId: plain.showcaseMediaId,
 			};
 		});
 		const created = await this.sealModel.insertMany(plains);
@@ -56,7 +57,7 @@ export class SealRepositoryImpl extends SealRepository {
 		const plain = SealMapper.toPersistence(seal);
 		const objectId = MongoIdUtils.stringToObjectId(id);
 		const updated = await this.sealModel
-			.findByIdAndUpdate(objectId, plain, { new: true })
+			.findByIdAndUpdate(objectId, { $set: plain }, { new: true })
 			.exec();
 		return SealMapper.fromDocument(updated!);
 	}

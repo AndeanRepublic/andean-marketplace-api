@@ -6,11 +6,15 @@ import {
 	IsArray,
 	IsOptional,
 	IsMongoId,
+	IsBoolean,
+	ArrayMinSize,
+	ArrayMaxSize,
 	ValidateNested,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { CreateProviderInfoDto } from '../providerInfo/CreateProviderInfoDto';
+import { CreateCommunityPageInfoDto } from './CreateCommunityPageInfoDto';
 
 export class CreateCommunityDto {
 	@ApiProperty({
@@ -34,15 +38,23 @@ export class CreateCommunityDto {
 	@IsMongoId()
 	bannerImageId!: string;
 
-	@ApiPropertyOptional({
-		description: 'Array de IDs de seals asociados a la comunidad',
-		example: ['67890abcdef1234567890123', '67890abcdef1234567890124'],
+	@ApiProperty({
+		description: 'Array de exactamente 4 IDs de seals asociados a la comunidad',
+		example: [
+			'67890abcdef1234567890123',
+			'67890abcdef1234567890124',
+			'67890abcdef1234567890125',
+			'67890abcdef1234567890126',
+		],
 		type: [String],
+		minItems: 4,
+		maxItems: 4,
 	})
 	@IsArray()
 	@IsString({ each: true })
-	@IsOptional()
-	seals?: string[];
+	@ArrayMinSize(4)
+	@ArrayMaxSize(4)
+	seals!: string[];
 
 	@ApiPropertyOptional({
 		description: 'Datos de ProviderInfo para crear y asociar a la comunidad',
@@ -52,4 +64,18 @@ export class CreateCommunityDto {
 	@ValidateNested()
 	@Type(() => CreateProviderInfoDto)
 	providerInfo?: CreateProviderInfoDto;
+
+	@ApiPropertyOptional({ description: 'Indica si la página pública está activa' })
+	@IsOptional()
+	@IsBoolean()
+	activePage?: boolean;
+
+	@ApiPropertyOptional({
+		description: 'Datos de la página pública de la comunidad',
+		type: CreateCommunityPageInfoDto,
+	})
+	@IsOptional()
+	@ValidateNested()
+	@Type(() => CreateCommunityPageInfoDto)
+	pageInfo?: CreateCommunityPageInfoDto;
 }

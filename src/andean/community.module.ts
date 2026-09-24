@@ -6,12 +6,15 @@ import { Connection } from 'mongoose';
 // Schema
 import { CommunitySchema } from './infra/persistence/community/community.schema';
 import { SealSchema } from './infra/persistence/community/Seal.schema';
+import { CommunityPageInfoSchema } from './infra/persistence/community/communityPageInfo.schema';
 
 // Repository
 import { CommunityRepository } from './app/datastore/community/community.repo';
 import { CommunityRepositoryImpl } from './infra/datastore/community/community.repo.impl';
 import { SealRepository } from './app/datastore/community/Seal.repo';
 import { SealRepositoryImpl } from './infra/datastore/community/Seal.repo.impl';
+import { CommunityPageInfoRepository } from './app/datastore/community/CommunityPageInfo.repo';
+import { CommunityPageInfoRepoImpl } from './infra/datastore/community/communityPageInfo.repo.impl';
 
 // Use Cases
 import { CreateCommunityUseCase } from './app/use_cases/community/CreateCommunityUseCase';
@@ -39,6 +42,7 @@ import { CommunityController } from './infra/controllers/community.controller';
 		MongooseModule.forFeature([
 			{ name: 'Community', schema: CommunitySchema },
 			{ name: 'Seal', schema: SealSchema },
+			{ name: 'CommunityPageInfo', schema: CommunityPageInfoSchema },
 		]),
 		MediaItemModule,
 		ProviderInfoModule,
@@ -54,6 +58,10 @@ import { CommunityController } from './infra/controllers/community.controller';
 			provide: SealRepository,
 			useClass: SealRepositoryImpl,
 		},
+		{
+			provide: CommunityPageInfoRepository,
+			useClass: CommunityPageInfoRepoImpl,
+		},
 		// Use Cases
 		CreateCommunityUseCase,
 		UpdateCommunityUseCase,
@@ -68,7 +76,7 @@ import { CommunityController } from './infra/controllers/community.controller';
 		DeleteSealUseCase,
 		UpdateCommunityStatusUseCase,
 	],
-	exports: [CommunityRepository, SealRepository],
+	exports: [CommunityRepository, SealRepository, CommunityPageInfoRepository],
 })
 export class CommunityModule implements OnModuleInit {
 	constructor(@InjectConnection() private readonly connection: Connection) {}

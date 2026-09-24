@@ -27,6 +27,7 @@ import { ExperienceDurationUnit } from '../../../domain/enums/ExperienceDuration
 interface OwnerInfo {
 	title: string;
 	imgUrl: string;
+	activePage: boolean;
 }
 
 interface ReviewUserInfo {
@@ -263,6 +264,7 @@ export class ExperienceDetailMapper {
 			ownerType: experience.basicInfo.ownerType,
 			ownerTitle: ownerInfo.title,
 			ownerImgUrl: ownerInfo.imgUrl,
+			ownerActivePage: ownerInfo.activePage,
 		};
 	}
 
