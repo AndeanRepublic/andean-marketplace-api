@@ -5,10 +5,10 @@ import { StorageRepository } from '../../app/datastore/Storage.repo';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const MAX_LONGEST_EDGE = 1200;
-const JPEG_QUALITY = 80;
+const MAX_LONGEST_EDGE = 2400;
+const JPEG_QUALITY = 90;
 const PNG_EFFORT = 8;
-const WEBP_QUALITY = 80;
+const WEBP_QUALITY = 90;
 
 const SKIP_MIME_TYPES = new Set(['image/gif', 'image/svg+xml']);
 
@@ -34,7 +34,7 @@ function qualityOptions(
 ): sharp.JpegOptions | sharp.PngOptions | sharp.WebpOptions {
 	switch (format) {
 		case 'jpeg':
-			return { quality: JPEG_QUALITY };
+			return { quality: JPEG_QUALITY, chromaSubsampling: '4:4:4' };
 		case 'png':
 			return { effort: PNG_EFFORT };
 		case 'webp':
@@ -55,6 +55,17 @@ export class ImageOptimizerRepoImpl implements ImageOptimizerRepository {
 		const options = qualityOptions(format);
 
 		try {
+			const metadata = await sharp(file).metadata();
+			const width = metadata.width ?? 0;
+			const height = metadata.height ?? 0;
+			if (
+				width > 0 &&
+				height > 0 &&
+				Math.max(width, height) <= MAX_LONGEST_EDGE
+			) {
+				return file;
+			}
+
 			const { data, info } = await sharp(file)
 				.rotate()
 				.resize({
