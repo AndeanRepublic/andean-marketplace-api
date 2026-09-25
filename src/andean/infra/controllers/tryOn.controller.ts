@@ -33,7 +33,9 @@ export class TryOnController {
 	// @UseGuards(JwtAuthGuard)
 	@Public()
 	@Post()
-	@UseInterceptors(FileInterceptor('file'))
+	@UseInterceptors(
+		FileInterceptor('file', { limits: { fileSize: 15 * 1024 * 1024 } }),
+	)
 	@ApiConsumes('multipart/form-data')
 	@ApiOperation({
 		summary: 'Probar una prenda virtualmente usando segfit-v1.3',
@@ -48,7 +50,7 @@ export class TryOnController {
 				file: {
 					type: 'string',
 					format: 'binary',
-					description: 'Foto del usuario (jpeg, png o webp, máx 5MB)',
+					description: 'Foto del usuario (jpeg, png o webp, máx 15MB)',
 				},
 				textileProductId: {
 					type: 'string',
@@ -80,8 +82,15 @@ export class TryOnController {
 		@UploadedFile(
 			new ParseFilePipe({
 				validators: [
-					new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }), // 5MB
-					new FileTypeValidator({ fileType: /^image\/(jpeg|png|webp)$/ }),
+					new MaxFileSizeValidator({
+						maxSize: 15 * 1024 * 1024,
+						errorMessage:
+							'This photo is too large. Please use one smaller than 15 MB.',
+					}),
+					new FileTypeValidator({
+						fileType: /^image\/(jpeg|png|webp)$/,
+						errorMessage: 'Please use a JPG, PNG, or WebP photo.',
+					}),
 				],
 			}),
 		)
